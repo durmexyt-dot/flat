@@ -1,0 +1,27 @@
+{
+  "@@locale": "bs",
+  "appTitle": "Flat",
+  "loginTitle": "Prijava",
+  "loginSubtitle": "Prijavite se na svoj račun",
+  "emailLabel": "E-mail",
+  "passwordLabel": "Lozinka",
+  "loginButton": "Prijavi se",
+  "logoutButton": "Odjavi se",
+  "emailRequired": "Unesite e-mail adresu",
+  "emailInvalid": "Unesite ispravnu e-mail adresu",
+  "passwordRequired": "Unesite lozinku",
+  "errorInvalidCredentials": "Pogrešan e-mail ili lozinka",
+  "errorUserDisabled": "Ovaj račun je deaktiviran",
+  "errorTooManyRequests": "Previše pokušaja. Pokušajte ponovo kasnije",
+  "errorNetwork": "Nema internet konekcije",
+  "errorUnknown": "Došlo je do greške. Pokušajte ponovo",
+  "dashboardTitle": "Kontrolna tabla",
+  "welcome": "Dobrodošli, {email}",
+  "@welcome": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "dashboardEmpty": "Ovdje još nema ničega.",
+  "language": "Jezik",
+  "showPassword": "Prikaži lozinku",
+  "hidePassword": "Sakrij lozinku"
+}
