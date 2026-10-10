@@ -708,4 +708,254 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get orderPendingPayment => 'Awaiting payment';
+
+  @override
+  String get orderPaid => 'Paid';
+
+  @override
+  String get orderTicketsSent => 'Tickets delivered';
+
+  @override
+  String get orderCompleted => 'Completed';
+
+  @override
+  String get orderCancelled => 'Cancelled';
+
+  @override
+  String get orderRefunded => 'Refunded';
+
+  @override
+  String get orderDisputed => 'In dispute';
+
+  @override
+  String get payoutPending => 'Waiting for event';
+
+  @override
+  String get payoutScheduled => 'Scheduled';
+
+  @override
+  String get payoutProcessing => 'Processing';
+
+  @override
+  String get payoutPaid => 'Paid out';
+
+  @override
+  String get payoutFailed => 'Failed';
+
+  @override
+  String get buyerNextPendingPayment =>
+      'Complete payment to secure the tickets.';
+
+  @override
+  String get buyerNextPaid =>
+      'The seller is sending the tickets. You\'ll get them before the event at the latest.';
+
+  @override
+  String get buyerNextTicketsSent =>
+      'Your tickets were delivered. Check your email or the organizer\'s app.';
+
+  @override
+  String get buyerNextCompleted => 'Enjoy the event!';
+
+  @override
+  String get buyerNextCancelled =>
+      'The order was cancelled. You weren\'t charged.';
+
+  @override
+  String get buyerNextRefunded =>
+      'The amount was refunded to your payment method.';
+
+  @override
+  String get buyerNextDisputed =>
+      'Our team is reviewing the order and will get back to you.';
+
+  @override
+  String get sellerNextPendingPayment =>
+      'The buyer is paying. The tickets are reserved.';
+
+  @override
+  String get sellerNextPaid =>
+      'Send the tickets to the buyer as soon as possible.';
+
+  @override
+  String get sellerNextTicketsSent => 'Your payout follows after the event.';
+
+  @override
+  String get sellerNextCompleted => 'Sale complete. See your payouts.';
+
+  @override
+  String get sellerNextCancelled =>
+      'Order cancelled. The tickets are back on sale.';
+
+  @override
+  String get sellerNextRefunded =>
+      'The buyer was refunded. There\'s no payout for this sale.';
+
+  @override
+  String get sellerNextDisputed =>
+      'The buyer reported a problem. The payout waits for the outcome.';
+
+  @override
+  String get payoutNextPending =>
+      'The money is released once the event has taken place.';
+
+  @override
+  String get payoutNextScheduled => 'The payout is in the next payout run.';
+
+  @override
+  String get payoutNextProcessing =>
+      'The bank is processing the transfer, usually 1–3 business days.';
+
+  @override
+  String get payoutNextPaid => 'The money is in your account.';
+
+  @override
+  String get payoutNextFailed =>
+      'Check your payout method. We\'ll retry after you update it.';
+
+  @override
+  String get invoice => 'Invoice';
+
+  @override
+  String get orderNumber => 'Order number';
+
+  @override
+  String get orderDate => 'Order date';
+
+  @override
+  String get paymentMethod => 'Payment method';
+
+  @override
+  String get saleAmount => 'Sale amount';
+
+  @override
+  String get sellerFeeLabel => 'Seller fee';
+
+  @override
+  String get yourEarnings => 'Your earnings';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get whatsNext => 'What\'s next';
+
+  @override
+  String get statusHistory => 'Progress';
+
+  @override
+  String get orderDetails => 'Order details';
+
+  @override
+  String get saleDetails => 'Sale details';
+
+  @override
+  String get payoutDetails => 'Payout details';
+
+  @override
+  String get purchases => 'Purchases & invoices';
+
+  @override
+  String get sales => 'Sales';
+
+  @override
+  String get payouts => 'Payouts';
+
+  @override
+  String get payoutMethod => 'Payout method';
+
+  @override
+  String get noPurchases => 'No purchases yet';
+
+  @override
+  String get noPurchasesInfo =>
+      'Tickets you buy and their invoices show up here.';
+
+  @override
+  String get noSales => 'No sales yet';
+
+  @override
+  String get noSalesInfo =>
+      'When someone buys your tickets, you\'ll see it here.';
+
+  @override
+  String get noPayouts => 'No payouts yet';
+
+  @override
+  String get noPayoutsInfo =>
+      'Money from sales reaches your account after the event.';
+
+  @override
+  String get filterInProgress => 'In progress';
+
+  @override
+  String get filterCompleted => 'Completed';
+
+  @override
+  String get filterCancelled => 'Cancelled';
+
+  @override
+  String get payoutsUpcoming => 'Coming to you';
+
+  @override
+  String get payoutsPaidTotal => 'Paid out so far';
+
+  @override
+  String expectedOn(String date) {
+    return 'Expected $date';
+  }
+
+  @override
+  String get payoutOrders => 'Orders in this payout';
+
+  @override
+  String get failureReason => 'Reason';
+
+  @override
+  String get setUpPayout => 'Add payout method';
+
+  @override
+  String get payoutMethodMissing =>
+      'Add a bank account to receive money from sales.';
+
+  @override
+  String get accountHolder => 'Account holder';
+
+  @override
+  String get iban => 'IBAN';
+
+  @override
+  String get ibanInvalid => 'Invalid IBAN';
+
+  @override
+  String get payoutMethodInfo =>
+      'Payouts arrive in this account 3–5 business days after the event.';
+
+  @override
+  String get payoutMethodSaved => 'Payout method saved';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get demoMode => 'Demo data';
+
+  @override
+  String get demoModeInfo =>
+      'Shows example orders, sales and payouts. Nothing is saved.';
+
+  @override
+  String get demoBanner => 'Demo – example data';
+
+  @override
+  String get buyer => 'Buyer';
+
+  @override
+  String get tools => 'Tools';
 }

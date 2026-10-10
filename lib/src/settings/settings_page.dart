@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../account/profile_header.dart';
 import '../auth/auth_repository.dart';
+import '../data/demo_data.dart';
 import '../data/repositories.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
@@ -22,6 +23,9 @@ class SettingsPage extends ConsumerWidget {
     final controller = ref.read(settingsProvider.notifier);
     final user = ref.watch(authStateProvider).value;
     final isGuest = ref.watch(guestModeProvider);
+    final payoutMethod = user == null
+        ? null
+        : ref.watch(payoutMethodProvider).value;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -43,6 +47,16 @@ class SettingsPage extends ConsumerWidget {
                 },
               ),
             if (user != null) ...[
+              SettingsSectionTitle(l10n.buying),
+              SettingsGroup(
+                children: [
+                  SettingsLinkTile(
+                    icon: Icons.receipt_long_outlined,
+                    title: l10n.purchases,
+                    onTap: () => context.push('/account/purchases'),
+                  ),
+                ],
+              ),
               SettingsSectionTitle(l10n.selling),
               SettingsGroup(
                 children: [
@@ -50,6 +64,22 @@ class SettingsPage extends ConsumerWidget {
                     icon: Icons.sell_outlined,
                     title: l10n.myListings,
                     onTap: () => context.push('/account/listings'),
+                  ),
+                  SettingsLinkTile(
+                    icon: Icons.point_of_sale_outlined,
+                    title: l10n.sales,
+                    onTap: () => context.push('/account/sales'),
+                  ),
+                  SettingsLinkTile(
+                    icon: Icons.account_balance_wallet_outlined,
+                    title: l10n.payouts,
+                    onTap: () => context.push('/account/payouts'),
+                  ),
+                  SettingsLinkTile(
+                    icon: Icons.account_balance_outlined,
+                    title: l10n.payoutMethod,
+                    subtitle: payoutMethod?.masked ?? l10n.payoutMethodMissing,
+                    onTap: () => context.push('/account/payout-method'),
                   ),
                 ],
               ),
@@ -125,6 +155,22 @@ class SettingsPage extends ConsumerWidget {
                             ],
                           ),
                     onTap: () => context.push('/settings/privacy'),
+                  ),
+                ],
+              ),
+              SettingsSectionTitle(l10n.tools),
+              SettingsGroup(
+                children: [
+                  SwitchListTile(
+                    shape: const RoundedRectangleBorder(),
+                    secondary: const Icon(Icons.science_outlined),
+                    title: Text(l10n.demoMode),
+                    subtitle: Text(l10n.demoModeInfo),
+                    value: ref.watch(demoModeProvider),
+                    onChanged: (on) {
+                      ref.read(demoModeProvider.notifier).set(on);
+                      ref.invalidate(statsProvider);
+                    },
                   ),
                 ],
               ),

@@ -1419,6 +1419,462 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'U redu'**
   String get ok;
+
+  /// No description provided for @orderPendingPayment.
+  ///
+  /// In bs, this message translates to:
+  /// **'Čeka plaćanje'**
+  String get orderPendingPayment;
+
+  /// No description provided for @orderPaid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćeno'**
+  String get orderPaid;
+
+  /// No description provided for @orderTicketsSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte poslane'**
+  String get orderTicketsSent;
+
+  /// No description provided for @orderCompleted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Završeno'**
+  String get orderCompleted;
+
+  /// No description provided for @orderCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazano'**
+  String get orderCancelled;
+
+  /// No description provided for @orderRefunded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac vraćen'**
+  String get orderRefunded;
+
+  /// No description provided for @orderDisputed.
+  ///
+  /// In bs, this message translates to:
+  /// **'U rješavanju'**
+  String get orderDisputed;
+
+  /// No description provided for @payoutPending.
+  ///
+  /// In bs, this message translates to:
+  /// **'Čeka događaj'**
+  String get payoutPending;
+
+  /// No description provided for @payoutScheduled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zakazano'**
+  String get payoutScheduled;
+
+  /// No description provided for @payoutProcessing.
+  ///
+  /// In bs, this message translates to:
+  /// **'U obradi'**
+  String get payoutProcessing;
+
+  /// No description provided for @payoutPaid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplaćeno'**
+  String get payoutPaid;
+
+  /// No description provided for @payoutFailed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Neuspjelo'**
+  String get payoutFailed;
+
+  /// No description provided for @buyerNextPendingPayment.
+  ///
+  /// In bs, this message translates to:
+  /// **'Završi plaćanje da rezervišeš karte.'**
+  String get buyerNextPendingPayment;
+
+  /// No description provided for @buyerNextPaid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac šalje karte. Dobit ćeš ih najkasnije prije događaja.'**
+  String get buyerNextPaid;
+
+  /// No description provided for @buyerNextTicketsSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte su ti poslane. Provjeri e-mail ili aplikaciju organizatora.'**
+  String get buyerNextTicketsSent;
+
+  /// No description provided for @buyerNextCompleted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uživaj u događaju!'**
+  String get buyerNextCompleted;
+
+  /// No description provided for @buyerNextCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžba je otkazana. Ništa nije naplaćeno.'**
+  String get buyerNextCancelled;
+
+  /// No description provided for @buyerNextRefunded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Iznos je vraćen na tvoj način plaćanja.'**
+  String get buyerNextRefunded;
+
+  /// No description provided for @buyerNextDisputed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naš tim provjerava narudžbu i javit će ti se.'**
+  String get buyerNextDisputed;
+
+  /// No description provided for @sellerNextPendingPayment.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac plaća. Karte su rezervisane.'**
+  String get sellerNextPendingPayment;
+
+  /// No description provided for @sellerNextPaid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji karte kupcu što prije.'**
+  String get sellerNextPaid;
+
+  /// No description provided for @sellerNextTicketsSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplata slijedi nakon događaja.'**
+  String get sellerNextTicketsSent;
+
+  /// No description provided for @sellerNextCompleted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja je završena. Pogledaj isplate.'**
+  String get sellerNextCompleted;
+
+  /// No description provided for @sellerNextCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžba je otkazana. Karte su ponovo u prodaji.'**
+  String get sellerNextCancelled;
+
+  /// No description provided for @sellerNextRefunded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupcu je vraćen novac. Za ovu prodaju nema isplate.'**
+  String get sellerNextRefunded;
+
+  /// No description provided for @sellerNextDisputed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac je prijavio problem. Isplata čeka rješenje.'**
+  String get sellerNextDisputed;
+
+  /// No description provided for @payoutNextPending.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac se oslobađa nakon održanog događaja.'**
+  String get payoutNextPending;
+
+  /// No description provided for @payoutNextScheduled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplata je u sljedećem krugu isplata.'**
+  String get payoutNextScheduled;
+
+  /// No description provided for @payoutNextProcessing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Banka obrađuje uplatu, obično 1–3 radna dana.'**
+  String get payoutNextProcessing;
+
+  /// No description provided for @payoutNextPaid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac je na tvom računu.'**
+  String get payoutNextPaid;
+
+  /// No description provided for @payoutNextFailed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjeri način isplate. Pokušat ćemo ponovo nakon izmjene.'**
+  String get payoutNextFailed;
+
+  /// No description provided for @invoice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Račun'**
+  String get invoice;
+
+  /// No description provided for @orderNumber.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj narudžbe'**
+  String get orderNumber;
+
+  /// No description provided for @orderDate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Datum narudžbe'**
+  String get orderDate;
+
+  /// No description provided for @paymentMethod.
+  ///
+  /// In bs, this message translates to:
+  /// **'Način plaćanja'**
+  String get paymentMethod;
+
+  /// No description provided for @saleAmount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Iznos prodaje'**
+  String get saleAmount;
+
+  /// No description provided for @sellerFeeLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada prodavca'**
+  String get sellerFeeLabel;
+
+  /// No description provided for @yourEarnings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoja zarada'**
+  String get yourEarnings;
+
+  /// No description provided for @copied.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kopirano'**
+  String get copied;
+
+  /// No description provided for @copy.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kopiraj'**
+  String get copy;
+
+  /// No description provided for @whatsNext.
+  ///
+  /// In bs, this message translates to:
+  /// **'Šta slijedi'**
+  String get whatsNext;
+
+  /// No description provided for @statusHistory.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tok narudžbe'**
+  String get statusHistory;
+
+  /// No description provided for @orderDetails.
+  ///
+  /// In bs, this message translates to:
+  /// **'Detalji narudžbe'**
+  String get orderDetails;
+
+  /// No description provided for @saleDetails.
+  ///
+  /// In bs, this message translates to:
+  /// **'Detalji prodaje'**
+  String get saleDetails;
+
+  /// No description provided for @payoutDetails.
+  ///
+  /// In bs, this message translates to:
+  /// **'Detalji isplate'**
+  String get payoutDetails;
+
+  /// No description provided for @purchases.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupovine i računi'**
+  String get purchases;
+
+  /// No description provided for @sales.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaje'**
+  String get sales;
+
+  /// No description provided for @payouts.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplate'**
+  String get payouts;
+
+  /// No description provided for @payoutMethod.
+  ///
+  /// In bs, this message translates to:
+  /// **'Način isplate'**
+  String get payoutMethod;
+
+  /// No description provided for @noPurchases.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nemaš kupovina'**
+  String get noPurchases;
+
+  /// No description provided for @noPurchasesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupljene karte i računi pojavit će se ovdje.'**
+  String get noPurchasesInfo;
+
+  /// No description provided for @noSales.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nemaš prodaja'**
+  String get noSales;
+
+  /// No description provided for @noSalesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada neko kupi tvoje karte, vidjet ćeš to ovdje.'**
+  String get noSalesInfo;
+
+  /// No description provided for @noPayouts.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema isplata'**
+  String get noPayouts;
+
+  /// No description provided for @noPayoutsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac od prodaje stiže na tvoj račun nakon događaja.'**
+  String get noPayoutsInfo;
+
+  /// No description provided for @filterInProgress.
+  ///
+  /// In bs, this message translates to:
+  /// **'U toku'**
+  String get filterInProgress;
+
+  /// No description provided for @filterCompleted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Završene'**
+  String get filterCompleted;
+
+  /// No description provided for @filterCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazane'**
+  String get filterCancelled;
+
+  /// No description provided for @payoutsUpcoming.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uskoro na računu'**
+  String get payoutsUpcoming;
+
+  /// No description provided for @payoutsPaidTotal.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplaćeno ukupno'**
+  String get payoutsPaidTotal;
+
+  /// No description provided for @expectedOn.
+  ///
+  /// In bs, this message translates to:
+  /// **'Očekivano {date}'**
+  String expectedOn(String date);
+
+  /// No description provided for @payoutOrders.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžbe u isplati'**
+  String get payoutOrders;
+
+  /// No description provided for @failureReason.
+  ///
+  /// In bs, this message translates to:
+  /// **'Razlog'**
+  String get failureReason;
+
+  /// No description provided for @setUpPayout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj način isplate'**
+  String get setUpPayout;
+
+  /// No description provided for @payoutMethodMissing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj bankovni račun da bi primio novac od prodaje.'**
+  String get payoutMethodMissing;
+
+  /// No description provided for @accountHolder.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vlasnik računa'**
+  String get accountHolder;
+
+  /// No description provided for @iban.
+  ///
+  /// In bs, this message translates to:
+  /// **'IBAN'**
+  String get iban;
+
+  /// No description provided for @ibanInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Neispravan IBAN'**
+  String get ibanInvalid;
+
+  /// No description provided for @payoutMethodInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplate stižu na ovaj račun 3–5 radnih dana nakon događaja.'**
+  String get payoutMethodInfo;
+
+  /// No description provided for @payoutMethodSaved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Način isplate je sačuvan'**
+  String get payoutMethodSaved;
+
+  /// No description provided for @change.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni'**
+  String get change;
+
+  /// No description provided for @demoMode.
+  ///
+  /// In bs, this message translates to:
+  /// **'Demo podaci'**
+  String get demoMode;
+
+  /// No description provided for @demoModeInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prikazuje primjere narudžbi, prodaja i isplata. Ništa se ne sprema.'**
+  String get demoModeInfo;
+
+  /// No description provided for @demoBanner.
+  ///
+  /// In bs, this message translates to:
+  /// **'Demo – primjeri podataka'**
+  String get demoBanner;
+
+  /// No description provided for @buyer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac'**
+  String get buyer;
+
+  /// No description provided for @tools.
+  ///
+  /// In bs, this message translates to:
+  /// **'Alati'**
+  String get tools;
 }
 
 class _AppLocalizationsDelegate

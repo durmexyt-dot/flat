@@ -710,4 +710,247 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get ok => 'U redu';
+
+  @override
+  String get orderPendingPayment => 'Čeka plaćanje';
+
+  @override
+  String get orderPaid => 'Plaćeno';
+
+  @override
+  String get orderTicketsSent => 'Karte poslane';
+
+  @override
+  String get orderCompleted => 'Završeno';
+
+  @override
+  String get orderCancelled => 'Otkazano';
+
+  @override
+  String get orderRefunded => 'Novac vraćen';
+
+  @override
+  String get orderDisputed => 'U rješavanju';
+
+  @override
+  String get payoutPending => 'Čeka događaj';
+
+  @override
+  String get payoutScheduled => 'Zakazano';
+
+  @override
+  String get payoutProcessing => 'U obradi';
+
+  @override
+  String get payoutPaid => 'Isplaćeno';
+
+  @override
+  String get payoutFailed => 'Neuspjelo';
+
+  @override
+  String get buyerNextPendingPayment => 'Završi plaćanje da rezervišeš karte.';
+
+  @override
+  String get buyerNextPaid =>
+      'Prodavac šalje karte. Dobit ćeš ih najkasnije prije događaja.';
+
+  @override
+  String get buyerNextTicketsSent =>
+      'Karte su ti poslane. Provjeri e-mail ili aplikaciju organizatora.';
+
+  @override
+  String get buyerNextCompleted => 'Uživaj u događaju!';
+
+  @override
+  String get buyerNextCancelled =>
+      'Narudžba je otkazana. Ništa nije naplaćeno.';
+
+  @override
+  String get buyerNextRefunded => 'Iznos je vraćen na tvoj način plaćanja.';
+
+  @override
+  String get buyerNextDisputed =>
+      'Naš tim provjerava narudžbu i javit će ti se.';
+
+  @override
+  String get sellerNextPendingPayment => 'Kupac plaća. Karte su rezervisane.';
+
+  @override
+  String get sellerNextPaid => 'Pošalji karte kupcu što prije.';
+
+  @override
+  String get sellerNextTicketsSent => 'Isplata slijedi nakon događaja.';
+
+  @override
+  String get sellerNextCompleted => 'Prodaja je završena. Pogledaj isplate.';
+
+  @override
+  String get sellerNextCancelled =>
+      'Narudžba je otkazana. Karte su ponovo u prodaji.';
+
+  @override
+  String get sellerNextRefunded =>
+      'Kupcu je vraćen novac. Za ovu prodaju nema isplate.';
+
+  @override
+  String get sellerNextDisputed =>
+      'Kupac je prijavio problem. Isplata čeka rješenje.';
+
+  @override
+  String get payoutNextPending => 'Novac se oslobađa nakon održanog događaja.';
+
+  @override
+  String get payoutNextScheduled => 'Isplata je u sljedećem krugu isplata.';
+
+  @override
+  String get payoutNextProcessing =>
+      'Banka obrađuje uplatu, obično 1–3 radna dana.';
+
+  @override
+  String get payoutNextPaid => 'Novac je na tvom računu.';
+
+  @override
+  String get payoutNextFailed =>
+      'Provjeri način isplate. Pokušat ćemo ponovo nakon izmjene.';
+
+  @override
+  String get invoice => 'Račun';
+
+  @override
+  String get orderNumber => 'Broj narudžbe';
+
+  @override
+  String get orderDate => 'Datum narudžbe';
+
+  @override
+  String get paymentMethod => 'Način plaćanja';
+
+  @override
+  String get saleAmount => 'Iznos prodaje';
+
+  @override
+  String get sellerFeeLabel => 'Naknada prodavca';
+
+  @override
+  String get yourEarnings => 'Tvoja zarada';
+
+  @override
+  String get copied => 'Kopirano';
+
+  @override
+  String get copy => 'Kopiraj';
+
+  @override
+  String get whatsNext => 'Šta slijedi';
+
+  @override
+  String get statusHistory => 'Tok narudžbe';
+
+  @override
+  String get orderDetails => 'Detalji narudžbe';
+
+  @override
+  String get saleDetails => 'Detalji prodaje';
+
+  @override
+  String get payoutDetails => 'Detalji isplate';
+
+  @override
+  String get purchases => 'Kupovine i računi';
+
+  @override
+  String get sales => 'Prodaje';
+
+  @override
+  String get payouts => 'Isplate';
+
+  @override
+  String get payoutMethod => 'Način isplate';
+
+  @override
+  String get noPurchases => 'Još nemaš kupovina';
+
+  @override
+  String get noPurchasesInfo => 'Kupljene karte i računi pojavit će se ovdje.';
+
+  @override
+  String get noSales => 'Još nemaš prodaja';
+
+  @override
+  String get noSalesInfo => 'Kada neko kupi tvoje karte, vidjet ćeš to ovdje.';
+
+  @override
+  String get noPayouts => 'Još nema isplata';
+
+  @override
+  String get noPayoutsInfo =>
+      'Novac od prodaje stiže na tvoj račun nakon događaja.';
+
+  @override
+  String get filterInProgress => 'U toku';
+
+  @override
+  String get filterCompleted => 'Završene';
+
+  @override
+  String get filterCancelled => 'Otkazane';
+
+  @override
+  String get payoutsUpcoming => 'Uskoro na računu';
+
+  @override
+  String get payoutsPaidTotal => 'Isplaćeno ukupno';
+
+  @override
+  String expectedOn(String date) {
+    return 'Očekivano $date';
+  }
+
+  @override
+  String get payoutOrders => 'Narudžbe u isplati';
+
+  @override
+  String get failureReason => 'Razlog';
+
+  @override
+  String get setUpPayout => 'Dodaj način isplate';
+
+  @override
+  String get payoutMethodMissing =>
+      'Dodaj bankovni račun da bi primio novac od prodaje.';
+
+  @override
+  String get accountHolder => 'Vlasnik računa';
+
+  @override
+  String get iban => 'IBAN';
+
+  @override
+  String get ibanInvalid => 'Neispravan IBAN';
+
+  @override
+  String get payoutMethodInfo =>
+      'Isplate stižu na ovaj račun 3–5 radnih dana nakon događaja.';
+
+  @override
+  String get payoutMethodSaved => 'Način isplate je sačuvan';
+
+  @override
+  String get change => 'Promijeni';
+
+  @override
+  String get demoMode => 'Demo podaci';
+
+  @override
+  String get demoModeInfo =>
+      'Prikazuje primjere narudžbi, prodaja i isplata. Ništa se ne sprema.';
+
+  @override
+  String get demoBanner => 'Demo – primjeri podataka';
+
+  @override
+  String get buyer => 'Kupac';
+
+  @override
+  String get tools => 'Alati';
 }

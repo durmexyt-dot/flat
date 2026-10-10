@@ -86,7 +86,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Push na ovom uređaju'),
       -200,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: mainScrollable,
     );
     expect(
       find.text(

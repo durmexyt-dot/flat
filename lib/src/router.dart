@@ -13,6 +13,11 @@ import 'data/models.dart';
 import 'home/home_page.dart';
 import 'market/listing_detail_page.dart';
 import 'market/my_listings_page.dart';
+import 'market/order_detail_page.dart';
+import 'market/order_labels.dart';
+import 'market/orders_page.dart';
+import 'market/payout_method_page.dart';
+import 'market/payouts_page.dart';
 import 'market/sell_page.dart';
 import 'settings/appearance_page.dart';
 import 'settings/settings_page.dart';
@@ -23,6 +28,8 @@ const _authRoutes = {'/login', '/signup', '/forgot-password'};
 const _accountOnly = [
   '/sell',
   '/account',
+  '/order',
+  '/payout',
   '/settings/profile',
   '/settings/privacy',
   '/settings/notifications',
@@ -80,6 +87,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       _route('/account/listings', (_) => const MyListingsPage()),
+      _route(
+        '/account/purchases',
+        (_) => const OrdersPage(role: OrderRole.buyer),
+      ),
+      _route('/account/sales', (_) => const OrdersPage(role: OrderRole.seller)),
+      _route('/account/payouts', (_) => const PayoutsPage()),
+      _route('/account/payout-method', (_) => const PayoutMethodPage()),
+      _route(
+        '/order/:id',
+        (state) => OrderDetailPage(
+          id: state.pathParameters['id']!,
+          initial: state.extra as Order?,
+        ),
+      ),
+      _route(
+        '/payout/:id',
+        (state) => PayoutDetailPage(
+          id: state.pathParameters['id']!,
+          initial: state.extra as Payout?,
+        ),
+      ),
     ],
   );
 });

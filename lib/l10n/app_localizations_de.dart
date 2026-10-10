@@ -714,4 +714,256 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get orderPendingPayment => 'Zahlung ausstehend';
+
+  @override
+  String get orderPaid => 'Bezahlt';
+
+  @override
+  String get orderTicketsSent => 'Tickets übertragen';
+
+  @override
+  String get orderCompleted => 'Abgeschlossen';
+
+  @override
+  String get orderCancelled => 'Storniert';
+
+  @override
+  String get orderRefunded => 'Erstattet';
+
+  @override
+  String get orderDisputed => 'In Klärung';
+
+  @override
+  String get payoutPending => 'Wartet auf Event';
+
+  @override
+  String get payoutScheduled => 'Geplant';
+
+  @override
+  String get payoutProcessing => 'In Bearbeitung';
+
+  @override
+  String get payoutPaid => 'Ausgezahlt';
+
+  @override
+  String get payoutFailed => 'Fehlgeschlagen';
+
+  @override
+  String get buyerNextPendingPayment =>
+      'Schließe die Zahlung ab, um die Tickets zu sichern.';
+
+  @override
+  String get buyerNextPaid =>
+      'Der Verkäufer überträgt die Tickets. Du bekommst sie spätestens vor dem Event.';
+
+  @override
+  String get buyerNextTicketsSent =>
+      'Deine Tickets wurden übertragen. Prüfe deine E-Mails oder die App des Veranstalters.';
+
+  @override
+  String get buyerNextCompleted => 'Viel Spaß beim Event!';
+
+  @override
+  String get buyerNextCancelled =>
+      'Die Bestellung wurde storniert. Es wurde nichts berechnet.';
+
+  @override
+  String get buyerNextRefunded =>
+      'Der Betrag wurde auf deine Zahlungsmethode erstattet.';
+
+  @override
+  String get buyerNextDisputed =>
+      'Unser Team prüft die Bestellung und meldet sich bei dir.';
+
+  @override
+  String get sellerNextPendingPayment =>
+      'Der Käufer bezahlt. Die Tickets sind reserviert.';
+
+  @override
+  String get sellerNextPaid =>
+      'Übertrage die Tickets so bald wie möglich an den Käufer.';
+
+  @override
+  String get sellerNextTicketsSent => 'Die Auszahlung folgt nach dem Event.';
+
+  @override
+  String get sellerNextCompleted =>
+      'Verkauf abgeschlossen. Sieh dir deine Auszahlungen an.';
+
+  @override
+  String get sellerNextCancelled =>
+      'Bestellung storniert. Die Tickets sind wieder im Verkauf.';
+
+  @override
+  String get sellerNextRefunded =>
+      'Der Käufer wurde erstattet. Für diesen Verkauf gibt es keine Auszahlung.';
+
+  @override
+  String get sellerNextDisputed =>
+      'Der Käufer hat ein Problem gemeldet. Die Auszahlung wartet auf die Klärung.';
+
+  @override
+  String get payoutNextPending =>
+      'Das Geld wird freigegeben, sobald das Event stattgefunden hat.';
+
+  @override
+  String get payoutNextScheduled =>
+      'Die Auszahlung ist im nächsten Auszahlungslauf.';
+
+  @override
+  String get payoutNextProcessing =>
+      'Die Bank bearbeitet die Überweisung, meist 1–3 Werktage.';
+
+  @override
+  String get payoutNextPaid => 'Das Geld ist auf deinem Konto.';
+
+  @override
+  String get payoutNextFailed =>
+      'Prüfe deine Auszahlungsmethode. Nach einer Änderung versuchen wir es erneut.';
+
+  @override
+  String get invoice => 'Rechnung';
+
+  @override
+  String get orderNumber => 'Bestellnummer';
+
+  @override
+  String get orderDate => 'Bestelldatum';
+
+  @override
+  String get paymentMethod => 'Zahlungsmethode';
+
+  @override
+  String get saleAmount => 'Verkaufsbetrag';
+
+  @override
+  String get sellerFeeLabel => 'Verkäufergebühr';
+
+  @override
+  String get yourEarnings => 'Dein Erlös';
+
+  @override
+  String get copied => 'Kopiert';
+
+  @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get whatsNext => 'Wie es weitergeht';
+
+  @override
+  String get statusHistory => 'Verlauf';
+
+  @override
+  String get orderDetails => 'Bestelldetails';
+
+  @override
+  String get saleDetails => 'Verkaufsdetails';
+
+  @override
+  String get payoutDetails => 'Auszahlungsdetails';
+
+  @override
+  String get purchases => 'Käufe & Rechnungen';
+
+  @override
+  String get sales => 'Verkäufe';
+
+  @override
+  String get payouts => 'Auszahlungen';
+
+  @override
+  String get payoutMethod => 'Auszahlungsmethode';
+
+  @override
+  String get noPurchases => 'Noch keine Käufe';
+
+  @override
+  String get noPurchasesInfo =>
+      'Gekaufte Tickets und Rechnungen erscheinen hier.';
+
+  @override
+  String get noSales => 'Noch keine Verkäufe';
+
+  @override
+  String get noSalesInfo =>
+      'Wenn jemand deine Tickets kauft, siehst du es hier.';
+
+  @override
+  String get noPayouts => 'Noch keine Auszahlungen';
+
+  @override
+  String get noPayoutsInfo =>
+      'Geld aus Verkäufen kommt nach dem Event auf dein Konto.';
+
+  @override
+  String get filterInProgress => 'Laufend';
+
+  @override
+  String get filterCompleted => 'Abgeschlossen';
+
+  @override
+  String get filterCancelled => 'Storniert';
+
+  @override
+  String get payoutsUpcoming => 'Demnächst auf dem Konto';
+
+  @override
+  String get payoutsPaidTotal => 'Bisher ausgezahlt';
+
+  @override
+  String expectedOn(String date) {
+    return 'Erwartet am $date';
+  }
+
+  @override
+  String get payoutOrders => 'Enthaltene Bestellungen';
+
+  @override
+  String get failureReason => 'Grund';
+
+  @override
+  String get setUpPayout => 'Auszahlungsmethode hinzufügen';
+
+  @override
+  String get payoutMethodMissing =>
+      'Füge ein Bankkonto hinzu, um Geld aus Verkäufen zu erhalten.';
+
+  @override
+  String get accountHolder => 'Kontoinhaber';
+
+  @override
+  String get iban => 'IBAN';
+
+  @override
+  String get ibanInvalid => 'Ungültige IBAN';
+
+  @override
+  String get payoutMethodInfo =>
+      'Auszahlungen gehen 3–5 Werktage nach dem Event auf dieses Konto.';
+
+  @override
+  String get payoutMethodSaved => 'Auszahlungsmethode gespeichert';
+
+  @override
+  String get change => 'Ändern';
+
+  @override
+  String get demoMode => 'Demo-Daten';
+
+  @override
+  String get demoModeInfo =>
+      'Zeigt Beispiel-Bestellungen, -Verkäufe und -Auszahlungen. Nichts wird gespeichert.';
+
+  @override
+  String get demoBanner => 'Demo – Beispieldaten';
+
+  @override
+  String get buyer => 'Käufer';
+
+  @override
+  String get tools => 'Werkzeuge';
 }

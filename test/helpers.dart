@@ -160,15 +160,18 @@ Future<FakeAuthRepository> pumpApp(
   return auth;
 }
 
+/// The vertical list of the screen on top (not e.g. a row of chips).
+Finder get mainScrollable => find
+    .byWidgetPredicate(
+      (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+    )
+    .last;
+
 /// Scrolls the first scrollable until [finder] is built and visible, then
 /// taps it.
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
   if (finder.evaluate().isEmpty) {
-    await tester.scrollUntilVisible(
-      finder,
-      200,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await tester.scrollUntilVisible(finder, 200, scrollable: mainScrollable);
   }
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();

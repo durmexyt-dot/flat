@@ -97,17 +97,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Postavke'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Bosanski'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Bosanski'));
-    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('Bosanski'));
     await tester.tap(find.text('Deutsch').last);
     await tester.pumpAndSettle();
     expect(find.text('Einstellungen'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Darstellung').last);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Darstellung').last);
+    await tapVisible(tester, find.text('Darstellung').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dunkel'));
     await tester.pumpAndSettle();
@@ -131,17 +126,12 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('BAM (KM)'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('BAM (KM)'));
-    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('BAM (KM)'));
     await tester.tap(find.text('EUR (€)').last);
     await tester.pumpAndSettle();
     expect(find.text('EUR (€)'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Abmelden'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Abmelden'));
+    await tapVisible(tester, find.text('Abmelden'));
     await tester.pumpAndSettle();
     expect(find.text('Willkommen bei Stubswap'), findsOneWidget);
   });
