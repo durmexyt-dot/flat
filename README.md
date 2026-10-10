@@ -9,10 +9,22 @@ Web version: https://durmexyt-dot.github.io/flat/
 
 - Splash screen; logo, wordmark and tagline fly into the sign-in screen
   (Hero transitions are a core design principle, see `lib/src/ui/`).
-- Sign in with email/password or Google, "keep me signed in",
-  password reset, sign up, or browse as guest.
-- Home: event search (no events yet), sell button.
-- Settings (top right): dark mode, language, currency (BAM/EUR/USD), sign out.
+- Sign in with email/password or Google, keep me signed in, password reset,
+  sign up, or browse as guest.
+- Home: active listings with search and category filters.
+- Selling: sell form with fee breakdown, my listings, listing details
+  (change price, withdraw).
+- Account hub (top right): profile with photo, username and ticket counts;
+  purchases with invoices; sales; payouts with payout method (IBAN);
+  appearance (dark mode, theme color, text size, UI style), language,
+  currency; notifications; privacy & security; help center and support
+  requests.
+- Demo data (account → tools) shows example orders, sales and payouts in
+  every status.
+
+Not done yet: checkout and payouts need a server (Cloud Functions with a
+payment provider such as Stripe). Orders and payouts are therefore created
+and updated only by the server; the app shows them.
 
 ## Project layout
 
@@ -27,16 +39,31 @@ lib/
   src/ui/                   Hero tags and page transition
   src/splash/               Splash screen
   src/auth/                 Firebase Auth wrapper, sign-in screens
+  src/data/                 Models, Firestore repositories, demo data
   src/home/                 Event discovery
-  src/settings/             Settings controller and screen
+  src/market/               Selling, orders, payouts, status timeline
+  src/account/              Profile, photo, privacy & security, alerts
+  src/support/              Help center and support requests
+  src/settings/             Account hub, appearance, settings controller
   src/web/                  Removes the HTML loading splash (web only)
 web/index.html              HTML splash shown while Flutter loads
 ```
 
 ## Firebase setup
 
-Authentication → Sign-in method: enable **Email/Password** and **Google**.
-Authentication → Settings → Authorized domains: `durmexyt-dot.github.io`.
+1. Authentication → Sign-in method: enable **Email/Password** and **Google**.
+2. Authentication → Settings → Authorized domains: `durmexyt-dot.github.io`.
+3. Firestore Database → **Create database** (production mode, a European
+   location such as `eur3`).
+4. Firestore Database → **Rules**: replace the rules with the content of
+   [`firestore.rules`](firestore.rules) and publish. With the Firebase CLI:
+   `firebase deploy --only firestore:rules`.
+
+Data model (collections): `users` (private profile, notification settings,
+`private/payoutMethod`), `publicProfiles`, `usernames`, `listings`,
+`orders` and `payouts` (server-written), `supportRequests`.
+Profile photos are stored as small JPEGs in the profile, so no Storage
+bucket (Blaze plan) is needed.
 
 ## Run locally
 

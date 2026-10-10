@@ -844,7 +844,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get whatsNext => 'Šta slijedi';
 
   @override
-  String get statusHistory => 'Tok narudžbe';
+  String get statusHistory => 'Tok statusa';
 
   @override
   String get orderDetails => 'Detalji narudžbe';

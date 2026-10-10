@@ -1669,7 +1669,7 @@ abstract class AppLocalizations {
   /// No description provided for @statusHistory.
   ///
   /// In bs, this message translates to:
-  /// **'Tok narudžbe'**
+  /// **'Tok statusa'**
   String get statusHistory;
 
   /// No description provided for @orderDetails.
