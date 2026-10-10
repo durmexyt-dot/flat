@@ -1,11 +1,11 @@
 {
-    "name": "Flat",
-    "short_name": "Flat",
+    "name": "Stubswap",
+    "short_name": "Stubswap",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#009688",
-    "theme_color": "#009688",
-    "description": "Flat app",
+    "background_color": "#fdf8ff",
+    "theme_color": "#5d2bff",
+    "description": "Buy and sell tickets for events",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
