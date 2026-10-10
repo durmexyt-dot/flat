@@ -1,10 +1,18 @@
-# Flat
+# Stubswap
 
-Flutter app (web, Android, iOS, macOS) with Firebase email/password login.
-The MVP is a login screen and an empty dashboard. UI languages: Bosnian
-(default), German, English.
+Marketplace app to buy and sell tickets for events (Flutter: web, Android,
+iOS, macOS; Firebase Auth). UI languages: Bosnian (default), German, English.
 
 Web version: https://durmexyt-dot.github.io/flat/
+
+## Current state
+
+- Splash screen; logo, wordmark and tagline fly into the sign-in screen
+  (Hero transitions are a core design principle, see `lib/src/ui/`).
+- Sign in with email/password or Google, "keep me signed in",
+  password reset, sign up, or browse as guest.
+- Home: event search (no events yet), sell button.
+- Settings (top right): dark mode, language, currency (BAM/EUR/USD), sign out.
 
 ## Project layout
 
@@ -13,12 +21,22 @@ lib/
   main.dart                 Firebase + app start
   firebase_options.dart     Firebase config (web; native via flutterfire)
   l10n/app_*.arb            Translations (bs = template, de, en)
-  src/app.dart              MaterialApp, theme, localization
-  src/router.dart           go_router with login redirect
-  src/auth/                 Firebase Auth wrapper and login page
-  src/dashboard/            Dashboard page
-  src/settings/             Language selection (saved on device)
+  src/app.dart              MaterialApp, theme
+  src/router.dart           Routes and redirects (splash, auth, guest)
+  src/brand/                Logo, wordmark, tagline (Hero elements)
+  src/ui/                   Hero tags and page transition
+  src/splash/               Splash screen
+  src/auth/                 Firebase Auth wrapper, sign-in screens
+  src/home/                 Event discovery
+  src/settings/             Settings controller and screen
+  src/web/                  Removes the HTML loading splash (web only)
+web/index.html              HTML splash shown while Flutter loads
 ```
+
+## Firebase setup
+
+Authentication → Sign-in method: enable **Email/Password** and **Google**.
+Authentication → Settings → Authorized domains: `durmexyt-dot.github.io`.
 
 ## Run locally
 
@@ -33,8 +51,8 @@ After editing an `.arb` file, `flutter gen-l10n` (or any build) regenerates
 
 ## Users
 
-There is no sign-up screen. Create users in the Firebase console:
-Authentication → Users → Add user.
+Users sign up in the app, or are created in the Firebase console
+(Authentication → Users → Add user).
 
 ## Deployment (web)
 
@@ -52,8 +70,6 @@ One-time setup:
 
 1. GitHub → Settings → Pages → Source: **Deploy from a branch**,
    Branch: `gh-pages`, folder `/ (root)`.
-2. Firebase console → Authentication → Settings → Authorized domains:
-   add `durmexyt-dot.github.io`.
 
 ## Android, iOS and macOS
 

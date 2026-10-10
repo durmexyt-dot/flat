@@ -103,20 +103,20 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In bs, this message translates to:
-  /// **'Flat'**
+  /// **'Stubswap'**
   String get appTitle;
 
-  /// No description provided for @loginTitle.
+  /// No description provided for @splashTagline.
   ///
   /// In bs, this message translates to:
-  /// **'Prijava'**
-  String get loginTitle;
+  /// **'Kupuj i prodaji karte za događaje'**
+  String get splashTagline;
 
-  /// No description provided for @loginSubtitle.
+  /// No description provided for @loginWelcome.
   ///
   /// In bs, this message translates to:
-  /// **'Prijavite se na svoj račun'**
-  String get loginSubtitle;
+  /// **'Dobrodošli na Stubswap'**
+  String get loginWelcome;
 
   /// No description provided for @emailLabel.
   ///
@@ -130,17 +130,143 @@ abstract class AppLocalizations {
   /// **'Lozinka'**
   String get passwordLabel;
 
+  /// No description provided for @showPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prikaži lozinku'**
+  String get showPassword;
+
+  /// No description provided for @hidePassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sakrij lozinku'**
+  String get hidePassword;
+
+  /// No description provided for @keepSignedIn.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostani prijavljen'**
+  String get keepSignedIn;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zaboravljena lozinka?'**
+  String get forgotPassword;
+
   /// No description provided for @loginButton.
   ///
   /// In bs, this message translates to:
   /// **'Prijavi se'**
   String get loginButton;
 
-  /// No description provided for @logoutButton.
+  /// No description provided for @orDivider.
   ///
   /// In bs, this message translates to:
-  /// **'Odjavi se'**
-  String get logoutButton;
+  /// **'ili'**
+  String get orDivider;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nastavi s Google računom'**
+  String get continueWithGoogle;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemate račun?'**
+  String get noAccount;
+
+  /// No description provided for @signUp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Registruj se'**
+  String get signUp;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pretraži događaje kao gost'**
+  String get continueAsGuest;
+
+  /// No description provided for @signupTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kreirajte svoj račun'**
+  String get signupTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ime'**
+  String get nameLabel;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesite ime'**
+  String get nameRequired;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdite lozinku'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lozinka mora imati najmanje 6 znakova'**
+  String get passwordTooShort;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lozinke se ne podudaraju'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @createAccountButton.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kreiraj račun'**
+  String get createAccountButton;
+
+  /// No description provided for @haveAccount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Već imate račun?'**
+  String get haveAccount;
+
+  /// No description provided for @resetTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Resetujte lozinku'**
+  String get resetTitle;
+
+  /// No description provided for @resetInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesite e-mail adresu i poslat ćemo vam link za resetovanje lozinke.'**
+  String get resetInfo;
+
+  /// No description provided for @resetButton.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji link'**
+  String get resetButton;
+
+  /// No description provided for @resetSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ako postoji račun za {email}, poslali smo link za resetovanje.'**
+  String resetSent(String email);
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nazad na prijavu'**
+  String get backToLogin;
 
   /// No description provided for @emailRequired.
   ///
@@ -166,6 +292,18 @@ abstract class AppLocalizations {
   /// **'Pogrešan e-mail ili lozinka'**
   String get errorInvalidCredentials;
 
+  /// No description provided for @errorEmailInUse.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova e-mail adresa je već registrovana'**
+  String get errorEmailInUse;
+
+  /// No description provided for @errorWeakPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lozinka je preslaba'**
+  String get errorWeakPassword;
+
   /// No description provided for @errorUserDisabled.
   ///
   /// In bs, this message translates to:
@@ -184,29 +322,125 @@ abstract class AppLocalizations {
   /// **'Nema internet konekcije'**
   String get errorNetwork;
 
+  /// No description provided for @errorMethodDisabled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovaj način prijave nije omogućen'**
+  String get errorMethodDisabled;
+
   /// No description provided for @errorUnknown.
   ///
   /// In bs, this message translates to:
   /// **'Došlo je do greške. Pokušajte ponovo'**
   String get errorUnknown;
 
-  /// No description provided for @dashboardTitle.
+  /// No description provided for @homeGreeting.
   ///
   /// In bs, this message translates to:
-  /// **'Kontrolna tabla'**
-  String get dashboardTitle;
+  /// **'Zdravo, {name}'**
+  String homeGreeting(String name);
 
-  /// No description provided for @welcome.
+  /// No description provided for @homeGuest.
   ///
   /// In bs, this message translates to:
-  /// **'Dobrodošli, {email}'**
-  String welcome(String email);
+  /// **'Pregledate kao gost'**
+  String get homeGuest;
 
-  /// No description provided for @dashboardEmpty.
+  /// No description provided for @homeHeadline.
   ///
   /// In bs, this message translates to:
-  /// **'Ovdje još nema ničega.'**
-  String get dashboardEmpty;
+  /// **'Pronađite karte za sljedeći događaj'**
+  String get homeHeadline;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pretraži događaje, izvođače, mjesta'**
+  String get searchHint;
+
+  /// No description provided for @catConcerts.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koncerti'**
+  String get catConcerts;
+
+  /// No description provided for @catSports.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sport'**
+  String get catSports;
+
+  /// No description provided for @catTheater.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pozorište'**
+  String get catTheater;
+
+  /// No description provided for @catFestivals.
+  ///
+  /// In bs, this message translates to:
+  /// **'Festivali'**
+  String get catFestivals;
+
+  /// No description provided for @noEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema događaja'**
+  String get noEvents;
+
+  /// No description provided for @noEventsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uskoro ovdje možete kupovati i prodavati karte.'**
+  String get noEventsInfo;
+
+  /// No description provided for @sellTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaj karte'**
+  String get sellTickets;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uskoro dostupno'**
+  String get comingSoon;
+
+  /// No description provided for @guestSignInPrompt.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavite se da biste kupovali i prodavali karte'**
+  String get guestSignInPrompt;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Postavke'**
+  String get settingsTitle;
+
+  /// No description provided for @appearance.
+  ///
+  /// In bs, this message translates to:
+  /// **'Izgled'**
+  String get appearance;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sistem'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svijetlo'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tamno'**
+  String get themeDark;
 
   /// No description provided for @language.
   ///
@@ -214,17 +448,41 @@ abstract class AppLocalizations {
   /// **'Jezik'**
   String get language;
 
-  /// No description provided for @showPassword.
+  /// No description provided for @currency.
   ///
   /// In bs, this message translates to:
-  /// **'Prikaži lozinku'**
-  String get showPassword;
+  /// **'Valuta'**
+  String get currency;
 
-  /// No description provided for @hidePassword.
+  /// No description provided for @account.
   ///
   /// In bs, this message translates to:
-  /// **'Sakrij lozinku'**
-  String get hidePassword;
+  /// **'Račun'**
+  String get account;
+
+  /// No description provided for @signedInAs.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavljeni kao'**
+  String get signedInAs;
+
+  /// No description provided for @guest.
+  ///
+  /// In bs, this message translates to:
+  /// **'Gost'**
+  String get guest;
+
+  /// No description provided for @signInOrUp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijava ili registracija'**
+  String get signInOrUp;
+
+  /// No description provided for @logoutButton.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odjavi se'**
+  String get logoutButton;
 }
 
 class _AppLocalizationsDelegate

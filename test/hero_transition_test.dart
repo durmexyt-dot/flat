@@ -1,99 +1,67 @@
-import 'dart:async';
-
-import 'package:flat/src/app.dart';
-import 'package:flat/src/auth/auth_repository.dart';
-import 'package:flat/src/settings/locale_controller.dart';
+import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/ui/hero_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class FakeAuthRepository implements AuthRepository {
-  final _controller = StreamController<AppUser?>.broadcast();
-  AppUser? _user;
+import 'helpers.dart';
 
-  @override
-  AppUser? get currentUser => _user;
-
-  @override
-  Stream<AppUser?> authStateChanges() async* {
-    // Like Firebase: emit the current user first, then changes.
-    yield _user;
-    yield* _controller.stream;
-  }
-
-  @override
-  Future<void> signIn({required String email, required String password}) async {
-    _user = AppUser(uid: '1', email: email);
-    _controller.add(_user);
-  }
-
-  @override
-  Future<void> signOut() async {
-    _user = null;
-    _controller.add(null);
-  }
-}
-
-/// Sizes of all laid-out logo icons. The icon is 60% of the logo, so it is
-/// 33.6 on the login page and 21.6 in the app bar; any size in between can only
-/// come from the copy Flutter shows during a Hero flight.
-Iterable<double> _logoSizes(WidgetTester tester) => find
-    .byIcon(Icons.home_rounded, skipOffstage: false)
+/// Sizes of all laid-out brand logo icons. The icon is 56% of the logo:
+/// 53.8 on the splash, 22.4 on sign-in screens and 17.9 in the home app bar.
+/// A size in between can only come from the copy shown during a Hero flight.
+Iterable<double> _markSizes(WidgetTester tester) => find
+    .byIcon(Icons.confirmation_number_rounded, skipOffstage: false)
     .evaluate()
     .map((e) => (e.renderObject as RenderBox?)?.size.width)
     .whereType<double>();
 
-bool _logoInFlight(WidgetTester tester) =>
-    _logoSizes(tester).any((w) => w > 22 && w < 33);
+bool _inFlight(WidgetTester tester, double from, double to) =>
+    _markSizes(tester).any((w) => w > from + 0.3 && w < to - 0.3);
+
+Future<void> _pumpHalfTransition(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(heroTransitionDuration ~/ 2);
+}
 
 void main() {
-  testWidgets('logo flies between login and dashboard', (tester) async {
-    tester.view.physicalSize = const Size(390, 844) * 3;
-    tester.view.devicePixelRatio = 3;
-    addTearDown(tester.view.reset);
-
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    final auth = FakeAuthRepository();
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          authRepositoryProvider.overrideWithValue(auth),
-        ],
-        child: const FlatApp(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Prijava'), findsOneWidget);
-    expect(_logoInFlight(tester), isFalse);
-
-    // Sign in: the logo flies from the login page into the app bar.
-    await auth.signIn(email: 'a@b.ba', password: 'x');
-    await tester.pump();
-    await tester.pump(heroTransitionDuration ~/ 2);
+  testWidgets('brand flies from splash to login', (tester) async {
+    await pumpApp(tester, settle: false);
+    await tester.pump(splashMinDuration);
+    await _pumpHalfTransition(tester);
     expect(
-      _logoInFlight(tester),
+      _inFlight(tester, 22.4, 53.8),
       isTrue,
-      reason: 'sizes: ${_logoSizes(tester)}',
+      reason: 'sizes: ${_markSizes(tester)}',
+    );
+    // The tagline cross-fades from the splash text to the welcome text.
+    expect(find.text('Kupuj i prodaji karte za događaje'), findsOneWidget);
+    expect(find.text('Dobrodošli na Stubswap'), findsWidgets);
+    await tester.pumpAndSettle();
+    expect(find.text('Kupuj i prodaji karte za događaje'), findsNothing);
+  });
+
+  testWidgets('brand flies into the app bar on sign in and back on sign out', (
+    tester,
+  ) async {
+    final auth = await pumpApp(tester);
+
+    await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
+    await _pumpHalfTransition(tester);
+    expect(
+      _inFlight(tester, 17.9, 22.4),
+      isTrue,
+      reason: 'sizes: ${_markSizes(tester)}',
     );
     await tester.pumpAndSettle();
-    expect(find.text('Dobrodošli, a@b.ba'), findsOneWidget);
-    expect(_logoInFlight(tester), isFalse);
+    expect(find.text('Zdravo, Amra'), findsOneWidget);
 
-    // Sign out: the logo flies back.
     await auth.signOut();
-    await tester.pump();
-    await tester.pump(heroTransitionDuration ~/ 2);
+    await _pumpHalfTransition(tester);
     expect(
-      _logoInFlight(tester),
+      _inFlight(tester, 17.9, 22.4),
       isTrue,
-      reason: 'sizes: ${_logoSizes(tester)}',
+      reason: 'sizes: ${_markSizes(tester)}',
     );
     await tester.pumpAndSettle();
-    expect(find.text('Prijava'), findsOneWidget);
+    expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);
   });
 }

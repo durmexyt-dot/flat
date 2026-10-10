@@ -1,27 +1,81 @@
 {
   "@@locale": "bs",
-  "appTitle": "Flat",
-  "loginTitle": "Prijava",
-  "loginSubtitle": "Prijavite se na svoj račun",
+  "appTitle": "Stubswap",
+  "splashTagline": "Kupuj i prodaji karte za događaje",
+  "loginWelcome": "Dobrodošli na Stubswap",
   "emailLabel": "E-mail",
   "passwordLabel": "Lozinka",
+  "showPassword": "Prikaži lozinku",
+  "hidePassword": "Sakrij lozinku",
+  "keepSignedIn": "Ostani prijavljen",
+  "forgotPassword": "Zaboravljena lozinka?",
   "loginButton": "Prijavi se",
-  "logoutButton": "Odjavi se",
+  "orDivider": "ili",
+  "continueWithGoogle": "Nastavi s Google računom",
+  "noAccount": "Nemate račun?",
+  "signUp": "Registruj se",
+  "continueAsGuest": "Pretraži događaje kao gost",
+  "signupTitle": "Kreirajte svoj račun",
+  "nameLabel": "Ime",
+  "nameRequired": "Unesite ime",
+  "confirmPasswordLabel": "Potvrdite lozinku",
+  "passwordTooShort": "Lozinka mora imati najmanje 6 znakova",
+  "passwordsDontMatch": "Lozinke se ne podudaraju",
+  "createAccountButton": "Kreiraj račun",
+  "haveAccount": "Već imate račun?",
+  "resetTitle": "Resetujte lozinku",
+  "resetInfo": "Unesite e-mail adresu i poslat ćemo vam link za resetovanje lozinke.",
+  "resetButton": "Pošalji link",
+  "resetSent": "Ako postoji račun za {email}, poslali smo link za resetovanje.",
+  "@resetSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "backToLogin": "Nazad na prijavu",
   "emailRequired": "Unesite e-mail adresu",
   "emailInvalid": "Unesite ispravnu e-mail adresu",
   "passwordRequired": "Unesite lozinku",
   "errorInvalidCredentials": "Pogrešan e-mail ili lozinka",
+  "errorEmailInUse": "Ova e-mail adresa je već registrovana",
+  "errorWeakPassword": "Lozinka je preslaba",
   "errorUserDisabled": "Ovaj račun je deaktiviran",
   "errorTooManyRequests": "Previše pokušaja. Pokušajte ponovo kasnije",
   "errorNetwork": "Nema internet konekcije",
+  "errorMethodDisabled": "Ovaj način prijave nije omogućen",
   "errorUnknown": "Došlo je do greške. Pokušajte ponovo",
-  "dashboardTitle": "Kontrolna tabla",
-  "welcome": "Dobrodošli, {email}",
-  "@welcome": {
-    "placeholders": { "email": { "type": "String" } }
+  "homeGreeting": "Zdravo, {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-  "dashboardEmpty": "Ovdje još nema ničega.",
+  "homeGuest": "Pregledate kao gost",
+  "homeHeadline": "Pronađite karte za sljedeći događaj",
+  "searchHint": "Pretraži događaje, izvođače, mjesta",
+  "catConcerts": "Koncerti",
+  "catSports": "Sport",
+  "catTheater": "Pozorište",
+  "catFestivals": "Festivali",
+  "noEvents": "Još nema događaja",
+  "noEventsInfo": "Uskoro ovdje možete kupovati i prodavati karte.",
+  "sellTickets": "Prodaj karte",
+  "comingSoon": "Uskoro dostupno",
+  "guestSignInPrompt": "Prijavite se da biste kupovali i prodavali karte",
+  "settingsTitle": "Postavke",
+  "appearance": "Izgled",
+  "themeSystem": "Sistem",
+  "themeLight": "Svijetlo",
+  "themeDark": "Tamno",
   "language": "Jezik",
-  "showPassword": "Prikaži lozinku",
-  "hidePassword": "Sakrij lozinku"
+  "currency": "Valuta",
+  "account": "Račun",
+  "signedInAs": "Prijavljeni kao",
+  "guest": "Gost",
+  "signInOrUp": "Prijava ili registracija",
+  "logoutButton": "Odjavi se"
 }

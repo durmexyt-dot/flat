@@ -4,7 +4,38 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../l10n/app_localizations.dart';
 import 'router.dart';
-import 'settings/locale_controller.dart';
+import 'settings/settings_controller.dart';
+
+const brandSeedColor = Color(0xFF6D4AFF);
+
+ThemeData buildTheme(Brightness brightness) {
+  final colors = ColorScheme.fromSeed(
+    seedColor: brandSeedColor,
+    brightness: brightness,
+    dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+  );
+  return ThemeData(
+    colorScheme: colors,
+    useMaterial3: true,
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: colors.surfaceContainerHighest.withValues(alpha: 0.5),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: colors.primary, width: 2),
+      ),
+    ),
+    appBarTheme: const AppBarTheme(scrolledUnderElevation: 0),
+  );
+}
 
 class FlatApp extends ConsumerWidget {
   const FlatApp({super.key});
@@ -12,18 +43,15 @@ class FlatApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final locale = ref.watch(localeProvider);
+    final settings = ref.watch(settingsProvider);
 
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-      darkTheme: ThemeData(
-        colorSchemeSeed: Colors.teal,
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
-      locale: locale,
+      theme: buildTheme(Brightness.light),
+      darkTheme: buildTheme(Brightness.dark),
+      themeMode: settings.themeMode,
+      locale: settings.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,

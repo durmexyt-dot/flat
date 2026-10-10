@@ -1,53 +1,64 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'auth/auth_repository.dart';
+import 'auth/forgot_password_page.dart';
 import 'auth/login_page.dart';
-import 'dashboard/dashboard_page.dart';
+import 'auth/signup_page.dart';
+import 'home/home_page.dart';
+import 'settings/settings_page.dart';
+import 'splash/splash_page.dart';
 import 'ui/hero_page.dart';
+
+const _authRoutes = {'/login', '/signup', '/forgot-password'};
 
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authRepositoryProvider);
-  final refresh = _StreamListenable(auth.authStateChanges());
-  ref.onDispose(refresh.dispose);
+  final refresh = _RefreshNotifier();
+  final sub = auth.authStateChanges().listen((_) => refresh.notify());
+  ref.listen(guestModeProvider, (_, _) => refresh.notify());
+  ref.onDispose(() {
+    sub.cancel();
+    refresh.dispose();
+  });
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: refresh,
     redirect: (context, state) {
-      final loggedIn = auth.currentUser != null;
-      final onLogin = state.matchedLocation == '/login';
-      if (!loggedIn) return onLogin ? null : '/login';
-      if (onLogin) return '/';
-      return null;
+      final location = state.matchedLocation;
+      // Every cold start, also a reload on web, begins with the splash.
+      if (!ref.read(splashDoneProvider)) {
+        return location == '/splash' ? null : '/splash';
+      }
+      if (location == '/splash') return null;
+
+      final canBrowse = auth.currentUser != null || ref.read(guestModeProvider);
+      if (canBrowse) return _authRoutes.contains(location) ? '/' : null;
+      return location == '/' ? '/login' : null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        pageBuilder: (context, state) => heroPage(state, const DashboardPage()),
+      _route('/splash', (_) => const SplashPage()),
+      _route('/', (_) => const HomePage()),
+      _route('/login', (_) => const LoginPage()),
+      _route('/signup', (_) => const SignupPage()),
+      _route(
+        '/forgot-password',
+        (state) =>
+            ForgotPasswordPage(initialEmail: state.extra as String? ?? ''),
       ),
-      GoRoute(
-        path: '/login',
-        pageBuilder: (context, state) => heroPage(state, const LoginPage()),
-      ),
+      _route('/settings', (_) => const SettingsPage()),
     ],
   );
 });
 
-/// Notifies the router whenever the auth state changes.
-class _StreamListenable extends ChangeNotifier {
-  _StreamListenable(Stream<Object?> stream) {
-    _sub = stream.listen((_) => notifyListeners());
-  }
+GoRoute _route(String path, Widget Function(GoRouterState state) build) =>
+    GoRoute(
+      path: path,
+      pageBuilder: (context, state) => heroPage(state, build(state)),
+    );
 
-  late final StreamSubscription<Object?> _sub;
-
-  @override
-  void dispose() {
-    _sub.cancel();
-    super.dispose();
-  }
+class _RefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
 }

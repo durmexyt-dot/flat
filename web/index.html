@@ -1,46 +1,74 @@
 <!DOCTYPE html>
 <html lang="bs">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Flat app">
+  <meta name="description" content="Stubswap – buy and sell tickets for events">
+  <meta name="theme-color" content="#fdf8ff">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Flat">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Stubswap">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Flat</title>
+  <title>Stubswap</title>
   <link rel="manifest" href="manifest.json">
+
+  <script>
+    // Match the theme the app will use (stored by shared_preferences), so the
+    // loading splash doesn't flash in the wrong colors.
+    (function () {
+      var mode = null;
+      try { mode = JSON.parse(localStorage.getItem('flutter.themeMode')); } catch (e) {}
+      var dark = mode === 'dark' ||
+        (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+  <style>
+    :root, [data-theme="light"] {
+      --surface: #fdf8ff; --on-surface: #1c1a25; --primary: #5d2bff;
+      --tertiary: #75517e; --on-primary: #ffffff;
+    }
+    [data-theme="dark"] {
+      --surface: #14121c; --on-surface: #e5e0ef; --primary: #c9bfff;
+      --tertiary: #e3b8eb; --on-primary: #2f009c;
+    }
+    html, body { margin: 0; height: 100%; background: var(--surface); }
+    /* Same layout as the Flutter splash; Flutter draws over it and removes it. */
+    #splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: Roboto, system-ui, -apple-system, sans-serif;
+    }
+    #splash .mark {
+      width: 96px; height: 96px; border-radius: 26.88px;
+      background: linear-gradient(135deg, var(--primary), var(--tertiary));
+      display: flex; align-items: center; justify-content: center;
+    }
+    #splash .mark svg { width: 53.76px; height: 53.76px; fill: var(--on-primary); }
+    #splash .wordmark {
+      margin-top: 20px; height: 48px; font-size: 48px; line-height: 1;
+      font-weight: 800; letter-spacing: -0.96px; color: var(--on-surface);
+    }
+    #splash .wordmark span { color: var(--primary); }
+    #splash .tagline { height: 38px; }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <div id="splash" aria-hidden="true">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z"/></svg>
+    </div>
+    <div class="wordmark">Stub<span>swap</span></div>
+    <div class="tagline"></div>
+  </div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
