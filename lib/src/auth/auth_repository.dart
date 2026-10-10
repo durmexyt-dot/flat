@@ -1,13 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final firebaseAuthProvider = Provider<FirebaseAuth>(
-  (ref) => FirebaseAuth.instance,
-);
-
-final authStateProvider = StreamProvider<User?>(
-  (ref) => ref.watch(firebaseAuthProvider).authStateChanges(),
-);
+/// The signed-in user, independent of Firebase types.
+class AppUser {
+  const AppUser({required this.uid, this.email});
+  final String uid;
+  final String? email;
+}
 
 /// Error categories shown to the user, independent of Firebase error codes.
 enum AuthError {
@@ -23,10 +22,28 @@ class AuthException implements Exception {
   final AuthError error;
 }
 
-class AuthRepository {
-  AuthRepository(this._auth);
+abstract class AuthRepository {
+  AppUser? get currentUser;
+  Stream<AppUser?> authStateChanges();
+  Future<void> signIn({required String email, required String password});
+  Future<void> signOut();
+}
+
+class FirebaseAuthRepository implements AuthRepository {
+  FirebaseAuthRepository(this._auth);
   final FirebaseAuth _auth;
 
+  static AppUser? _toAppUser(User? user) =>
+      user == null ? null : AppUser(uid: user.uid, email: user.email);
+
+  @override
+  AppUser? get currentUser => _toAppUser(_auth.currentUser);
+
+  @override
+  Stream<AppUser?> authStateChanges() =>
+      _auth.authStateChanges().map(_toAppUser);
+
+  @override
   Future<void> signIn({required String email, required String password}) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -35,6 +52,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<void> signOut() => _auth.signOut();
 
   static AuthError _mapCode(String code) {
@@ -58,5 +76,9 @@ class AuthRepository {
 }
 
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => AuthRepository(ref.watch(firebaseAuthProvider)),
+  (ref) => FirebaseAuthRepository(FirebaseAuth.instance),
+);
+
+final authStateProvider = StreamProvider<AppUser?>(
+  (ref) => ref.watch(authRepositoryProvider).authStateChanges(),
 );

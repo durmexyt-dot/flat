@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../settings/language_menu.dart';
+import '../ui/app_logo.dart';
 import 'auth_repository.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -79,11 +80,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(
-                        Icons.home_rounded,
-                        size: 64,
-                        color: theme.colorScheme.primary,
-                      ),
+                      const Center(child: AppLogo()),
                       const SizedBox(height: 16),
                       Text(
                         l10n.loginTitle,
