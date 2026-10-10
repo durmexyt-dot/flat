@@ -345,4 +345,166 @@ class AppLocalizationsBs extends AppLocalizations {
   String memberSince(String date) {
     return 'Član od $date';
   }
+
+  @override
+  String get privacySecurity => 'Privatnost i sigurnost';
+
+  @override
+  String get privacy => 'Privatnost';
+
+  @override
+  String get profileVisibility => 'Vidljivost profila';
+
+  @override
+  String get visibilityPublicInfo =>
+      'Kupci vide tvoje ime, korisničko ime i fotografiju uz tvoje ponude.';
+
+  @override
+  String get visibilityPrivateInfo =>
+      'Kupci vide samo da je prodavac verifikovan. Ime i fotografija ostaju skriveni.';
+
+  @override
+  String get security => 'Sigurnost';
+
+  @override
+  String get emailVerified => 'Potvrđeno';
+
+  @override
+  String get emailNotVerified => 'Nije potvrđeno';
+
+  @override
+  String get verifyEmailInfo =>
+      'Potvrdi e-mail adresu prije prodaje karata, kako bi te kupci mogli kontaktirati.';
+
+  @override
+  String get sendVerification => 'Pošalji link za potvrdu';
+
+  @override
+  String verificationSent(String email) {
+    return 'Link je poslan na $email';
+  }
+
+  @override
+  String get checkVerification => 'Već sam potvrdio/la';
+
+  @override
+  String get signInMethods => 'Načini prijave';
+
+  @override
+  String get methodPassword => 'E-mail i lozinka';
+
+  @override
+  String get changePassword => 'Promijeni lozinku';
+
+  @override
+  String get currentPassword => 'Trenutna lozinka';
+
+  @override
+  String get newPassword => 'Nova lozinka';
+
+  @override
+  String get passwordChanged => 'Lozinka je promijenjena';
+
+  @override
+  String get dangerZone => 'Opasna zona';
+
+  @override
+  String get deleteAccount => 'Obriši račun';
+
+  @override
+  String get deleteAccountInfo =>
+      'Tvoj profil i aktivne ponude bit će trajno uklonjeni. Narudžbe i isplate čuvamo onoliko dugo koliko zakon zahtijeva.';
+
+  @override
+  String get deleteAccountConfirm => 'Potvrdi lozinkom';
+
+  @override
+  String get deleteAccountGoogle =>
+      'Potvrdit ćeš brisanje svojim Google računom.';
+
+  @override
+  String get cancel => 'Odustani';
+
+  @override
+  String get notifications => 'Obavještenja';
+
+  @override
+  String get channels => 'Kanali';
+
+  @override
+  String get channelEmail => 'E-mail';
+
+  @override
+  String channelEmailInfo(String email) {
+    return 'Obavještenja na $email';
+  }
+
+  @override
+  String get channelPush => 'Push na ovom uređaju';
+
+  @override
+  String get pushUnsupported =>
+      'Ovaj preglednik ne podržava obavještenja. Na iPhoneu dodaj Stubswap na početni ekran.';
+
+  @override
+  String get pushDenied =>
+      'Obavještenja su blokirana u postavkama preglednika.';
+
+  @override
+  String get sendTestNotification => 'Pošalji probno obavještenje';
+
+  @override
+  String get testNotificationTitle => 'Stubswap obavještenja rade';
+
+  @override
+  String get testNotificationBody =>
+      'Ovako ćeš saznati kada se tvoje karte prodaju.';
+
+  @override
+  String get buying => 'Kupovina';
+
+  @override
+  String get selling => 'Prodaja';
+
+  @override
+  String get other => 'Ostalo';
+
+  @override
+  String get notifOrderUpdates => 'Status narudžbe';
+
+  @override
+  String get notifOrderUpdatesInfo => 'Plaćanje, isporuka karata, povrat novca';
+
+  @override
+  String get notifEventReminders => 'Podsjetnici za događaje';
+
+  @override
+  String get notifEventRemindersInfo => 'Dan prije događaja za koji imaš karte';
+
+  @override
+  String get notifPriceAlerts => 'Upozorenja o cijenama';
+
+  @override
+  String get notifPriceAlertsInfo =>
+      'Kada cijene padnu za događaje koje pratiš';
+
+  @override
+  String get notifSaleUpdates => 'Prodane karte';
+
+  @override
+  String get notifSaleUpdatesInfo =>
+      'Kada se karte prodaju i trebaš ih poslati';
+
+  @override
+  String get notifPayoutUpdates => 'Isplate';
+
+  @override
+  String get notifPayoutUpdatesInfo =>
+      'Planirane, poslane ili neuspjele isplate';
+
+  @override
+  String get notifNewsletter => 'Novosti i ponude';
+
+  @override
+  String get notifNewsletterInfo => 'Povremeno, o novim događajima';
 }

@@ -345,4 +345,164 @@ class AppLocalizationsEn extends AppLocalizations {
   String memberSince(String date) {
     return 'Member since $date';
   }
+
+  @override
+  String get privacySecurity => 'Privacy & security';
+
+  @override
+  String get privacy => 'Privacy';
+
+  @override
+  String get profileVisibility => 'Profile visibility';
+
+  @override
+  String get visibilityPublicInfo =>
+      'Buyers see your name, username and photo on your listings.';
+
+  @override
+  String get visibilityPrivateInfo =>
+      'Buyers only see that the seller is verified. Name and photo stay hidden.';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get emailVerified => 'Verified';
+
+  @override
+  String get emailNotVerified => 'Not verified';
+
+  @override
+  String get verifyEmailInfo =>
+      'Verify your email before selling tickets so buyers can reach you.';
+
+  @override
+  String get sendVerification => 'Send verification link';
+
+  @override
+  String verificationSent(String email) {
+    return 'Link sent to $email';
+  }
+
+  @override
+  String get checkVerification => 'I\'ve verified';
+
+  @override
+  String get signInMethods => 'Sign-in methods';
+
+  @override
+  String get methodPassword => 'Email and password';
+
+  @override
+  String get changePassword => 'Change password';
+
+  @override
+  String get currentPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get passwordChanged => 'Password changed';
+
+  @override
+  String get dangerZone => 'Danger zone';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountInfo =>
+      'Your profile and active listings will be removed permanently. Orders and payouts are kept as long as the law requires.';
+
+  @override
+  String get deleteAccountConfirm => 'Confirm with your password';
+
+  @override
+  String get deleteAccountGoogle => 'You\'ll confirm with your Google account.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get channels => 'Channels';
+
+  @override
+  String get channelEmail => 'Email';
+
+  @override
+  String channelEmailInfo(String email) {
+    return 'Notifications to $email';
+  }
+
+  @override
+  String get channelPush => 'Push on this device';
+
+  @override
+  String get pushUnsupported =>
+      'This browser doesn\'t support notifications. On iPhone, add Stubswap to your home screen.';
+
+  @override
+  String get pushDenied =>
+      'Notifications are blocked in your browser settings.';
+
+  @override
+  String get sendTestNotification => 'Send test notification';
+
+  @override
+  String get testNotificationTitle => 'Stubswap notifications work';
+
+  @override
+  String get testNotificationBody =>
+      'This is how you\'ll hear when your tickets sell.';
+
+  @override
+  String get buying => 'Buying';
+
+  @override
+  String get selling => 'Selling';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get notifOrderUpdates => 'Order updates';
+
+  @override
+  String get notifOrderUpdatesInfo => 'Payment, ticket delivery, refunds';
+
+  @override
+  String get notifEventReminders => 'Event reminders';
+
+  @override
+  String get notifEventRemindersInfo =>
+      'A day before events you have tickets for';
+
+  @override
+  String get notifPriceAlerts => 'Price alerts';
+
+  @override
+  String get notifPriceAlertsInfo => 'When prices drop for events you follow';
+
+  @override
+  String get notifSaleUpdates => 'Ticket sales';
+
+  @override
+  String get notifSaleUpdatesInfo =>
+      'When tickets sell and you need to send them';
+
+  @override
+  String get notifPayoutUpdates => 'Payouts';
+
+  @override
+  String get notifPayoutUpdatesInfo => 'Scheduled, sent or failed payouts';
+
+  @override
+  String get notifNewsletter => 'News and offers';
+
+  @override
+  String get notifNewsletterInfo => 'Occasionally, about new events';
 }

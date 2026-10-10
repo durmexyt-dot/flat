@@ -88,6 +88,34 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
             if (user != null) ...[
+              SettingsSectionTitle(l10n.account),
+              SettingsGroup(
+                children: [
+                  SettingsLinkTile(
+                    icon: Icons.notifications_outlined,
+                    title: l10n.notifications,
+                    onTap: () => context.push('/settings/notifications'),
+                  ),
+                  SettingsLinkTile(
+                    icon: Icons.shield_outlined,
+                    title: l10n.privacySecurity,
+                    trailing: user.emailVerified
+                        ? null
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                size: 18,
+                                color: theme.colorScheme.error,
+                              ),
+                              const Icon(Icons.chevron_right),
+                            ],
+                          ),
+                    onTap: () => context.push('/settings/privacy'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
               SettingsGroup(
                 children: [

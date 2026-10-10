@@ -129,5 +129,68 @@
         "type": "String"
       }
     }
-  }
+  },
+  "privacySecurity": "Privatnost i sigurnost",
+  "privacy": "Privatnost",
+  "profileVisibility": "Vidljivost profila",
+  "visibilityPublicInfo": "Kupci vide tvoje ime, korisničko ime i fotografiju uz tvoje ponude.",
+  "visibilityPrivateInfo": "Kupci vide samo da je prodavac verifikovan. Ime i fotografija ostaju skriveni.",
+  "security": "Sigurnost",
+  "emailVerified": "Potvrđeno",
+  "emailNotVerified": "Nije potvrđeno",
+  "verifyEmailInfo": "Potvrdi e-mail adresu prije prodaje karata, kako bi te kupci mogli kontaktirati.",
+  "sendVerification": "Pošalji link za potvrdu",
+  "verificationSent": "Link je poslan na {email}",
+  "@verificationSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "checkVerification": "Već sam potvrdio/la",
+  "signInMethods": "Načini prijave",
+  "methodPassword": "E-mail i lozinka",
+  "changePassword": "Promijeni lozinku",
+  "currentPassword": "Trenutna lozinka",
+  "newPassword": "Nova lozinka",
+  "passwordChanged": "Lozinka je promijenjena",
+  "dangerZone": "Opasna zona",
+  "deleteAccount": "Obriši račun",
+  "deleteAccountInfo": "Tvoj profil i aktivne ponude bit će trajno uklonjeni. Narudžbe i isplate čuvamo onoliko dugo koliko zakon zahtijeva.",
+  "deleteAccountConfirm": "Potvrdi lozinkom",
+  "deleteAccountGoogle": "Potvrdit ćeš brisanje svojim Google računom.",
+  "cancel": "Odustani",
+  "notifications": "Obavještenja",
+  "channels": "Kanali",
+  "channelEmail": "E-mail",
+  "channelEmailInfo": "Obavještenja na {email}",
+  "@channelEmailInfo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "channelPush": "Push na ovom uređaju",
+  "pushUnsupported": "Ovaj preglednik ne podržava obavještenja. Na iPhoneu dodaj Stubswap na početni ekran.",
+  "pushDenied": "Obavještenja su blokirana u postavkama preglednika.",
+  "sendTestNotification": "Pošalji probno obavještenje",
+  "testNotificationTitle": "Stubswap obavještenja rade",
+  "testNotificationBody": "Ovako ćeš saznati kada se tvoje karte prodaju.",
+  "buying": "Kupovina",
+  "selling": "Prodaja",
+  "other": "Ostalo",
+  "notifOrderUpdates": "Status narudžbe",
+  "notifOrderUpdatesInfo": "Plaćanje, isporuka karata, povrat novca",
+  "notifEventReminders": "Podsjetnici za događaje",
+  "notifEventRemindersInfo": "Dan prije događaja za koji imaš karte",
+  "notifPriceAlerts": "Upozorenja o cijenama",
+  "notifPriceAlertsInfo": "Kada cijene padnu za događaje koje pratiš",
+  "notifSaleUpdates": "Prodane karte",
+  "notifSaleUpdatesInfo": "Kada se karte prodaju i trebaš ih poslati",
+  "notifPayoutUpdates": "Isplate",
+  "notifPayoutUpdatesInfo": "Planirane, poslane ili neuspjele isplate",
+  "notifNewsletter": "Novosti i ponude",
+  "notifNewsletterInfo": "Povremeno, o novim događajima"
 }

@@ -753,6 +753,300 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Član od {date}'**
   String memberSince(String date);
+
+  /// No description provided for @privacySecurity.
+  ///
+  /// In bs, this message translates to:
+  /// **'Privatnost i sigurnost'**
+  String get privacySecurity;
+
+  /// No description provided for @privacy.
+  ///
+  /// In bs, this message translates to:
+  /// **'Privatnost'**
+  String get privacy;
+
+  /// No description provided for @profileVisibility.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vidljivost profila'**
+  String get profileVisibility;
+
+  /// No description provided for @visibilityPublicInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupci vide tvoje ime, korisničko ime i fotografiju uz tvoje ponude.'**
+  String get visibilityPublicInfo;
+
+  /// No description provided for @visibilityPrivateInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupci vide samo da je prodavac verifikovan. Ime i fotografija ostaju skriveni.'**
+  String get visibilityPrivateInfo;
+
+  /// No description provided for @security.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sigurnost'**
+  String get security;
+
+  /// No description provided for @emailVerified.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrđeno'**
+  String get emailVerified;
+
+  /// No description provided for @emailNotVerified.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nije potvrđeno'**
+  String get emailNotVerified;
+
+  /// No description provided for @verifyEmailInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi e-mail adresu prije prodaje karata, kako bi te kupci mogli kontaktirati.'**
+  String get verifyEmailInfo;
+
+  /// No description provided for @sendVerification.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji link za potvrdu'**
+  String get sendVerification;
+
+  /// No description provided for @verificationSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Link je poslan na {email}'**
+  String verificationSent(String email);
+
+  /// No description provided for @checkVerification.
+  ///
+  /// In bs, this message translates to:
+  /// **'Već sam potvrdio/la'**
+  String get checkVerification;
+
+  /// No description provided for @signInMethods.
+  ///
+  /// In bs, this message translates to:
+  /// **'Načini prijave'**
+  String get signInMethods;
+
+  /// No description provided for @methodPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-mail i lozinka'**
+  String get methodPassword;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni lozinku'**
+  String get changePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Trenutna lozinka'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nova lozinka'**
+  String get newPassword;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lozinka je promijenjena'**
+  String get passwordChanged;
+
+  /// No description provided for @dangerZone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Opasna zona'**
+  String get dangerZone;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obriši račun'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoj profil i aktivne ponude bit će trajno uklonjeni. Narudžbe i isplate čuvamo onoliko dugo koliko zakon zahtijeva.'**
+  String get deleteAccountInfo;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi lozinkom'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountGoogle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdit ćeš brisanje svojim Google računom.'**
+  String get deleteAccountGoogle;
+
+  /// No description provided for @cancel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odustani'**
+  String get cancel;
+
+  /// No description provided for @notifications.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obavještenja'**
+  String get notifications;
+
+  /// No description provided for @channels.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kanali'**
+  String get channels;
+
+  /// No description provided for @channelEmail.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-mail'**
+  String get channelEmail;
+
+  /// No description provided for @channelEmailInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obavještenja na {email}'**
+  String channelEmailInfo(String email);
+
+  /// No description provided for @channelPush.
+  ///
+  /// In bs, this message translates to:
+  /// **'Push na ovom uređaju'**
+  String get channelPush;
+
+  /// No description provided for @pushUnsupported.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovaj preglednik ne podržava obavještenja. Na iPhoneu dodaj Stubswap na početni ekran.'**
+  String get pushUnsupported;
+
+  /// No description provided for @pushDenied.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obavještenja su blokirana u postavkama preglednika.'**
+  String get pushDenied;
+
+  /// No description provided for @sendTestNotification.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji probno obavještenje'**
+  String get sendTestNotification;
+
+  /// No description provided for @testNotificationTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stubswap obavještenja rade'**
+  String get testNotificationTitle;
+
+  /// No description provided for @testNotificationBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovako ćeš saznati kada se tvoje karte prodaju.'**
+  String get testNotificationBody;
+
+  /// No description provided for @buying.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupovina'**
+  String get buying;
+
+  /// No description provided for @selling.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja'**
+  String get selling;
+
+  /// No description provided for @other.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostalo'**
+  String get other;
+
+  /// No description provided for @notifOrderUpdates.
+  ///
+  /// In bs, this message translates to:
+  /// **'Status narudžbe'**
+  String get notifOrderUpdates;
+
+  /// No description provided for @notifOrderUpdatesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje, isporuka karata, povrat novca'**
+  String get notifOrderUpdatesInfo;
+
+  /// No description provided for @notifEventReminders.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podsjetnici za događaje'**
+  String get notifEventReminders;
+
+  /// No description provided for @notifEventRemindersInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dan prije događaja za koji imaš karte'**
+  String get notifEventRemindersInfo;
+
+  /// No description provided for @notifPriceAlerts.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upozorenja o cijenama'**
+  String get notifPriceAlerts;
+
+  /// No description provided for @notifPriceAlertsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada cijene padnu za događaje koje pratiš'**
+  String get notifPriceAlertsInfo;
+
+  /// No description provided for @notifSaleUpdates.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodane karte'**
+  String get notifSaleUpdates;
+
+  /// No description provided for @notifSaleUpdatesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada se karte prodaju i trebaš ih poslati'**
+  String get notifSaleUpdatesInfo;
+
+  /// No description provided for @notifPayoutUpdates.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplate'**
+  String get notifPayoutUpdates;
+
+  /// No description provided for @notifPayoutUpdatesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Planirane, poslane ili neuspjele isplate'**
+  String get notifPayoutUpdatesInfo;
+
+  /// No description provided for @notifNewsletter.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novosti i ponude'**
+  String get notifNewsletter;
+
+  /// No description provided for @notifNewsletterInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povremeno, o novim događajima'**
+  String get notifNewsletterInfo;
 }
 
 class _AppLocalizationsDelegate

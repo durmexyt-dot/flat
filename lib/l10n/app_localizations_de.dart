@@ -347,4 +347,168 @@ class AppLocalizationsDe extends AppLocalizations {
   String memberSince(String date) {
     return 'Mitglied seit $date';
   }
+
+  @override
+  String get privacySecurity => 'Datenschutz & Sicherheit';
+
+  @override
+  String get privacy => 'Datenschutz';
+
+  @override
+  String get profileVisibility => 'Profil-Sichtbarkeit';
+
+  @override
+  String get visibilityPublicInfo =>
+      'Käufer sehen deinen Namen, Benutzernamen und dein Foto bei deinen Angeboten.';
+
+  @override
+  String get visibilityPrivateInfo =>
+      'Käufer sehen nur, dass der Verkäufer verifiziert ist. Name und Foto bleiben verborgen.';
+
+  @override
+  String get security => 'Sicherheit';
+
+  @override
+  String get emailVerified => 'Bestätigt';
+
+  @override
+  String get emailNotVerified => 'Nicht bestätigt';
+
+  @override
+  String get verifyEmailInfo =>
+      'Bestätige deine E-Mail-Adresse, bevor du Tickets verkaufst, damit Käufer dich erreichen können.';
+
+  @override
+  String get sendVerification => 'Bestätigungslink senden';
+
+  @override
+  String verificationSent(String email) {
+    return 'Link wurde an $email gesendet';
+  }
+
+  @override
+  String get checkVerification => 'Ich habe bestätigt';
+
+  @override
+  String get signInMethods => 'Anmeldemethoden';
+
+  @override
+  String get methodPassword => 'E-Mail und Passwort';
+
+  @override
+  String get changePassword => 'Passwort ändern';
+
+  @override
+  String get currentPassword => 'Aktuelles Passwort';
+
+  @override
+  String get newPassword => 'Neues Passwort';
+
+  @override
+  String get passwordChanged => 'Passwort wurde geändert';
+
+  @override
+  String get dangerZone => 'Gefahrenbereich';
+
+  @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String get deleteAccountInfo =>
+      'Dein Profil und deine aktiven Angebote werden dauerhaft entfernt. Bestellungen und Auszahlungen bewahren wir so lange auf, wie es gesetzlich nötig ist.';
+
+  @override
+  String get deleteAccountConfirm => 'Mit Passwort bestätigen';
+
+  @override
+  String get deleteAccountGoogle =>
+      'Du bestätigst das Löschen mit deinem Google-Konto.';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get channels => 'Kanäle';
+
+  @override
+  String get channelEmail => 'E-Mail';
+
+  @override
+  String channelEmailInfo(String email) {
+    return 'Benachrichtigungen an $email';
+  }
+
+  @override
+  String get channelPush => 'Push auf diesem Gerät';
+
+  @override
+  String get pushUnsupported =>
+      'Dieser Browser unterstützt keine Benachrichtigungen. Auf dem iPhone füge Stubswap zum Home-Bildschirm hinzu.';
+
+  @override
+  String get pushDenied =>
+      'Benachrichtigungen sind in den Browser-Einstellungen blockiert.';
+
+  @override
+  String get sendTestNotification => 'Test-Benachrichtigung senden';
+
+  @override
+  String get testNotificationTitle =>
+      'Stubswap-Benachrichtigungen funktionieren';
+
+  @override
+  String get testNotificationBody =>
+      'So erfährst du, wenn deine Tickets verkauft werden.';
+
+  @override
+  String get buying => 'Kaufen';
+
+  @override
+  String get selling => 'Verkaufen';
+
+  @override
+  String get other => 'Sonstiges';
+
+  @override
+  String get notifOrderUpdates => 'Bestellstatus';
+
+  @override
+  String get notifOrderUpdatesInfo => 'Zahlung, Ticketübergabe, Erstattungen';
+
+  @override
+  String get notifEventReminders => 'Event-Erinnerungen';
+
+  @override
+  String get notifEventRemindersInfo =>
+      'Einen Tag vor Events, für die du Tickets hast';
+
+  @override
+  String get notifPriceAlerts => 'Preisalarme';
+
+  @override
+  String get notifPriceAlertsInfo =>
+      'Wenn Preise für Events fallen, denen du folgst';
+
+  @override
+  String get notifSaleUpdates => 'Verkaufte Tickets';
+
+  @override
+  String get notifSaleUpdatesInfo =>
+      'Wenn Tickets verkauft wurden und du sie senden musst';
+
+  @override
+  String get notifPayoutUpdates => 'Auszahlungen';
+
+  @override
+  String get notifPayoutUpdatesInfo =>
+      'Geplante, gesendete oder fehlgeschlagene Auszahlungen';
+
+  @override
+  String get notifNewsletter => 'Neuigkeiten und Angebote';
+
+  @override
+  String get notifNewsletterInfo => 'Gelegentlich, zu neuen Events';
 }

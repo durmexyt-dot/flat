@@ -7,10 +7,22 @@ import '../settings/settings_controller.dart';
 
 /// The signed-in user, independent of Firebase types.
 class AppUser {
-  const AppUser({required this.uid, this.email, this.displayName});
+  const AppUser({
+    required this.uid,
+    this.email,
+    this.displayName,
+    this.emailVerified = false,
+    this.providers = const ['password'],
+  });
   final String uid;
   final String? email;
   final String? displayName;
+  final bool emailVerified;
+
+  /// Sign-in methods, e.g. 'password', 'google.com'.
+  final List<String> providers;
+
+  bool get hasPassword => providers.contains('password');
 }
 
 /// Error categories shown to the user, independent of Firebase error codes.
@@ -52,6 +64,21 @@ abstract class AuthRepository {
     required String languageCode,
   });
   Future<void> updateDisplayName(String name);
+  Future<void> sendEmailVerification(String languageCode);
+
+  /// Reloads the user, e.g. after the email link was opened elsewhere.
+  Future<void> reloadUser();
+
+  /// Throws [AuthException] with [AuthError.invalidCredentials] when
+  /// [currentPassword] is wrong.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
+
+  /// Confirms the user's identity again and deletes the account. Password
+  /// users pass their password; others confirm with their provider.
+  Future<void> deleteAccount({String? password});
   Future<void> signOut();
 }
 
@@ -79,6 +106,8 @@ class FirebaseAuthRepository implements AuthRepository {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
+          emailVerified: user.emailVerified,
+          providers: [for (final p in user.providerData) p.providerId],
         );
 
   @override
@@ -160,6 +189,43 @@ class FirebaseAuthRepository implements AuthRepository {
     await _auth.currentUser?.updateDisplayName(name);
     await _auth.currentUser?.reload();
   }
+
+  @override
+  Future<void> sendEmailVerification(String languageCode) => _guard(() async {
+    await _auth.setLanguageCode(languageCode);
+    await _auth.currentUser?.sendEmailVerification();
+  });
+
+  @override
+  Future<void> reloadUser() async => _auth.currentUser?.reload();
+
+  Future<void> _reauthenticate({String? password}) async {
+    final user = _auth.currentUser!;
+    if (password != null) {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: user.email!, password: password),
+      );
+    } else if (kIsWeb) {
+      await user.reauthenticateWithPopup(GoogleAuthProvider());
+    } else {
+      await user.reauthenticateWithProvider(GoogleAuthProvider());
+    }
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) => _guard(() async {
+    await _reauthenticate(password: currentPassword);
+    await _auth.currentUser!.updatePassword(newPassword);
+  });
+
+  @override
+  Future<void> deleteAccount({String? password}) => _guard(() async {
+    await _reauthenticate(password: password);
+    await _auth.currentUser!.delete();
+  });
 
   @override
   Future<void> signOut() => _auth.signOut();

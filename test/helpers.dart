@@ -71,6 +71,50 @@ class FakeAuthRepository implements AuthRepository {
     }
   }
 
+  bool verificationSent = false;
+  String password = 'secret1';
+  bool deleted = false;
+
+  /// Marks the email as verified, as if the link was opened.
+  void verifyEmail() {
+    final u = _user!;
+    _set(
+      AppUser(
+        uid: u.uid,
+        email: u.email,
+        displayName: u.displayName,
+        emailVerified: true,
+      ),
+    );
+  }
+
+  @override
+  Future<void> sendEmailVerification(String languageCode) async =>
+      verificationSent = true;
+
+  @override
+  Future<void> reloadUser() async {}
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if (currentPassword != password) {
+      throw const AuthException(AuthError.invalidCredentials);
+    }
+    password = newPassword;
+  }
+
+  @override
+  Future<void> deleteAccount({String? password}) async {
+    if (password != this.password) {
+      throw const AuthException(AuthError.invalidCredentials);
+    }
+    deleted = true;
+    _set(null);
+  }
+
   @override
   Future<void> signOut() async => _set(null);
 }
@@ -114,4 +158,20 @@ Future<FakeAuthRepository> pumpApp(
     await tester.pumpAndSettle();
   }
   return auth;
+}
+
+/// Scrolls the first scrollable until [finder] is built and visible, then
+/// taps it.
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  if (finder.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(
+      finder,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+  }
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
 }

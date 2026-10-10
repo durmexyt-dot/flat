@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'account/edit_profile_page.dart';
+import 'account/notifications_page.dart';
+import 'account/privacy_security_page.dart';
 import 'auth/auth_repository.dart';
 import 'auth/forgot_password_page.dart';
 import 'auth/login_page.dart';
@@ -53,6 +55,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/settings', (_) => const SettingsPage()),
       _route('/settings/appearance', (_) => const AppearancePage()),
       _route('/settings/profile', (_) => const EditProfilePage()),
+      _route('/settings/privacy', (_) => const PrivacySecurityPage()),
+      _route('/settings/notifications', (_) => const NotificationsPage()),
     ],
   );
 });
