@@ -451,3 +451,16 @@ final orderProvider = StreamProvider.family<Order?, String>(
 final payoutProvider = StreamProvider.family<Payout?, String>(
   (ref, id) => ref.watch(marketRepositoryProvider).watchPayout(id),
 );
+
+/// Creates the profile document when a user signs in. Watched by the app.
+final profileBootstrapProvider = Provider<void>((ref) {
+  ref.listen(authStateProvider, (_, next) {
+    final user = next.value;
+    if (user == null) return;
+    ref
+        .read(profileRepositoryProvider)
+        .ensureProfile(user)
+        // Without Firestore the app still works from the auth data.
+        .catchError((Object _) {});
+  }, fireImmediately: true);
+});

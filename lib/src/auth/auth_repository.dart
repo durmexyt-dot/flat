@@ -51,6 +51,7 @@ abstract class AuthRepository {
     required String email,
     required String languageCode,
   });
+  Future<void> updateDisplayName(String name);
   Future<void> signOut();
 }
 
@@ -85,7 +86,8 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Stream<AppUser?> authStateChanges() =>
-      _auth.authStateChanges().map(_toAppUser);
+      // Unlike authStateChanges, userChanges also fires on profile updates.
+      _auth.userChanges().map(_toAppUser);
 
   Future<void> _applyKeepSignedIn(bool keep) async {
     await _prefs.setBool(_keepSignedInKey, keep);
@@ -152,6 +154,12 @@ class FirebaseAuthRepository implements AuthRepository {
     await _auth.setLanguageCode(languageCode);
     await _auth.sendPasswordResetEmail(email: email);
   });
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    await _auth.currentUser?.updateDisplayName(name);
+    await _auth.currentUser?.reload();
+  }
 
   @override
   Future<void> signOut() => _auth.signOut();

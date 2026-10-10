@@ -93,16 +93,20 @@ void main() {
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.tap(find.byTooltip('Postavke'));
     await tester.pumpAndSettle();
     expect(find.text('Postavke'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Bosanski'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Bosanski'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Deutsch').last);
     await tester.pumpAndSettle();
     expect(find.text('Einstellungen'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Darstellung').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Darstellung').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dunkel'));
@@ -127,12 +131,16 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('BAM (KM)'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('BAM (KM)'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('EUR (€)').last);
     await tester.pumpAndSettle();
     expect(find.text('EUR (€)'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Abmelden'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Abmelden'));
     await tester.pumpAndSettle();
     expect(find.text('Willkommen bei Stubswap'), findsOneWidget);

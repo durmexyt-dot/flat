@@ -275,4 +275,76 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get previewButton => 'Tickets kaufen';
+
+  @override
+  String get profileTitle => 'Profil';
+
+  @override
+  String get editProfile => 'Profil bearbeiten';
+
+  @override
+  String get changePhoto => 'Foto ändern';
+
+  @override
+  String get removePhoto => 'Foto entfernen';
+
+  @override
+  String get usernameLabel => 'Benutzername';
+
+  @override
+  String get usernameHint => '3–20 Zeichen: Kleinbuchstaben, Zahlen, _ und .';
+
+  @override
+  String get usernameInvalid => 'Ungültiger Benutzername';
+
+  @override
+  String get usernameTaken => 'Benutzername ist vergeben';
+
+  @override
+  String get save => 'Speichern';
+
+  @override
+  String get saved => 'Gespeichert';
+
+  @override
+  String get saveError => 'Speichern fehlgeschlagen';
+
+  @override
+  String get statListed => 'Eingestellt';
+
+  @override
+  String get statSold => 'Verkauft';
+
+  @override
+  String get statBought => 'Gekauft';
+
+  @override
+  String get statTickets => 'Tickets';
+
+  @override
+  String get profilePublic => 'Öffentliches Profil';
+
+  @override
+  String get profilePrivate => 'Privates Profil';
+
+  @override
+  String get personalization => 'Personalisierung';
+
+  @override
+  String get loadError => 'Laden fehlgeschlagen';
+
+  @override
+  String get loadErrorInfo =>
+      'Prüfe deine Internetverbindung und versuche es erneut.';
+
+  @override
+  String get retry => 'Erneut versuchen';
+
+  @override
+  String get photoError => 'Foto konnte nicht geladen werden';
+
+  @override
+  String memberSince(String date) {
+    return 'Mitglied seit $date';
+  }
 }

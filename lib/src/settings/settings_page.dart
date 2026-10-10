@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../account/profile_header.dart';
 import '../auth/auth_repository.dart';
+import '../data/repositories.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
+import 'settings_widgets.dart';
 
+/// Account hub: profile on top, then grouped settings.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -19,102 +23,133 @@ class SettingsPage extends ConsumerWidget {
     final user = ref.watch(authStateProvider).value;
     final isGuest = ref.watch(guestModeProvider);
 
-    Widget section(String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-      child: Text(
-        title,
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: theme.colorScheme.primary,
-        ),
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
-        children: [
-          section(l10n.appearance),
-          ListTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: Text(l10n.appearance),
-            subtitle: Text(
-              '${themeModeName(l10n, settings.themeMode)} · '
-              '${brandColorName(l10n, settings.color)} · '
-              '${uiStyleName(l10n, settings.uiStyle)}',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/appearance'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: Text(l10n.language),
-            trailing: DropdownButton<String>(
-              value: settings.locale.languageCode,
-              underline: const SizedBox.shrink(),
-              onChanged: (code) => controller.setLocale(Locale(code!)),
-              items: [
-                for (final e in languageNames.entries)
-                  DropdownMenuItem(value: e.key, child: Text(e.value)),
-              ],
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.payments_outlined),
-            title: Text(l10n.currency),
-            trailing: DropdownButton<Currency>(
-              value: settings.currency,
-              underline: const SizedBox.shrink(),
-              onChanged: (c) => controller.setCurrency(c!),
-              items: [
-                for (final c in Currency.values)
-                  DropdownMenuItem(
-                    value: c,
-                    child: Text('${c.code} (${c.symbol})'),
-                  ),
-              ],
-            ),
-          ),
-          if (user != null || isGuest) section(l10n.account),
-          if (user != null) ...[
-            ListTile(
-              leading: CircleAvatar(
-                child: Text(
-                  (user.displayName ?? user.email ?? '?').characters.first
-                      .toUpperCase(),
-                ),
-              ),
-              title: Text(user.displayName ?? user.email ?? ''),
-              subtitle: Text('${l10n.signedInAs} ${user.email ?? ''}'),
-            ),
-            ListTile(
-              leading: Icon(Icons.logout, color: theme.colorScheme.error),
-              title: Text(
-                l10n.logoutButton,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
-              onTap: () async {
-                await ref.read(authRepositoryProvider).signOut();
-                if (context.mounted) context.go('/login');
-              },
-            ),
-          ] else if (isGuest) ...[
-            ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person_outline)),
-              title: Text(l10n.guest),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: FilledButton(
-                onPressed: () {
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(statsProvider);
+          await ref.read(statsProvider.future).catchError((_) => null);
+        },
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          children: [
+            if (user != null)
+              const ProfileHeader()
+            else if (isGuest)
+              _GuestCard(
+                onSignIn: () {
                   ref.read(guestModeProvider.notifier).exit();
                   context.go('/login');
                 },
-                child: Text(l10n.signInOrUp),
+              ),
+            SettingsSectionTitle(l10n.personalization),
+            SettingsGroup(
+              children: [
+                SettingsLinkTile(
+                  icon: Icons.palette_outlined,
+                  title: l10n.appearance,
+                  subtitle:
+                      '${themeModeName(l10n, settings.themeMode)} · '
+                      '${brandColorName(l10n, settings.color)} · '
+                      '${uiStyleName(l10n, settings.uiStyle)}',
+                  onTap: () => context.push('/settings/appearance'),
+                ),
+                ListTile(
+                  shape: const RoundedRectangleBorder(),
+                  leading: const Icon(Icons.language),
+                  title: Text(l10n.language),
+                  trailing: DropdownButton<String>(
+                    value: settings.locale.languageCode,
+                    underline: const SizedBox.shrink(),
+                    onChanged: (code) => controller.setLocale(Locale(code!)),
+                    items: [
+                      for (final e in languageNames.entries)
+                        DropdownMenuItem(value: e.key, child: Text(e.value)),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  shape: const RoundedRectangleBorder(),
+                  leading: const Icon(Icons.payments_outlined),
+                  title: Text(l10n.currency),
+                  trailing: DropdownButton<Currency>(
+                    value: settings.currency,
+                    underline: const SizedBox.shrink(),
+                    onChanged: (c) => controller.setCurrency(c!),
+                    items: [
+                      for (final c in Currency.values)
+                        DropdownMenuItem(
+                          value: c,
+                          child: Text('${c.code} (${c.symbol})'),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (user != null) ...[
+              const SizedBox(height: 24),
+              SettingsGroup(
+                children: [
+                  ListTile(
+                    shape: const RoundedRectangleBorder(),
+                    leading: Icon(Icons.logout, color: theme.colorScheme.error),
+                    title: Text(
+                      l10n.logoutButton,
+                      style: TextStyle(color: theme.colorScheme.error),
+                    ),
+                    onTap: () async {
+                      await ref.read(authRepositoryProvider).signOut();
+                      if (context.mounted) context.go('/login');
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GuestCard extends StatelessWidget {
+  const _GuestCard({required this.onSignIn});
+
+  final VoidCallback onSignIn;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card.filled(
+      margin: EdgeInsets.zero,
+      color: theme.colorScheme.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 32,
+              backgroundColor: theme.colorScheme.primary,
+              child: Icon(
+                Icons.person_outline,
+                size: 32,
+                color: theme.colorScheme.onPrimary,
               ),
             ),
+            const SizedBox(height: 12),
+            Text(l10n.guest, style: theme.textTheme.titleLarge),
+            const SizedBox(height: 4),
+            Text(
+              l10n.guestSignInPrompt,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: theme.colorScheme.onPrimaryContainer),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(onPressed: onSignIn, child: Text(l10n.signInOrUp)),
           ],
-        ],
+        ),
       ),
     );
   }

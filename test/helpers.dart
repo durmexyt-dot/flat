@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flat/src/app.dart';
 import 'package:flat/src/auth/auth_repository.dart';
+import 'package:flat/src/data/memory_repositories.dart';
+import 'package:flat/src/data/repositories.dart';
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/ui/hero_page.dart';
@@ -62,15 +64,30 @@ class FakeAuthRepository implements AuthRepository {
   }) async {}
 
   @override
+  Future<void> updateDisplayName(String name) async {
+    final u = _user;
+    if (u != null) {
+      _set(AppUser(uid: u.uid, email: u.email, displayName: name));
+    }
+  }
+
+  @override
   Future<void> signOut() async => _set(null);
 }
 
 /// Starts the full app on a phone-sized screen and waits past the splash
 /// until the first real screen has settled.
+/// The repositories of the last [pumpApp], for assertions.
+late InMemoryProfileRepository profiles;
+late InMemoryMarketRepository market;
+
 Future<FakeAuthRepository> pumpApp(
   WidgetTester tester, {
   bool settle = true,
+  InMemoryMarketRepository? marketRepository,
 }) async {
+  profiles = InMemoryProfileRepository();
+  market = marketRepository ?? InMemoryMarketRepository();
   tester.view.physicalSize = const Size(390, 844) * 3;
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -84,6 +101,8 @@ Future<FakeAuthRepository> pumpApp(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         authRepositoryProvider.overrideWithValue(auth),
+        profileRepositoryProvider.overrideWithValue(profiles),
+        marketRepositoryProvider.overrideWithValue(market),
       ],
       child: const FlatApp(),
     ),

@@ -99,5 +99,35 @@
   "uiCrisp": "Oštar",
   "preview": "Pregled",
   "previewTickets": "2 karte · Parter",
-  "previewButton": "Kupi karte"
+  "previewButton": "Kupi karte",
+  "profileTitle": "Profil",
+  "editProfile": "Uredi profil",
+  "changePhoto": "Promijeni fotografiju",
+  "removePhoto": "Ukloni fotografiju",
+  "usernameLabel": "Korisničko ime",
+  "usernameHint": "3–20 znakova: mala slova, brojevi, _ i .",
+  "usernameInvalid": "Neispravno korisničko ime",
+  "usernameTaken": "Korisničko ime je zauzeto",
+  "save": "Sačuvaj",
+  "saved": "Sačuvano",
+  "saveError": "Čuvanje nije uspjelo",
+  "statListed": "Ponuđeno",
+  "statSold": "Prodano",
+  "statBought": "Kupljeno",
+  "statTickets": "karata",
+  "profilePublic": "Javni profil",
+  "profilePrivate": "Privatni profil",
+  "personalization": "Personalizacija",
+  "loadError": "Učitavanje nije uspjelo",
+  "loadErrorInfo": "Provjerite internet konekciju i pokušajte ponovo.",
+  "retry": "Pokušaj ponovo",
+  "photoError": "Fotografija se ne može učitati",
+  "memberSince": "Član od {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

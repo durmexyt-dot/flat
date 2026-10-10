@@ -8,4 +8,5 @@ abstract final class HeroTags {
   static const brandMark = 'brand-mark';
   static const brandWordmark = 'brand-wordmark';
   static const brandTagline = 'brand-tagline';
+  static const avatar = 'avatar';
 }

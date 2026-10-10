@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
+import '../account/avatar.dart';
 import '../brand/brand.dart';
+import '../data/repositories.dart';
 
 /// Event discovery. Open to signed-in users and guests.
 class HomePage extends ConsumerWidget {
@@ -15,8 +18,10 @@ class HomePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final user = ref.watch(authStateProvider).value;
+    final profile = ref.watch(profileProvider).value;
     final isGuest = user == null;
-    final name = user?.displayName?.split(' ').first ?? user?.email ?? '';
+    final fullName = profile?.displayName ?? user?.displayName;
+    final name = fullName?.split(' ').first ?? user?.email ?? '';
 
     final categories = [
       (Icons.music_note_outlined, l10n.catConcerts),
@@ -47,7 +52,21 @@ class HomePage extends ConsumerWidget {
           alignment: Alignment.centerLeft,
           child: BrandHeader(markSize: 32, wordmarkHeight: 22),
         ),
-        actions: const [SettingsButton(), SizedBox(width: 4)],
+        actions: [
+          if (isGuest)
+            const SettingsButton()
+          else
+            IconButton(
+              tooltip: AppLocalizations.of(context).settingsTitle,
+              onPressed: () => context.push('/settings'),
+              icon: UserAvatar(
+                size: 34,
+                photoBase64: profile?.photoBase64,
+                name: fullName ?? user.email,
+              ),
+            ),
+          const SizedBox(width: 4),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: sell,

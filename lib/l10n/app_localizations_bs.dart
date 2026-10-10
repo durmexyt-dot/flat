@@ -273,4 +273,76 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get previewButton => 'Kupi karte';
+
+  @override
+  String get profileTitle => 'Profil';
+
+  @override
+  String get editProfile => 'Uredi profil';
+
+  @override
+  String get changePhoto => 'Promijeni fotografiju';
+
+  @override
+  String get removePhoto => 'Ukloni fotografiju';
+
+  @override
+  String get usernameLabel => 'Korisničko ime';
+
+  @override
+  String get usernameHint => '3–20 znakova: mala slova, brojevi, _ i .';
+
+  @override
+  String get usernameInvalid => 'Neispravno korisničko ime';
+
+  @override
+  String get usernameTaken => 'Korisničko ime je zauzeto';
+
+  @override
+  String get save => 'Sačuvaj';
+
+  @override
+  String get saved => 'Sačuvano';
+
+  @override
+  String get saveError => 'Čuvanje nije uspjelo';
+
+  @override
+  String get statListed => 'Ponuđeno';
+
+  @override
+  String get statSold => 'Prodano';
+
+  @override
+  String get statBought => 'Kupljeno';
+
+  @override
+  String get statTickets => 'karata';
+
+  @override
+  String get profilePublic => 'Javni profil';
+
+  @override
+  String get profilePrivate => 'Privatni profil';
+
+  @override
+  String get personalization => 'Personalizacija';
+
+  @override
+  String get loadError => 'Učitavanje nije uspjelo';
+
+  @override
+  String get loadErrorInfo =>
+      'Provjerite internet konekciju i pokušajte ponovo.';
+
+  @override
+  String get retry => 'Pokušaj ponovo';
+
+  @override
+  String get photoError => 'Fotografija se ne može učitati';
+
+  @override
+  String memberSince(String date) {
+    return 'Član od $date';
+  }
 }

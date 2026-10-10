@@ -273,4 +273,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get previewButton => 'Buy tickets';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get usernameLabel => 'Username';
+
+  @override
+  String get usernameHint =>
+      '3–20 characters: lowercase letters, numbers, _ and .';
+
+  @override
+  String get usernameInvalid => 'Invalid username';
+
+  @override
+  String get usernameTaken => 'Username is taken';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get saveError => 'Couldn\'t save';
+
+  @override
+  String get statListed => 'Listed';
+
+  @override
+  String get statSold => 'Sold';
+
+  @override
+  String get statBought => 'Bought';
+
+  @override
+  String get statTickets => 'tickets';
+
+  @override
+  String get profilePublic => 'Public profile';
+
+  @override
+  String get profilePrivate => 'Private profile';
+
+  @override
+  String get personalization => 'Personalization';
+
+  @override
+  String get loadError => 'Couldn\'t load';
+
+  @override
+  String get loadErrorInfo => 'Check your connection and try again.';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String get photoError => 'Couldn\'t load the photo';
+
+  @override
+  String memberSince(String date) {
+    return 'Member since $date';
+  }
 }

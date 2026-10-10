@@ -615,6 +615,144 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Kupi karte'**
   String get previewButton;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Profil'**
+  String get profileTitle;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uredi profil'**
+  String get editProfile;
+
+  /// No description provided for @changePhoto.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni fotografiju'**
+  String get changePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni fotografiju'**
+  String get removePhoto;
+
+  /// No description provided for @usernameLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisničko ime'**
+  String get usernameLabel;
+
+  /// No description provided for @usernameHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'3–20 znakova: mala slova, brojevi, _ i .'**
+  String get usernameHint;
+
+  /// No description provided for @usernameInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Neispravno korisničko ime'**
+  String get usernameInvalid;
+
+  /// No description provided for @usernameTaken.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisničko ime je zauzeto'**
+  String get usernameTaken;
+
+  /// No description provided for @save.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sačuvaj'**
+  String get save;
+
+  /// No description provided for @saved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sačuvano'**
+  String get saved;
+
+  /// No description provided for @saveError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Čuvanje nije uspjelo'**
+  String get saveError;
+
+  /// No description provided for @statListed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuđeno'**
+  String get statListed;
+
+  /// No description provided for @statSold.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodano'**
+  String get statSold;
+
+  /// No description provided for @statBought.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupljeno'**
+  String get statBought;
+
+  /// No description provided for @statTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'karata'**
+  String get statTickets;
+
+  /// No description provided for @profilePublic.
+  ///
+  /// In bs, this message translates to:
+  /// **'Javni profil'**
+  String get profilePublic;
+
+  /// No description provided for @profilePrivate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Privatni profil'**
+  String get profilePrivate;
+
+  /// No description provided for @personalization.
+  ///
+  /// In bs, this message translates to:
+  /// **'Personalizacija'**
+  String get personalization;
+
+  /// No description provided for @loadError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Učitavanje nije uspjelo'**
+  String get loadError;
+
+  /// No description provided for @loadErrorInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjerite internet konekciju i pokušajte ponovo.'**
+  String get loadErrorInfo;
+
+  /// No description provided for @retry.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pokušaj ponovo'**
+  String get retry;
+
+  /// No description provided for @photoError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fotografija se ne može učitati'**
+  String get photoError;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In bs, this message translates to:
+  /// **'Član od {date}'**
+  String memberSince(String date);
 }
 
 class _AppLocalizationsDelegate
