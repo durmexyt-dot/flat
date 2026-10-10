@@ -511,4 +511,207 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notifNewsletterInfo => 'Gelegentlich, zu neuen Events';
+
+  @override
+  String get sellTitle => 'Tickets verkaufen';
+
+  @override
+  String get event => 'Event';
+
+  @override
+  String get eventName => 'Name des Events';
+
+  @override
+  String get venue => 'Veranstaltungsort';
+
+  @override
+  String get city => 'Stadt';
+
+  @override
+  String get dateTime => 'Datum und Uhrzeit';
+
+  @override
+  String get pickDate => 'Datum wählen';
+
+  @override
+  String get category => 'Kategorie';
+
+  @override
+  String get tickets => 'Tickets';
+
+  @override
+  String get ticketType => 'Ticketart';
+
+  @override
+  String get ticketEticket => 'E-Ticket';
+
+  @override
+  String get ticketMobile => 'Mobil';
+
+  @override
+  String get ticketPaper => 'Papier';
+
+  @override
+  String get quantity => 'Anzahl';
+
+  @override
+  String get section => 'Block';
+
+  @override
+  String get row => 'Reihe';
+
+  @override
+  String get seats => 'Plätze';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String get price => 'Preis';
+
+  @override
+  String get pricePerTicket => 'Preis pro Ticket';
+
+  @override
+  String buyerPays(String percent) {
+    return 'Käufer zahlt (inkl. $percent % Gebühr)';
+  }
+
+  @override
+  String youReceive(String percent) {
+    return 'Du erhältst pro Ticket ($percent % Gebühr)';
+  }
+
+  @override
+  String get totalPayout => 'Auszahlung gesamt';
+
+  @override
+  String get noteLabel => 'Hinweis für Käufer';
+
+  @override
+  String get publishListing => 'Angebot veröffentlichen';
+
+  @override
+  String get listingPublished => 'Angebot ist online';
+
+  @override
+  String get required => 'Pflichtfeld';
+
+  @override
+  String get dateInPast => 'Datum muss in der Zukunft liegen';
+
+  @override
+  String get priceInvalid => 'Bitte gültigen Preis eingeben';
+
+  @override
+  String get verifyBeforeSelling =>
+      'Bestätige deine E-Mail-Adresse, damit Käufer deinen Angeboten vertrauen.';
+
+  @override
+  String get verifyNow => 'Bestätigen';
+
+  @override
+  String get myListings => 'Meine Angebote';
+
+  @override
+  String get filterAll => 'Alle';
+
+  @override
+  String get statusActive => 'Aktiv';
+
+  @override
+  String get statusReserved => 'Reserviert';
+
+  @override
+  String get statusSoldOut => 'Ausverkauft';
+
+  @override
+  String get statusExpired => 'Abgelaufen';
+
+  @override
+  String get statusWithdrawn => 'Zurückgezogen';
+
+  @override
+  String get ended => 'Beendet';
+
+  @override
+  String get noListings => 'Noch keine Angebote';
+
+  @override
+  String get noListingsInfo =>
+      'Tickets übrig? Verkaufe sie in wenigen Minuten.';
+
+  @override
+  String ticketsLeft(String count, String total) {
+    return '$count von $total verfügbar';
+  }
+
+  @override
+  String ticketsCount(String count) {
+    return '$count Stk.';
+  }
+
+  @override
+  String get perTicket => 'pro Ticket';
+
+  @override
+  String get listingDetails => 'Angebotsdetails';
+
+  @override
+  String get editPrice => 'Preis ändern';
+
+  @override
+  String get withdrawListing => 'Angebot zurückziehen';
+
+  @override
+  String get withdrawConfirm =>
+      'Das Angebot ist dann für Käufer nicht mehr sichtbar. Fortfahren?';
+
+  @override
+  String get listingWithdrawn => 'Angebot zurückgezogen';
+
+  @override
+  String get listingNotFound => 'Angebot nicht gefunden';
+
+  @override
+  String get yourListing => 'Dein Angebot';
+
+  @override
+  String get buyTickets => 'Tickets kaufen';
+
+  @override
+  String get total => 'Gesamt';
+
+  @override
+  String get serviceFee => 'Servicegebühr';
+
+  @override
+  String get checkoutSoonTitle => 'Bezahlung kommt bald';
+
+  @override
+  String get checkoutSoonInfo =>
+      'Sichere Bezahlung mit Käuferschutz ist in Arbeit. Das Angebot kannst du dir schon ansehen.';
+
+  @override
+  String get buyerProtection =>
+      'Käuferschutz: gültige Tickets rechtzeitig oder Geld zurück.';
+
+  @override
+  String get sellerVerified => 'Verifizierter Verkäufer';
+
+  @override
+  String searchNoResults(String query) {
+    return 'Keine Ergebnisse für „$query“';
+  }
+
+  @override
+  String get upcomingEvents => 'Kommende Events';
+
+  @override
+  String fromPrice(String price) {
+    return 'ab $price';
+  }
+
+  @override
+  String get ok => 'OK';
 }

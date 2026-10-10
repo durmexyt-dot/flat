@@ -505,4 +505,207 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifNewsletterInfo => 'Occasionally, about new events';
+
+  @override
+  String get sellTitle => 'Sell tickets';
+
+  @override
+  String get event => 'Event';
+
+  @override
+  String get eventName => 'Event name';
+
+  @override
+  String get venue => 'Venue';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get dateTime => 'Date and time';
+
+  @override
+  String get pickDate => 'Pick a date';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get tickets => 'Tickets';
+
+  @override
+  String get ticketType => 'Ticket type';
+
+  @override
+  String get ticketEticket => 'E-ticket';
+
+  @override
+  String get ticketMobile => 'Mobile';
+
+  @override
+  String get ticketPaper => 'Paper';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get section => 'Section';
+
+  @override
+  String get row => 'Row';
+
+  @override
+  String get seats => 'Seats';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get pricePerTicket => 'Price per ticket';
+
+  @override
+  String buyerPays(String percent) {
+    return 'Buyer pays (incl. $percent% fee)';
+  }
+
+  @override
+  String youReceive(String percent) {
+    return 'You receive per ticket ($percent% fee)';
+  }
+
+  @override
+  String get totalPayout => 'Total payout';
+
+  @override
+  String get noteLabel => 'Note for buyers';
+
+  @override
+  String get publishListing => 'Publish listing';
+
+  @override
+  String get listingPublished => 'Listing published';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get dateInPast => 'Date must be in the future';
+
+  @override
+  String get priceInvalid => 'Enter a valid price';
+
+  @override
+  String get verifyBeforeSelling =>
+      'Verify your email so buyers can trust your listings.';
+
+  @override
+  String get verifyNow => 'Verify';
+
+  @override
+  String get myListings => 'My listings';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get statusActive => 'Active';
+
+  @override
+  String get statusReserved => 'Reserved';
+
+  @override
+  String get statusSoldOut => 'Sold out';
+
+  @override
+  String get statusExpired => 'Expired';
+
+  @override
+  String get statusWithdrawn => 'Withdrawn';
+
+  @override
+  String get ended => 'Ended';
+
+  @override
+  String get noListings => 'No listings yet';
+
+  @override
+  String get noListingsInfo =>
+      'Got tickets you can\'t use? Sell them in minutes.';
+
+  @override
+  String ticketsLeft(String count, String total) {
+    return '$count of $total available';
+  }
+
+  @override
+  String ticketsCount(String count) {
+    return '$count pcs';
+  }
+
+  @override
+  String get perTicket => 'per ticket';
+
+  @override
+  String get listingDetails => 'Listing details';
+
+  @override
+  String get editPrice => 'Change price';
+
+  @override
+  String get withdrawListing => 'Withdraw listing';
+
+  @override
+  String get withdrawConfirm =>
+      'Buyers will no longer see this listing. Continue?';
+
+  @override
+  String get listingWithdrawn => 'Listing withdrawn';
+
+  @override
+  String get listingNotFound => 'Listing not found';
+
+  @override
+  String get yourListing => 'Your listing';
+
+  @override
+  String get buyTickets => 'Buy tickets';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get serviceFee => 'Service fee';
+
+  @override
+  String get checkoutSoonTitle => 'Checkout coming soon';
+
+  @override
+  String get checkoutSoonInfo =>
+      'Secure checkout with buyer protection is on its way. You can already browse the listing.';
+
+  @override
+  String get buyerProtection =>
+      'Buyer protection: valid tickets on time or your money back.';
+
+  @override
+  String get sellerVerified => 'Verified seller';
+
+  @override
+  String searchNoResults(String query) {
+    return 'No results for \"$query\"';
+  }
+
+  @override
+  String get upcomingEvents => 'Upcoming events';
+
+  @override
+  String fromPrice(String price) {
+    return 'from $price';
+  }
+
+  @override
+  String get ok => 'OK';
 }

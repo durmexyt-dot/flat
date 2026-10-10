@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import '../data/repositories.dart';
 import 'photo_picker.dart';
+import '../ui/snack.dart';
 
 /// Bottom sheet to change or remove the profile photo.
 Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
@@ -50,6 +51,6 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
       if (photo != null) await repo.setPhoto(uid, photo);
     }
   } catch (_) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.photoError)));
+    showSnack(messenger, l10n.photoError);
   }
 }

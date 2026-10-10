@@ -7,6 +7,7 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../web/browser_notifications.dart';
+import '../ui/snack.dart';
 
 /// Which alerts to get and where. Saved in the profile, so the server sends
 /// only what the user wants, on every device.
@@ -39,7 +40,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       await ref.read(profileRepositoryProvider).setNotifications(uid, next);
     } catch (_) {
       if (mounted) setState(() => _optimistic = previous);
-      messenger.showSnackBar(SnackBar(content: Text(l10n.saveError)));
+      showSnack(messenger, l10n.saveError);
     }
   }
 

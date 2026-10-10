@@ -192,5 +192,112 @@
   "notifPayoutUpdates": "Isplate",
   "notifPayoutUpdatesInfo": "Planirane, poslane ili neuspjele isplate",
   "notifNewsletter": "Novosti i ponude",
-  "notifNewsletterInfo": "Povremeno, o novim događajima"
+  "notifNewsletterInfo": "Povremeno, o novim događajima",
+  "sellTitle": "Prodaj karte",
+  "event": "Događaj",
+  "eventName": "Naziv događaja",
+  "venue": "Mjesto održavanja",
+  "city": "Grad",
+  "dateTime": "Datum i vrijeme",
+  "pickDate": "Odaberi datum",
+  "category": "Kategorija",
+  "tickets": "Karte",
+  "ticketType": "Vrsta karte",
+  "ticketEticket": "E-karta",
+  "ticketMobile": "Mobilna",
+  "ticketPaper": "Papirna",
+  "quantity": "Količina",
+  "section": "Sektor",
+  "row": "Red",
+  "seats": "Sjedišta",
+  "optional": "neobavezno",
+  "price": "Cijena",
+  "pricePerTicket": "Cijena po karti",
+  "buyerPays": "Kupac plaća (s naknadom {percent}%)",
+  "@buyerPays": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "youReceive": "Dobijaš po karti (naknada {percent}%)",
+  "@youReceive": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPayout": "Ukupna isplata",
+  "noteLabel": "Napomena za kupca",
+  "publishListing": "Objavi ponudu",
+  "listingPublished": "Ponuda je objavljena",
+  "required": "Obavezno polje",
+  "dateInPast": "Datum mora biti u budućnosti",
+  "priceInvalid": "Unesite ispravnu cijenu",
+  "verifyBeforeSelling": "Potvrdi e-mail adresu da bi kupci mogli vjerovati tvojim ponudama.",
+  "verifyNow": "Potvrdi",
+  "myListings": "Moje ponude",
+  "filterAll": "Sve",
+  "statusActive": "Aktivna",
+  "statusReserved": "Rezervisana",
+  "statusSoldOut": "Rasprodana",
+  "statusExpired": "Istekla",
+  "statusWithdrawn": "Povučena",
+  "ended": "Završene",
+  "noListings": "Još nemaš ponuda",
+  "noListingsInfo": "Imaš karte koje ne trebaš? Prodaj ih za nekoliko minuta.",
+  "ticketsLeft": "{count} od {total} dostupno",
+  "@ticketsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "ticketsCount": "{count} kom.",
+  "@ticketsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "perTicket": "po karti",
+  "listingDetails": "Detalji ponude",
+  "editPrice": "Promijeni cijenu",
+  "withdrawListing": "Povuci ponudu",
+  "withdrawConfirm": "Ponuda više neće biti vidljiva kupcima. Nastaviti?",
+  "listingWithdrawn": "Ponuda je povučena",
+  "listingNotFound": "Ponuda nije pronađena",
+  "yourListing": "Tvoja ponuda",
+  "buyTickets": "Kupi karte",
+  "total": "Ukupno",
+  "serviceFee": "Naknada za uslugu",
+  "checkoutSoonTitle": "Plaćanje uskoro",
+  "checkoutSoonInfo": "Sigurno plaćanje s garancijom za kupce je u izradi. Ponudu možeš već pregledati.",
+  "buyerProtection": "Garancija za kupce: dobijaš važeće karte na vrijeme ili povrat novca.",
+  "sellerVerified": "Verifikovani prodavac",
+  "searchNoResults": "Nema rezultata za „{query}”",
+  "@searchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "upcomingEvents": "Nadolazeći događaji",
+  "fromPrice": "od {price}",
+  "@fromPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ok": "U redu"
 }

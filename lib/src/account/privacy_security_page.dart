@@ -9,6 +9,7 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/app_style.dart';
+import '../ui/snack.dart';
 
 class PrivacySecurityPage extends ConsumerWidget {
   const PrivacySecurityPage({super.key});
@@ -27,7 +28,7 @@ class PrivacySecurityPage extends ConsumerWidget {
       try {
         await ref.read(profileRepositoryProvider).setVisibility(user.uid, v);
       } catch (_) {
-        messenger.showSnackBar(SnackBar(content: Text(l10n.saveError)));
+        showSnack(messenger, l10n.saveError);
       }
     }
 
@@ -208,13 +209,9 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
       await ref
           .read(authRepositoryProvider)
           .sendEmailVerification(Localizations.localeOf(context).languageCode);
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.verificationSent(widget.user.email ?? ''))),
-      );
+      showSnack(messenger, l10n.verificationSent(widget.user.email ?? ''));
     } on AuthException catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(authErrorText(l10n, e.error))),
-      );
+      showSnack(messenger, authErrorText(l10n, e.error));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -331,7 +328,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
             currentPassword: _current.text,
             newPassword: _new.text,
           );
-      messenger.showSnackBar(SnackBar(content: Text(l10n.passwordChanged)));
+      showSnack(messenger, l10n.passwordChanged);
       if (mounted) Navigator.pop(context);
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = authErrorText(l10n, e.error));

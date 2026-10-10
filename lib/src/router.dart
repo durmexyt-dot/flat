@@ -9,13 +9,24 @@ import 'auth/auth_repository.dart';
 import 'auth/forgot_password_page.dart';
 import 'auth/login_page.dart';
 import 'auth/signup_page.dart';
+import 'data/models.dart';
 import 'home/home_page.dart';
+import 'market/listing_detail_page.dart';
+import 'market/my_listings_page.dart';
+import 'market/sell_page.dart';
 import 'settings/appearance_page.dart';
 import 'settings/settings_page.dart';
 import 'splash/splash_page.dart';
 import 'ui/hero_page.dart';
 
 const _authRoutes = {'/login', '/signup', '/forgot-password'};
+const _accountOnly = [
+  '/sell',
+  '/account',
+  '/settings/profile',
+  '/settings/privacy',
+  '/settings/notifications',
+];
 
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authRepositoryProvider);
@@ -38,7 +49,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
       if (location == '/splash') return null;
 
-      final canBrowse = auth.currentUser != null || ref.read(guestModeProvider);
+      final signedIn = auth.currentUser != null;
+      // Selling and the account need an account; browsing doesn't.
+      if (!signedIn && _accountOnly.any(location.startsWith)) return '/login';
+      final canBrowse = signedIn || ref.read(guestModeProvider);
       if (canBrowse) return _authRoutes.contains(location) ? '/' : null;
       return location == '/' ? '/login' : null;
     },
@@ -57,6 +71,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/settings/profile', (_) => const EditProfilePage()),
       _route('/settings/privacy', (_) => const PrivacySecurityPage()),
       _route('/settings/notifications', (_) => const NotificationsPage()),
+      _route('/sell', (_) => const SellPage()),
+      _route(
+        '/listing/:id',
+        (state) => ListingDetailPage(
+          id: state.pathParameters['id']!,
+          initial: state.extra as Listing?,
+        ),
+      ),
+      _route('/account/listings', (_) => const MyListingsPage()),
     ],
   );
 });

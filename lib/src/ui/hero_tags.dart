@@ -9,4 +9,7 @@ abstract final class HeroTags {
   static const brandWordmark = 'brand-wordmark';
   static const brandTagline = 'brand-tagline';
   static const avatar = 'avatar';
+  static String listing(String id) => 'listing-$id';
+  static String order(String id) => 'order-$id';
+  static String payout(String id) => 'payout-$id';
 }

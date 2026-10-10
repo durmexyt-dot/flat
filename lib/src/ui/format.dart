@@ -25,3 +25,10 @@ String formatDateTime(BuildContext context, DateTime date) =>
   DateFormat.d(_locale(context)).format(date),
   DateFormat.MMM(_locale(context)).format(date).toUpperCase(),
 );
+
+/// Parses "12", "12.5" or "12,50" into minor units; null if invalid.
+int? parseMoney(String input) {
+  final text = input.trim().replaceAll(' ', '').replaceAll(',', '.');
+  if (!RegExp(r'^\d{1,7}(\.\d{0,2})?$').hasMatch(text)) return null;
+  return (double.parse(text) * 100).round();
+}

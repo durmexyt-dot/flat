@@ -1047,6 +1047,378 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Povremeno, o novim događajima'**
   String get notifNewsletterInfo;
+
+  /// No description provided for @sellTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaj karte'**
+  String get sellTitle;
+
+  /// No description provided for @event.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj'**
+  String get event;
+
+  /// No description provided for @eventName.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naziv događaja'**
+  String get eventName;
+
+  /// No description provided for @venue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mjesto održavanja'**
+  String get venue;
+
+  /// No description provided for @city.
+  ///
+  /// In bs, this message translates to:
+  /// **'Grad'**
+  String get city;
+
+  /// No description provided for @dateTime.
+  ///
+  /// In bs, this message translates to:
+  /// **'Datum i vrijeme'**
+  String get dateTime;
+
+  /// No description provided for @pickDate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi datum'**
+  String get pickDate;
+
+  /// No description provided for @category.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kategorija'**
+  String get category;
+
+  /// No description provided for @tickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte'**
+  String get tickets;
+
+  /// No description provided for @ticketType.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrsta karte'**
+  String get ticketType;
+
+  /// No description provided for @ticketEticket.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-karta'**
+  String get ticketEticket;
+
+  /// No description provided for @ticketMobile.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mobilna'**
+  String get ticketMobile;
+
+  /// No description provided for @ticketPaper.
+  ///
+  /// In bs, this message translates to:
+  /// **'Papirna'**
+  String get ticketPaper;
+
+  /// No description provided for @quantity.
+  ///
+  /// In bs, this message translates to:
+  /// **'Količina'**
+  String get quantity;
+
+  /// No description provided for @section.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektor'**
+  String get section;
+
+  /// No description provided for @row.
+  ///
+  /// In bs, this message translates to:
+  /// **'Red'**
+  String get row;
+
+  /// No description provided for @seats.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sjedišta'**
+  String get seats;
+
+  /// No description provided for @optional.
+  ///
+  /// In bs, this message translates to:
+  /// **'neobavezno'**
+  String get optional;
+
+  /// No description provided for @price.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena'**
+  String get price;
+
+  /// No description provided for @pricePerTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena po karti'**
+  String get pricePerTicket;
+
+  /// No description provided for @buyerPays.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac plaća (s naknadom {percent}%)'**
+  String buyerPays(String percent);
+
+  /// No description provided for @youReceive.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dobijaš po karti (naknada {percent}%)'**
+  String youReceive(String percent);
+
+  /// No description provided for @totalPayout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukupna isplata'**
+  String get totalPayout;
+
+  /// No description provided for @noteLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napomena za kupca'**
+  String get noteLabel;
+
+  /// No description provided for @publishListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Objavi ponudu'**
+  String get publishListing;
+
+  /// No description provided for @listingPublished.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda je objavljena'**
+  String get listingPublished;
+
+  /// No description provided for @required.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obavezno polje'**
+  String get required;
+
+  /// No description provided for @dateInPast.
+  ///
+  /// In bs, this message translates to:
+  /// **'Datum mora biti u budućnosti'**
+  String get dateInPast;
+
+  /// No description provided for @priceInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesite ispravnu cijenu'**
+  String get priceInvalid;
+
+  /// No description provided for @verifyBeforeSelling.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi e-mail adresu da bi kupci mogli vjerovati tvojim ponudama.'**
+  String get verifyBeforeSelling;
+
+  /// No description provided for @verifyNow.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi'**
+  String get verifyNow;
+
+  /// No description provided for @myListings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Moje ponude'**
+  String get myListings;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sve'**
+  String get filterAll;
+
+  /// No description provided for @statusActive.
+  ///
+  /// In bs, this message translates to:
+  /// **'Aktivna'**
+  String get statusActive;
+
+  /// No description provided for @statusReserved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rezervisana'**
+  String get statusReserved;
+
+  /// No description provided for @statusSoldOut.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rasprodana'**
+  String get statusSoldOut;
+
+  /// No description provided for @statusExpired.
+  ///
+  /// In bs, this message translates to:
+  /// **'Istekla'**
+  String get statusExpired;
+
+  /// No description provided for @statusWithdrawn.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povučena'**
+  String get statusWithdrawn;
+
+  /// No description provided for @ended.
+  ///
+  /// In bs, this message translates to:
+  /// **'Završene'**
+  String get ended;
+
+  /// No description provided for @noListings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nemaš ponuda'**
+  String get noListings;
+
+  /// No description provided for @noListingsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Imaš karte koje ne trebaš? Prodaj ih za nekoliko minuta.'**
+  String get noListingsInfo;
+
+  /// No description provided for @ticketsLeft.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count} od {total} dostupno'**
+  String ticketsLeft(String count, String total);
+
+  /// No description provided for @ticketsCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count} kom.'**
+  String ticketsCount(String count);
+
+  /// No description provided for @perTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'po karti'**
+  String get perTicket;
+
+  /// No description provided for @listingDetails.
+  ///
+  /// In bs, this message translates to:
+  /// **'Detalji ponude'**
+  String get listingDetails;
+
+  /// No description provided for @editPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni cijenu'**
+  String get editPrice;
+
+  /// No description provided for @withdrawListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povuci ponudu'**
+  String get withdrawListing;
+
+  /// No description provided for @withdrawConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda više neće biti vidljiva kupcima. Nastaviti?'**
+  String get withdrawConfirm;
+
+  /// No description provided for @listingWithdrawn.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda je povučena'**
+  String get listingWithdrawn;
+
+  /// No description provided for @listingNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda nije pronađena'**
+  String get listingNotFound;
+
+  /// No description provided for @yourListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoja ponuda'**
+  String get yourListing;
+
+  /// No description provided for @buyTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupi karte'**
+  String get buyTickets;
+
+  /// No description provided for @total.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukupno'**
+  String get total;
+
+  /// No description provided for @serviceFee.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada za uslugu'**
+  String get serviceFee;
+
+  /// No description provided for @checkoutSoonTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje uskoro'**
+  String get checkoutSoonTitle;
+
+  /// No description provided for @checkoutSoonInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sigurno plaćanje s garancijom za kupce je u izradi. Ponudu možeš već pregledati.'**
+  String get checkoutSoonInfo;
+
+  /// No description provided for @buyerProtection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Garancija za kupce: dobijaš važeće karte na vrijeme ili povrat novca.'**
+  String get buyerProtection;
+
+  /// No description provided for @sellerVerified.
+  ///
+  /// In bs, this message translates to:
+  /// **'Verifikovani prodavac'**
+  String get sellerVerified;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema rezultata za „{query}”'**
+  String searchNoResults(String query);
+
+  /// No description provided for @upcomingEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nadolazeći događaji'**
+  String get upcomingEvents;
+
+  /// No description provided for @fromPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'od {price}'**
+  String fromPrice(String price);
+
+  /// No description provided for @ok.
+  ///
+  /// In bs, this message translates to:
+  /// **'U redu'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

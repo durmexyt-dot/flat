@@ -8,6 +8,7 @@ import '../auth/auth_widgets.dart';
 import '../data/repositories.dart';
 import 'avatar.dart';
 import 'photo_actions.dart';
+import '../ui/snack.dart';
 
 final usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
 
@@ -63,7 +64,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (username.isNotEmpty && username != profile?.username) {
         await repo.setUsername(uid, username);
       }
-      messenger.showSnackBar(SnackBar(content: Text(l10n.saved)));
+      showSnack(messenger, l10n.saved);
       if (mounted) context.pop();
     } on UsernameTakenException {
       if (mounted) {
@@ -71,7 +72,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         _formKey.currentState!.validate();
       }
     } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.saveError)));
+      showSnack(messenger, l10n.saveError);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

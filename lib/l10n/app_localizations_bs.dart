@@ -507,4 +507,207 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get notifNewsletterInfo => 'Povremeno, o novim događajima';
+
+  @override
+  String get sellTitle => 'Prodaj karte';
+
+  @override
+  String get event => 'Događaj';
+
+  @override
+  String get eventName => 'Naziv događaja';
+
+  @override
+  String get venue => 'Mjesto održavanja';
+
+  @override
+  String get city => 'Grad';
+
+  @override
+  String get dateTime => 'Datum i vrijeme';
+
+  @override
+  String get pickDate => 'Odaberi datum';
+
+  @override
+  String get category => 'Kategorija';
+
+  @override
+  String get tickets => 'Karte';
+
+  @override
+  String get ticketType => 'Vrsta karte';
+
+  @override
+  String get ticketEticket => 'E-karta';
+
+  @override
+  String get ticketMobile => 'Mobilna';
+
+  @override
+  String get ticketPaper => 'Papirna';
+
+  @override
+  String get quantity => 'Količina';
+
+  @override
+  String get section => 'Sektor';
+
+  @override
+  String get row => 'Red';
+
+  @override
+  String get seats => 'Sjedišta';
+
+  @override
+  String get optional => 'neobavezno';
+
+  @override
+  String get price => 'Cijena';
+
+  @override
+  String get pricePerTicket => 'Cijena po karti';
+
+  @override
+  String buyerPays(String percent) {
+    return 'Kupac plaća (s naknadom $percent%)';
+  }
+
+  @override
+  String youReceive(String percent) {
+    return 'Dobijaš po karti (naknada $percent%)';
+  }
+
+  @override
+  String get totalPayout => 'Ukupna isplata';
+
+  @override
+  String get noteLabel => 'Napomena za kupca';
+
+  @override
+  String get publishListing => 'Objavi ponudu';
+
+  @override
+  String get listingPublished => 'Ponuda je objavljena';
+
+  @override
+  String get required => 'Obavezno polje';
+
+  @override
+  String get dateInPast => 'Datum mora biti u budućnosti';
+
+  @override
+  String get priceInvalid => 'Unesite ispravnu cijenu';
+
+  @override
+  String get verifyBeforeSelling =>
+      'Potvrdi e-mail adresu da bi kupci mogli vjerovati tvojim ponudama.';
+
+  @override
+  String get verifyNow => 'Potvrdi';
+
+  @override
+  String get myListings => 'Moje ponude';
+
+  @override
+  String get filterAll => 'Sve';
+
+  @override
+  String get statusActive => 'Aktivna';
+
+  @override
+  String get statusReserved => 'Rezervisana';
+
+  @override
+  String get statusSoldOut => 'Rasprodana';
+
+  @override
+  String get statusExpired => 'Istekla';
+
+  @override
+  String get statusWithdrawn => 'Povučena';
+
+  @override
+  String get ended => 'Završene';
+
+  @override
+  String get noListings => 'Još nemaš ponuda';
+
+  @override
+  String get noListingsInfo =>
+      'Imaš karte koje ne trebaš? Prodaj ih za nekoliko minuta.';
+
+  @override
+  String ticketsLeft(String count, String total) {
+    return '$count od $total dostupno';
+  }
+
+  @override
+  String ticketsCount(String count) {
+    return '$count kom.';
+  }
+
+  @override
+  String get perTicket => 'po karti';
+
+  @override
+  String get listingDetails => 'Detalji ponude';
+
+  @override
+  String get editPrice => 'Promijeni cijenu';
+
+  @override
+  String get withdrawListing => 'Povuci ponudu';
+
+  @override
+  String get withdrawConfirm =>
+      'Ponuda više neće biti vidljiva kupcima. Nastaviti?';
+
+  @override
+  String get listingWithdrawn => 'Ponuda je povučena';
+
+  @override
+  String get listingNotFound => 'Ponuda nije pronađena';
+
+  @override
+  String get yourListing => 'Tvoja ponuda';
+
+  @override
+  String get buyTickets => 'Kupi karte';
+
+  @override
+  String get total => 'Ukupno';
+
+  @override
+  String get serviceFee => 'Naknada za uslugu';
+
+  @override
+  String get checkoutSoonTitle => 'Plaćanje uskoro';
+
+  @override
+  String get checkoutSoonInfo =>
+      'Sigurno plaćanje s garancijom za kupce je u izradi. Ponudu možeš već pregledati.';
+
+  @override
+  String get buyerProtection =>
+      'Garancija za kupce: dobijaš važeće karte na vrijeme ili povrat novca.';
+
+  @override
+  String get sellerVerified => 'Verifikovani prodavac';
+
+  @override
+  String searchNoResults(String query) {
+    return 'Nema rezultata za „$query”';
+  }
+
+  @override
+  String get upcomingEvents => 'Nadolazeći događaji';
+
+  @override
+  String fromPrice(String price) {
+    return 'od $price';
+  }
+
+  @override
+  String get ok => 'U redu';
 }

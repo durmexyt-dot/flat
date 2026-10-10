@@ -42,6 +42,18 @@ class SettingsPage extends ConsumerWidget {
                   context.go('/login');
                 },
               ),
+            if (user != null) ...[
+              SettingsSectionTitle(l10n.selling),
+              SettingsGroup(
+                children: [
+                  SettingsLinkTile(
+                    icon: Icons.sell_outlined,
+                    title: l10n.myListings,
+                    onTap: () => context.push('/account/listings'),
+                  ),
+                ],
+              ),
+            ],
             SettingsSectionTitle(l10n.personalization),
             SettingsGroup(
               children: [
