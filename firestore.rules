@@ -1,0 +1,76 @@
+rules_version = '2';
+
+// Stubswap security rules.
+// Orders and payouts are written only by the server (Cloud Functions with
+// the Admin SDK, which bypasses these rules), so nobody can mark their own
+// order as paid or payout as sent.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    function onlyChanges(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // Private profile: settings, notification preferences.
+    match /users/{uid} {
+      allow read, write: if isUser(uid);
+
+      match /private/{doc} {
+        allow read, write: if isUser(uid);
+      }
+    }
+
+    // What other users may see: name, username, photo.
+    match /publicProfiles/{uid} {
+      allow read: if isUser(uid) || resource.data.visibility == 'public';
+      allow write: if isUser(uid);
+    }
+
+    // Username reservations, one document per lowercase username.
+    match /usernames/{name} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && name.matches('^[a-z0-9_.]{3,20}$');
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /listings/{id} {
+      allow read: if resource.data.status == 'active'
+        || isUser(resource.data.sellerId);
+      allow create: if signedIn()
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.status == 'active'
+        && request.resource.data.quantitySold == 0
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0
+        && request.resource.data.priceMinor is int
+        && request.resource.data.priceMinor > 0;
+      // Sellers may change the price or withdraw while the listing is active.
+      allow update: if isUser(resource.data.sellerId)
+        && resource.data.status == 'active'
+        && (
+          (onlyChanges(['priceMinor', 'updatedAt'])
+            && request.resource.data.priceMinor is int
+            && request.resource.data.priceMinor > 0)
+          || (onlyChanges(['status', 'updatedAt'])
+            && request.resource.data.status == 'withdrawn')
+        );
+    }
+
+    match /orders/{id} {
+      allow read: if isUser(resource.data.buyerId) || isUser(resource.data.sellerId);
+    }
+
+    match /payouts/{id} {
+      allow read: if isUser(resource.data.sellerId);
+    }
+
+    match /supportRequests/{id} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow read: if isUser(resource.data.uid);
+    }
+  }
+}
