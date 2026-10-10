@@ -207,4 +207,70 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get logoutButton => 'Odjavi se';
+
+  @override
+  String get themeModeLabel => 'Način prikaza';
+
+  @override
+  String get themeColor => 'Boja teme';
+
+  @override
+  String get colorViolet => 'Ljubičasta';
+
+  @override
+  String get colorIndigo => 'Indigo';
+
+  @override
+  String get colorBlue => 'Plava';
+
+  @override
+  String get colorTeal => 'Tirkizna';
+
+  @override
+  String get colorGreen => 'Zelena';
+
+  @override
+  String get colorOrange => 'Narandžasta';
+
+  @override
+  String get colorRed => 'Crvena';
+
+  @override
+  String get colorPink => 'Ružičasta';
+
+  @override
+  String get textSize => 'Veličina teksta';
+
+  @override
+  String get textSizeMinimum => 'Minimalna';
+
+  @override
+  String get textSizeDefault => 'Standardna';
+
+  @override
+  String get textSizeLarge => 'Velika';
+
+  @override
+  String get textSizeExtraLarge => 'Vrlo velika';
+
+  @override
+  String get uiStyle => 'Stil interfejsa';
+
+  @override
+  String get uiRounded => 'Zaobljen';
+
+  @override
+  String get uiSoft => 'Mekan';
+
+  @override
+  String get uiCrisp => 'Oštar';
+
+  @override
+  String get preview => 'Pregled';
+
+  @override
+  String get previewTickets => '2 karte · Parter';
+
+  @override
+  String get previewButton => 'Kupi karte';
 }

@@ -1,3 +1,5 @@
+import 'package:flat/src/settings/settings_controller.dart';
+import 'package:flat/src/ui/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -101,10 +103,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Einstellungen'), findsOneWidget);
 
+    await tester.tap(find.text('Darstellung').last);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Dunkel'));
     await tester.pumpAndSettle();
-    final context = tester.element(find.text('Einstellungen'));
+    final context = tester.element(find.text('Designfarbe'));
     expect(Theme.of(context).brightness, Brightness.dark);
+    await tester.ensureVisible(find.byTooltip('Grün'));
+    await tester.tap(find.byTooltip('Grün'));
+    await tester.pumpAndSettle();
+    expect(
+      Theme.of(tester.element(find.text('Designfarbe'))).colorScheme.primary,
+      colorSchemeFor(BrandColor.green, Brightness.dark).primary,
+    );
+    await tester.ensureVisible(find.text('Kantig'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Kantig'));
+    await tester.pumpAndSettle();
+    expect(
+      AppStyle.of(tester.element(find.text('Designfarbe'))).cardRadius,
+      UiStyle.crisp.cardRadius,
+    );
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('BAM (KM)'));
     await tester.pumpAndSettle();

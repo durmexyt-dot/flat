@@ -209,4 +209,70 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get logoutButton => 'Abmelden';
+
+  @override
+  String get themeModeLabel => 'Modus';
+
+  @override
+  String get themeColor => 'Designfarbe';
+
+  @override
+  String get colorViolet => 'Violett';
+
+  @override
+  String get colorIndigo => 'Indigo';
+
+  @override
+  String get colorBlue => 'Blau';
+
+  @override
+  String get colorTeal => 'Petrol';
+
+  @override
+  String get colorGreen => 'Grün';
+
+  @override
+  String get colorOrange => 'Orange';
+
+  @override
+  String get colorRed => 'Rot';
+
+  @override
+  String get colorPink => 'Pink';
+
+  @override
+  String get textSize => 'Textgröße';
+
+  @override
+  String get textSizeMinimum => 'Minimum';
+
+  @override
+  String get textSizeDefault => 'Standard';
+
+  @override
+  String get textSizeLarge => 'Groß';
+
+  @override
+  String get textSizeExtraLarge => 'Sehr groß';
+
+  @override
+  String get uiStyle => 'UI-Stil';
+
+  @override
+  String get uiRounded => 'Abgerundet';
+
+  @override
+  String get uiSoft => 'Weich';
+
+  @override
+  String get uiCrisp => 'Kantig';
+
+  @override
+  String get preview => 'Vorschau';
+
+  @override
+  String get previewTickets => '2 Tickets · Innenraum';
+
+  @override
+  String get previewButton => 'Tickets kaufen';
 }

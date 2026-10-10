@@ -483,6 +483,138 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Odjavi se'**
   String get logoutButton;
+
+  /// No description provided for @themeModeLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Način prikaza'**
+  String get themeModeLabel;
+
+  /// No description provided for @themeColor.
+  ///
+  /// In bs, this message translates to:
+  /// **'Boja teme'**
+  String get themeColor;
+
+  /// No description provided for @colorViolet.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ljubičasta'**
+  String get colorViolet;
+
+  /// No description provided for @colorIndigo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Indigo'**
+  String get colorIndigo;
+
+  /// No description provided for @colorBlue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plava'**
+  String get colorBlue;
+
+  /// No description provided for @colorTeal.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tirkizna'**
+  String get colorTeal;
+
+  /// No description provided for @colorGreen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zelena'**
+  String get colorGreen;
+
+  /// No description provided for @colorOrange.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narandžasta'**
+  String get colorOrange;
+
+  /// No description provided for @colorRed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Crvena'**
+  String get colorRed;
+
+  /// No description provided for @colorPink.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ružičasta'**
+  String get colorPink;
+
+  /// No description provided for @textSize.
+  ///
+  /// In bs, this message translates to:
+  /// **'Veličina teksta'**
+  String get textSize;
+
+  /// No description provided for @textSizeMinimum.
+  ///
+  /// In bs, this message translates to:
+  /// **'Minimalna'**
+  String get textSizeMinimum;
+
+  /// No description provided for @textSizeDefault.
+  ///
+  /// In bs, this message translates to:
+  /// **'Standardna'**
+  String get textSizeDefault;
+
+  /// No description provided for @textSizeLarge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Velika'**
+  String get textSizeLarge;
+
+  /// No description provided for @textSizeExtraLarge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrlo velika'**
+  String get textSizeExtraLarge;
+
+  /// No description provided for @uiStyle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stil interfejsa'**
+  String get uiStyle;
+
+  /// No description provided for @uiRounded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zaobljen'**
+  String get uiRounded;
+
+  /// No description provided for @uiSoft.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mekan'**
+  String get uiSoft;
+
+  /// No description provided for @uiCrisp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Oštar'**
+  String get uiCrisp;
+
+  /// No description provided for @preview.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pregled'**
+  String get preview;
+
+  /// No description provided for @previewTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'2 karte · Parter'**
+  String get previewTickets;
+
+  /// No description provided for @previewButton.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupi karte'**
+  String get previewButton;
 }
 
 class _AppLocalizationsDelegate

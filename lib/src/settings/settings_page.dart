@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
+import 'appearance_page.dart';
 import 'settings_controller.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -34,31 +35,17 @@ class SettingsPage extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 32),
         children: [
           section(l10n.appearance),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SegmentedButton<ThemeMode>(
-              segments: [
-                ButtonSegment(
-                  value: ThemeMode.system,
-                  icon: const Icon(Icons.brightness_auto_outlined),
-                  label: Text(l10n.themeSystem),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.light,
-                  icon: const Icon(Icons.light_mode_outlined),
-                  label: Text(l10n.themeLight),
-                ),
-                ButtonSegment(
-                  value: ThemeMode.dark,
-                  icon: const Icon(Icons.dark_mode_outlined),
-                  label: Text(l10n.themeDark),
-                ),
-              ],
-              selected: {settings.themeMode},
-              onSelectionChanged: (s) => controller.setThemeMode(s.first),
+          ListTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: Text(l10n.appearance),
+            subtitle: Text(
+              '${themeModeName(l10n, settings.themeMode)} · '
+              '${brandColorName(l10n, settings.color)} · '
+              '${uiStyleName(l10n, settings.uiStyle)}',
             ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/settings/appearance'),
           ),
-          const SizedBox(height: 8),
           ListTile(
             leading: const Icon(Icons.language),
             title: Text(l10n.language),

@@ -7,6 +7,7 @@ import 'auth/forgot_password_page.dart';
 import 'auth/login_page.dart';
 import 'auth/signup_page.dart';
 import 'home/home_page.dart';
+import 'settings/appearance_page.dart';
 import 'settings/settings_page.dart';
 import 'splash/splash_page.dart';
 import 'ui/hero_page.dart';
@@ -49,6 +50,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             ForgotPasswordPage(initialEmail: state.extra as String? ?? ''),
       ),
       _route('/settings', (_) => const SettingsPage()),
+      _route('/settings/appearance', (_) => const AppearancePage()),
     ],
   );
 });

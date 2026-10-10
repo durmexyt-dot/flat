@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,32 +22,83 @@ enum Currency {
   final String symbol;
 }
 
+/// Seed colors the user can pick for the theme.
+enum BrandColor {
+  violet(Color(0xFF6D4AFF)),
+  indigo(Color(0xFF3F51B5)),
+  blue(Color(0xFF1E88E5)),
+  teal(Color(0xFF00897B)),
+  green(Color(0xFF2E7D32)),
+  orange(Color(0xFFF57C00)),
+  red(Color(0xFFE53935)),
+  pink(Color(0xFFD81B60));
+
+  const BrandColor(this.seed);
+  final Color seed;
+}
+
+enum TextSize {
+  minimum(0.85),
+  normal(1),
+  large(1.15),
+  extraLarge(1.3);
+
+  const TextSize(this.scale);
+  final double scale;
+}
+
+/// Corner style of the UI.
+enum UiStyle {
+  rounded(cardRadius: 28, controlRadius: 28),
+  soft(cardRadius: 18, controlRadius: 12),
+  crisp(cardRadius: 6, controlRadius: 4);
+
+  const UiStyle({required this.cardRadius, required this.controlRadius});
+  final double cardRadius;
+  final double controlRadius;
+}
+
 @immutable
 class AppSettings {
   const AppSettings({
     required this.locale,
     required this.themeMode,
     required this.currency,
+    this.color = BrandColor.violet,
+    this.textSize = TextSize.normal,
+    this.uiStyle = UiStyle.soft,
   });
 
   final Locale locale;
   final ThemeMode themeMode;
   final Currency currency;
+  final BrandColor color;
+  final TextSize textSize;
+  final UiStyle uiStyle;
 
   AppSettings copyWith({
     Locale? locale,
     ThemeMode? themeMode,
     Currency? currency,
+    BrandColor? color,
+    TextSize? textSize,
+    UiStyle? uiStyle,
   }) => AppSettings(
     locale: locale ?? this.locale,
     themeMode: themeMode ?? this.themeMode,
     currency: currency ?? this.currency,
+    color: color ?? this.color,
+    textSize: textSize ?? this.textSize,
+    uiStyle: uiStyle ?? this.uiStyle,
   );
 }
 
 const _localeKey = 'locale';
 const _themeKey = 'themeMode';
 const _currencyKey = 'currency';
+const _colorKey = 'themeColor';
+const _textSizeKey = 'textSize';
+const _uiStyleKey = 'uiStyle';
 
 T _byName<T extends Enum>(List<T> values, String? name, T fallback) =>
     values.where((v) => v.name == name).firstOrNull ?? fallback;
@@ -69,6 +122,21 @@ class SettingsController extends Notifier<AppSettings> {
         prefs.getString(_currencyKey),
         Currency.bam,
       ),
+      color: _byName(
+        BrandColor.values,
+        prefs.getString(_colorKey),
+        BrandColor.violet,
+      ),
+      textSize: _byName(
+        TextSize.values,
+        prefs.getString(_textSizeKey),
+        TextSize.normal,
+      ),
+      uiStyle: _byName(
+        UiStyle.values,
+        prefs.getString(_uiStyleKey),
+        UiStyle.soft,
+      ),
     );
   }
 
@@ -86,7 +154,54 @@ class SettingsController extends Notifier<AppSettings> {
     state = state.copyWith(currency: currency);
     await _prefs.setString(_currencyKey, currency.name);
   }
+
+  Future<void> setColor(BrandColor color) async {
+    state = state.copyWith(color: color);
+    await _prefs.setString(_colorKey, color.name);
+    await _saveSplashColors(color);
+  }
+
+  Future<void> setTextSize(TextSize size) async {
+    state = state.copyWith(textSize: size);
+    await _prefs.setString(_textSizeKey, size.name);
+  }
+
+  Future<void> setUiStyle(UiStyle style) async {
+    state = state.copyWith(uiStyle: style);
+    await _prefs.setString(_uiStyleKey, style.name);
+  }
+
+  /// web/index.html reads these to draw its loading splash in the user's
+  /// colors before Flutter starts.
+  Future<void> _saveSplashColors(BrandColor color) async {
+    String hex(Color c) => '#${c.toARGB32().toRadixString(16).substring(2)}';
+    Map<String, String> scheme(Brightness b) {
+      final s = colorSchemeFor(color, b);
+      return {
+        'surface': hex(s.surface),
+        'onSurface': hex(s.onSurface),
+        'primary': hex(s.primary),
+        'tertiary': hex(s.tertiary),
+        'onPrimary': hex(s.onPrimary),
+      };
+    }
+
+    await _prefs.setString(
+      'splashColors',
+      jsonEncode({
+        'light': scheme(Brightness.light),
+        'dark': scheme(Brightness.dark),
+      }),
+    );
+  }
 }
+
+ColorScheme colorSchemeFor(BrandColor color, Brightness brightness) =>
+    ColorScheme.fromSeed(
+      seedColor: color.seed,
+      brightness: brightness,
+      dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+    );
 
 final settingsProvider = NotifierProvider<SettingsController, AppSettings>(
   SettingsController.new,

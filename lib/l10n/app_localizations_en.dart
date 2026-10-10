@@ -207,4 +207,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutButton => 'Sign out';
+
+  @override
+  String get themeModeLabel => 'Mode';
+
+  @override
+  String get themeColor => 'Theme color';
+
+  @override
+  String get colorViolet => 'Violet';
+
+  @override
+  String get colorIndigo => 'Indigo';
+
+  @override
+  String get colorBlue => 'Blue';
+
+  @override
+  String get colorTeal => 'Teal';
+
+  @override
+  String get colorGreen => 'Green';
+
+  @override
+  String get colorOrange => 'Orange';
+
+  @override
+  String get colorRed => 'Red';
+
+  @override
+  String get colorPink => 'Pink';
+
+  @override
+  String get textSize => 'Text size';
+
+  @override
+  String get textSizeMinimum => 'Minimum';
+
+  @override
+  String get textSizeDefault => 'Default';
+
+  @override
+  String get textSizeLarge => 'Large';
+
+  @override
+  String get textSizeExtraLarge => 'Extra large';
+
+  @override
+  String get uiStyle => 'UI style';
+
+  @override
+  String get uiRounded => 'Rounded';
+
+  @override
+  String get uiSoft => 'Soft';
+
+  @override
+  String get uiCrisp => 'Crisp';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get previewTickets => '2 tickets · Floor';
+
+  @override
+  String get previewButton => 'Buy tickets';
 }
