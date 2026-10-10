@@ -51,10 +51,10 @@ class SettingsButton extends StatelessWidget {
 /// Layout shared by the sign-in screens: brand on top, then a headline that
 /// flies in from the previous screen, then the form.
 ///
-/// Everything sits at the top of the screen. On iPhone Safari the keyboard
-/// covers the lower half, and Safari shifts the page when a focused field
-/// would be hidden, which misaligns Flutter's text fields with their native
-/// input.
+/// On large screens the form is centered in a card. On phones it sits in the
+/// upper part: on iPhone Safari the keyboard covers the lower half, and
+/// Safari shifts the page when a focused field would be hidden, which
+/// misaligns Flutter's text fields with their native input.
 class AuthScaffold extends StatelessWidget {
   const AuthScaffold({
     super.key,
@@ -67,62 +67,97 @@ class AuthScaffold extends StatelessWidget {
   final String? subtitle;
   final List<Widget> children;
 
+  static const _padding = EdgeInsets.fromLTRB(16, 8, 16, 24);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 48,
+              child: context.canPop() ? const BackButton() : null,
+            ),
+            const Expanded(child: Center(child: BrandHeader())),
+            const SettingsButton(),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BrandTagline(
+                title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 20),
+              ...children,
+            ],
+          ),
+        ),
+      ],
+    );
+
     return Scaffold(
       body: SafeArea(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 48,
-                        child: context.canPop() ? const BackButton() : null,
-                      ),
-                      const Expanded(child: Center(child: BrandHeader())),
-                      const SettingsButton(),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        BrandTagline(
-                          title,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        if (subtitle != null) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            subtitle!,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final large =
+                constraints.maxWidth >= 600 && constraints.maxHeight >= 700;
+            return SingleChildScrollView(
+              padding: _padding,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - _padding.vertical,
+                ),
+                child: Align(
+                  // Phones: a third of the free space above the form, which
+                  // keeps the fields clear of the iPhone keyboard.
+                  alignment: large
+                      ? Alignment.center
+                      : const Alignment(0, -0.3),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 440),
+                    child: large
+                        ? Card.filled(
+                            color: theme.colorScheme.surfaceContainerLow,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
                             ),
-                          ),
-                        ],
-                        const SizedBox(height: 20),
-                        ...children,
-                      ],
-                    ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                16,
+                                16,
+                                24,
+                              ),
+                              child: content,
+                            ),
+                          )
+                        : content,
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
@@ -217,25 +252,39 @@ class EmailField extends StatelessWidget {
   }
 }
 
-class ErrorText extends StatelessWidget {
-  const ErrorText(this.text, {super.key});
+/// Error line under a form; slides open when an error appears.
+class AnimatedErrorText extends StatelessWidget {
+  const AnimatedErrorText(this.text, {super.key});
 
+  /// Empty for no error.
   final String text;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+      alignment: Alignment.topCenter,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: text.isEmpty
+            ? const SizedBox(width: double.infinity)
+            : Padding(
+                key: ValueKey(text),
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
       ),
     );
   }
 }
 
-/// Primary action button with a loading state.
+/// Primary action button. While [loading], it shrinks into a circle with a
+/// spinner and grows back once the response is there.
 class SubmitButton extends StatelessWidget {
   const SubmitButton({
     super.key,
@@ -248,18 +297,55 @@ class SubmitButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onPressed;
 
+  static const _height = 52.0;
+  static const _duration = Duration(milliseconds: 350);
+
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: loading ? null : onPressed,
-      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-      child: loading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Text(label),
+    final colors = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      height: _height,
+      child: LayoutBuilder(
+        builder: (context, constraints) => Center(
+          child: AnimatedContainer(
+            duration: _duration,
+            curve: Curves.easeInOutCubic,
+            width: loading ? _height : constraints.maxWidth,
+            height: _height,
+            child: IgnorePointer(
+              ignoring: loading,
+              child: FilledButton(
+                onPressed: onPressed,
+                style: FilledButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(_height, _height),
+                  shape: const StadiumBorder(),
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: loading
+                      ? SizedBox.square(
+                          key: const ValueKey('loading'),
+                          dimension: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: colors.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          label,
+                          key: const ValueKey('label'),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.clip,
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

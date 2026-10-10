@@ -108,7 +108,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             ),
           ),
         ),
-        if (error.isNotEmpty) ErrorText(error),
+        AnimatedErrorText(error),
         const SizedBox(height: 20),
         SubmitButton(
           label: l10n.createAccountButton,

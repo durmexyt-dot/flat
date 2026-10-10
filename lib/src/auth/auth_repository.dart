@@ -62,8 +62,7 @@ class FirebaseAuthRepository implements AuthRepository {
   final SharedPreferences _prefs;
 
   /// Ends a session the user did not want to keep. On web this is handled by
-  /// session persistence (cleared when the tab closes); native apps call this
-  /// once at startup.
+  /// in-memory persistence; native apps call this once at startup.
   static Future<void> dropUnwantedSession(
     FirebaseAuth auth,
     SharedPreferences prefs,
@@ -92,7 +91,10 @@ class FirebaseAuthRepository implements AuthRepository {
     await _prefs.setBool(_keepSignedInKey, keep);
     if (kIsWeb) {
       await _auth.setPersistence(
-        keep ? Persistence.LOCAL : Persistence.SESSION,
+        // NONE keeps the session in memory only, so it ends on reload or when
+        // the app is reopened. SESSION would survive reloads, and iOS Safari
+        // even restores it after Safari was closed.
+        keep ? Persistence.LOCAL : Persistence.NONE,
       );
     }
   }

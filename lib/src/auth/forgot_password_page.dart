@@ -97,7 +97,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   onSubmitted: (_) => _submit(),
                 ),
               ),
-              if (error.isNotEmpty) ErrorText(error),
+              AnimatedErrorText(error),
               const SizedBox(height: 20),
               SubmitButton(
                 label: l10n.resetButton,

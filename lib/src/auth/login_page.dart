@@ -115,7 +115,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           ],
         ),
-        if (error.isNotEmpty) ErrorText(error),
+        AnimatedErrorText(error),
         const SizedBox(height: 12),
         SubmitButton(
           label: l10n.loginButton,

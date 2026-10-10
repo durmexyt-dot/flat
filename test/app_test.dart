@@ -29,6 +29,32 @@ void main() {
     expect(find.text('Zdravo, Amra'), findsOneWidget);
   });
 
+  testWidgets('sign-in button turns into a spinner until the response', (
+    tester,
+  ) async {
+    final auth = await pumpApp(tester);
+    auth.delay = const Duration(seconds: 2);
+    await tester.enterText(find.byType(TextFormField).at(0), 'amra@test.ba');
+    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
+    await tester.tap(find.widgetWithText(FilledButton, 'Prijavi se'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    final button = find.byType(FilledButton);
+    expect(tester.getSize(button).width, 52);
+    expect(
+      find.descendant(
+        of: button,
+        matching: find.byType(CircularProgressIndicator),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.text('Zdravo, Amra'), findsOneWidget);
+  });
+
   testWidgets('guest can browse events and get back to sign in', (
     tester,
   ) async {

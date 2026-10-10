@@ -14,6 +14,9 @@ class FakeAuthRepository implements AuthRepository {
   final _controller = StreamController<AppUser?>.broadcast();
   AppUser? _user;
 
+  /// Simulated server response time for sign-in.
+  Duration delay = Duration.zero;
+
   void _set(AppUser? user) {
     _user = user;
     _controller.add(user);
@@ -34,7 +37,12 @@ class FakeAuthRepository implements AuthRepository {
     required String email,
     required String password,
     required bool keepSignedIn,
-  }) async => _set(AppUser(uid: '1', email: email, displayName: 'Amra Test'));
+  }) async {
+    // Only wait when asked to: tests that await signIn directly would
+    // otherwise block on a timer that only advances when pumped.
+    if (delay > Duration.zero) await Future<void>.delayed(delay);
+    _set(AppUser(uid: '1', email: email, displayName: 'Amra Test'));
+  }
 
   @override
   Future<void> signInWithGoogle({required bool keepSignedIn}) async =>
