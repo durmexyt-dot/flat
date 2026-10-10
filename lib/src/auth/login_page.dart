@@ -66,12 +66,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
+    // On iPhone Safari the keyboard covers the lower half of the screen, and
+    // Safari shifts the whole page when a focused field would be hidden. That
+    // shift misaligns Flutter's text fields with their native input, so the
+    // form sits at the top where the keyboard never reaches it.
     return Scaffold(
-      appBar: AppBar(actions: const [LanguageMenu()]),
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Form(
@@ -80,20 +84,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Center(child: AppLogo()),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.loginTitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineMedium,
+                      Row(
+                        children: [
+                          const AppLogo(size: 56),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.loginTitle,
+                                  style: theme.textTheme.headlineSmall,
+                                ),
+                                Text(
+                                  l10n.loginSubtitle,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const LanguageMenu(),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.loginSubtitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       TextFormField(
                         controller: _email,
                         decoration: InputDecoration(
@@ -114,7 +127,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       TextFormField(
                         controller: _password,
                         decoration: InputDecoration(
@@ -151,7 +164,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           style: TextStyle(color: theme.colorScheme.error),
                         ),
                       ],
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       FilledButton(
                         onPressed: _loading ? null : _submit,
                         style: FilledButton.styleFrom(

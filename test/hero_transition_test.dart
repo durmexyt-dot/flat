@@ -37,7 +37,7 @@ class FakeAuthRepository implements AuthRepository {
 }
 
 /// Sizes of all laid-out logo icons. The icon is 60% of the logo, so it is
-/// 48 on the login page and 21.6 in the app bar; any size in between can only
+/// 33.6 on the login page and 21.6 in the app bar; any size in between can only
 /// come from the copy Flutter shows during a Hero flight.
 Iterable<double> _logoSizes(WidgetTester tester) => find
     .byIcon(Icons.home_rounded, skipOffstage: false)
@@ -46,7 +46,7 @@ Iterable<double> _logoSizes(WidgetTester tester) => find
     .whereType<double>();
 
 bool _logoInFlight(WidgetTester tester) =>
-    _logoSizes(tester).any((w) => w > 22 && w < 47);
+    _logoSizes(tester).any((w) => w > 22 && w < 33);
 
 void main() {
   testWidgets('logo flies between login and dashboard', (tester) async {
