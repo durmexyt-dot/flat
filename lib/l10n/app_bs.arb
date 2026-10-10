@@ -382,5 +382,59 @@
   "demoModeInfo": "Prikazuje primjere narudžbi, prodaja i isplata. Ništa se ne sprema.",
   "demoBanner": "Demo – primjeri podataka",
   "buyer": "Kupac",
-  "tools": "Alati"
+  "tools": "Alati",
+  "support": "Podrška",
+  "helpCenter": "Centar za pomoć",
+  "contactSupport": "Kontaktiraj podršku",
+  "about": "O aplikaciji",
+  "aboutText": "Stubswap je sigurno tržište za kupovinu i prodaju karata za događaje.",
+  "getHelpOrder": "Pomoć oko ove narudžbe",
+  "getHelpPayout": "Pomoć oko ove isplate",
+  "topic": "Tema",
+  "topicOrder": "Kupovina",
+  "topicSale": "Prodaja",
+  "topicPayout": "Isplata",
+  "topicAccount": "Račun",
+  "topicOther": "Ostalo",
+  "reference": "Broj narudžbe ili ponude",
+  "message": "Poruka",
+  "messageHint": "Opiši šta se desilo. Što više detalja, brže pomažemo.",
+  "messageTooShort": "Napiši barem 20 znakova",
+  "send": "Pošalji",
+  "requestSent": "Zahtjev je poslan",
+  "requestSentInfo": "Broj tvog zahtjeva je {number}. Odgovorit ćemo na {email}, obično u roku od 24 sata.",
+  "@requestSentInfo": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "Gotovo",
+  "stillNeedHelp": "Nisi pronašao odgovor?",
+  "faqBuySafeQ": "Da li je kupovina na Stubswapu sigurna?",
+  "faqBuySafeA": "Da. Novac zadržavamo dok ne dobiješ karte. Ako karte ne stignu na vrijeme ili nisu važeće, vraćamo ti novac.",
+  "faqWhenTicketsQ": "Kada ću dobiti karte?",
+  "faqWhenTicketsA": "Prodavac ih šalje nakon plaćanja, najkasnije prije događaja. Status vidiš u Kupovine i računi.",
+  "faqFeesQ": "Koje su naknade?",
+  "faqFeesA": "Kupac plaća naknadu za uslugu od {buyer}% na cijenu karte. Prodavcu zadržavamo {seller}% od prodajne cijene.",
+  "@faqFeesA": {
+    "placeholders": {
+      "buyer": {
+        "type": "String"
+      },
+      "seller": {
+        "type": "String"
+      }
+    }
+  },
+  "faqPayoutWhenQ": "Kada dobijam novac od prodaje?",
+  "faqPayoutWhenA": "Nakon održanog događaja isplata se zakazuje i stiže na tvoj IBAN za 3–5 radnih dana.",
+  "faqSendTicketsQ": "Kako da pošaljem karte kupcu?",
+  "faqSendTicketsA": "E-karte i mobilne karte prenosiš preko organizatora na e-mail kupca. Papirne karte šalješ preporučeno. Status ažuriraj odmah nakon slanja.",
+  "faqCancelQ": "Šta ako je događaj otkazan?",
+  "faqCancelA": "Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca."
 }

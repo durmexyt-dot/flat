@@ -1875,6 +1875,210 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Alati'**
   String get tools;
+
+  /// No description provided for @support.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podrška'**
+  String get support;
+
+  /// No description provided for @helpCenter.
+  ///
+  /// In bs, this message translates to:
+  /// **'Centar za pomoć'**
+  String get helpCenter;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kontaktiraj podršku'**
+  String get contactSupport;
+
+  /// No description provided for @about.
+  ///
+  /// In bs, this message translates to:
+  /// **'O aplikaciji'**
+  String get about;
+
+  /// No description provided for @aboutText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stubswap je sigurno tržište za kupovinu i prodaju karata za događaje.'**
+  String get aboutText;
+
+  /// No description provided for @getHelpOrder.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomoć oko ove narudžbe'**
+  String get getHelpOrder;
+
+  /// No description provided for @getHelpPayout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomoć oko ove isplate'**
+  String get getHelpPayout;
+
+  /// No description provided for @topic.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tema'**
+  String get topic;
+
+  /// No description provided for @topicOrder.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupovina'**
+  String get topicOrder;
+
+  /// No description provided for @topicSale.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja'**
+  String get topicSale;
+
+  /// No description provided for @topicPayout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isplata'**
+  String get topicPayout;
+
+  /// No description provided for @topicAccount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Račun'**
+  String get topicAccount;
+
+  /// No description provided for @topicOther.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostalo'**
+  String get topicOther;
+
+  /// No description provided for @reference.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj narudžbe ili ponude'**
+  String get reference;
+
+  /// No description provided for @message.
+  ///
+  /// In bs, this message translates to:
+  /// **'Poruka'**
+  String get message;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Opiši šta se desilo. Što više detalja, brže pomažemo.'**
+  String get messageHint;
+
+  /// No description provided for @messageTooShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napiši barem 20 znakova'**
+  String get messageTooShort;
+
+  /// No description provided for @send.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji'**
+  String get send;
+
+  /// No description provided for @requestSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zahtjev je poslan'**
+  String get requestSent;
+
+  /// No description provided for @requestSentInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj tvog zahtjeva je {number}. Odgovorit ćemo na {email}, obično u roku od 24 sata.'**
+  String requestSentInfo(String number, String email);
+
+  /// No description provided for @done.
+  ///
+  /// In bs, this message translates to:
+  /// **'Gotovo'**
+  String get done;
+
+  /// No description provided for @stillNeedHelp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nisi pronašao odgovor?'**
+  String get stillNeedHelp;
+
+  /// No description provided for @faqBuySafeQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Da li je kupovina na Stubswapu sigurna?'**
+  String get faqBuySafeQ;
+
+  /// No description provided for @faqBuySafeA.
+  ///
+  /// In bs, this message translates to:
+  /// **'Da. Novac zadržavamo dok ne dobiješ karte. Ako karte ne stignu na vrijeme ili nisu važeće, vraćamo ti novac.'**
+  String get faqBuySafeA;
+
+  /// No description provided for @faqWhenTicketsQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada ću dobiti karte?'**
+  String get faqWhenTicketsQ;
+
+  /// No description provided for @faqWhenTicketsA.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac ih šalje nakon plaćanja, najkasnije prije događaja. Status vidiš u Kupovine i računi.'**
+  String get faqWhenTicketsA;
+
+  /// No description provided for @faqFeesQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koje su naknade?'**
+  String get faqFeesQ;
+
+  /// No description provided for @faqFeesA.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac plaća naknadu za uslugu od {buyer}% na cijenu karte. Prodavcu zadržavamo {seller}% od prodajne cijene.'**
+  String faqFeesA(String buyer, String seller);
+
+  /// No description provided for @faqPayoutWhenQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada dobijam novac od prodaje?'**
+  String get faqPayoutWhenQ;
+
+  /// No description provided for @faqPayoutWhenA.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nakon održanog događaja isplata se zakazuje i stiže na tvoj IBAN za 3–5 radnih dana.'**
+  String get faqPayoutWhenA;
+
+  /// No description provided for @faqSendTicketsQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kako da pošaljem karte kupcu?'**
+  String get faqSendTicketsQ;
+
+  /// No description provided for @faqSendTicketsA.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-karte i mobilne karte prenosiš preko organizatora na e-mail kupca. Papirne karte šalješ preporučeno. Status ažuriraj odmah nakon slanja.'**
+  String get faqSendTicketsA;
+
+  /// No description provided for @faqCancelQ.
+  ///
+  /// In bs, this message translates to:
+  /// **'Šta ako je događaj otkazan?'**
+  String get faqCancelQ;
+
+  /// No description provided for @faqCancelA.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca.'**
+  String get faqCancelA;
 }
 
 class _AppLocalizationsDelegate

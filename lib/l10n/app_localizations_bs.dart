@@ -953,4 +953,117 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get tools => 'Alati';
+
+  @override
+  String get support => 'Podrška';
+
+  @override
+  String get helpCenter => 'Centar za pomoć';
+
+  @override
+  String get contactSupport => 'Kontaktiraj podršku';
+
+  @override
+  String get about => 'O aplikaciji';
+
+  @override
+  String get aboutText =>
+      'Stubswap je sigurno tržište za kupovinu i prodaju karata za događaje.';
+
+  @override
+  String get getHelpOrder => 'Pomoć oko ove narudžbe';
+
+  @override
+  String get getHelpPayout => 'Pomoć oko ove isplate';
+
+  @override
+  String get topic => 'Tema';
+
+  @override
+  String get topicOrder => 'Kupovina';
+
+  @override
+  String get topicSale => 'Prodaja';
+
+  @override
+  String get topicPayout => 'Isplata';
+
+  @override
+  String get topicAccount => 'Račun';
+
+  @override
+  String get topicOther => 'Ostalo';
+
+  @override
+  String get reference => 'Broj narudžbe ili ponude';
+
+  @override
+  String get message => 'Poruka';
+
+  @override
+  String get messageHint =>
+      'Opiši šta se desilo. Što više detalja, brže pomažemo.';
+
+  @override
+  String get messageTooShort => 'Napiši barem 20 znakova';
+
+  @override
+  String get send => 'Pošalji';
+
+  @override
+  String get requestSent => 'Zahtjev je poslan';
+
+  @override
+  String requestSentInfo(String number, String email) {
+    return 'Broj tvog zahtjeva je $number. Odgovorit ćemo na $email, obično u roku od 24 sata.';
+  }
+
+  @override
+  String get done => 'Gotovo';
+
+  @override
+  String get stillNeedHelp => 'Nisi pronašao odgovor?';
+
+  @override
+  String get faqBuySafeQ => 'Da li je kupovina na Stubswapu sigurna?';
+
+  @override
+  String get faqBuySafeA =>
+      'Da. Novac zadržavamo dok ne dobiješ karte. Ako karte ne stignu na vrijeme ili nisu važeće, vraćamo ti novac.';
+
+  @override
+  String get faqWhenTicketsQ => 'Kada ću dobiti karte?';
+
+  @override
+  String get faqWhenTicketsA =>
+      'Prodavac ih šalje nakon plaćanja, najkasnije prije događaja. Status vidiš u Kupovine i računi.';
+
+  @override
+  String get faqFeesQ => 'Koje su naknade?';
+
+  @override
+  String faqFeesA(String buyer, String seller) {
+    return 'Kupac plaća naknadu za uslugu od $buyer% na cijenu karte. Prodavcu zadržavamo $seller% od prodajne cijene.';
+  }
+
+  @override
+  String get faqPayoutWhenQ => 'Kada dobijam novac od prodaje?';
+
+  @override
+  String get faqPayoutWhenA =>
+      'Nakon održanog događaja isplata se zakazuje i stiže na tvoj IBAN za 3–5 radnih dana.';
+
+  @override
+  String get faqSendTicketsQ => 'Kako da pošaljem karte kupcu?';
+
+  @override
+  String get faqSendTicketsA =>
+      'E-karte i mobilne karte prenosiš preko organizatora na e-mail kupca. Papirne karte šalješ preporučeno. Status ažuriraj odmah nakon slanja.';
+
+  @override
+  String get faqCancelQ => 'Šta ako je događaj otkazan?';
+
+  @override
+  String get faqCancelA =>
+      'Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca.';
 }

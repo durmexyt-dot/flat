@@ -5,11 +5,15 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../account/profile_header.dart';
 import '../auth/auth_repository.dart';
+import '../brand/brand.dart';
 import '../data/demo_data.dart';
 import '../data/repositories.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
+
+/// Shown in the about dialog; keep in sync with pubspec.yaml.
+const appVersion = '1.0.0';
 
 /// Account hub: profile on top, then grouped settings.
 class SettingsPage extends ConsumerWidget {
@@ -125,6 +129,33 @@ class SettingsPage extends ConsumerWidget {
                           child: Text('${c.code} (${c.symbol})'),
                         ),
                     ],
+                  ),
+                ),
+              ],
+            ),
+            SettingsSectionTitle(l10n.support),
+            SettingsGroup(
+              children: [
+                SettingsLinkTile(
+                  icon: Icons.help_outline,
+                  title: l10n.helpCenter,
+                  onTap: () => context.push('/support'),
+                ),
+                if (user != null)
+                  SettingsLinkTile(
+                    icon: Icons.support_agent,
+                    title: l10n.contactSupport,
+                    onTap: () => context.push('/support/new'),
+                  ),
+                SettingsLinkTile(
+                  icon: Icons.info_outline,
+                  title: l10n.about,
+                  onTap: () => showAboutDialog(
+                    context: context,
+                    applicationName: 'Stubswap',
+                    applicationVersion: appVersion,
+                    applicationIcon: const BrandMark(size: 48),
+                    children: [Text(l10n.aboutText)],
                   ),
                 ),
               ],

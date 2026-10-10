@@ -966,4 +966,117 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tools => 'Werkzeuge';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get helpCenter => 'Hilfe-Center';
+
+  @override
+  String get contactSupport => 'Support kontaktieren';
+
+  @override
+  String get about => 'Über die App';
+
+  @override
+  String get aboutText =>
+      'Stubswap ist ein sicherer Marktplatz zum Kaufen und Verkaufen von Event-Tickets.';
+
+  @override
+  String get getHelpOrder => 'Hilfe zu dieser Bestellung';
+
+  @override
+  String get getHelpPayout => 'Hilfe zu dieser Auszahlung';
+
+  @override
+  String get topic => 'Thema';
+
+  @override
+  String get topicOrder => 'Kauf';
+
+  @override
+  String get topicSale => 'Verkauf';
+
+  @override
+  String get topicPayout => 'Auszahlung';
+
+  @override
+  String get topicAccount => 'Konto';
+
+  @override
+  String get topicOther => 'Sonstiges';
+
+  @override
+  String get reference => 'Bestell- oder Angebotsnummer';
+
+  @override
+  String get message => 'Nachricht';
+
+  @override
+  String get messageHint =>
+      'Beschreibe, was passiert ist. Je mehr Details, desto schneller helfen wir.';
+
+  @override
+  String get messageTooShort => 'Bitte mindestens 20 Zeichen';
+
+  @override
+  String get send => 'Senden';
+
+  @override
+  String get requestSent => 'Anfrage gesendet';
+
+  @override
+  String requestSentInfo(String number, String email) {
+    return 'Deine Anfragenummer ist $number. Wir antworten an $email, meist innerhalb von 24 Stunden.';
+  }
+
+  @override
+  String get done => 'Fertig';
+
+  @override
+  String get stillNeedHelp => 'Keine Antwort gefunden?';
+
+  @override
+  String get faqBuySafeQ => 'Ist der Kauf bei Stubswap sicher?';
+
+  @override
+  String get faqBuySafeA =>
+      'Ja. Wir halten das Geld zurück, bis du deine Tickets hast. Kommen sie nicht rechtzeitig oder sind ungültig, bekommst du dein Geld zurück.';
+
+  @override
+  String get faqWhenTicketsQ => 'Wann bekomme ich meine Tickets?';
+
+  @override
+  String get faqWhenTicketsA =>
+      'Der Verkäufer überträgt sie nach der Zahlung, spätestens vor dem Event. Den Status siehst du unter Käufe & Rechnungen.';
+
+  @override
+  String get faqFeesQ => 'Welche Gebühren fallen an?';
+
+  @override
+  String faqFeesA(String buyer, String seller) {
+    return 'Käufer zahlen $buyer % Servicegebühr auf den Ticketpreis. Von Verkäufern behalten wir $seller % des Verkaufspreises ein.';
+  }
+
+  @override
+  String get faqPayoutWhenQ => 'Wann bekomme ich das Geld aus einem Verkauf?';
+
+  @override
+  String get faqPayoutWhenA =>
+      'Nach dem Event wird die Auszahlung geplant und kommt in 3–5 Werktagen auf deine IBAN.';
+
+  @override
+  String get faqSendTicketsQ => 'Wie übertrage ich Tickets an den Käufer?';
+
+  @override
+  String get faqSendTicketsA =>
+      'E-Tickets und mobile Tickets überträgst du über den Veranstalter an die E-Mail des Käufers. Papiertickets verschickst du per Einschreiben.';
+
+  @override
+  String get faqCancelQ => 'Was passiert, wenn ein Event abgesagt wird?';
+
+  @override
+  String get faqCancelA =>
+      'Käufer bekommen den vollen Betrag zurück, Verkäufe werden ohne Gebühr für Verkäufer storniert.';
 }

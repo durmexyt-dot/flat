@@ -22,6 +22,8 @@ import 'market/sell_page.dart';
 import 'settings/appearance_page.dart';
 import 'settings/settings_page.dart';
 import 'splash/splash_page.dart';
+import 'support/contact_support_page.dart';
+import 'support/help_center_page.dart';
 import 'ui/hero_page.dart';
 
 const _authRoutes = {'/login', '/signup', '/forgot-password'};
@@ -30,6 +32,7 @@ const _accountOnly = [
   '/account',
   '/order',
   '/payout',
+  '/support/new',
   '/settings/profile',
   '/settings/privacy',
   '/settings/notifications',
@@ -94,6 +97,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/account/sales', (_) => const OrdersPage(role: OrderRole.seller)),
       _route('/account/payouts', (_) => const PayoutsPage()),
       _route('/account/payout-method', (_) => const PayoutMethodPage()),
+      _route('/support', (_) => const HelpCenterPage()),
+      _route(
+        '/support/new',
+        (state) => ContactSupportPage(initial: state.extra as SupportContext?),
+      ),
       _route(
         '/order/:id',
         (state) => OrderDetailPage(

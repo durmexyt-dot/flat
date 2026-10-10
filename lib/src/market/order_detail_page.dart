@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
+import '../support/contact_support_page.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
 import '../ui/skeleton.dart';
@@ -59,6 +60,20 @@ class OrderDetailPage extends ConsumerWidget {
                 StatusTimeline(steps: orderTimeline(context, order)),
                 SettingsSectionTitle(l10n.invoice),
                 _Invoice(order: order, role: role),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(
+                    '/support/new',
+                    extra: SupportContext(
+                      topic: role == OrderRole.buyer
+                          ? SupportTopic.order
+                          : SupportTopic.sale,
+                      reference: order.number,
+                    ),
+                  ),
+                  icon: const Icon(Icons.support_agent),
+                  label: Text(l10n.getHelpOrder),
+                ),
                 if (role == OrderRole.seller &&
                     order.status == OrderStatus.completed) ...[
                   const SizedBox(height: 12),

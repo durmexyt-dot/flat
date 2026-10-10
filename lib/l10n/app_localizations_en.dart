@@ -958,4 +958,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tools => 'Tools';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get helpCenter => 'Help center';
+
+  @override
+  String get contactSupport => 'Contact support';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutText =>
+      'Stubswap is a safe marketplace to buy and sell event tickets.';
+
+  @override
+  String get getHelpOrder => 'Get help with this order';
+
+  @override
+  String get getHelpPayout => 'Get help with this payout';
+
+  @override
+  String get topic => 'Topic';
+
+  @override
+  String get topicOrder => 'Purchase';
+
+  @override
+  String get topicSale => 'Sale';
+
+  @override
+  String get topicPayout => 'Payout';
+
+  @override
+  String get topicAccount => 'Account';
+
+  @override
+  String get topicOther => 'Other';
+
+  @override
+  String get reference => 'Order or listing number';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get messageHint =>
+      'Describe what happened. The more detail, the faster we can help.';
+
+  @override
+  String get messageTooShort => 'Please write at least 20 characters';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get requestSent => 'Request sent';
+
+  @override
+  String requestSentInfo(String number, String email) {
+    return 'Your request number is $number. We\'ll reply to $email, usually within 24 hours.';
+  }
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get stillNeedHelp => 'Didn\'t find an answer?';
+
+  @override
+  String get faqBuySafeQ => 'Is buying on Stubswap safe?';
+
+  @override
+  String get faqBuySafeA =>
+      'Yes. We hold the money until you have your tickets. If they don\'t arrive on time or aren\'t valid, you get your money back.';
+
+  @override
+  String get faqWhenTicketsQ => 'When will I get my tickets?';
+
+  @override
+  String get faqWhenTicketsA =>
+      'The seller sends them after payment, before the event at the latest. You can follow the status in Purchases & invoices.';
+
+  @override
+  String get faqFeesQ => 'What are the fees?';
+
+  @override
+  String faqFeesA(String buyer, String seller) {
+    return 'Buyers pay a $buyer% service fee on the ticket price. Sellers pay $seller% of the sale price.';
+  }
+
+  @override
+  String get faqPayoutWhenQ => 'When do I get paid for a sale?';
+
+  @override
+  String get faqPayoutWhenA =>
+      'After the event the payout is scheduled and reaches your IBAN within 3–5 business days.';
+
+  @override
+  String get faqSendTicketsQ => 'How do I send tickets to the buyer?';
+
+  @override
+  String get faqSendTicketsA =>
+      'Transfer e-tickets and mobile tickets to the buyer\'s email through the organizer. Send paper tickets by registered mail.';
+
+  @override
+  String get faqCancelQ => 'What if an event is cancelled?';
+
+  @override
+  String get faqCancelA =>
+      'Buyers get a full refund and sales are cancelled without a fee for the seller.';
 }

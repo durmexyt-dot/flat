@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
+import '../support/contact_support_page.dart';
 import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
@@ -304,6 +305,18 @@ class PayoutDetailPage extends ConsumerWidget {
                 ],
                 SettingsSectionTitle(l10n.statusHistory),
                 StatusTimeline(steps: payoutTimeline(context, payout)),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(
+                    '/support/new',
+                    extra: SupportContext(
+                      topic: SupportTopic.payout,
+                      reference: payout.orderNumbers.join(', '),
+                    ),
+                  ),
+                  icon: const Icon(Icons.support_agent),
+                  label: Text(l10n.getHelpPayout),
+                ),
                 SettingsSectionTitle(l10n.payoutOrders),
                 SettingsGroup(
                   children: [
