@@ -2079,6 +2079,162 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca.'**
   String get faqCancelA;
+
+  /// No description provided for @checkout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje'**
+  String get checkout;
+
+  /// No description provided for @payAmount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plati {amount}'**
+  String payAmount(String amount);
+
+  /// No description provided for @testModeBadge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Testni način · bez pravog novca'**
+  String get testModeBadge;
+
+  /// No description provided for @stripeSimulator.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stripe simulator'**
+  String get stripeSimulator;
+
+  /// No description provided for @simulatorInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Simulacija plaćanja. Kasnije je zamjenjuje pravi Stripe.'**
+  String get simulatorInfo;
+
+  /// No description provided for @cardNumber.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj kartice'**
+  String get cardNumber;
+
+  /// No description provided for @cardExpiry.
+  ///
+  /// In bs, this message translates to:
+  /// **'Datum isteka'**
+  String get cardExpiry;
+
+  /// No description provided for @cardCvc.
+  ///
+  /// In bs, this message translates to:
+  /// **'CVC'**
+  String get cardCvc;
+
+  /// No description provided for @simulateSuccess.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje uspješno'**
+  String get simulateSuccess;
+
+  /// No description provided for @simulateSuccessInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Isključi da simuliraš odbijenu karticu.'**
+  String get simulateSuccessInfo;
+
+  /// No description provided for @declineReason.
+  ///
+  /// In bs, this message translates to:
+  /// **'Razlog odbijanja'**
+  String get declineReason;
+
+  /// No description provided for @failCardDeclined.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kartica odbijena'**
+  String get failCardDeclined;
+
+  /// No description provided for @failInsufficientFunds.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nedovoljno sredstava'**
+  String get failInsufficientFunds;
+
+  /// No description provided for @failExpiredCard.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kartica je istekla'**
+  String get failExpiredCard;
+
+  /// No description provided for @failProcessingError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Greška pri obradi'**
+  String get failProcessingError;
+
+  /// No description provided for @failSoldOut.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte su u međuvremenu prodane'**
+  String get failSoldOut;
+
+  /// No description provided for @processingPayment.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obrada plaćanja…'**
+  String get processingPayment;
+
+  /// No description provided for @paymentSucceeded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje uspješno'**
+  String get paymentSucceeded;
+
+  /// No description provided for @paymentFailedTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje nije uspjelo'**
+  String get paymentFailedTitle;
+
+  /// No description provided for @paymentFailedInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'{reason}. Ništa nije naplaćeno. Pokušaj ponovo ili koristi drugu karticu.'**
+  String paymentFailedInfo(String reason);
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pokušaj ponovo'**
+  String get tryAgain;
+
+  /// No description provided for @payNow.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plati sada'**
+  String get payNow;
+
+  /// No description provided for @markTicketsSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Označi karte kao poslane'**
+  String get markTicketsSent;
+
+  /// No description provided for @ticketsMarkedSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac je obaviješten'**
+  String get ticketsMarkedSent;
+
+  /// No description provided for @buyerEmail.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte stižu na'**
+  String get buyerEmail;
+
+  /// No description provided for @notAvailableAnymore.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova ponuda više nije dostupna'**
+  String get notAvailableAnymore;
 }
 
 class _AppLocalizationsDelegate

@@ -1071,4 +1071,87 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get faqCancelA =>
       'Buyers get a full refund and sales are cancelled without a fee for the seller.';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String payAmount(String amount) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get testModeBadge => 'Test mode · no real money';
+
+  @override
+  String get stripeSimulator => 'Stripe simulator';
+
+  @override
+  String get simulatorInfo =>
+      'Simulated payment. Will be replaced by real Stripe later.';
+
+  @override
+  String get cardNumber => 'Card number';
+
+  @override
+  String get cardExpiry => 'Expiry';
+
+  @override
+  String get cardCvc => 'CVC';
+
+  @override
+  String get simulateSuccess => 'Payment succeeds';
+
+  @override
+  String get simulateSuccessInfo => 'Turn off to simulate a declined card.';
+
+  @override
+  String get declineReason => 'Decline reason';
+
+  @override
+  String get failCardDeclined => 'Card declined';
+
+  @override
+  String get failInsufficientFunds => 'Insufficient funds';
+
+  @override
+  String get failExpiredCard => 'Card expired';
+
+  @override
+  String get failProcessingError => 'Processing error';
+
+  @override
+  String get failSoldOut => 'The tickets sold out in the meantime';
+
+  @override
+  String get processingPayment => 'Processing payment…';
+
+  @override
+  String get paymentSucceeded => 'Payment successful';
+
+  @override
+  String get paymentFailedTitle => 'Payment failed';
+
+  @override
+  String paymentFailedInfo(String reason) {
+    return '$reason. You weren\'t charged. Try again or use another card.';
+  }
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get payNow => 'Pay now';
+
+  @override
+  String get markTicketsSent => 'Mark tickets as sent';
+
+  @override
+  String get ticketsMarkedSent => 'The buyer has been notified';
+
+  @override
+  String get buyerEmail => 'Tickets go to';
+
+  @override
+  String get notAvailableAnymore => 'This listing is no longer available';
 }

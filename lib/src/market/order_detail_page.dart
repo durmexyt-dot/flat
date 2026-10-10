@@ -6,6 +6,11 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
+import '../auth/auth_widgets.dart';
+import '../payments/checkout_repository.dart';
+import '../payments/pay_flow.dart';
+import '../payments/payment_gateway.dart';
+import '../payments/test_payment_gateway.dart';
 import '../settings/settings_widgets.dart';
 import '../support/contact_support_page.dart';
 import '../ui/async_view.dart';
@@ -53,9 +58,21 @@ class OrderDetailPage extends ConsumerWidget {
                 OrderTicket(order: order, role: role),
                 const SizedBox(height: 16),
                 NextStepCard(
-                  text: orderNextStep(l10n, order.status, role),
+                  text: order.failureReason.isNotEmpty
+                      ? l10n.paymentFailedInfo(
+                          paymentFailureText(
+                            l10n,
+                            enumByName(
+                              PaymentFailure.values,
+                              order.failureReason,
+                              PaymentFailure.processingError,
+                            ),
+                          ),
+                        )
+                      : orderNextStep(l10n, order.status, role),
                   tone: orderTone(order.status),
                 ),
+                _OrderActions(order: order, role: role),
                 SettingsSectionTitle(l10n.statusHistory),
                 StatusTimeline(steps: orderTimeline(context, order)),
                 SettingsSectionTitle(l10n.invoice),
@@ -84,6 +101,82 @@ class OrderDetailPage extends ConsumerWidget {
                   ),
                 ],
               ],
+            ),
+    );
+  }
+}
+
+/// Test-mode actions that the server takes over with real payments.
+class _OrderActions extends ConsumerStatefulWidget {
+  const _OrderActions({required this.order, required this.role});
+
+  final Order order;
+  final OrderRole role;
+
+  @override
+  ConsumerState<_OrderActions> createState() => _OrderActionsState();
+}
+
+class _OrderActionsState extends ConsumerState<_OrderActions> {
+  bool _busy = false;
+
+  Future<void> _run(Future<void> Function() action) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    setState(() => _busy = true);
+    try {
+      await action();
+    } catch (_) {
+      showSnack(messenger, l10n.errorUnknown);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final order = widget.order;
+    final buyerPays =
+        widget.role == OrderRole.buyer &&
+        order.testMode &&
+        order.status == OrderStatus.pendingPayment;
+    final sellerSends =
+        widget.role == OrderRole.seller &&
+        order.testMode &&
+        order.status == OrderStatus.paid;
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      child: !(buyerPays || sellerSends)
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: SubmitButton(
+                label: buyerPays ? l10n.payNow : l10n.markTicketsSent,
+                loading: _busy,
+                onPressed: () => _run(() async {
+                  if (buyerPays) {
+                    final outcome = await payOrder(context, ref, order);
+                    if (outcome is PaymentSucceeded && context.mounted) {
+                      showSnack(
+                        ScaffoldMessenger.of(context),
+                        l10n.paymentSucceeded,
+                      );
+                    }
+                  } else {
+                    await ref
+                        .read(checkoutRepositoryProvider)
+                        .markTicketsSent(order);
+                    if (context.mounted) {
+                      showSnack(
+                        ScaffoldMessenger.of(context),
+                        l10n.ticketsMarkedSent,
+                      );
+                    }
+                  }
+                }),
+              ),
             ),
     );
   }

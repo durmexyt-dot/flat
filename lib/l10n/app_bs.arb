@@ -436,5 +436,45 @@
   "faqSendTicketsQ": "Kako da pošaljem karte kupcu?",
   "faqSendTicketsA": "E-karte i mobilne karte prenosiš preko organizatora na e-mail kupca. Papirne karte šalješ preporučeno. Status ažuriraj odmah nakon slanja.",
   "faqCancelQ": "Šta ako je događaj otkazan?",
-  "faqCancelA": "Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca."
+  "faqCancelA": "Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca.",
+  "checkout": "Plaćanje",
+  "payAmount": "Plati {amount}",
+  "@payAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "testModeBadge": "Testni način · bez pravog novca",
+  "stripeSimulator": "Stripe simulator",
+  "simulatorInfo": "Simulacija plaćanja. Kasnije je zamjenjuje pravi Stripe.",
+  "cardNumber": "Broj kartice",
+  "cardExpiry": "Datum isteka",
+  "cardCvc": "CVC",
+  "simulateSuccess": "Plaćanje uspješno",
+  "simulateSuccessInfo": "Isključi da simuliraš odbijenu karticu.",
+  "declineReason": "Razlog odbijanja",
+  "failCardDeclined": "Kartica odbijena",
+  "failInsufficientFunds": "Nedovoljno sredstava",
+  "failExpiredCard": "Kartica je istekla",
+  "failProcessingError": "Greška pri obradi",
+  "failSoldOut": "Karte su u međuvremenu prodane",
+  "processingPayment": "Obrada plaćanja…",
+  "paymentSucceeded": "Plaćanje uspješno",
+  "paymentFailedTitle": "Plaćanje nije uspjelo",
+  "paymentFailedInfo": "{reason}. Ništa nije naplaćeno. Pokušaj ponovo ili koristi drugu karticu.",
+  "@paymentFailedInfo": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "tryAgain": "Pokušaj ponovo",
+  "payNow": "Plati sada",
+  "markTicketsSent": "Označi karte kao poslane",
+  "ticketsMarkedSent": "Kupac je obaviješten",
+  "buyerEmail": "Karte stižu na",
+  "notAvailableAnymore": "Ova ponuda više nije dostupna"
 }

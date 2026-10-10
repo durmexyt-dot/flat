@@ -22,9 +22,35 @@ Web version: https://durmexyt-dot.github.io/flat/
 - Demo data (account → tools) shows example orders, sales and payouts in
   every status.
 
-Not done yet: checkout and payouts need a server (Cloud Functions with a
-payment provider such as Stripe). Orders and payouts are therefore created
-and updated only by the server; the app shows them.
+## Payments (test mode)
+
+Buying runs through a **payment simulator** that looks like Stripe Checkout:
+test card 4242 4242 4242 4242 and a checkbox whether the payment succeeds
+(with a decline reason when it doesn't). No real money moves.
+
+```
+lib/src/payments/
+  payment_gateway.dart       PaymentGateway interface + provider
+  test_payment_gateway.dart  The simulator (TestPaymentGateway)
+  checkout_repository.dart   Creates orders, records payments (test mode)
+  checkout_page.dart         Checkout screen
+  pay_flow.dart              collect → record result
+```
+
+Flow: the buyer opens an order (`pendingPayment`), the gateway collects the
+payment, then one Firestore transaction marks the order `paid`, takes the
+tickets off the listing (`soldOut` when the last ones go) and creates the
+seller's payout (`pending`). A failed payment cancels the order. The seller
+marks the tickets as sent.
+
+**Switching to real Stripe** (needs the Firebase Blaze plan):
+1. Cloud Function `createPaymentIntent(orderId)` with the Stripe secret key.
+2. `StripePaymentGateway implements PaymentGateway`: confirm the intent with
+   `flutter_stripe` (PaymentSheet) or Stripe Elements on web; return the
+   outcome. Register it in `paymentGatewayProvider`.
+3. Stripe webhook (Cloud Function) does what `completePayment` does today,
+   with the Admin SDK.
+4. Remove the test-mode parts from `firestore.rules`.
 
 ## Project layout
 
@@ -58,6 +84,12 @@ web/index.html              HTML splash shown while Flutter loads
 4. Firestore Database → **Rules**: replace the rules with the content of
    [`firestore.rules`](firestore.rules) and publish. With the Firebase CLI:
    `firebase deploy --only firestore:rules`.
+
+Test the rules with the Firestore emulator (needs Java):
+
+```sh
+cd firestore_test && npm install && npm test
+```
 
 Data model (collections): `users` (private profile, notification settings,
 `private/payoutMethod`), `publicProfiles`, `usernames`, `listings`,

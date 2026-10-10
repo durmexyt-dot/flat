@@ -1079,4 +1079,88 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get faqCancelA =>
       'Käufer bekommen den vollen Betrag zurück, Verkäufe werden ohne Gebühr für Verkäufer storniert.';
+
+  @override
+  String get checkout => 'Kasse';
+
+  @override
+  String payAmount(String amount) {
+    return '$amount bezahlen';
+  }
+
+  @override
+  String get testModeBadge => 'Testmodus · kein echtes Geld';
+
+  @override
+  String get stripeSimulator => 'Stripe-Simulator';
+
+  @override
+  String get simulatorInfo =>
+      'Simulierte Zahlung. Wird später durch echtes Stripe ersetzt.';
+
+  @override
+  String get cardNumber => 'Kartennummer';
+
+  @override
+  String get cardExpiry => 'Ablaufdatum';
+
+  @override
+  String get cardCvc => 'CVC';
+
+  @override
+  String get simulateSuccess => 'Zahlung erfolgreich';
+
+  @override
+  String get simulateSuccessInfo =>
+      'Ausschalten, um eine abgelehnte Karte zu simulieren.';
+
+  @override
+  String get declineReason => 'Ablehnungsgrund';
+
+  @override
+  String get failCardDeclined => 'Karte abgelehnt';
+
+  @override
+  String get failInsufficientFunds => 'Nicht genügend Guthaben';
+
+  @override
+  String get failExpiredCard => 'Karte abgelaufen';
+
+  @override
+  String get failProcessingError => 'Verarbeitungsfehler';
+
+  @override
+  String get failSoldOut => 'Die Tickets wurden inzwischen verkauft';
+
+  @override
+  String get processingPayment => 'Zahlung wird verarbeitet…';
+
+  @override
+  String get paymentSucceeded => 'Zahlung erfolgreich';
+
+  @override
+  String get paymentFailedTitle => 'Zahlung fehlgeschlagen';
+
+  @override
+  String paymentFailedInfo(String reason) {
+    return '$reason. Es wurde nichts belastet. Versuche es erneut oder nutze eine andere Karte.';
+  }
+
+  @override
+  String get tryAgain => 'Erneut versuchen';
+
+  @override
+  String get payNow => 'Jetzt bezahlen';
+
+  @override
+  String get markTicketsSent => 'Tickets als übertragen markieren';
+
+  @override
+  String get ticketsMarkedSent => 'Der Käufer wurde informiert';
+
+  @override
+  String get buyerEmail => 'Tickets gehen an';
+
+  @override
+  String get notAvailableAnymore => 'Dieses Angebot ist nicht mehr verfügbar';
 }

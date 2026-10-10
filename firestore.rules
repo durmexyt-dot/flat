@@ -1,9 +1,14 @@
 rules_version = '2';
 
 // Stubswap security rules.
-// Orders and payouts are written only by the server (Cloud Functions with
-// the Admin SDK, which bypasses these rules), so nobody can mark their own
-// order as paid or payout as sent.
+//
+// Payments run in TEST MODE (payment simulator) until a server takes over:
+// the app then creates orders and records the simulated payment itself.
+// These rules keep that honest: an order can only be paid together with
+// taking its tickets off the listing and creating the seller's payout, in
+// one transaction, with amounts that match the listing.
+// With real Stripe, a Cloud Function (Admin SDK, bypasses these rules)
+// writes orders and payouts, and the test-mode rules below can go.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -11,6 +16,26 @@ service cloud.firestore {
     function isUser(uid) { return signedIn() && request.auth.uid == uid; }
     function onlyChanges(keys) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+    function orderPath(id) { return /databases/$(database)/documents/orders/$(id); }
+    function listingPath(id) { return /databases/$(database)/documents/listings/$(id); }
+    function payoutPath(id) { return /databases/$(database)/documents/payouts/$(id); }
+
+    // True if order [id] goes from awaiting payment to paid in this very
+    // request (get() reads the state before, getAfter() after it).
+    function paidNow(id) {
+      let before = get(orderPath(id)).data;
+      let after = getAfter(orderPath(id)).data;
+      return before.status == 'pendingPayment'
+        && after.status == 'paid'
+        && after.testMode == true
+        && after.buyerId == request.auth.uid;
+    }
+
+    // Seller's share: ticket price minus the 10 % seller fee.
+    function sellerEarnings(o) {
+      return o.unitPriceMinor * o.quantity
+        - math.round(o.unitPriceMinor * o.quantity * 0.1);
     }
 
     // Private profile: settings, notification preferences.
@@ -48,24 +73,87 @@ service cloud.firestore {
         && request.resource.data.quantity > 0
         && request.resource.data.priceMinor is int
         && request.resource.data.priceMinor > 0;
-      // Sellers may change the price or withdraw while the listing is active.
-      allow update: if isUser(resource.data.sellerId)
-        && resource.data.status == 'active'
-        && (
-          (onlyChanges(['priceMinor', 'updatedAt'])
-            && request.resource.data.priceMinor is int
-            && request.resource.data.priceMinor > 0)
-          || (onlyChanges(['status', 'updatedAt'])
-            && request.resource.data.status == 'withdrawn')
-        );
+      allow update: if
+        // Sellers may change the price or withdraw while the listing is active.
+        (isUser(resource.data.sellerId)
+          && resource.data.status == 'active'
+          && (
+            (onlyChanges(['priceMinor', 'updatedAt'])
+              && request.resource.data.priceMinor is int
+              && request.resource.data.priceMinor > 0)
+            || (onlyChanges(['status', 'updatedAt'])
+              && request.resource.data.status == 'withdrawn')
+          ))
+        // Test mode: a buyer's payment takes the tickets off the listing.
+        || (signedIn()
+          && onlyChanges(['quantitySold', 'status', 'lastOrderId', 'updatedAt'])
+          && paidNow(request.resource.data.lastOrderId)
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.listingId == id
+          && request.resource.data.quantitySold == resource.data.quantitySold
+            + getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity
+          && (
+            (request.resource.data.quantitySold == resource.data.quantity
+              && request.resource.data.status == 'soldOut')
+            || (request.resource.data.quantitySold < resource.data.quantity
+              && request.resource.data.status == resource.data.status)
+          ));
     }
 
     match /orders/{id} {
       allow read: if isUser(resource.data.buyerId) || isUser(resource.data.sellerId);
+
+      // Test mode: the buyer opens an order at the listing's current price.
+      allow create: if signedIn()
+        && request.resource.data.testMode == true
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.status == 'pendingPayment'
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0
+        && request.resource.data.sellerId != request.auth.uid
+        && get(listingPath(request.resource.data.listingId)).data.status == 'active'
+        && request.resource.data.sellerId
+          == get(listingPath(request.resource.data.listingId)).data.sellerId
+        && request.resource.data.unitPriceMinor
+          == get(listingPath(request.resource.data.listingId)).data.priceMinor
+        && request.resource.data.currency
+          == get(listingPath(request.resource.data.listingId)).data.currency
+        && request.resource.data.quantity
+          <= get(listingPath(request.resource.data.listingId)).data.quantity
+            - get(listingPath(request.resource.data.listingId)).data.quantitySold;
+
+      allow update: if resource.data.testMode == true && (
+        // Buyer: the simulated payment failed.
+        (isUser(resource.data.buyerId)
+          && resource.data.status == 'pendingPayment'
+          && request.resource.data.status == 'cancelled'
+          && onlyChanges(['status', 'history', 'failureReason', 'updatedAt']))
+        // Buyer: paid, only together with the listing and the payout.
+        || (isUser(resource.data.buyerId)
+          && resource.data.status == 'pendingPayment'
+          && request.resource.data.status == 'paid'
+          && onlyChanges(['status', 'history', 'paymentId', 'paymentMethod', 'updatedAt'])
+          && getAfter(listingPath(resource.data.listingId)).data.lastOrderId == id
+          && existsAfter(payoutPath(id)))
+        // Seller: tickets sent to the buyer.
+        || (isUser(resource.data.sellerId)
+          && resource.data.status == 'paid'
+          && request.resource.data.status == 'ticketsSent'
+          && onlyChanges(['status', 'history', 'updatedAt']))
+      );
     }
 
     match /payouts/{id} {
       allow read: if isUser(resource.data.sellerId);
+
+      // Test mode: created with the payment of order [id], for its seller
+      // and exactly the seller's share.
+      allow create: if signedIn()
+        && request.resource.data.testMode == true
+        && request.resource.data.status == 'pending'
+        && paidNow(id)
+        && request.resource.data.sellerId == getAfter(orderPath(id)).data.sellerId
+        && request.resource.data.currency == getAfter(orderPath(id)).data.currency
+        && request.resource.data.amountMinor == sellerEarnings(getAfter(orderPath(id)).data);
     }
 
     match /supportRequests/{id} {

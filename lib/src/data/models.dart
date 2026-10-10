@@ -354,6 +354,9 @@ class Order {
     this.row = '',
     this.seats = '',
     this.paymentMethod = '',
+    this.paymentId = '',
+    this.failureReason = '',
+    this.testMode = false,
     this.history = const [],
     this.createdAt,
   });
@@ -377,6 +380,15 @@ class Order {
 
   /// E.g. "Visa •••• 4242".
   final String paymentMethod;
+
+  /// The payment provider's reference, e.g. a Stripe PaymentIntent id.
+  final String paymentId;
+
+  /// Why the payment failed, a [PaymentFailure] name.
+  final String failureReason;
+
+  /// Paid with the payment simulator, not real money.
+  final bool testMode;
   final List<StatusChange<OrderStatus>> history;
   final DateTime? createdAt;
 
@@ -413,6 +425,9 @@ class Order {
     row: m['row'] as String? ?? '',
     seats: m['seats'] as String? ?? '',
     paymentMethod: m['paymentMethod'] as String? ?? '',
+    paymentId: m['paymentId'] as String? ?? '',
+    failureReason: m['failureReason'] as String? ?? '',
+    testMode: m['testMode'] == true,
     history: _history(m['history'], OrderStatus.values),
     createdAt: _date(m['createdAt']),
   );

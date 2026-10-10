@@ -19,6 +19,7 @@ import 'market/orders_page.dart';
 import 'market/payout_method_page.dart';
 import 'market/payouts_page.dart';
 import 'market/sell_page.dart';
+import 'payments/checkout_page.dart';
 import 'settings/appearance_page.dart';
 import 'settings/settings_page.dart';
 import 'splash/splash_page.dart';
@@ -29,6 +30,7 @@ import 'ui/hero_page.dart';
 const _authRoutes = {'/login', '/signup', '/forgot-password'};
 const _accountOnly = [
   '/sell',
+  '/checkout',
   '/account',
   '/order',
   '/payout',
@@ -97,6 +99,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/account/sales', (_) => const OrdersPage(role: OrderRole.seller)),
       _route('/account/payouts', (_) => const PayoutsPage()),
       _route('/account/payout-method', (_) => const PayoutMethodPage()),
+      _route('/checkout/:id', (state) {
+        final (listing, quantity) = state.extra as (Listing, int)? ?? (null, 1);
+        return CheckoutPage(
+          listingId: state.pathParameters['id']!,
+          initial: listing,
+          quantity: quantity,
+        );
+      }),
       _route('/support', (_) => const HelpCenterPage()),
       _route(
         '/support/new',

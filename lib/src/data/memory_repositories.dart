@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import '../auth/auth_repository.dart';
+import '../payments/checkout_repository.dart';
+import '../payments/payment_gateway.dart';
 import 'models.dart';
 import 'repositories.dart';
 
@@ -107,7 +109,8 @@ class InMemoryProfileRepository implements ProfileRepository {
 }
 
 /// Marketplace data held in memory: used by tests and by the demo mode.
-class InMemoryMarketRepository implements MarketRepository {
+/// Handles checkout too, like the server will.
+class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   InMemoryMarketRepository({
     List<Listing> listings = const [],
     List<Order> orders = const [],
@@ -244,4 +247,126 @@ class InMemoryMarketRepository implements MarketRepository {
     });
     return number;
   }
+
+  // Checkout -----------------------------------------------------------------
+
+  Map<String, Object?> _orderMap(Order o) => {
+    'number': o.number,
+    'listingId': o.listingId,
+    'buyerId': o.buyerId,
+    'sellerId': o.sellerId,
+    'event': o.event.toMap(),
+    'quantity': o.quantity,
+    'unitPriceMinor': o.unitPriceMinor,
+    'currency': o.currency,
+    'status': o.status.name,
+    'ticketType': o.ticketType.name,
+    'section': o.section,
+    'row': o.row,
+    'seats': o.seats,
+    'paymentMethod': o.paymentMethod,
+    'paymentId': o.paymentId,
+    'failureReason': o.failureReason,
+    'testMode': o.testMode,
+    'history': [
+      for (final h in o.history) {'status': h.status.name, 'at': h.at},
+    ],
+    'createdAt': o.createdAt,
+  };
+
+  void _replaceOrder(Order o, Map<String, Object?> changes, OrderStatus step) {
+    final map = _orderMap(o);
+    final updated = Order.fromMap(o.id, {
+      ...map,
+      ...changes,
+      'history': [
+        ...map['history']! as List,
+        {'status': step.name, 'at': DateTime.now()},
+      ],
+    });
+    _orders.value = [for (final x in _orders.value) x.id == o.id ? updated : x];
+  }
+
+  Order _current(Order o) => _orders.value.firstWhere((x) => x.id == o.id);
+
+  @override
+  Future<Order> createOrder({
+    required Listing listing,
+    required int quantity,
+    required String buyerId,
+  }) async {
+    final order = Order.fromMap('order-${_nextId++}', {
+      'number': newOrderNumber(),
+      'listingId': listing.id,
+      'buyerId': buyerId,
+      'sellerId': listing.sellerId,
+      'event': listing.event.toMap(),
+      'quantity': quantity,
+      'unitPriceMinor': listing.priceMinor,
+      'currency': listing.currency,
+      'ticketType': listing.ticketType.name,
+      'section': listing.section,
+      'row': listing.row,
+      'seats': listing.seats,
+      'status': OrderStatus.pendingPayment.name,
+      'testMode': true,
+      'history': [
+        {'status': OrderStatus.pendingPayment.name, 'at': DateTime.now()},
+      ],
+      'createdAt': DateTime.now(),
+    });
+    _orders.value = [order, ..._orders.value];
+    return order;
+  }
+
+  @override
+  Future<void> completePayment(Order order, PaymentOutcome outcome) async {
+    final current = _current(order);
+    switch (outcome) {
+      case PaymentCancelled():
+        return;
+      case PaymentFailed(:final reason):
+        _replaceOrder(current, {
+          'status': OrderStatus.cancelled.name,
+          'failureReason': reason.name,
+        }, OrderStatus.cancelled);
+      case PaymentSucceeded(:final paymentId, :final methodLabel):
+        final listing = _listings.value.firstWhere(
+          (l) => l.id == order.listingId,
+        );
+        final sold = listing.quantitySold + order.quantity;
+        if (sold > listing.quantity) throw SoldOutException();
+        _replaceOrder(current, {
+          'status': OrderStatus.paid.name,
+          'paymentId': paymentId,
+          'paymentMethod': methodLabel,
+        }, OrderStatus.paid);
+        _updateListing(listing.id, {
+          'quantitySold': sold,
+          if (sold == listing.quantity) 'status': ListingStatus.soldOut.name,
+        });
+        _payouts.value = [
+          Payout.fromMap(order.id, {
+            'sellerId': order.sellerId,
+            'orderNumbers': [order.number],
+            'amountMinor': order.sellerEarningsMinor,
+            'currency': order.currency,
+            'status': PayoutStatus.pending.name,
+            'expectedAt': expectedPayoutDate(order.event.date),
+            'history': [
+              {'status': PayoutStatus.pending.name, 'at': DateTime.now()},
+            ],
+            'createdAt': DateTime.now(),
+          }),
+          ..._payouts.value,
+        ];
+    }
+  }
+
+  @override
+  Future<void> markTicketsSent(Order order) async => _replaceOrder(
+    _current(order),
+    {'status': OrderStatus.ticketsSent.name},
+    OrderStatus.ticketsSent,
+  );
 }

@@ -1066,4 +1066,87 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get faqCancelA =>
       'Kupci dobijaju puni povrat novca, a prodaje se poništavaju bez naknade za prodavca.';
+
+  @override
+  String get checkout => 'Plaćanje';
+
+  @override
+  String payAmount(String amount) {
+    return 'Plati $amount';
+  }
+
+  @override
+  String get testModeBadge => 'Testni način · bez pravog novca';
+
+  @override
+  String get stripeSimulator => 'Stripe simulator';
+
+  @override
+  String get simulatorInfo =>
+      'Simulacija plaćanja. Kasnije je zamjenjuje pravi Stripe.';
+
+  @override
+  String get cardNumber => 'Broj kartice';
+
+  @override
+  String get cardExpiry => 'Datum isteka';
+
+  @override
+  String get cardCvc => 'CVC';
+
+  @override
+  String get simulateSuccess => 'Plaćanje uspješno';
+
+  @override
+  String get simulateSuccessInfo => 'Isključi da simuliraš odbijenu karticu.';
+
+  @override
+  String get declineReason => 'Razlog odbijanja';
+
+  @override
+  String get failCardDeclined => 'Kartica odbijena';
+
+  @override
+  String get failInsufficientFunds => 'Nedovoljno sredstava';
+
+  @override
+  String get failExpiredCard => 'Kartica je istekla';
+
+  @override
+  String get failProcessingError => 'Greška pri obradi';
+
+  @override
+  String get failSoldOut => 'Karte su u međuvremenu prodane';
+
+  @override
+  String get processingPayment => 'Obrada plaćanja…';
+
+  @override
+  String get paymentSucceeded => 'Plaćanje uspješno';
+
+  @override
+  String get paymentFailedTitle => 'Plaćanje nije uspjelo';
+
+  @override
+  String paymentFailedInfo(String reason) {
+    return '$reason. Ništa nije naplaćeno. Pokušaj ponovo ili koristi drugu karticu.';
+  }
+
+  @override
+  String get tryAgain => 'Pokušaj ponovo';
+
+  @override
+  String get payNow => 'Plati sada';
+
+  @override
+  String get markTicketsSent => 'Označi karte kao poslane';
+
+  @override
+  String get ticketsMarkedSent => 'Kupac je obaviješten';
+
+  @override
+  String get buyerEmail => 'Karte stižu na';
+
+  @override
+  String get notAvailableAnymore => 'Ova ponuda više nije dostupna';
 }

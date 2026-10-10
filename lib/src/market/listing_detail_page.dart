@@ -363,20 +363,9 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
       );
       return;
     }
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: EmptyState(
-          icon: Icons.lock_clock_outlined,
-          title: l10n.checkoutSoonTitle,
-          message: l10n.checkoutSoonInfo,
-          action: FilledButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.ok),
-          ),
-        ),
-      ),
+    context.push(
+      '/checkout/${widget.listing.id}',
+      extra: (widget.listing, _quantity),
     );
   }
 
