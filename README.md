@@ -38,12 +38,20 @@ Authentication → Users → Add user.
 
 ## Deployment (web)
 
-Every push to `main` runs `.github/workflows/deploy-web.yml`, which analyzes,
-tests, builds and publishes to GitHub Pages.
+GitHub Pages serves the `gh-pages` branch, which contains only the built web
+app. To publish the current state:
+
+```sh
+tool/deploy_web.sh
+```
+
+The script runs the tests, builds with the right base path and pushes the
+build to `gh-pages`.
 
 One-time setup:
 
-1. GitHub → Settings → Pages → Source: **GitHub Actions**.
+1. GitHub → Settings → Pages → Source: **Deploy from a branch**,
+   Branch: `gh-pages`, folder `/ (root)`.
 2. Firebase console → Authentication → Settings → Authorized domains:
    add `durmexyt-dot.github.io`.
 
