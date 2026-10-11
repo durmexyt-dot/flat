@@ -10942,7 +10942,7 @@ n.toString
 q.push(n)}s=new A.iN(r.a,r.b,r.c,r.r,q)}return s},
 c8f(a){switch(a){case"invalid-credential":case"invalid-email":case"user-not-found":case"wrong-password":case"INVALID_LOGIN_CREDENTIALS":return B.yo
 case"email-already-in-use":case"account-exists-with-different-credential":return B.a_s
-case"weak-password":return B.a_t
+case"weak-password":case"password-does-not-meet-requirements":return B.a_t
 case"user-disabled":return B.a_u
 case"too-many-requests":return B.a_v
 case"network-request-failed":return B.a_w
@@ -50172,9 +50172,9 @@ break
 case 1:return A.y(q,r)}})
 return A.z($async$aL4,r)},
 bJd(){var s=A.c([],t.s)
-s.push("4")
-s.push("6e5a194")
-return s.length===0?"1.2.0 \xb7 staging":"1.2.0 ("+B.d.bK(s," \xb7 ")+") \xb7 staging"},
+s.push("5")
+s.push("a7d54b0")
+return s.length===0?"1.2.1 \xb7 staging":"1.2.1 ("+B.d.bK(s," \xb7 ")+") \xb7 staging"},
 cns(a,b){if(b instanceof A.Af&&B.axi.q(0,b.c))return null
 if(a>=3)return null
 return A.fX(0,0,400*B.b.dC(1,a),0)},
@@ -75433,7 +75433,7 @@ ga_y(){return"Unesite ispravnu e-mail adresu"},
 gPl(){return"Unesite lozinku"},
 ga_J(){return"Pogre\u0161an e-mail ili lozinka"},
 ga_I(){return"Ova e-mail adresa je ve\u0107 registrovana"},
-ga_O(){return"Lozinka je preslaba"},
+ga_O(){return"Lozinka je preslaba: najmanje 8 znakova"},
 ga_N(){return"Ovaj ra\u010dun je deaktiviran"},
 ga_M(){return"Previ\u0161e poku\u0161aja. Poku\u0161ajte ponovo kasnije"},
 ga_L(){return"Nema internet konekcije"},
@@ -75806,7 +75806,7 @@ ga_y(){return"Bitte g\xfcltige E-Mail-Adresse eingeben"},
 gPl(){return"Bitte Passwort eingeben"},
 ga_J(){return"E-Mail oder Passwort ist falsch"},
 ga_I(){return"Diese E-Mail-Adresse ist bereits registriert"},
-ga_O(){return"Das Passwort ist zu schwach"},
+ga_O(){return"Das Passwort ist zu schwach: mindestens 8 Zeichen"},
 ga_N(){return"Dieses Konto wurde deaktiviert"},
 ga_M(){return"Zu viele Versuche. Bitte sp\xe4ter erneut versuchen"},
 ga_L(){return"Keine Internetverbindung"},
@@ -76179,7 +76179,7 @@ ga_y(){return"Please enter a valid email address"},
 gPl(){return"Please enter your password"},
 ga_J(){return"Incorrect email or password"},
 ga_I(){return"This email is already registered"},
-ga_O(){return"Password is too weak"},
+ga_O(){return"Password is too weak: at least 8 characters"},
 ga_N(){return"This account has been disabled"},
 ga_M(){return"Too many attempts. Please try again later"},
 ga_L(){return"No internet connection"},
@@ -79935,7 +79935,7 @@ for(;;)switch(s){case 0:if(p.e||p.c==null){s=1
 break}s=3
 return A.t(A.aKT(),$async$CO)
 case 3:o=b
-if(o==null||o<=4||p.c==null){s=1
+if(o==null||o<=5||p.c==null){s=1
 break}p.e=!0
 n=p.c
 n.toString
