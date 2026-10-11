@@ -84,7 +84,7 @@ if ! git push -q origin "refs/tags/$tag" 2>/dev/null; then
 fi
 
 # ---- Deploy --------------------------------------------------------------------
-prod_ready=$(grep -q 'FirebaseOptions? web = null' lib/firebase_options_prod.dart && echo no || echo yes)
+prod_ready=$(! grep -q 'projectId:' lib/firebase_options_prod.dart && echo no || echo yes)
 case "$envs" in
   staging) bash tool/deploy_web.sh staging ;;
   prod) bash tool/deploy_web.sh prod ;;

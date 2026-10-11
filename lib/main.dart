@@ -15,11 +15,7 @@ import 'src/settings/settings_controller.dart';
 /// The Firebase project of this build's environment.
 FirebaseOptions firebaseOptions() {
   if (!AppInfo.isProd) return DefaultFirebaseOptions.currentPlatform;
-  return ProdFirebaseOptions.web ??
-      (throw StateError(
-        'Prod Firebase config missing: see '
-        'lib/firebase_options_prod.dart',
-      ));
+  return ProdFirebaseOptions.web;
 }
 
 Future<void> main() async {

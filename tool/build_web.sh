@@ -13,7 +13,7 @@ env=${1:?usage: tool/build_web.sh staging|prod <base-href>}
 base_href=${2:?usage: tool/build_web.sh staging|prod <base-href>}
 case "$env" in staging|prod) ;; *) echo "Unknown environment: $env" >&2; exit 1 ;; esac
 
-if [[ "$env" == prod ]] && grep -q 'FirebaseOptions? web = null' lib/firebase_options_prod.dart; then
+if [[ "$env" == prod ]] && ! grep -q 'projectId:' lib/firebase_options_prod.dart; then
   echo "Prod Firebase config missing: fill in lib/firebase_options_prod.dart." >&2
   exit 1
 fi

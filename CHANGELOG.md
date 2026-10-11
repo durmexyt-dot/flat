@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Prod-Umgebung mit eigenem Firebase-Projekt `stubswap-prod` (echte Nutzer,
+  Zahlungssimulator bis Stripe); Staging bleibt unter `/flat/staging/`
+
 ## [1.1.1] – 2026-10-11
 
 ### Behoben
