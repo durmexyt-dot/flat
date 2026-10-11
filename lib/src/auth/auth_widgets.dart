@@ -6,7 +6,10 @@ import '../../l10n/app_localizations.dart';
 import '../brand/brand.dart';
 import 'auth_repository.dart';
 
-String authErrorText(AppLocalizations l10n, AuthError error) {
+String authExceptionText(AppLocalizations l10n, AuthException e) =>
+    authErrorText(l10n, e.error, code: e.code);
+
+String authErrorText(AppLocalizations l10n, AuthError error, {String? code}) {
   switch (error) {
     case AuthError.invalidCredentials:
       return l10n.errorInvalidCredentials;
@@ -22,10 +25,12 @@ String authErrorText(AppLocalizations l10n, AuthError error) {
       return l10n.errorNetwork;
     case AuthError.methodDisabled:
       return l10n.errorMethodDisabled;
+    case AuthError.popupBlocked:
+      return l10n.errorPopupBlocked;
     case AuthError.cancelled:
       return '';
     case AuthError.unknown:
-      return l10n.errorUnknown;
+      return code == null ? l10n.errorUnknown : '${l10n.errorUnknown} ($code)';
   }
 }
 

@@ -128,6 +128,10 @@ class AppLocalizationsBs extends AppLocalizations {
   String get errorMethodDisabled => 'Ovaj način prijave nije omogućen';
 
   @override
+  String get errorPopupBlocked =>
+      'Preglednik je blokirao prozor za Google prijavu. Dozvolite skočne prozore za ovu stranicu i pokušajte ponovo';
+
+  @override
   String get errorUnknown => 'Došlo je do greške. Pokušajte ponovo';
 
   @override

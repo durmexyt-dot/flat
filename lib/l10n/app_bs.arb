@@ -45,6 +45,7 @@
   "errorTooManyRequests": "Previše pokušaja. Pokušajte ponovo kasnije",
   "errorNetwork": "Nema internet konekcije",
   "errorMethodDisabled": "Ovaj način prijave nije omogućen",
+  "errorPopupBlocked": "Preglednik je blokirao prozor za Google prijavu. Dozvolite skočne prozore za ovu stranicu i pokušajte ponovo",
   "errorUnknown": "Došlo je do greške. Pokušajte ponovo",
   "homeGreeting": "Zdravo, {name}",
   "@homeGreeting": {

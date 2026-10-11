@@ -129,6 +129,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorMethodDisabled => 'Diese Anmeldemethode ist nicht aktiviert';
 
   @override
+  String get errorPopupBlocked =>
+      'Der Browser hat das Google-Anmeldefenster blockiert. Erlaube Pop-ups für diese Seite und versuche es erneut';
+
+  @override
   String get errorUnknown =>
       'Ein Fehler ist aufgetreten. Bitte erneut versuchen';
 

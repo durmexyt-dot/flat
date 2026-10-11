@@ -328,6 +328,12 @@ abstract class AppLocalizations {
   /// **'Ovaj način prijave nije omogućen'**
   String get errorMethodDisabled;
 
+  /// No description provided for @errorPopupBlocked.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preglednik je blokirao prozor za Google prijavu. Dozvolite skočne prozore za ovu stranicu i pokušajte ponovo'**
+  String get errorPopupBlocked;
+
   /// No description provided for @errorUnknown.
   ///
   /// In bs, this message translates to:

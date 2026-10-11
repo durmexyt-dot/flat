@@ -128,6 +128,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorMethodDisabled => 'This sign-in method is not enabled';
 
   @override
+  String get errorPopupBlocked =>
+      'Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again';
+
+  @override
   String get errorUnknown => 'Something went wrong. Please try again';
 
   @override

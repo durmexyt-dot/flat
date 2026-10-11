@@ -35,14 +35,21 @@ enum AuthError {
   network,
   methodDisabled,
 
+  /// The browser blocked the Google sign-in window.
+  popupBlocked,
+
   /// The user closed the Google popup; nothing to show.
   cancelled,
   unknown,
 }
 
 class AuthException implements Exception {
-  const AuthException(this.error);
+  const AuthException(this.error, {this.code});
   final AuthError error;
+
+  /// The raw Firebase error code, shown with unexpected errors so a report
+  /// tells what went wrong.
+  final String? code;
 }
 
 abstract class AuthRepository {
@@ -134,7 +141,8 @@ class FirebaseAuthRepository implements AuthRepository {
     try {
       await action();
     } on FirebaseAuthException catch (e) {
-      throw AuthException(_mapCode(e.code));
+      debugPrint('Auth error: ${e.code} ${e.message ?? ''}');
+      throw AuthException(_mapCode(e.code), code: e.code);
     }
   }
 
@@ -151,11 +159,15 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> signInWithGoogle({required bool keepSignedIn}) =>
       _guard(() async {
-        await _applyKeepSignedIn(keepSignedIn);
         final provider = GoogleAuthProvider();
         if (kIsWeb) {
+          // Browsers only allow a popup straight from the tap: open it before
+          // anything else is awaited. Persistence switched afterwards moves
+          // the new session to the chosen storage.
           await _auth.signInWithPopup(provider);
+          await _applyKeepSignedIn(keepSignedIn);
         } else {
+          await _applyKeepSignedIn(keepSignedIn);
           await _auth.signInWithProvider(provider);
         }
       });
@@ -258,6 +270,8 @@ class FirebaseAuthRepository implements AuthRepository {
         return AuthError.network;
       case 'operation-not-allowed':
         return AuthError.methodDisabled;
+      case 'popup-blocked':
+        return AuthError.popupBlocked;
       case 'popup-closed-by-user':
       case 'cancelled-popup-request':
       case 'web-context-canceled':

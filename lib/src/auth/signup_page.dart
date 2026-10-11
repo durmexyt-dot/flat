@@ -22,7 +22,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final _password = TextEditingController();
   final _confirm = TextEditingController();
   bool _loading = false;
-  AuthError? _error;
+  AuthException? _error;
 
   @override
   void dispose() {
@@ -49,7 +49,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           );
       // The router moves on to the home screen once signed in.
     } on AuthException catch (e) {
-      if (mounted) setState(() => _error = e.error);
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -58,7 +58,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final error = _error == null ? '' : authErrorText(l10n, _error!);
+    final error = _error == null ? '' : authExceptionText(l10n, _error!);
 
     return AuthScaffold(
       title: l10n.signupTitle,

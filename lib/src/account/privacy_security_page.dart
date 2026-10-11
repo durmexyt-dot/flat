@@ -218,7 +218,7 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
           .sendEmailVerification(Localizations.localeOf(context).languageCode);
       showSnack(l10n.verificationSent(widget.user.email ?? ''));
     } on AuthException catch (e) {
-      showSnack(authErrorText(l10n, e.error));
+      showSnack(authExceptionText(l10n, e));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -407,7 +407,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
       showSnack(l10n.passwordChanged);
       if (mounted) Navigator.pop(context);
     } on AuthException catch (e) {
-      if (mounted) setState(() => _error = authErrorText(l10n, e.error));
+      if (mounted) setState(() => _error = authExceptionText(l10n, e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -534,7 +534,7 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
           );
       router.go('/login');
     } on AuthException catch (e) {
-      if (mounted) setState(() => _error = authErrorText(l10n, e.error));
+      if (mounted) setState(() => _error = authExceptionText(l10n, e));
     } catch (_) {
       if (mounted) setState(() => _error = l10n.errorUnknown);
     } finally {

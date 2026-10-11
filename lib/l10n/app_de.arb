@@ -38,6 +38,7 @@
   "errorTooManyRequests": "Zu viele Versuche. Bitte später erneut versuchen",
   "errorNetwork": "Keine Internetverbindung",
   "errorMethodDisabled": "Diese Anmeldemethode ist nicht aktiviert",
+  "errorPopupBlocked": "Der Browser hat das Google-Anmeldefenster blockiert. Erlaube Pop-ups für diese Seite und versuche es erneut",
   "errorUnknown": "Ein Fehler ist aufgetreten. Bitte erneut versuchen",
   "homeGreeting": "Hallo, {name}",
   "homeGuest": "Du bist als Gast unterwegs",

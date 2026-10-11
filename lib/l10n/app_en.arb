@@ -38,6 +38,7 @@
   "errorTooManyRequests": "Too many attempts. Please try again later",
   "errorNetwork": "No internet connection",
   "errorMethodDisabled": "This sign-in method is not enabled",
+  "errorPopupBlocked": "Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again",
   "errorUnknown": "Something went wrong. Please try again",
   "homeGreeting": "Hi, {name}",
   "homeGuest": "You're browsing as a guest",

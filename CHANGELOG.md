@@ -9,6 +9,12 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Behoben
+- Google-Anmeldung: Das Anmeldefenster wird sofort beim Tippen geöffnet, damit
+  der Browser es nicht als unerwünschtes Pop-up blockiert
+- Eigene Meldung, wenn der Browser das Google-Fenster trotzdem blockiert;
+  unerwartete Fehler zeigen jetzt den Fehlercode (z. B. „internal-error“)
+
 ## [1.2.1] – 2026-10-11
 
 ### Behoben

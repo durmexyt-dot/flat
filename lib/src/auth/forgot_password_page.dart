@@ -21,7 +21,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   late final _email = TextEditingController(text: widget.initialEmail);
   bool _loading = false;
   bool _sent = false;
-  AuthError? _error;
+  AuthException? _error;
 
   @override
   void dispose() {
@@ -50,7 +50,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           if (e.error == AuthError.invalidCredentials) {
             _sent = true;
           } else {
-            _error = e.error;
+            _error = e;
           }
         });
       }
@@ -63,7 +63,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final error = _error == null ? '' : authErrorText(l10n, _error!);
+    final error = _error == null ? '' : authExceptionText(l10n, _error!);
 
     return AuthScaffold(
       title: l10n.resetTitle,
