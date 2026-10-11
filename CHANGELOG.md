@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.3.0] – 2026-10-11
+
 ### Neu
 - Events werden vom Admin angelegt (mit Bild); die Startseite zeigt Events,
   die Angebote erscheinen auf der Event-Seite; Verkaufen = Event auswählen
