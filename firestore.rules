@@ -126,7 +126,11 @@ service cloud.firestore {
     match /users/{uid} {
       function validUser(d) {
         return d.keys().hasOnly(['displayName', 'email', 'username', 'photo',
-            'visibility', 'notifications', 'createdAt', 'updatedAt'])
+            'visibility', 'notifications', 'createdAt', 'updatedAt',
+            'termsAcceptedAt', 'termsVersion'])
+          // When the user accepted the terms (signup), and which version.
+          && (!('termsAcceptedAt' in d) || d.termsAcceptedAt is timestamp)
+          && optStr(d, 'termsVersion', 20)
           && optStr(d, 'displayName', 80)
           // The sign-in's own email, nothing made up.
           && (!('email' in d) || d.email == null
@@ -199,7 +203,7 @@ service cloud.firestore {
         // Sellers need a payout method before listing tickets.
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
         && request.resource.data.keys().hasOnly(['sellerId', 'eventId', 'event',
-            'buyerFeePercent', 'sellerFeePercent', 'ticketType',
+            'buyerFeePercent', 'sellerFeePercent', 'faceValueMinor', 'ticketType',
             'quantity', 'quantitySold', 'priceMinor', 'currency', 'status',
             'section', 'row', 'seats', 'note', 'createdAt', 'updatedAt'])
         && validEvent(request.resource.data.event)
@@ -225,6 +229,9 @@ service cloud.firestore {
         && request.resource.data.quantity > 0
         && request.resource.data.quantity <= 50
         && validPrice(request.resource.data.priceMinor)
+        // The original price on the ticket, if given.
+        && (!('faceValueMinor' in request.resource.data)
+          || validPrice(request.resource.data.faceValueMinor))
         && request.resource.data.currency in ['BAM', 'EUR', 'USD']
         && optStr(request.resource.data, 'section', 40)
         && optStr(request.resource.data, 'row', 40)

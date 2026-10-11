@@ -353,6 +353,7 @@ class Listing {
     required this.status,
     this.eventId = '',
     this.fees = const FeeConfig(),
+    this.faceValueMinor,
     this.section = '',
     this.row = '',
     this.seats = '',
@@ -371,6 +372,9 @@ class Listing {
 
   /// The fees in force when the listing was created.
   final FeeConfig fees;
+
+  /// The original price printed on one ticket, if the seller gave it.
+  final int? faceValueMinor;
   final TicketType ticketType;
   final int quantity;
   final int quantitySold;
@@ -395,6 +399,7 @@ class Listing {
     id: id,
     sellerId: m['sellerId'] as String? ?? '',
     eventId: m['eventId'] as String? ?? '',
+    faceValueMinor: (m['faceValueMinor'] as num?)?.toInt(),
     fees: FeeConfig(
       buyerPercent: _percent(m['buyerFeePercent']),
       sellerPercent: _percent(m['sellerFeePercent']),
@@ -423,6 +428,7 @@ class Listing {
     'event': event.toMap(),
     'buyerFeePercent': fees.buyerPercent,
     'sellerFeePercent': fees.sellerPercent,
+    'faceValueMinor': ?faceValueMinor,
     'ticketType': ticketType.name,
     'quantity': quantity,
     'quantitySold': quantitySold,
