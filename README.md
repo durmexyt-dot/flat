@@ -165,8 +165,11 @@ release:
 tool/release.sh patch     # 1.1.0 → 1.1.1, bug fixes
 tool/release.sh minor     # 1.1.0 → 1.2.0, new features
 tool/release.sh major     # 1.1.0 → 2.0.0, incompatible changes
-tool/release.sh minor all # also deploy prod
+tool/release.sh minor all # also deploy prod (only when asked)
 ```
+
+Rule: new versions go to **staging** first. Prod gets exactly a version
+tested there, only on request: `tool/deploy_web.sh prod --ref vX.Y.Z`.
 
 It checks that `main` is clean and pushed, runs analyze and tests, bumps
 version and build number, writes the changelog section, commits
