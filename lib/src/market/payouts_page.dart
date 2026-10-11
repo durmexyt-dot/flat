@@ -323,7 +323,12 @@ class PayoutDetailPage extends ConsumerWidget {
                     ),
                   ),
                   prefix: const Icon(FLucideIcons.headset),
-                  child: Text(l10n.getHelpPayout),
+                  child: Flexible(
+                    child: Text(
+                      l10n.getHelpPayout,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 SettingsSectionTitle(l10n.payoutOrders),
                 SettingsGroup(

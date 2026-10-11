@@ -132,7 +132,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               size: FButtonSizeVariant.sm,
               mainAxisSize: MainAxisSize.min,
               onPress: () => context.pop(),
-              child: Text(l10n.loginButton),
+              child: Text(l10n.loginButton, overflow: TextOverflow.ellipsis),
             ),
           ],
         ),

@@ -55,14 +55,14 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
             mainAxisSize: MainAxisSize.min,
             onPress: () => context.push('/sell'),
             prefix: const Icon(FLucideIcons.plus),
-            child: Text(l10n.sellTickets),
+            child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
           ),
       ],
       floatingActionButton: FButton(
         mainAxisSize: MainAxisSize.min,
         onPress: () => context.push('/sell'),
         prefix: const Icon(FLucideIcons.plus),
-        child: Text(l10n.sellTickets),
+        child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +98,10 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                     action: FButton(
                       mainAxisSize: MainAxisSize.min,
                       onPress: () => context.push('/sell'),
-                      child: Text(l10n.sellTickets),
+                      child: Text(
+                        l10n.sellTickets,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   );
                 }

@@ -40,6 +40,7 @@ class EventTicket extends StatelessWidget {
 
     return Hero(
       tag: heroTag,
+      flightShuttleBuilder: _ticketShuttle,
       child: TicketCard(
         onTap: onTap,
         stub: Column(
@@ -181,4 +182,26 @@ class ListingTicket extends StatelessWidget {
       ],
     );
   }
+}
+
+/// While flying, the ticket keeps its natural height and is clipped to the
+/// flight's rect, instead of squeezing (and overflowing) its text.
+Widget _ticketShuttle(
+  BuildContext flightContext,
+  Animation<double> animation,
+  HeroFlightDirection direction,
+  BuildContext fromContext,
+  BuildContext toContext,
+) {
+  final hero =
+      (direction == HeroFlightDirection.push ? toContext : fromContext).widget
+          as Hero;
+  return ClipRect(
+    child: OverflowBox(
+      alignment: Alignment.topCenter,
+      minHeight: 0,
+      maxHeight: double.infinity,
+      child: hero.child,
+    ),
+  );
 }

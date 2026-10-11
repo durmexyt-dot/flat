@@ -222,7 +222,10 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                                       onPress: _processing
                                           ? null
                                           : () => setState(() => _failure = f),
-                                      child: Text(paymentFailureText(l10n, f)),
+                                      child: Text(
+                                        paymentFailureText(l10n, f),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                 ],
                               ),

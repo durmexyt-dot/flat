@@ -1,5 +1,6 @@
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/ui/app_style.dart';
+import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,15 +44,9 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    final button = find.byType(FButton);
-    expect(tester.getSize(button).width, 52);
-    expect(
-      find.descendant(
-        of: button,
-        matching: find.byType(CircularProgressIndicator),
-      ),
-      findsOneWidget,
-    );
+    // The label turns into a spinner while waiting.
+    expect(find.byType(FCircularProgress), findsOneWidget);
+    expect(find.widgetWithText(FButton, 'Prijavi se'), findsNothing);
 
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
@@ -94,7 +89,7 @@ void main() {
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Postavke'));
+    await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
     expect(find.text('Postavke'), findsOneWidget);
 
@@ -109,8 +104,8 @@ void main() {
     await tester.pumpAndSettle();
     final context = tester.element(find.text('Designfarbe'));
     expect(Theme.of(context).brightness, Brightness.dark);
-    await tester.ensureVisible(find.byTooltip('Grün'));
-    await tester.tap(find.byTooltip('Grün'));
+    await tester.ensureVisible(byLabel('Grün'));
+    await tester.tap(byLabel('Grün'));
     await tester.pumpAndSettle();
     expect(
       Theme.of(tester.element(find.text('Designfarbe'))).colorScheme.primary,
@@ -124,7 +119,7 @@ void main() {
       AppStyle.of(tester.element(find.text('Designfarbe'))).cardRadius,
       UiStyle.crisp.cardRadius,
     );
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byKey(backButtonKey));
     await tester.pumpAndSettle();
 
     await tapVisible(tester, find.text('BAM (KM)'));

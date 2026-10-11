@@ -9,7 +9,7 @@ Future<FakeAuthRepository> _signedInAt(WidgetTester tester, String tile) async {
   final auth = await pumpApp(tester);
   await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
   await tester.pumpAndSettle();
-  await tester.tap(find.byTooltip('Postavke'));
+  await tester.tap(byLabel('Postavke'));
   await tester.pumpAndSettle();
   await tapVisible(tester, find.text(tile));
   return auth;

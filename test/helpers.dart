@@ -8,6 +8,7 @@ import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/ui/hero_page.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -178,3 +179,14 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
   await tester.tap(finder);
   await tester.pumpAndSettle();
 }
+
+/// A Forui control by its semantics label (Forui tooltips only build on
+/// hover, so `find.byTooltip` doesn't see them).
+Finder byLabel(String label) => find.byWidgetPredicate(
+  (w) => switch (w) {
+    FButton(:final semanticsLabel) => semanticsLabel == label,
+    FTappable(:final semanticsLabel) => semanticsLabel == label,
+    FHeaderAction(:final semanticsLabel) => semanticsLabel == label,
+    _ => false,
+  },
+);

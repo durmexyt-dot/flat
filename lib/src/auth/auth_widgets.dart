@@ -357,7 +357,12 @@ class GoogleButton extends StatelessWidget {
           color: Color(0xFF4285F4),
         ),
       ),
-      child: Text(AppLocalizations.of(context).continueWithGoogle),
+      child: Flexible(
+        child: Text(
+          AppLocalizations.of(context).continueWithGoogle,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
-import 'package:flutter/material.dart';
+import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 
@@ -77,10 +77,12 @@ Future<void> _openSimulatorAndPay(
     }
   }
   await tester.tap(
-    find.descendant(
-      of: find.byType(PaymentSimulatorSheet),
-      matching: find.byType(FButton),
-    ),
+    find
+        .descendant(
+          of: find.byType(PaymentSimulatorSheet),
+          matching: find.byType(FButton),
+        )
+        .last,
   );
   await tester.pump();
   expect(find.text('Obrada plaćanja…'), findsOneWidget);
@@ -178,7 +180,7 @@ void main() {
     final auth = await pumpApp(tester, marketRepository: market);
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Postavke'));
+    await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Prodaje'));
     await tester.tap(find.text('Sarajevo Jazz Festival'));
@@ -195,7 +197,7 @@ void main() {
     );
 
     // The sales list shows the new status too.
-    await tester.tap(find.byType(BackButton).last);
+    await tester.tap(find.byKey(backButtonKey).last);
     await tester.pumpAndSettle();
     expect(find.text('Karte poslane'), findsOneWidget);
     expect(find.text('Plaćeno'), findsNothing);

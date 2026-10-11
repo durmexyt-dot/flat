@@ -106,7 +106,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 onPress: () =>
                     context.push('/forgot-password', extra: _email.text.trim()),
-                child: Text(l10n.forgotPassword, textAlign: TextAlign.end),
+                // Bounded by the outer Flexible, so the label can shrink.
+                child: Flexible(
+                  child: Text(
+                    l10n.forgotPassword,
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
             ),
           ],
@@ -136,7 +143,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               size: FButtonSizeVariant.sm,
               mainAxisSize: MainAxisSize.min,
               onPress: () => context.push('/signup'),
-              child: Text(l10n.signUp),
+              child: Text(l10n.signUp, overflow: TextOverflow.ellipsis),
             ),
           ],
         ),
@@ -151,6 +158,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: Text(
               l10n.continueAsGuest,
               style: TextStyle(color: theme.colors.mutedForeground),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),

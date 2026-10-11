@@ -42,7 +42,7 @@ void main() {
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byTooltip('Otvori meni računa'));
+    await tester.tap(byLabel('Otvori meni računa'));
     await tester.pumpAndSettle();
     expect(find.byType(AccountDrawer), findsOneWidget);
     expect(find.text('Amra Test'), findsWidgets);
@@ -61,7 +61,7 @@ void main() {
     final auth = await _desktop(tester);
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Otvori meni računa'));
+    await tester.tap(byLabel('Otvori meni računa'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();

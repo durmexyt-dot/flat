@@ -84,7 +84,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         mainAxisSize: MainAxisSize.min,
         onPress: _sell,
         prefix: const Icon(FLucideIcons.tag),
-        child: Text(l10n.sellTickets),
+        child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(activeListingsProvider),
@@ -252,7 +252,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               prefix: Icon(categoryIcon(c)),
               onPress: () =>
                   setState(() => _category = _category == c ? null : c),
-              child: Text(categoryName(l10n, c)),
+              child: Text(
+                categoryName(l10n, c),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
         ],
       ),
@@ -287,7 +290,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               size: FButtonSizeVariant.sm,
               mainAxisSize: MainAxisSize.min,
               onPress: () => ref.read(guestModeProvider.notifier).exit(),
-              child: Text(l10n.loginButton),
+              child: Text(l10n.loginButton, overflow: TextOverflow.ellipsis),
             ),
           ],
         ),

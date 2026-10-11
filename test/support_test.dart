@@ -13,7 +13,7 @@ void main() {
     );
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Postavke'));
+    await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Kupovine i računi'));
     await tester.tap(find.text('EXIT Festival'));

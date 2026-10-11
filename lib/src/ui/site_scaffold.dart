@@ -18,6 +18,9 @@ const wideLayoutBreakpoint = 900.0;
 bool isWideLayout(BuildContext context) =>
     MediaQuery.sizeOf(context).width >= wideLayoutBreakpoint;
 
+/// The page's back button, phone header or wide title row (for tests).
+const backButtonKey = ValueKey('back');
+
 /// Content widths on wide screens.
 abstract final class SiteWidth {
   /// The page: header, lists and grids.
@@ -81,7 +84,10 @@ class SiteScaffold extends StatelessWidget {
                     title: Text(title),
                     prefixes: [
                       if (context.canPop())
-                        FHeaderAction.back(onPress: () => context.pop()),
+                        FHeaderAction.back(
+                          key: backButtonKey,
+                          onPress: () => context.pop(),
+                        ),
                     ],
                     suffixes: actions,
                   ),
@@ -105,6 +111,7 @@ class SiteScaffold extends StatelessWidget {
               children: [
                 if (context.canPop()) ...[
                   FButton.icon(
+                    key: backButtonKey,
                     variant: FButtonVariant.ghost,
                     semanticsLabel: MaterialLocalizations.of(context)
                         .backButtonTooltip,
@@ -202,6 +209,7 @@ class SiteHeader extends ConsumerWidget {
                 : theme.colors.mutedForeground,
             fontWeight: active ? FontWeight.w600 : FontWeight.w500,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
       );
     }
@@ -252,12 +260,15 @@ class SiteHeader extends ConsumerWidget {
                       variant: FButtonVariant.ghost,
                       mainAxisSize: MainAxisSize.min,
                       onPress: signIn,
-                      child: Text(l10n.loginButton),
+                      child: Text(
+                        l10n.loginButton,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     FButton(
                       mainAxisSize: MainAxisSize.min,
                       onPress: () => signIn(signUp: true),
-                      child: Text(l10n.signUp),
+                      child: Text(l10n.signUp, overflow: TextOverflow.ellipsis),
                     ),
                   ] else
                     Builder(

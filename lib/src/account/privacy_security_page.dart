@@ -233,66 +233,78 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
     return FTile(
       prefix: const Icon(FLucideIcons.mail),
       title: Text(widget.user.email ?? ''),
-      details: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        transitionBuilder: (child, animation) =>
-            ScaleTransition(scale: animation, child: child),
-        child: FBadge(
-          key: ValueKey(verified),
-          variant: verified ? .secondary : .destructive,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                verified ? FLucideIcons.badgeCheck : FLucideIcons.circleAlert,
-                size: 14,
-              ),
-              const SizedBox(width: 4),
-              Text(verified ? l10n.emailVerified : l10n.emailNotVerified),
-            ],
-          ),
-        ),
-      ),
-      subtitle: AnimatedSize(
-        duration: const Duration(milliseconds: 250),
-        alignment: Alignment.topCenter,
-        child: verified
-            ? const SizedBox(width: double.infinity)
-            : Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      // Badge and actions sit under the address: as tile details they
+      // would squeeze the buttons on phones.
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: FBadge(
+                key: ValueKey(verified),
+                variant: verified ? .secondary : .destructive,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      l10n.verifyEmailInfo,
-                      overflow: TextOverflow.visible,
-                      style: TextStyle(color: colors.mutedForeground),
+                    Icon(
+                      verified
+                          ? FLucideIcons.badgeCheck
+                          : FLucideIcons.circleAlert,
+                      size: 14,
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        FButton(
-                          variant: .secondary,
-                          size: .sm,
-                          mainAxisSize: MainAxisSize.min,
-                          onPress: _sending ? null : _send,
-                          child: Text(l10n.sendVerification),
-                        ),
-                        FButton(
-                          variant: .ghost,
-                          size: .sm,
-                          mainAxisSize: MainAxisSize.min,
-                          onPress: () =>
-                              ref.read(authRepositoryProvider).reloadUser(),
-                          child: Text(l10n.checkVerification),
-                        ),
-                      ],
-                    ),
+                    const SizedBox(width: 4),
+                    Text(verified ? l10n.emailVerified : l10n.emailNotVerified),
                   ],
                 ),
               ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            alignment: Alignment.topCenter,
+            child: verified
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.verifyEmailInfo,
+                          overflow: TextOverflow.visible,
+                          style: TextStyle(color: colors.mutedForeground),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FButton(
+                              variant: .secondary,
+                              size: .sm,
+                              mainAxisSize: MainAxisSize.min,
+                              onPress: _sending ? null : _send,
+                              child: Text(l10n.sendVerification),
+                            ),
+                            FButton(
+                              variant: .ghost,
+                              size: .sm,
+                              mainAxisSize: MainAxisSize.min,
+                              onPress: () =>
+                                  ref.read(authRepositoryProvider).reloadUser(),
+                              child: Text(l10n.checkVerification),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -448,9 +460,16 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
         FButton(
           variant: .outline,
           onPress: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
         ),
-        FButton(onPress: _loading ? null : _submit, child: Text(l10n.save)),
+        FButton(
+          onPress: _loading ? null : _submit,
+          child: Flexible(
+            child: Text(l10n.save, overflow: TextOverflow.ellipsis),
+          ),
+        ),
       ],
     );
   }
@@ -541,12 +560,16 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
         FButton(
           variant: .outline,
           onPress: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
         ),
         FButton(
           variant: .destructive,
           onPress: _loading ? null : _delete,
-          child: Text(l10n.deleteAccount),
+          child: Flexible(
+            child: Text(l10n.deleteAccount, overflow: TextOverflow.ellipsis),
+          ),
         ),
       ],
     );

@@ -130,11 +130,15 @@ class _SellerPanel extends ConsumerWidget {
         FButton(
           variant: FButtonVariant.outline,
           onPress: () => Navigator.pop(ctx),
-          child: Text(l10n.cancel),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
         ),
         FButton(
           onPress: () => form.currentState?.submit(),
-          child: Text(l10n.save),
+          child: Flexible(
+            child: Text(l10n.save, overflow: TextOverflow.ellipsis),
+          ),
         ),
       ],
     );
@@ -159,12 +163,16 @@ class _SellerPanel extends ConsumerWidget {
         FButton(
           variant: FButtonVariant.outline,
           onPress: () => Navigator.pop(ctx, false),
-          child: Text(l10n.cancel),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
         ),
         FButton(
           variant: FButtonVariant.destructive,
           onPress: () => Navigator.pop(ctx, true),
-          child: Text(l10n.withdrawListing),
+          child: Flexible(
+            child: Text(l10n.withdrawListing, overflow: TextOverflow.ellipsis),
+          ),
         ),
       ],
     );
@@ -236,14 +244,20 @@ class _SellerPanel extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         onPress: () => _editPrice(context, ref),
                         prefix: const Icon(FLucideIcons.pencil),
-                        child: Text(l10n.editPrice),
+                        child: Text(
+                          l10n.editPrice,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       FButton(
                         variant: FButtonVariant.outline,
                         mainAxisSize: MainAxisSize.min,
                         onPress: () => _withdraw(context, ref),
                         prefix: const Icon(FLucideIcons.eyeOff),
-                        child: Text(l10n.withdrawListing),
+                        child: Text(
+                          l10n.withdrawListing,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -479,7 +493,9 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
           size: FButtonSizeVariant.lg,
           onPress: available ? _buy : null,
           prefix: const Icon(FLucideIcons.shoppingBag),
-          child: Text(l10n.buyTickets),
+          child: Flexible(
+            child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
+          ),
         ),
         const SizedBox(height: 12),
         Row(

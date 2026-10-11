@@ -99,7 +99,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                   action: FButton(
                     mainAxisSize: MainAxisSize.min,
                     onPress: () => popOrGo(context, '/support'),
-                    child: Text(l10n.done),
+                    child: Text(l10n.done, overflow: TextOverflow.ellipsis),
                   ),
                 ),
               )
@@ -125,7 +125,10 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                                   : FButtonVariant.outline,
                               selected: _topic == t,
                               onPress: () => setState(() => _topic = t),
-                              child: Text(supportTopicName(l10n, t)),
+                              child: Text(
+                                supportTopicName(l10n, t),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                         ],
                       ),

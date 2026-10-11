@@ -31,11 +31,12 @@ void showSnack(String text, {String? actionLabel, VoidCallback? onAction}) {
           ? null
           : FButton(
               size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
               onPress: () {
                 entry.dismiss();
                 onAction?.call();
               },
-              child: Text(actionLabel),
+              child: Text(actionLabel, overflow: TextOverflow.ellipsis),
             ),
     ),
   );

@@ -249,7 +249,10 @@ class _Preview extends StatelessWidget {
                 FButton(
                   mainAxisSize: MainAxisSize.min,
                   onPress: () {},
-                  child: Text(l10n.previewButton),
+                  child: Text(
+                    l10n.previewButton,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),

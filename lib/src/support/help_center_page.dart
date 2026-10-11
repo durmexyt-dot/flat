@@ -103,6 +103,7 @@ class HelpCenterPage extends ConsumerWidget {
                         : context.go('/login'),
                     child: Text(
                       signedIn ? l10n.contactSupport : l10n.signInOrUp,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

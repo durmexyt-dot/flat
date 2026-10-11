@@ -171,7 +171,10 @@ class _SellPageState extends ConsumerState<SellPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     onPress: () =>
                                         context.push('/settings/privacy'),
-                                    child: Text(l10n.verifyNow),
+                                    child: Text(
+                                      l10n.verifyNow,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -240,7 +243,10 @@ class _SellPageState extends ConsumerState<SellPage> {
                                     : FButtonVariant.outline,
                                 prefix: Icon(categoryIcon(c)),
                                 onPress: () => setState(() => _category = c),
-                                child: Text(categoryName(l10n, c)),
+                                child: Text(
+                                  categoryName(l10n, c),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                           ],
                         ),
@@ -476,7 +482,7 @@ class _PayoutRequired extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             onPress: () => context.push('/account/payout-method'),
             prefix: const Icon(FLucideIcons.plus),
-            child: Text(l10n.setUpPayout),
+            child: Text(l10n.setUpPayout, overflow: TextOverflow.ellipsis),
           ),
         ),
       ),
@@ -484,7 +490,7 @@ class _PayoutRequired extends StatelessWidget {
   }
 }
 
-class _DateField extends StatelessWidget {
+class _DateField extends StatefulWidget {
   const _DateField({
     required this.date,
     required this.error,
@@ -496,16 +502,56 @@ class _DateField extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_DateField> createState() => _DateFieldState();
+}
+
+class _DateFieldState extends State<_DateField> {
+  final _controller = TextEditingController();
+  bool _built = false;
+
+  String _text() =>
+      widget.date == null ? '' : formatDateTime(context, widget.date!);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Also on a locale change. Before the first build nobody listens yet.
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(_DateField old) {
+    super.didUpdateWidget(old);
+    if (old.date != widget.date) _sync();
+  }
+
+  /// The field's form state listens to the controller, so changing it while
+  /// building would rebuild the form mid-build: update after the frame.
+  void _sync() {
+    final text = _text();
+    if (_controller.text == text) return;
+    if (!_built) {
+      _controller.text = text;
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.text = _text();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _built = true;
     final l10n = AppLocalizations.of(context);
     // Read-only: tapping opens the date and time pickers.
     return FTextFormField(
-      control: FTextFieldControl.lifted(
-        value: TextEditingValue(
-          text: date == null ? '' : formatDateTime(context, date!),
-        ),
-        onChange: (_) {},
-      ),
+      control: FTextFieldControl.managed(controller: _controller),
       label: Text(l10n.dateTime),
       prefixBuilder: (context, style, variants) =>
           fieldIcon(FLucideIcons.calendar),
@@ -519,8 +565,8 @@ class _DateField extends StatelessWidget {
       ),
       readOnly: true,
       enableInteractiveSelection: false,
-      onTap: onTap,
-      forceErrorText: error,
+      onTap: widget.onTap,
+      forceErrorText: widget.error,
     );
   }
 }

@@ -37,7 +37,7 @@ Order _order(String buyer, String seller, int quantity, OrderStatus status) =>
     });
 
 Future<void> _openAccount(WidgetTester tester) async {
-  await tester.tap(find.byTooltip('Postavke'));
+  await tester.tap(byLabel('Postavke'));
   await tester.pumpAndSettle();
 }
 
@@ -81,11 +81,17 @@ void main() {
     Iterable<double> sizes() => find
         .text('AT', skipOffstage: false)
         .evaluate()
-        .map((e) => (e.renderObject as RenderBox?)?.size.height)
-        .whereType<double>();
+        .where((e) => e.renderObject is RenderBox)
+        // Painted height: the avatar scales during the flight.
+        .map((e) {
+          final box = e.renderObject! as RenderBox;
+          final top = box.localToGlobal(Offset.zero);
+          return (box.localToGlobal(box.size.bottomLeft(Offset.zero)) - top)
+              .distance;
+        });
     final before = sizes().toList();
 
-    await tester.tap(find.byTooltip('Postavke'));
+    await tester.tap(byLabel('Postavke'));
     await tester.pump();
     await tester.pump(heroTransitionDuration ~/ 2);
     final during = sizes().toList();

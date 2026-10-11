@@ -90,7 +90,12 @@ class OrderDetailPage extends ConsumerWidget {
                     ),
                   ),
                   prefix: const Icon(FLucideIcons.headset),
-                  child: Text(l10n.getHelpOrder),
+                  child: Flexible(
+                    child: Text(
+                      l10n.getHelpOrder,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 if (role == OrderRole.seller &&
                     order.status == OrderStatus.completed) ...[
@@ -99,7 +104,12 @@ class OrderDetailPage extends ConsumerWidget {
                     variant: FButtonVariant.outline,
                     onPress: () => context.push('/account/payouts'),
                     prefix: const Icon(FLucideIcons.landmark),
-                    child: Text(l10n.payouts),
+                    child: Flexible(
+                      child: Text(
+                        l10n.payouts,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
                 ],
               ],

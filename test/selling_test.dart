@@ -66,12 +66,12 @@ void main() {
     await tester.tap(find.text('Sport'));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), 'dubioza');
+    await tester.enterText(find.byType(EditableText), 'dubioza');
     await tester.pumpAndSettle();
     expect(find.text('Dubioza kolektiv'), findsOneWidget);
     expect(find.text('FK Sarajevo – FK Željezničar'), findsNothing);
 
-    await tester.enterText(find.byType(TextField), 'opera');
+    await tester.enterText(find.byType(EditableText), 'opera');
     await tester.pumpAndSettle();
     expect(find.text('Nema rezultata za „opera”'), findsOneWidget);
   });
@@ -155,8 +155,11 @@ void main() {
 
     await tester.ensureVisible(find.byIcon(FLucideIcons.tag));
     await tester.enterText(
-      find.ancestor(
-        of: find.byIcon(FLucideIcons.tag),
+      find.descendant(
+        of: find.ancestor(
+          of: find.byIcon(FLucideIcons.tag),
+          matching: find.byType(FTextFormField),
+        ),
         matching: find.byType(EditableText),
       ),
       '50',
@@ -180,7 +183,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tapVisible(tester, find.text('Povuci ponudu'));
-    await tester.tap(find.widgetWithText(FButton, 'Povuci ponudu'));
+    await tester.tap(find.widgetWithText(FButton, 'Povuci ponudu').last);
     await tester.pumpAndSettle();
     expect(find.text('Povučena'), findsOneWidget);
     expect(find.text('Promijeni cijenu'), findsNothing);

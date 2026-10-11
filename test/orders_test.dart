@@ -2,6 +2,7 @@ import 'package:flat/l10n/app_localizations.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/market/order_labels.dart';
 import 'package:flat/src/ui/status_timeline.dart';
+import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +14,7 @@ Future<void> _openAccountEntry(WidgetTester tester, String entry) async {
   final auth = await pumpApp(tester, marketRepository: buildSampleMarket('1'));
   await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
   await tester.pumpAndSettle();
-  await tester.tap(find.byTooltip('Postavke'));
+  await tester.tap(byLabel('Postavke'));
   await tester.pumpAndSettle();
   await tapVisible(tester, find.text(entry));
 }
@@ -26,7 +27,7 @@ void main() {
     );
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Postavke'));
+    await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
     // Listed 4+4+2, sold 1+2+4+1 (pending payment excluded),
     // bought 2+1+2 (refunded excluded).
@@ -65,7 +66,7 @@ void main() {
     // 4 × 60,00 = 240,00 − 10 % = 216,00.
     expect(find.textContaining('216,00'), findsWidgets);
 
-    await tester.tap(find.byType(BackButton).last);
+    await tester.tap(find.byKey(backButtonKey).last);
     await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Hamlet'));
     expect(

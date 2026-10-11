@@ -81,7 +81,7 @@ class ErrorState extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               onPress: onRetry,
               prefix: const Icon(FLucideIcons.refreshCw),
-              child: Text(l10n.retry),
+              child: Text(l10n.retry, overflow: TextOverflow.ellipsis),
             ),
           ],
         ],

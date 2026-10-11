@@ -268,12 +268,17 @@ void _showAbout(BuildContext context) {
           applicationVersion: appVersion,
           applicationIcon: const BrandMark(size: 48),
         ),
-        child: Text(material.viewLicensesButtonLabel),
+        child: Flexible(child: Text(material.viewLicensesButtonLabel)),
       ),
       FButton(
         variant: .outline,
         onPress: () => Navigator.pop(ctx),
-        child: Text(material.closeButtonLabel),
+        child: Flexible(
+          child: Text(
+            material.closeButtonLabel,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ),
     ],
   );
@@ -318,7 +323,12 @@ class _GuestCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            FButton(onPress: onSignIn, child: Text(l10n.signInOrUp)),
+            FButton(
+              onPress: onSignIn,
+              child: Flexible(
+                child: Text(l10n.signInOrUp, overflow: TextOverflow.ellipsis),
+              ),
+            ),
           ],
         ),
       ),

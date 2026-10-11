@@ -118,7 +118,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       mainAxisSize: MainAxisSize.min,
                       onPress: () => showPhotoActions(context, ref),
                       prefix: const Icon(FLucideIcons.camera),
-                      child: Text(l10n.changePhoto),
+                      child: Text(
+                        l10n.changePhoto,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
