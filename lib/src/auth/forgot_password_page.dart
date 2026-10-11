@@ -72,7 +72,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               Icon(
                 Icons.mark_email_read_outlined,
                 size: 56,
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 16),
               Text(

@@ -217,7 +217,7 @@ class _Stat extends StatelessWidget {
                 '${v.round()}',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),

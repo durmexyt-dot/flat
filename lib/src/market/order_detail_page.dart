@@ -197,17 +197,18 @@ class NextStepCard extends StatelessWidget {
         c.onErrorContainer,
         Icons.report_outlined,
       ),
+      // Neutral card; only problems get a colored surface.
       StatusTone.positive => (
-        c.tertiaryContainer,
-        c.onTertiaryContainer,
+        c.surfaceContainerHigh,
+        c.onSurface,
         Icons.check_circle_outline,
       ),
       StatusTone.neutral => (
-        c.surfaceContainerHighest,
-        c.onSurfaceVariant,
+        c.surfaceContainerHigh,
+        c.onSurface,
         Icons.info_outline,
       ),
-      _ => (c.primaryContainer, c.onPrimaryContainer, Icons.schedule),
+      _ => (c.surfaceContainerHigh, c.onSurface, Icons.schedule),
     };
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -274,7 +275,7 @@ class _Invoice extends StatelessWidget {
             style: strong
                 ? theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.primary,
+                    color: theme.colorScheme.onSurface,
                   )
                 : theme.textTheme.bodyMedium,
           ),

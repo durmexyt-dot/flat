@@ -46,7 +46,7 @@ class EventTicket extends StatelessWidget {
               day,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onSurfaceVariant,
                 height: 1,
               ),
             ),
@@ -70,7 +70,7 @@ class EventTicket extends StatelessWidget {
                 Icon(
                   categoryIcon(event.category),
                   size: 18,
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.onSurface,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -153,7 +153,7 @@ class ListingTicket extends StatelessWidget {
             Text(
               formatMoney(context, listing.priceMinor, listing.currency),
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.w800,
               ),
             ),

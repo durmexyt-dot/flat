@@ -70,7 +70,7 @@ class HelpCenterPage extends ConsumerWidget {
           const SizedBox(height: 24),
           Card.filled(
             margin: EdgeInsets.zero,
-            color: theme.colorScheme.primaryContainer,
+            color: theme.colorScheme.surfaceContainerLow,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -78,7 +78,7 @@ class HelpCenterPage extends ConsumerWidget {
                   Icon(
                     Icons.support_agent,
                     size: 40,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 8),
                   Text(l10n.stillNeedHelp, style: theme.textTheme.titleMedium),

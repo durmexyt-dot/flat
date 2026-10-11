@@ -151,7 +151,7 @@ class _VisibilityOption extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: radius,
               color: selected
-                  ? colors.primaryContainer
+                  ? colors.surfaceContainerHigh
                   : colors.surfaceContainerLow,
               border: Border.all(
                 color: selected ? colors.primary : Colors.transparent,

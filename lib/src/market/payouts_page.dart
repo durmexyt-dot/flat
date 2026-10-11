@@ -134,17 +134,13 @@ class _Summary extends StatelessWidget {
 
     return Card.filled(
       margin: EdgeInsets.zero,
-      color: theme.colorScheme.primaryContainer,
+      color: theme.colorScheme.surfaceContainerLow,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            figure(
-              l10n.payoutsUpcoming,
-              upcoming,
-              theme.colorScheme.onPrimaryContainer,
-            ),
-            figure(l10n.payoutsPaidTotal, paid, theme.colorScheme.primary),
+            figure(l10n.payoutsUpcoming, upcoming, theme.colorScheme.onSurface),
+            figure(l10n.payoutsPaidTotal, paid, theme.colorScheme.onSurface),
           ],
         ),
       ),
@@ -212,7 +208,7 @@ class PayoutCard extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: theme.colorScheme.secondaryContainer,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   child: Icon(
                     Icons.account_balance_outlined,
                     color: theme.colorScheme.onSecondaryContainer,

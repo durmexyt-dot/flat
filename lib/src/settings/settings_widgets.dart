@@ -14,7 +14,7 @@ class SettingsSectionTitle extends StatelessWidget {
       child: Text(
         title,
         style: theme.textTheme.labelLarge?.copyWith(
-          color: theme.colorScheme.primary,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );

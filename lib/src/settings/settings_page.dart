@@ -260,18 +260,18 @@ class _GuestCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card.filled(
       margin: EdgeInsets.zero,
-      color: theme.colorScheme.primaryContainer,
+      color: theme.colorScheme.surfaceContainerLow,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             CircleAvatar(
               radius: 32,
-              backgroundColor: theme.colorScheme.primary,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
               child: Icon(
                 Icons.person_outline,
                 size: 32,
-                color: theme.colorScheme.onPrimary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
@@ -280,7 +280,7 @@ class _GuestCard extends StatelessWidget {
             Text(
               l10n.guestSignInPrompt,
               textAlign: TextAlign.center,
-              style: TextStyle(color: theme.colorScheme.onPrimaryContainer),
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             FilledButton(onPressed: onSignIn, child: Text(l10n.signInOrUp)),

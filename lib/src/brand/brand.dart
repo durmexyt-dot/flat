@@ -24,11 +24,7 @@ class BrandMark extends StatelessWidget {
             final side = constraints.biggest.shortestSide;
             return DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [colors.primary, colors.tertiary],
-                ),
+                color: colors.primary,
                 borderRadius: BorderRadius.circular(side * 0.28),
               ),
               child: Center(

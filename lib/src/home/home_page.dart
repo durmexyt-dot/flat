@@ -11,6 +11,7 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../market/labels.dart';
 import '../market/listing_ticket.dart';
+import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
@@ -173,12 +174,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Container(
       padding: const EdgeInsets.fromLTRB(40, 40, 40, 32),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [colors.primaryContainer, colors.tertiaryContainer],
-        ),
+        borderRadius: BorderRadius.circular(AppStyle.of(context).cardRadius),
+        color: colors.surfaceContainerLow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +186,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               l10n.heroTitle,
               style: theme.textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: colors.onPrimaryContainer,
+                color: colors.onSurface,
                 height: 1.1,
               ),
             ),
@@ -198,7 +195,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           Text(
             l10n.heroSubtitle,
             style: theme.textTheme.titleMedium?.copyWith(
-              color: colors.onPrimaryContainer,
+              color: colors.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 28),
@@ -260,19 +257,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     final colors = Theme.of(context).colorScheme;
     return Card.filled(
       margin: EdgeInsets.zero,
-      color: colors.primaryContainer,
+      color: colors.surfaceContainerHigh,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(Icons.lock_open_outlined, color: colors.onPrimaryContainer),
+            Icon(Icons.lock_open_outlined, color: colors.onSurfaceVariant),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.guestSignInPrompt,
-                style: TextStyle(color: colors.onPrimaryContainer),
-              ),
-            ),
+            Expanded(child: Text(l10n.guestSignInPrompt)),
             TextButton(
               onPressed: () => ref.read(guestModeProvider.notifier).exit(),
               child: Text(l10n.loginButton),

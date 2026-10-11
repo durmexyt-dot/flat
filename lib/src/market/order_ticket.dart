@@ -48,7 +48,7 @@ class OrderTicket extends StatelessWidget {
             Text(
               formatMoney(context, amount, order.currency),
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.w800,
               ),
             ),

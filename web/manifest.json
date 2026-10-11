@@ -3,7 +3,7 @@
     "short_name": "Stubswap",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#fdf8ff",
+    "background_color": "#f9f9f9",
     "theme_color": "#5d2bff",
     "description": "Buy and sell tickets for events",
     "orientation": "portrait-primary",

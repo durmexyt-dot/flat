@@ -456,7 +456,7 @@ class _PriceBreakdown extends StatelessWidget {
               style: strong
                   ? theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: theme.colorScheme.primary,
+                      color: theme.colorScheme.onSurface,
                     )
                   : null,
             ),

@@ -181,7 +181,6 @@ class SettingsController extends Notifier<AppSettings> {
         'surface': hex(s.surface),
         'onSurface': hex(s.onSurface),
         'primary': hex(s.primary),
-        'tertiary': hex(s.tertiary),
         'onPrimary': hex(s.onPrimary),
       };
     }
@@ -196,12 +195,44 @@ class SettingsController extends Notifier<AppSettings> {
   }
 }
 
-ColorScheme colorSchemeFor(BrandColor color, Brightness brightness) =>
-    ColorScheme.fromSeed(
-      seedColor: color.seed,
-      brightness: brightness,
-      dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
-    );
+/// Colors follow the 70/20/10 rule: 70 % neutral surfaces, 20 % neutral
+/// containers and text, 10 % brand color for the main actions and active
+/// states. So surfaces, text and the secondary role are plain greys, and only
+/// primary carries the brand color.
+ColorScheme colorSchemeFor(BrandColor color, Brightness brightness) {
+  final brand = ColorScheme.fromSeed(
+    seedColor: color.seed,
+    brightness: brightness,
+    dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+  );
+  final grey = ColorScheme.fromSeed(
+    seedColor: color.seed,
+    brightness: brightness,
+    dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+  );
+  return brand.copyWith(
+    secondary: grey.secondary,
+    onSecondary: grey.onSecondary,
+    secondaryContainer: grey.surfaceContainerHighest,
+    onSecondaryContainer: grey.onSurface,
+    surface: grey.surface,
+    onSurface: grey.onSurface,
+    onSurfaceVariant: grey.onSurfaceVariant,
+    surfaceDim: grey.surfaceDim,
+    surfaceBright: grey.surfaceBright,
+    surfaceContainerLowest: grey.surfaceContainerLowest,
+    surfaceContainerLow: grey.surfaceContainerLow,
+    surfaceContainer: grey.surfaceContainer,
+    surfaceContainerHigh: grey.surfaceContainerHigh,
+    surfaceContainerHighest: grey.surfaceContainerHighest,
+    outline: grey.outline,
+    outlineVariant: grey.outlineVariant,
+    inverseSurface: grey.inverseSurface,
+    onInverseSurface: grey.onInverseSurface,
+    // No brand tint on raised surfaces.
+    surfaceTint: Colors.transparent,
+  );
+}
 
 final settingsProvider = NotifierProvider<SettingsController, AppSettings>(
   SettingsController.new,

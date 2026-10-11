@@ -24,7 +24,7 @@ String initialsOf(String? name) {
   return (first + last).toUpperCase();
 }
 
-/// Profile photo, or initials on a gradient. With [hero] it flies between
+/// Profile photo, or initials on a neutral circle. With [hero] it flies between
 /// the home app bar, the account page and the profile editor.
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
@@ -63,11 +63,7 @@ class UserAvatar extends StatelessWidget {
                   : DecoratedBox(
                       key: const ValueKey('initials'),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [colors.primary, colors.tertiary],
-                        ),
+                        color: colors.surfaceContainerHighest,
                       ),
                       child: SizedBox.square(
                         dimension: side,
@@ -75,7 +71,7 @@ class UserAvatar extends StatelessWidget {
                           child: Text(
                             initialsOf(name),
                             style: TextStyle(
-                              color: colors.onPrimary,
+                              color: colors.onSurface,
                               fontSize: side * 0.38,
                               fontWeight: FontWeight.w700,
                             ),

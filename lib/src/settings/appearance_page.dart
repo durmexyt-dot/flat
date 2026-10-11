@@ -155,7 +155,7 @@ class _Preview extends StatelessWidget {
             Text(
               l10n.preview,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
@@ -168,7 +168,7 @@ class _Preview extends StatelessWidget {
                     '14',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: theme.colorScheme.primary,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   Text('JUL', style: theme.textTheme.labelMedium),
@@ -194,7 +194,7 @@ class _Preview extends StatelessWidget {
                   Text(
                     '89,00 KM',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.primary,
+                      color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -316,8 +316,8 @@ class _StyleOption extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: selected
-                ? colors.primaryContainer
-                : colors.surfaceContainerHighest.withValues(alpha: 0.5),
+                ? colors.surfaceContainerHigh
+                : colors.surfaceContainerLow,
             borderRadius: BorderRadius.circular(current.controlRadius + 4),
             border: Border.all(
               color: selected ? colors.primary : Colors.transparent,
@@ -350,7 +350,7 @@ class _StyleOption extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected ? colors.onPrimaryContainer : null,
+                  color: colors.onSurface,
                 ),
               ),
             ],
