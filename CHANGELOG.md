@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.5.0] – 2026-10-11
+
 ### Geändert
 - Admin- und Support-Konten kaufen und verkaufen nicht mehr: keine
   Verkaufen-/Kaufen-Knöpfe und Menüpunkte, Hinweis bei Angeboten, Seiten zum
