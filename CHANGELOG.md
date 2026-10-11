@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.2.1] – 2026-10-11
+
 ### Behoben
 - Passwort, das die Firebase-Passwortrichtlinie nicht erfüllt: verständliche
   Meldung statt „unbekannter Fehler“
