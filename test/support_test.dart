@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 
 import 'fixtures.dart';
 import 'helpers.dart';
@@ -41,7 +42,7 @@ void main() {
     await pumpApp(tester);
     await tester.tap(find.text('Pretraži događaje kao gost'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.tap(find.byIcon(FLucideIcons.settings));
     await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Centar za pomoć'));
     await tester.tap(find.text('Koje su naknade?'));

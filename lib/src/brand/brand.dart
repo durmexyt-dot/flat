@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../ui/hero_tags.dart';
 
@@ -29,7 +30,7 @@ class BrandMark extends StatelessWidget {
               ),
               child: Center(
                 child: Icon(
-                  Icons.confirmation_number_rounded,
+                  FLucideIcons.ticket,
                   size: side * 0.56,
                   color: colors.onPrimary,
                 ),

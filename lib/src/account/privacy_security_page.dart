@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -41,7 +42,7 @@ class PrivacySecurityPage extends ConsumerWidget {
         children: [
           SettingsSectionTitle(l10n.profileVisibility),
           _VisibilityOption(
-            icon: Icons.public,
+            icon: FLucideIcons.globe,
             title: l10n.profilePublic,
             info: l10n.visibilityPublicInfo,
             selected: visibility == ProfileVisibility.public,
@@ -49,7 +50,7 @@ class PrivacySecurityPage extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           _VisibilityOption(
-            icon: Icons.lock_outline,
+            icon: FLucideIcons.lock,
             title: l10n.profilePrivate,
             info: l10n.visibilityPrivateInfo,
             selected: visibility == ProfileVisibility.private,
@@ -61,7 +62,7 @@ class PrivacySecurityPage extends ConsumerWidget {
               _EmailTile(user: user),
               ListTile(
                 shape: const RoundedRectangleBorder(),
-                leading: const Icon(Icons.key_outlined),
+                leading: const Icon(FLucideIcons.key),
                 title: Text(l10n.signInMethods),
                 subtitle: Wrap(
                   spacing: 6,
@@ -81,7 +82,7 @@ class PrivacySecurityPage extends ConsumerWidget {
               ),
               if (user.hasPassword)
                 SettingsLinkTile(
-                  icon: Icons.password_outlined,
+                  icon: FLucideIcons.keyRound,
                   title: l10n.changePassword,
                   onTap: () => showDialog<void>(
                     context: context,
@@ -96,7 +97,7 @@ class PrivacySecurityPage extends ConsumerWidget {
               ListTile(
                 shape: const RoundedRectangleBorder(),
                 leading: Icon(
-                  Icons.delete_forever_outlined,
+                  FLucideIcons.trash2,
                   color: theme.colorScheme.error,
                 ),
                 title: Text(
@@ -180,7 +181,7 @@ class _VisibilityOption extends StatelessWidget {
                   scale: selected ? 1 : 0,
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeOutBack,
-                  child: Icon(Icons.check_circle, color: colors.primary),
+                  child: Icon(FLucideIcons.circleCheck, color: colors.primary),
                 ),
               ],
             ),
@@ -231,7 +232,7 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
         children: [
           Row(
             children: [
-              const Icon(Icons.email_outlined),
+              const Icon(FLucideIcons.mail),
               const SizedBox(width: 16),
               Expanded(child: Text(widget.user.email ?? '')),
               AnimatedSwitcher(
@@ -241,7 +242,9 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
                 child: Chip(
                   key: ValueKey(verified),
                   avatar: Icon(
-                    verified ? Icons.verified : Icons.error_outline,
+                    verified
+                        ? FLucideIcons.badgeCheck
+                        : FLucideIcons.circleAlert,
                     size: 16,
                     color: verified ? colors.primary : colors.error,
                   ),
@@ -458,7 +461,7 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
     final l10n = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     return AlertDialog(
-      icon: Icon(Icons.delete_forever_outlined, color: colors.error),
+      icon: Icon(FLucideIcons.trash2, color: colors.error),
       title: Text(l10n.deleteAccount),
       content: SizedBox(
         width: 400,

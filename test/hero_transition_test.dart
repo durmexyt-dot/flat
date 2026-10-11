@@ -2,6 +2,7 @@ import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/ui/hero_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 
 import 'helpers.dart';
 
@@ -9,7 +10,7 @@ import 'helpers.dart';
 /// 53.8 on the splash, 22.4 on sign-in screens and 17.9 in the home app bar.
 /// A size in between can only come from the copy shown during a Hero flight.
 Iterable<double> _markSizes(WidgetTester tester) => find
-    .byIcon(Icons.confirmation_number_rounded, skipOffstage: false)
+    .byIcon(FLucideIcons.ticket, skipOffstage: false)
     .evaluate()
     .map((e) => (e.renderObject as RenderBox?)?.size.width)
     .whereType<double>();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'auth_repository.dart';
@@ -70,7 +71,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       children: _sent
           ? [
               Icon(
-                Icons.mark_email_read_outlined,
+                FLucideIcons.mailCheck,
                 size: 56,
                 color: theme.colorScheme.onSurfaceVariant,
               ),

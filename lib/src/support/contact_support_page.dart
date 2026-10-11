@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -92,7 +93,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
             ? Center(
                 key: const ValueKey('sent'),
                 child: EmptyState(
-                  icon: Icons.mark_email_read_outlined,
+                  icon: FLucideIcons.mailCheck,
                   title: l10n.requestSent,
                   message: l10n.requestSentInfo(_sentNumber!, email),
                   action: FilledButton(
@@ -128,7 +129,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                         decoration: InputDecoration(
                           labelText: l10n.reference,
                           helperText: l10n.optional,
-                          prefixIcon: const Icon(Icons.tag),
+                          prefixIcon: const Icon(FLucideIcons.hash),
                         ),
                         textCapitalization: TextCapitalization.characters,
                       ),

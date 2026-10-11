@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'auth_repository.dart';
@@ -71,7 +72,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   controller: _name,
                   decoration: InputDecoration(
                     labelText: l10n.nameLabel,
-                    prefixIcon: const Icon(Icons.person_outline),
+                    prefixIcon: const Icon(FLucideIcons.user),
                   ),
                   textCapitalization: TextCapitalization.words,
                   autofillHints: const [AutofillHints.name],

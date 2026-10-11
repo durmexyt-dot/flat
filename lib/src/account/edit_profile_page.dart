@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -112,7 +113,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   Center(
                     child: TextButton.icon(
                       onPressed: () => showPhotoActions(context, ref),
-                      icon: const Icon(Icons.photo_camera_outlined),
+                      icon: const Icon(FLucideIcons.camera),
                       label: Text(l10n.changePhoto),
                     ),
                   ),
@@ -121,7 +122,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     controller: _name,
                     decoration: InputDecoration(
                       labelText: l10n.nameLabel,
-                      prefixIcon: const Icon(Icons.person_outline),
+                      prefixIcon: const Icon(FLucideIcons.user),
                     ),
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
@@ -135,7 +136,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     controller: _username,
                     decoration: InputDecoration(
                       labelText: l10n.usernameLabel,
-                      prefixIcon: const Icon(Icons.alternate_email),
+                      prefixIcon: const Icon(FLucideIcons.atSign),
                       helperText: l10n.usernameHint,
                       helperMaxLines: 2,
                     ),
@@ -158,7 +159,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     enabled: false,
                     decoration: InputDecoration(
                       labelText: l10n.emailLabel,
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      prefixIcon: const Icon(FLucideIcons.mail),
                     ),
                   ),
                   const SizedBox(height: 24),

@@ -3,6 +3,7 @@ import 'package:flat/src/data/models.dart';
 import 'package:flat/src/ui/hero_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 
 import 'helpers.dart';
 
@@ -102,7 +103,7 @@ void main() {
 
     // A buyer sees the total with the 10 % service fee.
     expect(find.text('Detalji ponude'), findsOneWidget);
-    await tapVisible(tester, find.byIcon(Icons.add).last);
+    await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
     // 2 × 45,00 = 90,00 + 9,00 fee = 99,00
     expect(find.textContaining('99,00'), findsOneWidget);
   });
@@ -145,17 +146,17 @@ void main() {
     await tester.enterText(fields.at(1), 'Narodno pozorište');
     await tester.enterText(fields.at(2), 'Sarajevo');
     // Date: pick the preselected day and time.
-    await tapVisible(tester, find.byIcon(Icons.event_outlined));
+    await tapVisible(tester, find.byIcon(FLucideIcons.calendar));
     await tester.tap(find.text('Uredu').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Uredu').last);
     await tester.pumpAndSettle();
-    await tapVisible(tester, find.byIcon(Icons.add));
+    await tapVisible(tester, find.byIcon(FLucideIcons.plus));
 
-    await tester.ensureVisible(find.byIcon(Icons.sell_outlined));
+    await tester.ensureVisible(find.byIcon(FLucideIcons.tag));
     await tester.enterText(
       find.ancestor(
-        of: find.byIcon(Icons.sell_outlined),
+        of: find.byIcon(FLucideIcons.tag),
         matching: find.byType(TextFormField),
       ),
       '50',

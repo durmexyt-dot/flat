@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -142,7 +143,7 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                   onPressed: _processing
                       ? null
                       : () => Navigator.pop(context, const PaymentCancelled()),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(FLucideIcons.x),
                 ),
               ],
             ),

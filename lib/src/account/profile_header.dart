@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -58,7 +59,7 @@ class ProfileHeader extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(6),
                     child: Icon(
-                      Icons.photo_camera_outlined,
+                      FLucideIcons.camera,
                       size: 18,
                       color: theme.colorScheme.onPrimary,
                     ),
@@ -92,7 +93,7 @@ class ProfileHeader extends ConsumerWidget {
             children: [
               Chip(
                 avatar: Icon(
-                  private ? Icons.lock_outline : Icons.public,
+                  private ? FLucideIcons.lock : FLucideIcons.globe,
                   size: 16,
                 ),
                 label: Text(private ? l10n.profilePrivate : l10n.profilePublic),
@@ -100,7 +101,7 @@ class ProfileHeader extends ConsumerWidget {
               ),
               if (p?.createdAt case final since?)
                 Chip(
-                  avatar: const Icon(Icons.event_available_outlined, size: 16),
+                  avatar: const Icon(FLucideIcons.calendarCheck, size: 16),
                   label: Text(l10n.memberSince(formatDate(context, since))),
                   visualDensity: VisualDensity.compact,
                 ),
@@ -143,7 +144,7 @@ class ProfileHeader extends ConsumerWidget {
   Widget _editButton(BuildContext context, AppLocalizations l10n) =>
       OutlinedButton.icon(
         onPressed: () => context.push('/settings/profile'),
-        icon: const Icon(Icons.edit_outlined, size: 18),
+        icon: const Icon(FLucideIcons.pencil, size: 18),
         label: Text(l10n.editProfile),
       );
 }
@@ -196,7 +197,7 @@ class StatsRow extends ConsumerWidget {
               IconButton(
                 tooltip: l10n.retry,
                 onPressed: () => ref.invalidate(statsProvider),
-                icon: const Icon(Icons.refresh),
+                icon: const Icon(FLucideIcons.refreshCw),
               ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -52,7 +53,7 @@ class PayoutsPage extends ConsumerWidget {
                   SettingsSectionTitle(l10n.payouts),
                   if (all.isEmpty)
                     EmptyState(
-                      icon: Icons.account_balance_outlined,
+                      icon: FLucideIcons.landmark,
                       title: l10n.noPayouts,
                       message: l10n.noPayoutsInfo,
                     )
@@ -173,9 +174,7 @@ class _MethodCard extends ConsumerWidget {
         ListTile(
           shape: const RoundedRectangleBorder(),
           leading: Icon(
-            method == null
-                ? Icons.error_outline
-                : Icons.account_balance_outlined,
+            method == null ? FLucideIcons.circleAlert : FLucideIcons.landmark,
             color: method == null ? theme.colorScheme.error : null,
           ),
           title: Text(l10n.payoutMethod),
@@ -222,7 +221,7 @@ class PayoutCard extends StatelessWidget {
                 CircleAvatar(
                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                   child: Icon(
-                    Icons.account_balance_outlined,
+                    FLucideIcons.landmark,
                     color: theme.colorScheme.onSecondaryContainer,
                   ),
                 ),
@@ -294,7 +293,7 @@ class PayoutDetailPage extends ConsumerWidget {
               onRetry: () => ref.invalidate(payoutProvider(id)),
               loading: const _PayoutsSkeleton(),
               data: (_) =>
-                  EmptyState(icon: Icons.search_off, title: l10n.loadError),
+                  EmptyState(icon: FLucideIcons.searchX, title: l10n.loadError),
             )
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -308,7 +307,7 @@ class PayoutDetailPage extends ConsumerWidget {
                 if (payout.failureReason.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   ListTile(
-                    leading: const Icon(Icons.info_outline),
+                    leading: const Icon(FLucideIcons.info),
                     title: Text(l10n.failureReason),
                     subtitle: Text(payout.failureReason),
                   ),
@@ -324,7 +323,7 @@ class PayoutDetailPage extends ConsumerWidget {
                       reference: payout.orderNumbers.join(', '),
                     ),
                   ),
-                  icon: const Icon(Icons.support_agent),
+                  icon: const Icon(FLucideIcons.headset),
                   label: Text(l10n.getHelpPayout),
                 ),
                 SettingsSectionTitle(l10n.payoutOrders),
@@ -333,13 +332,13 @@ class PayoutDetailPage extends ConsumerWidget {
                     for (final n in payout.orderNumbers)
                       ListTile(
                         shape: const RoundedRectangleBorder(),
-                        leading: const Icon(Icons.receipt_long_outlined),
+                        leading: const Icon(FLucideIcons.receipt),
                         title: Text(n),
                       ),
                     if (payout.method.isNotEmpty)
                       ListTile(
                         shape: const RoundedRectangleBorder(),
-                        leading: const Icon(Icons.account_balance_outlined),
+                        leading: const Icon(FLucideIcons.landmark),
                         title: Text(l10n.payoutMethod),
                         subtitle: Text(payout.method),
                       ),

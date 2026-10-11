@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -77,45 +78,44 @@ class AccountDrawer extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: StatsRow(),
               ),
-              item(Icons.person_outline, l10n.profileTitle, '/settings'),
+              item(FLucideIcons.user, l10n.profileTitle, '/settings'),
               const Divider(),
+              item(FLucideIcons.receipt, l10n.purchases, '/account/purchases'),
+              item(FLucideIcons.tag, l10n.myListings, '/account/listings'),
+              item(FLucideIcons.store, l10n.sales, '/account/sales'),
+              item(FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
               item(
-                Icons.receipt_long_outlined,
-                l10n.purchases,
-                '/account/purchases',
-              ),
-              item(Icons.sell_outlined, l10n.myListings, '/account/listings'),
-              item(Icons.point_of_sale_outlined, l10n.sales, '/account/sales'),
-              item(
-                Icons.account_balance_wallet_outlined,
-                l10n.payouts,
-                '/account/payouts',
-              ),
-              item(
-                Icons.account_balance_outlined,
+                FLucideIcons.landmark,
                 l10n.payoutMethod,
                 '/account/payout-method',
               ),
               const Divider(),
               item(
-                Icons.palette_outlined,
+                FLucideIcons.palette,
                 l10n.appearance,
                 '/settings/appearance',
               ),
               item(
-                Icons.notifications_outlined,
+                FLucideIcons.bell,
                 l10n.notifications,
                 '/settings/notifications',
               ),
               item(
-                Icons.shield_outlined,
+                FLucideIcons.shield,
                 l10n.privacySecurity,
                 '/settings/privacy',
               ),
-              item(Icons.help_outline, l10n.helpCenter, '/support'),
+              item(
+                FLucideIcons.circleQuestionMark,
+                l10n.helpCenter,
+                '/support',
+              ),
               const Divider(),
               ListTile(
-                leading: Icon(Icons.logout, color: theme.colorScheme.error),
+                leading: Icon(
+                  FLucideIcons.logOut,
+                  color: theme.colorScheme.error,
+                ),
                 title: Text(
                   l10n.logoutButton,
                   style: TextStyle(color: theme.colorScheme.error),
@@ -129,7 +129,7 @@ class AccountDrawer extends ConsumerWidget {
               ),
             ] else ...[
               ListTile(
-                leading: const Icon(Icons.login),
+                leading: const Icon(FLucideIcons.logIn),
                 title: Text(l10n.signInOrUp),
                 onTap: () {
                   Navigator.pop(context);
@@ -137,8 +137,12 @@ class AccountDrawer extends ConsumerWidget {
                   context.go('/login');
                 },
               ),
-              item(Icons.settings_outlined, l10n.settingsTitle, '/settings'),
-              item(Icons.help_outline, l10n.helpCenter, '/support'),
+              item(FLucideIcons.settings, l10n.settingsTitle, '/settings'),
+              item(
+                FLucideIcons.circleQuestionMark,
+                l10n.helpCenter,
+                '/support',
+              ),
             ],
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -85,9 +86,7 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
               data: (all) {
                 if (all.isEmpty) {
                   return EmptyState(
-                    icon: buyer
-                        ? Icons.receipt_long_outlined
-                        : Icons.point_of_sale_outlined,
+                    icon: buyer ? FLucideIcons.receipt : FLucideIcons.store,
                     title: buyer ? l10n.noPurchases : l10n.noSales,
                     message: buyer ? l10n.noPurchasesInfo : l10n.noSalesInfo,
                   );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -161,9 +162,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                               margin: EdgeInsets.zero,
                               color: theme.colorScheme.secondaryContainer,
                               child: ListTile(
-                                leading: const Icon(
-                                  Icons.mark_email_unread_outlined,
-                                ),
+                                leading: const Icon(FLucideIcons.mailWarning),
                                 title: Text(l10n.verifyBeforeSelling),
                                 trailing: TextButton(
                                   onPressed: () =>
@@ -178,9 +177,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                           controller: _name,
                           decoration: InputDecoration(
                             labelText: l10n.eventName,
-                            prefixIcon: const Icon(
-                              Icons.local_activity_outlined,
-                            ),
+                            prefixIcon: const Icon(FLucideIcons.ticket),
                           ),
                           textCapitalization: TextCapitalization.words,
                           validator: required,
@@ -291,7 +288,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                           controller: _price,
                           decoration: InputDecoration(
                             labelText: l10n.pricePerTicket,
-                            prefixIcon: const Icon(Icons.sell_outlined),
+                            prefixIcon: const Icon(FLucideIcons.tag),
                             suffixText: currency.symbol,
                           ),
                           keyboardType: const TextInputType.numberWithOptions(
@@ -444,12 +441,12 @@ class _PayoutRequired extends StatelessWidget {
     return Center(
       child: SingleChildScrollView(
         child: EmptyState(
-          icon: Icons.account_balance_outlined,
+          icon: FLucideIcons.landmark,
           title: l10n.payoutRequiredTitle,
           message: l10n.payoutRequiredInfo,
           action: FilledButton.icon(
             onPressed: () => context.push('/account/payout-method'),
-            icon: const Icon(Icons.add),
+            icon: const Icon(FLucideIcons.plus),
             label: Text(l10n.setUpPayout),
           ),
         ),
@@ -478,7 +475,7 @@ class _DateField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: l10n.dateTime,
-          prefixIcon: const Icon(Icons.event_outlined),
+          prefixIcon: const Icon(FLucideIcons.calendar),
           errorText: error,
         ),
         isEmpty: date == null,
@@ -503,7 +500,7 @@ class _QuantityStepper extends StatelessWidget {
         Expanded(child: Text(l10n.quantity, style: theme.textTheme.titleSmall)),
         IconButton.filledTonal(
           onPressed: value > 1 ? () => onChanged(value - 1) : null,
-          icon: const Icon(Icons.remove),
+          icon: const Icon(FLucideIcons.minus),
         ),
         SizedBox(
           width: 48,
@@ -523,7 +520,7 @@ class _QuantityStepper extends StatelessWidget {
         ),
         IconButton.filledTonal(
           onPressed: value < 20 ? () => onChanged(value + 1) : null,
-          icon: const Icon(Icons.add),
+          icon: const Icon(FLucideIcons.plus),
         ),
       ],
     );

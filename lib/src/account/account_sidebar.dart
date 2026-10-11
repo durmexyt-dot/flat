@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 
 /// Account entries, shared by the sidebar and the drawer.
 List<(IconData, String, String)> accountEntries(AppLocalizations l10n) => [
-  (Icons.person_outline, l10n.profileTitle, '/settings'),
-  (Icons.receipt_long_outlined, l10n.purchases, '/account/purchases'),
-  (Icons.sell_outlined, l10n.myListings, '/account/listings'),
-  (Icons.point_of_sale_outlined, l10n.sales, '/account/sales'),
-  (Icons.account_balance_wallet_outlined, l10n.payouts, '/account/payouts'),
-  (Icons.account_balance_outlined, l10n.payoutMethod, '/account/payout-method'),
-  (Icons.palette_outlined, l10n.appearance, '/settings/appearance'),
-  (Icons.notifications_outlined, l10n.notifications, '/settings/notifications'),
-  (Icons.shield_outlined, l10n.privacySecurity, '/settings/privacy'),
-  (Icons.help_outline, l10n.helpCenter, '/support'),
+  (FLucideIcons.user, l10n.profileTitle, '/settings'),
+  (FLucideIcons.receipt, l10n.purchases, '/account/purchases'),
+  (FLucideIcons.tag, l10n.myListings, '/account/listings'),
+  (FLucideIcons.store, l10n.sales, '/account/sales'),
+  (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
+  (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
+  (FLucideIcons.palette, l10n.appearance, '/settings/appearance'),
+  (FLucideIcons.bell, l10n.notifications, '/settings/notifications'),
+  (FLucideIcons.shield, l10n.privacySecurity, '/settings/privacy'),
+  (FLucideIcons.circleQuestionMark, l10n.helpCenter, '/support'),
 ];
 
 /// Left navigation of the account area on wide screens.
@@ -54,7 +55,7 @@ class AccountSidebar extends ConsumerWidget {
           const Divider(height: 24),
           ListTile(
             dense: true,
-            leading: Icon(Icons.logout, size: 20, color: colors.error),
+            leading: Icon(FLucideIcons.logOut, size: 20, color: colors.error),
             title: Text(
               l10n.logoutButton,
               style: TextStyle(color: colors.error),

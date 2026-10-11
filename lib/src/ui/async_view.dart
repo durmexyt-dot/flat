@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 
@@ -59,7 +60,7 @@ class ErrorState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.cloud_off_outlined,
+            FLucideIcons.cloudOff,
             size: 48,
             color: theme.colorScheme.outline,
           ),
@@ -77,7 +78,7 @@ class ErrorState extends StatelessWidget {
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(FLucideIcons.refreshCw),
               label: Text(l10n.retry),
             ),
           ],

@@ -5,6 +5,7 @@ import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 
 import 'helpers.dart';
 
@@ -36,7 +37,7 @@ Future<void> _toCheckout(WidgetTester tester, {int quantity = 4}) async {
   await tester.pumpAndSettle();
   await tester.tap(find.text('Sarajevo Jazz Festival'));
   await tester.pumpAndSettle();
-  await tapVisible(tester, find.byIcon(Icons.add).last);
+  await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
   await tapVisible(tester, find.text('Kupi karte').last);
   expect(find.text('Plaćanje'), findsOneWidget);
   expect(find.text('Testni način · bez pravog novca'), findsOneWidget);

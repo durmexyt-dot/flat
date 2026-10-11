@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'auth_repository.dart';
@@ -140,7 +141,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Center(
           child: TextButton.icon(
             onPressed: () => ref.read(guestModeProvider.notifier).enter(),
-            icon: const Icon(Icons.travel_explore),
+            icon: const Icon(FLucideIcons.search),
             label: Text(l10n.continueAsGuest),
             style: TextButton.styleFrom(
               foregroundColor: theme.colorScheme.onSurfaceVariant,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../brand/brand.dart';
@@ -41,7 +42,7 @@ class SettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.settings_outlined),
+      icon: const Icon(FLucideIcons.settings),
       tooltip: AppLocalizations.of(context).settingsTitle,
       onPressed: () => context.push('/settings'),
     );
@@ -198,13 +199,9 @@ class _PasswordFieldState extends State<PasswordField> {
       controller: widget.controller,
       decoration: InputDecoration(
         labelText: widget.label,
-        prefixIcon: const Icon(Icons.lock_outline),
+        prefixIcon: const Icon(FLucideIcons.lock),
         suffixIcon: IconButton(
-          icon: Icon(
-            _obscure
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
-          ),
+          icon: Icon(_obscure ? FLucideIcons.eye : FLucideIcons.eyeOff),
           tooltip: _obscure ? l10n.showPassword : l10n.hidePassword,
           onPressed: () => setState(() => _obscure = !_obscure),
         ),
@@ -240,7 +237,7 @@ class EmailField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         labelText: l10n.emailLabel,
-        prefixIcon: const Icon(Icons.email_outlined),
+        prefixIcon: const Icon(FLucideIcons.mail),
       ),
       keyboardType: TextInputType.emailAddress,
       autofillHints: const [AutofillHints.email],

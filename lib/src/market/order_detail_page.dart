@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -49,7 +50,7 @@ class OrderDetailPage extends ConsumerWidget {
               onRetry: () => ref.invalidate(orderProvider(id)),
               loading: const SkeletonTicketList(count: 1),
               data: (_) =>
-                  EmptyState(icon: Icons.search_off, title: l10n.loadError),
+                  EmptyState(icon: FLucideIcons.searchX, title: l10n.loadError),
             )
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -87,7 +88,7 @@ class OrderDetailPage extends ConsumerWidget {
                       reference: order.number,
                     ),
                   ),
-                  icon: const Icon(Icons.support_agent),
+                  icon: const Icon(FLucideIcons.headset),
                   label: Text(l10n.getHelpOrder),
                 ),
                 if (role == OrderRole.seller &&
@@ -95,7 +96,7 @@ class OrderDetailPage extends ConsumerWidget {
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () => context.push('/account/payouts'),
-                    icon: const Icon(Icons.account_balance_outlined),
+                    icon: const Icon(FLucideIcons.landmark),
                     label: Text(l10n.payouts),
                   ),
                 ],
@@ -189,20 +190,20 @@ class NextStepCard extends StatelessWidget {
       StatusTone.negative => (
         c.errorContainer,
         c.onErrorContainer,
-        Icons.report_outlined,
+        FLucideIcons.octagonAlert,
       ),
       // Neutral card; only problems get a colored surface.
       StatusTone.positive => (
         c.surfaceContainerHigh,
         c.onSurface,
-        Icons.check_circle_outline,
+        FLucideIcons.circleCheck,
       ),
       StatusTone.neutral => (
         c.surfaceContainerHigh,
         c.onSurface,
-        Icons.info_outline,
+        FLucideIcons.info,
       ),
-      _ => (c.surfaceContainerHigh, c.onSurface, Icons.schedule),
+      _ => (c.surfaceContainerHigh, c.onSurface, FLucideIcons.clock),
     };
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -307,7 +308,7 @@ class _Invoice extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: l10n.copy,
-                  icon: const Icon(Icons.copy_outlined),
+                  icon: const Icon(FLucideIcons.copy),
                   onPressed: () async {
                     await Clipboard.setData(ClipboardData(text: order.number));
                     showSnack(l10n.copied);

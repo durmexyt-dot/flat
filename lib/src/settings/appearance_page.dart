@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../ui/app_style.dart';
@@ -60,9 +61,9 @@ class AppearancePage extends ConsumerWidget {
           SegmentedButton<ThemeMode>(
             segments: [
               for (final (mode, icon) in [
-                (ThemeMode.system, Icons.brightness_auto_outlined),
-                (ThemeMode.light, Icons.light_mode_outlined),
-                (ThemeMode.dark, Icons.dark_mode_outlined),
+                (ThemeMode.system, FLucideIcons.sunMoon),
+                (ThemeMode.light, FLucideIcons.sun),
+                (ThemeMode.dark, FLucideIcons.moon),
               ])
                 ButtonSegment(
                   value: mode,
@@ -211,7 +212,7 @@ class _Preview extends StatelessWidget {
               runSpacing: 8,
               children: [
                 ActionChip(
-                  avatar: const Icon(Icons.music_note_outlined, size: 18),
+                  avatar: const Icon(FLucideIcons.music, size: 18),
                   label: Text(l10n.catConcerts),
                   onPressed: () {},
                 ),
@@ -272,7 +273,7 @@ class _ColorDot extends StatelessWidget {
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeOutBack,
                 child: Icon(
-                  Icons.check,
+                  FLucideIcons.check,
                   size: 20,
                   color: colorSchemeFor(color, theme.brightness).onPrimary,
                 ),

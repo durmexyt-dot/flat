@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -51,13 +52,13 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
         if (isWideLayout(context))
           FilledButton.icon(
             onPressed: () => context.push('/sell'),
-            icon: const Icon(Icons.add),
+            icon: const Icon(FLucideIcons.plus),
             label: Text(l10n.sellTickets),
           ),
       ],
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/sell'),
-        icon: const Icon(Icons.add),
+        icon: const Icon(FLucideIcons.plus),
         label: Text(l10n.sellTickets),
       ),
       body: Column(
@@ -89,7 +90,7 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                 final shown = all.where(_matches).toList();
                 if (all.isEmpty) {
                   return EmptyState(
-                    icon: Icons.sell_outlined,
+                    icon: FLucideIcons.tag,
                     title: l10n.noListings,
                     message: l10n.noListingsInfo,
                     action: FilledButton(

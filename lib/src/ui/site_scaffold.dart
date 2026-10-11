@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/account_drawer.dart';
@@ -209,7 +210,7 @@ class SiteHeader extends ConsumerWidget {
                     IconButton(
                       tooltip: l10n.settingsTitle,
                       onPressed: () => context.push('/settings'),
-                      icon: const Icon(Icons.settings_outlined),
+                      icon: const Icon(FLucideIcons.settings),
                     ),
                     const SizedBox(width: 8),
                     TextButton(
@@ -250,7 +251,7 @@ class SiteHeader extends ConsumerWidget {
                                   hero: false,
                                 ),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.expand_more),
+                                const Icon(FLucideIcons.chevronDown),
                               ],
                             ),
                           ),

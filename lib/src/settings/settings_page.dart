@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/profile_header.dart';
@@ -49,7 +50,7 @@ class SettingsPage extends ConsumerWidget {
         SettingsGroup(
           children: [
             SettingsLinkTile(
-              icon: Icons.receipt_long_outlined,
+              icon: FLucideIcons.receipt,
               title: l10n.purchases,
               onTap: () => context.push('/account/purchases'),
             ),
@@ -59,22 +60,22 @@ class SettingsPage extends ConsumerWidget {
         SettingsGroup(
           children: [
             SettingsLinkTile(
-              icon: Icons.sell_outlined,
+              icon: FLucideIcons.tag,
               title: l10n.myListings,
               onTap: () => context.push('/account/listings'),
             ),
             SettingsLinkTile(
-              icon: Icons.point_of_sale_outlined,
+              icon: FLucideIcons.store,
               title: l10n.sales,
               onTap: () => context.push('/account/sales'),
             ),
             SettingsLinkTile(
-              icon: Icons.account_balance_wallet_outlined,
+              icon: FLucideIcons.wallet,
               title: l10n.payouts,
               onTap: () => context.push('/account/payouts'),
             ),
             SettingsLinkTile(
-              icon: Icons.account_balance_outlined,
+              icon: FLucideIcons.landmark,
               title: l10n.payoutMethod,
               subtitle: payoutMethod?.masked ?? l10n.payoutMethodMissing,
               onTap: () => context.push('/account/payout-method'),
@@ -86,7 +87,7 @@ class SettingsPage extends ConsumerWidget {
       SettingsGroup(
         children: [
           SettingsLinkTile(
-            icon: Icons.palette_outlined,
+            icon: FLucideIcons.palette,
             title: l10n.appearance,
             subtitle:
                 '${themeModeName(l10n, settings.themeMode)} · '
@@ -96,7 +97,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             shape: const RoundedRectangleBorder(),
-            leading: const Icon(Icons.language),
+            leading: const Icon(FLucideIcons.languages),
             title: Text(l10n.language),
             trailing: DropdownButton<String>(
               value: settings.locale.languageCode,
@@ -110,7 +111,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             shape: const RoundedRectangleBorder(),
-            leading: const Icon(Icons.payments_outlined),
+            leading: const Icon(FLucideIcons.banknote),
             title: Text(l10n.currency),
             trailing: DropdownButton<Currency>(
               value: settings.currency,
@@ -131,18 +132,18 @@ class SettingsPage extends ConsumerWidget {
       SettingsGroup(
         children: [
           SettingsLinkTile(
-            icon: Icons.help_outline,
+            icon: FLucideIcons.circleQuestionMark,
             title: l10n.helpCenter,
             onTap: () => context.push('/support'),
           ),
           if (user != null)
             SettingsLinkTile(
-              icon: Icons.support_agent,
+              icon: FLucideIcons.headset,
               title: l10n.contactSupport,
               onTap: () => context.push('/support/new'),
             ),
           SettingsLinkTile(
-            icon: Icons.info_outline,
+            icon: FLucideIcons.info,
             title: l10n.about,
             onTap: () => showAboutDialog(
               context: context,
@@ -159,12 +160,12 @@ class SettingsPage extends ConsumerWidget {
         SettingsGroup(
           children: [
             SettingsLinkTile(
-              icon: Icons.notifications_outlined,
+              icon: FLucideIcons.bell,
               title: l10n.notifications,
               onTap: () => context.push('/settings/notifications'),
             ),
             SettingsLinkTile(
-              icon: Icons.shield_outlined,
+              icon: FLucideIcons.shield,
               title: l10n.privacySecurity,
               trailing: user.emailVerified
                   ? null
@@ -172,11 +173,11 @@ class SettingsPage extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.error_outline,
+                          FLucideIcons.circleAlert,
                           size: 18,
                           color: theme.colorScheme.error,
                         ),
-                        const Icon(Icons.chevron_right),
+                        const Icon(FLucideIcons.chevronRight),
                       ],
                     ),
               onTap: () => context.push('/settings/privacy'),
@@ -188,7 +189,10 @@ class SettingsPage extends ConsumerWidget {
           children: [
             ListTile(
               shape: const RoundedRectangleBorder(),
-              leading: Icon(Icons.logout, color: theme.colorScheme.error),
+              leading: Icon(
+                FLucideIcons.logOut,
+                color: theme.colorScheme.error,
+              ),
               title: Text(
                 l10n.logoutButton,
                 style: TextStyle(color: theme.colorScheme.error),
@@ -264,7 +268,7 @@ class _GuestCard extends StatelessWidget {
               radius: 32,
               backgroundColor: theme.colorScheme.surfaceContainerHighest,
               child: Icon(
-                Icons.person_outline,
+                FLucideIcons.user,
                 size: 32,
                 color: theme.colorScheme.onSurfaceVariant,
               ),

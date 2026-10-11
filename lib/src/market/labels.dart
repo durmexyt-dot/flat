@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -12,11 +13,11 @@ String categoryName(AppLocalizations l10n, EventCategory c) => switch (c) {
 };
 
 IconData categoryIcon(EventCategory c) => switch (c) {
-  EventCategory.concerts => Icons.music_note_outlined,
-  EventCategory.sports => Icons.sports_soccer_outlined,
-  EventCategory.theater => Icons.theater_comedy_outlined,
-  EventCategory.festivals => Icons.festival_outlined,
-  EventCategory.other => Icons.local_activity_outlined,
+  EventCategory.concerts => FLucideIcons.music,
+  EventCategory.sports => FLucideIcons.volleyball,
+  EventCategory.theater => FLucideIcons.drama,
+  EventCategory.festivals => FLucideIcons.tent,
+  EventCategory.other => FLucideIcons.ticket,
 };
 
 String ticketTypeName(AppLocalizations l10n, TicketType t) => switch (t) {

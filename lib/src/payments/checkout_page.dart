@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -93,7 +94,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               onRetry: () => ref.invalidate(listingProvider(widget.listingId)),
               loading: const SkeletonTicketList(count: 1),
               data: (_) => EmptyState(
-                icon: Icons.search_off,
+                icon: FLucideIcons.searchX,
                 title: l10n.listingNotFound,
               ),
             )
@@ -126,7 +127,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Chip(
-                  avatar: const Icon(Icons.science_outlined, size: 18),
+                  avatar: const Icon(FLucideIcons.flaskConical, size: 18),
                   label: Text(l10n.testModeBadge),
                   visualDensity: VisualDensity.compact,
                 ),
@@ -152,7 +153,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                                   _order = null;
                                 })
                               : null,
-                          icon: const Icon(Icons.remove),
+                          icon: const Icon(FLucideIcons.minus),
                         ),
                         SizedBox(
                           width: 40,
@@ -169,7 +170,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                                   _order = null;
                                 })
                               : null,
-                          icon: const Icon(Icons.add),
+                          icon: const Icon(FLucideIcons.plus),
                         ),
                       ],
                     ),
@@ -191,7 +192,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             const SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.email_outlined),
+              leading: const Icon(FLucideIcons.mail),
               title: Text(l10n.buyerEmail),
               subtitle: Text(email),
             ),
@@ -225,7 +226,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             Row(
               children: [
                 Icon(
-                  Icons.verified_user_outlined,
+                  FLucideIcons.shieldCheck,
                   color: theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
@@ -292,7 +293,7 @@ class _FailureCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.credit_card_off_outlined, color: colors.onErrorContainer),
+          Icon(FLucideIcons.creditCard, color: colors.onErrorContainer),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

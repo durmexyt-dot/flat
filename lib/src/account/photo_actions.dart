@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/repositories.dart';
@@ -21,14 +22,14 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.photo_library_outlined),
+            leading: const Icon(FLucideIcons.images),
             title: Text(l10n.changePhoto),
             onTap: () => Navigator.pop(context, 'change'),
           ),
           if (hasPhoto)
             ListTile(
               leading: Icon(
-                Icons.delete_outline,
+                FLucideIcons.trash2,
                 color: Theme.of(context).colorScheme.error,
               ),
               title: Text(l10n.removePhoto),

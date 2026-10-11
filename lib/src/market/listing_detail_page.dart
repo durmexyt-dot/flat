@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -41,7 +42,7 @@ class ListingDetailPage extends ConsumerWidget {
               onRetry: () => ref.invalidate(listingProvider(id)),
               loading: const SkeletonTicketList(count: 1),
               data: (_) => EmptyState(
-                icon: Icons.search_off,
+                icon: FLucideIcons.searchX,
                 title: l10n.listingNotFound,
               ),
             )
@@ -81,29 +82,28 @@ class _Facts extends StatelessWidget {
     return SettingsGroup(
       children: [
         _Fact(
-          Icons.event_outlined,
+          FLucideIcons.calendar,
           l10n.dateTime,
           formatDateTime(context, listing.event.date),
         ),
         _Fact(
-          Icons.place_outlined,
+          FLucideIcons.mapPin,
           l10n.venue,
           '${listing.event.venue}, ${listing.event.city}',
         ),
         _Fact(
-          Icons.confirmation_number_outlined,
+          FLucideIcons.ticket,
           l10n.ticketType,
           ticketTypeName(l10n, listing.ticketType),
         ),
-        if (seats.isNotEmpty)
-          _Fact(Icons.event_seat_outlined, l10n.seats, seats),
+        if (seats.isNotEmpty) _Fact(FLucideIcons.armchair, l10n.seats, seats),
         _Fact(
-          Icons.inventory_2_outlined,
+          FLucideIcons.packageOpen,
           l10n.quantity,
           l10n.ticketsLeft('${listing.available}', '${listing.quantity}'),
         ),
         if (listing.note.isNotEmpty)
-          _Fact(Icons.notes_outlined, l10n.noteLabel, listing.note),
+          _Fact(FLucideIcons.notebookText, l10n.noteLabel, listing.note),
       ],
     );
   }
@@ -230,12 +230,12 @@ class _SellerPanel extends ConsumerWidget {
                     children: [
                       FilledButton.tonalIcon(
                         onPressed: () => _editPrice(context, ref),
-                        icon: const Icon(Icons.edit_outlined),
+                        icon: const Icon(FLucideIcons.pencil),
                         label: Text(l10n.editPrice),
                       ),
                       OutlinedButton.icon(
                         onPressed: () => _withdraw(context, ref),
-                        icon: const Icon(Icons.visibility_off_outlined),
+                        icon: const Icon(FLucideIcons.eyeOff),
                         label: Text(l10n.withdrawListing),
                       ),
                     ],
@@ -404,7 +404,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                       onPressed: quantity > 1
                           ? () => setState(() => _quantity = quantity - 1)
                           : null,
-                      icon: const Icon(Icons.remove),
+                      icon: const Icon(FLucideIcons.minus),
                     ),
                     SizedBox(
                       width: 40,
@@ -418,7 +418,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                       onPressed: quantity < listing.available
                           ? () => setState(() => _quantity = quantity + 1)
                           : null,
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(FLucideIcons.plus),
                     ),
                   ],
                 ),
@@ -445,16 +445,13 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
         FilledButton.icon(
           onPressed: available ? _buy : null,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          icon: const Icon(Icons.shopping_bag_outlined),
+          icon: const Icon(FLucideIcons.shoppingBag),
           label: Text(l10n.buyTickets),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Icon(
-              Icons.verified_user_outlined,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(FLucideIcons.shieldCheck, color: theme.colorScheme.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Text(

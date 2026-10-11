@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_widgets.dart';
@@ -138,7 +139,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                 controller: _holder,
                 decoration: InputDecoration(
                   labelText: l10n.accountHolder,
-                  prefixIcon: const Icon(Icons.person_outline),
+                  prefixIcon: const Icon(FLucideIcons.user),
                 ),
                 textCapitalization: TextCapitalization.words,
                 validator: (v) =>
@@ -150,7 +151,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                 decoration: InputDecoration(
                   labelText: l10n.iban,
                   hintText: 'BA39 1290 0794 0102 8494',
-                  prefixIcon: const Icon(Icons.account_balance_outlined),
+                  prefixIcon: const Icon(FLucideIcons.landmark),
                 ),
                 // No autocorrect, suggestions or smart punctuation: iOS would
                 // otherwise change letters and digits of the IBAN.

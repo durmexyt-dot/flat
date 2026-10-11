@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -95,7 +96,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             children: [
               SwitchListTile(
                 shape: const RoundedRectangleBorder(),
-                secondary: const Icon(Icons.email_outlined),
+                secondary: const Icon(FLucideIcons.mail),
                 title: Text(l10n.channelEmail),
                 subtitle: Text(l10n.channelEmailInfo(user?.email ?? '')),
                 value: prefs.email,
@@ -103,7 +104,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               ),
               SwitchListTile(
                 shape: const RoundedRectangleBorder(),
-                secondary: const Icon(Icons.notifications_active_outlined),
+                secondary: const Icon(FLucideIcons.bellRing),
                 title: Text(l10n.channelPush),
                 subtitle: pushHint == null ? null : Text(pushHint),
                 value: pushOn,
@@ -124,7 +125,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
                         onPressed: _sendTest,
-                        icon: const Icon(Icons.send_outlined),
+                        icon: const Icon(FLucideIcons.send),
                         label: Text(l10n.sendTestNotification),
                       ),
                     ),

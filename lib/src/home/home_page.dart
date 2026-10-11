@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/avatar.dart';
@@ -71,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       narrowAppBar: _narrowAppBar(context),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _sell,
-        icon: const Icon(Icons.sell_outlined),
+        icon: const Icon(FLucideIcons.tag),
         label: Text(l10n.sellTickets),
       ),
       body: RefreshIndicator(
@@ -210,11 +211,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     return SearchBar(
       controller: _search,
       hintText: l10n.searchHint,
-      leading: const Icon(Icons.search),
+      leading: const Icon(FLucideIcons.search),
       trailing: [
         if (_search.text.isNotEmpty)
           IconButton(
-            icon: const Icon(Icons.close),
+            icon: const Icon(FLucideIcons.x),
             onPressed: () => setState(_search.clear),
           ),
       ],
@@ -259,7 +260,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Icon(Icons.lock_open_outlined, color: colors.onSurfaceVariant),
+            Icon(FLucideIcons.lockOpen, color: colors.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(child: Text(l10n.guestSignInPrompt)),
             TextButton(
@@ -302,7 +303,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           data: (all) {
             if (all.isEmpty) {
               return EmptyState(
-                icon: Icons.local_activity_outlined,
+                icon: FLucideIcons.ticket,
                 title: l10n.noEvents,
                 message: l10n.noEventsInfo,
               );
@@ -310,7 +311,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             final shown = all.where(_matches).toList();
             if (shown.isEmpty) {
               return EmptyState(
-                icon: Icons.search_off,
+                icon: FLucideIcons.searchX,
                 title: l10n.searchNoResults(_search.text.trim()),
               );
             }
