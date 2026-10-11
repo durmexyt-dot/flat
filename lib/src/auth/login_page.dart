@@ -90,29 +90,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
+        // Side by side; on narrow phones the link moves below instead of
+        // being cut off.
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Expanded(
-              child: FCheckbox(
-                label: Text(l10n.keepSignedIn),
-                value: _keepSignedIn,
-                onChange: (v) => setState(() => _keepSignedIn = v),
-              ),
-            ),
-            Flexible(
-              child: FButton(
-                variant: FButtonVariant.ghost,
-                size: FButtonSizeVariant.sm,
-                mainAxisSize: MainAxisSize.min,
-                onPress: () =>
-                    context.push('/forgot-password', extra: _email.text.trim()),
-                // Bounded by the outer Flexible, so the label can shrink.
-                child: Flexible(
+            // FCheckbox's own label needs a bounded width; a separate,
+            // tappable label keeps its natural width in this row.
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                FCheckbox(
+                  semanticsLabel: l10n.keepSignedIn,
+                  value: _keepSignedIn,
+                  onChange: (v) => setState(() => _keepSignedIn = v),
+                ),
+                FTappable(
+                  onPress: () => setState(() => _keepSignedIn = !_keepSignedIn),
                   child: Text(
-                    l10n.forgotPassword,
-                    textAlign: TextAlign.end,
-                    overflow: TextOverflow.ellipsis,
+                    l10n.keepSignedIn,
+                    style: theme.typography.body.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
                   ),
+                ),
+              ],
+            ),
+            FButton(
+              variant: FButtonVariant.ghost,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () =>
+                  context.push('/forgot-password', extra: _email.text.trim()),
+              // Bounded by the wrap's width, so the label can shrink.
+              child: Flexible(
+                child: Text(
+                  l10n.forgotPassword,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
