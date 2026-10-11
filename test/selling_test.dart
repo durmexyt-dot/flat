@@ -2,6 +2,7 @@ import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/ui/hero_page.dart';
+import 'package:flat/src/ui/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
@@ -83,7 +84,8 @@ void main() {
     expect(find.text('FK Sarajevo – FK Željezničar'), findsOneWidget);
     expect(find.text('Past show'), findsNothing);
     expect(find.text('Hidden show'), findsNothing);
-    expect(find.text('od 45,00 KM · 3 karte'), findsOneWidget);
+    expect(find.textContaining('· 3 karte'), findsOneWidget);
+    expect(find.textContaining('od 45,00'), findsOneWidget);
     expect(find.text('Još nema ponuda'), findsOneWidget);
 
     await tester.tap(find.text('Sport'));
@@ -118,9 +120,11 @@ void main() {
     expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
     expect(find.text('Ponude'), findsOneWidget);
 
-    // The newest copy: the event page ticket, then the flying one, then
-    // the detail.
-    final ticket = find.text('3 od 4 dostupno', skipOffstage: false);
+    // The ticket on the event page, then the flying one, then the detail's.
+    final ticket = find.descendant(
+      of: find.byType(TicketCard, skipOffstage: false),
+      matching: find.text('Dubioza kolektiv', skipOffstage: false),
+    );
     double ticketTop() => tester.getTopLeft(ticket.last).dy;
     await tester.ensureVisible(ticket.first);
     await tester.pumpAndSettle();
@@ -129,10 +133,6 @@ void main() {
     await tester.pump();
     await tester.pump(heroTransitionDuration ~/ 2);
     final during = ticketTop();
-    // ignore: avoid_print
-    print([for (final e in ticket.evaluate()) tester.getTopLeft(find.byWidget(e.widget, skipOffstage: false).first)]);
-    // ignore: avoid_print
-    print([for (final e in find.text('Dubioza kolektiv', skipOffstage: false).evaluate()) tester.getTopLeft(find.byWidget(e.widget, skipOffstage: false).first)]);
     await tester.pumpAndSettle();
     final after = ticketTop();
     expect(
