@@ -85,6 +85,11 @@ web/index.html              HTML splash shown while Flutter loads
    [`firestore.rules`](firestore.rules) and publish. With the Firebase CLI:
    `firebase deploy --only firestore:rules`.
 
+Test data: `tool/seed_test_data.py` signs in a test seller
+(`test.prodavac@stubswap.test`, password via `STUBSWAP_SELLER_PASSWORD`),
+adds a profile and payout method and lists a few test events. Safe to run
+again.
+
 Test the rules with the Firestore emulator (needs Java):
 
 ```sh
