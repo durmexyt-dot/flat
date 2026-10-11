@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
@@ -25,7 +26,11 @@ class AsyncView<T> extends StatelessWidget {
     // Riverpod keeps a failed provider "loading" while it retries, with the
     // error attached; show the error then instead of an endless skeleton.
     final Widget child = value.hasError
-        ? ErrorState(key: const ValueKey('error'), onRetry: onRetry)
+        ? ErrorState(
+            key: const ValueKey('error'),
+            onRetry: onRetry,
+            error: value.error,
+          )
         : value.hasValue
         ? KeyedSubtree(
             key: const ValueKey('data'),
@@ -45,14 +50,25 @@ class AsyncView<T> extends StatelessWidget {
   }
 }
 
+/// A short code for an error, shown small so a report says what failed,
+/// e.g. "permission-denied".
+String? errorCode(Object? error) => switch (error) {
+  null => null,
+  FirebaseException(:final code) => code,
+  _ => error.runtimeType.toString(),
+};
+
 class ErrorState extends StatelessWidget {
-  const ErrorState({super.key, this.onRetry});
+  const ErrorState({super.key, this.onRetry, this.error});
 
   final VoidCallback? onRetry;
+  final Object? error;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final code = errorCode(error);
+    if (error != null) debugPrint('Load error: $error');
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -74,6 +90,15 @@ class ErrorState extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
+          if (code != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              code,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
+            ),
+          ],
           if (onRetry != null) ...[
             const SizedBox(height: 12),
             FButton(

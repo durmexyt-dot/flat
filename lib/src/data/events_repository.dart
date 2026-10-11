@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models.dart';
 import 'repositories.dart';
+import 'live_snapshots.dart';
 
 /// Events: users add them unconfirmed, the team (admins and support
 /// accounts) checks, corrects and confirms them. Everybody sees all events
@@ -66,7 +67,7 @@ class FirestoreEventRepository implements EventRepository {
     final Query<Map<String, dynamic>> q = includeHidden
         ? _events
         : _events.where('status', whereIn: visibleEventStatuses);
-    return q.snapshots().map(
+    return q.liveSnapshots().map(
       (s) =>
           [for (final d in s.docs) _event(d)]
             ..sort((a, b) => a.info.date.compareTo(b.info.date)),
@@ -75,7 +76,7 @@ class FirestoreEventRepository implements EventRepository {
 
   @override
   Stream<Event?> watchEvent(String id) =>
-      _events.doc(id).snapshots().map((d) => d.exists ? _event(d) : null);
+      _events.doc(id).liveSnapshots().map((d) => d.exists ? _event(d) : null);
 
   @override
   Future<String?> loadImage(String id) async =>

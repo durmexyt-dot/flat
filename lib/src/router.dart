@@ -143,9 +143,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Users add events too (unconfirmed until the team checks them).
       _route(
         '/events/new',
-        (state) => EventEditorPage(
-          forSale: state.uri.queryParameters['sell'] == '1',
-        ),
+        (state) =>
+            EventEditorPage(forSale: state.uri.queryParameters['sell'] == '1'),
       ),
       _route(
         '/info/:topic',

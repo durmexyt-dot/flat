@@ -8,6 +8,7 @@ import '../auth/auth_repository.dart';
 import '../../firebase_options_prod.dart';
 import '../config/app_info.dart';
 import 'models.dart';
+import 'live_snapshots.dart';
 
 /// Thrown when a username is already taken.
 class UsernameTakenException implements Exception {}
@@ -88,7 +89,7 @@ class FirestoreProfileRepository implements ProfileRepository {
   @override
   Stream<UserProfile?> watchProfile(String uid) =>
       _user(uid)
-          .snapshots()
+          .liveSnapshots()
           .map((d) => d.exists ? UserProfile.fromMap(uid, _data(d)) : null);
 
   @override
@@ -206,7 +207,7 @@ class FirestoreMarketRepository implements MarketRepository {
   Stream<List<Listing>> watchActiveListings() => _listings
       .where('status', isEqualTo: ListingStatus.active.name)
       .limit(300)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (q) =>
             _listingList(q)
@@ -218,7 +219,7 @@ class FirestoreMarketRepository implements MarketRepository {
   @override
   Stream<List<Listing>> watchMyListings(String uid) => _listings
       .where('sellerId', isEqualTo: uid)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (q) =>
             _listingList(q)
@@ -228,7 +229,7 @@ class FirestoreMarketRepository implements MarketRepository {
   @override
   Stream<Listing?> watchListing(String id) => _listings
       .doc(id)
-      .snapshots()
+      .liveSnapshots()
       .map((d) => d.exists ? Listing.fromMap(d.id, _data(d)) : null);
 
   @override
@@ -236,7 +237,7 @@ class FirestoreMarketRepository implements MarketRepository {
       // Two equality filters: Firestore merges the single-field indexes.
       .where('eventId', isEqualTo: eventId)
       .where('status', isEqualTo: ListingStatus.active.name)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (q) =>
             _listingList(q).where((l) => l.available > 0).toList()
@@ -270,22 +271,22 @@ class FirestoreMarketRepository implements MarketRepository {
 
   @override
   Stream<List<Order>> watchPurchases(String uid) =>
-      _orders.where('buyerId', isEqualTo: uid).snapshots().map(_orderList);
+      _orders.where('buyerId', isEqualTo: uid).liveSnapshots().map(_orderList);
 
   @override
   Stream<List<Order>> watchSales(String uid) =>
-      _orders.where('sellerId', isEqualTo: uid).snapshots().map(_orderList);
+      _orders.where('sellerId', isEqualTo: uid).liveSnapshots().map(_orderList);
 
   @override
   Stream<Order?> watchOrder(String id) => _orders
       .doc(id)
-      .snapshots()
+      .liveSnapshots()
       .map((d) => d.exists ? Order.fromMap(d.id, _data(d)) : null);
 
   @override
   Stream<List<Payout>> watchPayouts(String uid) => _payouts
       .where('sellerId', isEqualTo: uid)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (q) =>
             [for (final d in q.docs) Payout.fromMap(d.id, _data(d))]
@@ -295,7 +296,7 @@ class FirestoreMarketRepository implements MarketRepository {
   @override
   Stream<Payout?> watchPayout(String id) => _payouts
       .doc(id)
-      .snapshots()
+      .liveSnapshots()
       .map((d) => d.exists ? Payout.fromMap(d.id, _data(d)) : null);
 
   @override
@@ -324,7 +325,7 @@ class FirestoreMarketRepository implements MarketRepository {
       .doc(uid)
       .collection('private')
       .doc('payoutMethod')
-      .snapshots()
+      .liveSnapshots()
       .map((d) => d.exists ? PayoutMethod.fromMap(_data(d)) : null);
 
   @override

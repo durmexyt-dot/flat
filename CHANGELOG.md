@@ -12,6 +12,9 @@ die nächste Version.
 ## [1.4.1] – 2026-10-11
 
 ### Behoben
+- „Laden fehlgeschlagen“ beim ersten Öffnen (z. B. Hilfe-Center): Abfragen,
+  die genau beim An-/Abmelden starten oder kurz keine Verbindung haben,
+  werden automatisch wiederholt; Fehlermeldungen zeigen den Fehlercode
 - Team-Liste zeigt Name und E-Mail aus dem aktuellen Profil (auch für in der
   Konsole angelegte Admins) statt „Ohne Namen“
 

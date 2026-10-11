@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models.dart';
 import '../data/repositories.dart';
+import '../data/live_snapshots.dart';
 
 /// Roles, fees and finding users: the admin side.
 ///
@@ -41,7 +42,7 @@ class FirestoreAdminRepository implements AdminRepository {
   @override
   Stream<StaffRole?> watchRole(String uid) => _roles
       .doc(uid)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (d) =>
             d.exists ? StaffMember.fromMap(uid, firestoreData(d)).role : null,
@@ -54,7 +55,7 @@ class FirestoreAdminRepository implements AdminRepository {
       );
 
   @override
-  Stream<FeeConfig> watchFees() => _fees.snapshots().map(
+  Stream<FeeConfig> watchFees() => _fees.liveSnapshots().map(
     (d) => FeeConfig.fromMap(d.exists ? firestoreData(d) : null),
   );
 
@@ -67,7 +68,7 @@ class FirestoreAdminRepository implements AdminRepository {
 
   @override
   Stream<List<StaffMember>> watchTeam() =>
-      _roles.snapshots().asyncMap((q) async {
+      _roles.liveSnapshots().asyncMap((q) async {
         final members = [
           for (final d in q.docs) StaffMember.fromMap(d.id, firestoreData(d)),
         ];

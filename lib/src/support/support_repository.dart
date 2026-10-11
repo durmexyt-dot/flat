@@ -7,6 +7,7 @@ import '../admin/admin_repository.dart';
 import '../config/app_info.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
+import '../data/live_snapshots.dart';
 
 /// Support requests run inside the app: a ticket with a conversation
 /// between the user and the support team (admins and support accounts).
@@ -74,19 +75,19 @@ class FirestoreSupportRepository implements SupportRepository {
 
   @override
   Stream<List<SupportTicket>> watchMyTickets(String uid) =>
-      _tickets.where('uid', isEqualTo: uid).snapshots().map(_list);
+      _tickets.where('uid', isEqualTo: uid).liveSnapshots().map(_list);
 
   @override
   Stream<List<SupportTicket>> watchAllTickets() => _tickets
       .orderBy('lastMessageAt', descending: true)
       .limit(300)
-      .snapshots()
+      .liveSnapshots()
       .map(_list);
 
   @override
   Stream<SupportTicket?> watchTicket(String id) => _tickets
       .doc(id)
-      .snapshots()
+      .liveSnapshots()
       .map(
         (d) => d.exists ? SupportTicket.fromMap(d.id, firestoreData(d)) : null,
       );
@@ -95,7 +96,7 @@ class FirestoreSupportRepository implements SupportRepository {
   Stream<List<SupportMessage>> watchMessages(String ticketId) =>
       _messages(ticketId)
           .orderBy('createdAt')
-          .snapshots()
+          .liveSnapshots()
           .map(
             (q) => [
               for (final d in q.docs)
