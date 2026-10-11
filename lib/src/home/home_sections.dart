@@ -168,18 +168,17 @@ List<Event> recommendedEvents({
     for (final e in all)
       if (!exclude.contains(e.id)) e,
   ];
-  if (viewed.isEmpty) {
-    return [
-      for (final e in candidates)
-        if (offers.containsKey(e.id)) e,
-    ];
-  }
+  List<Event> withOffers() => [
+    for (final e in candidates)
+      if (offers.containsKey(e.id)) e,
+  ];
+  if (viewed.isEmpty) return withOffers();
   final genres = {
     for (final e in viewed)
       if (e.genre.isNotEmpty) e.genre,
   };
   final types = {for (final e in viewed) e.info.category};
-  return [
+  final similar = [
     for (final e in candidates)
       if (e.genre.isNotEmpty && genres.contains(e.genre)) e,
     for (final e in candidates)
@@ -187,6 +186,8 @@ List<Event> recommendedEvents({
           types.contains(e.info.category))
         e,
   ];
+  // Nothing like what was viewed: still suggest something.
+  return similar.isNotEmpty ? similar : withOffers();
 }
 
 /// The genres with the most events, up to [homeGenreRows]. Without any
