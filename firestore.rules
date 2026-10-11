@@ -204,7 +204,8 @@ service cloud.firestore {
         // Tickets only for a visible event an admin created; the copy of
         // the event is exactly the event.
         && request.resource.data.eventId is string
-        && get(eventPath(request.resource.data.eventId)).data.status == 'active'
+        && get(eventPath(request.resource.data.eventId)).data.status
+          in ['pending', 'confirmed', 'active']
         && request.resource.data.event == {
           'name': get(eventPath(request.resource.data.eventId)).data.name,
           'venue': get(eventPath(request.resource.data.eventId)).data.venue,
@@ -400,38 +401,65 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time;
     }
 
+    // Users add events unconfirmed ("pending"); the team (admins and
+    // support accounts) checks, corrects, confirms or hides them. Tickets can
+    // be listed for pending and confirmed events.
     match /events/{id} {
       function validEventDoc(d) {
         return d.keys().hasOnly(['name', 'venue', 'city', 'date', 'category',
-            'status', 'hasImage', 'imageVersion', 'createdAt', 'updatedAt'])
+            'genre', 'status', 'createdBy', 'hasImage', 'imageVersion',
+            'createdAt', 'updatedAt'])
           && str(d.name, 2, 100)
           && str(d.venue, 1, 100)
           && str(d.city, 1, 60)
           && d.date is timestamp
           && d.category in ['concerts', 'sports', 'theater', 'festivals', 'other']
-          && d.status in ['active', 'hidden']
+          && optStr(d, 'genre', 40)
+          && d.status in ['pending', 'confirmed', 'hidden', 'active']
           && d.hasImage is bool
           && d.imageVersion is int
           && d.updatedAt == request.time;
       }
-      allow read: if resource.data.status == 'active' || isAdmin();
-      allow create: if isAdmin() && validEventDoc(request.resource.data)
+      allow read: if resource.data.status in ['pending', 'confirmed', 'active']
+        || isStaff();
+      allow create: if signedIn()
+        && validEventDoc(request.resource.data)
+        && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time
-        && request.resource.data.date > request.time;
-      allow update: if isAdmin() && validEventDoc(request.resource.data)
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.date > request.time
+        && request.resource.data.date < request.time + duration.value(730, 'd')
+        && request.resource.data.imageVersion == 1
+        && (
+          // The team adds confirmed events.
+          (isStaff() && request.resource.data.status == 'confirmed')
+          // Users with a confirmed email add them for the team to check.
+          || (verifiedEmail() && request.resource.data.status == 'pending')
+        );
+      allow update: if isStaff() && validEventDoc(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.get('createdBy', null)
+          == resource.data.get('createdBy', null);
       allow delete: if false;
     }
 
     // An event's picture: a JPEG in base64, kept apart so event lists stay
-    // small.
+    // small. Users add one only together with their new event.
     match /eventImages/{id} {
+      function validImage() {
+        return request.resource.data.keys().hasOnly(['data', 'updatedAt'])
+          && str(request.resource.data.data, 100, 400000)
+          && request.resource.data.updatedAt == request.time;
+      }
+      function newOwnEvent() {
+        return !exists(/databases/$(database)/documents/events/$(id))
+          && getAfter(/databases/$(database)/documents/events/$(id)).data.createdBy
+            == request.auth.uid
+          && getAfter(/databases/$(database)/documents/events/$(id)).data.hasImage == true;
+      }
       allow read: if true;
-      allow write: if isAdmin()
-        && request.resource.data.keys().hasOnly(['data', 'updatedAt'])
-        && str(request.resource.data.data, 100, 400000)
-        && request.resource.data.updatedAt == request.time;
-      allow delete: if isAdmin();
+      allow create: if signedIn() && validImage() && (isStaff() || newOwnEvent());
+      allow update: if isStaff() && validImage();
+      allow delete: if isStaff();
     }
 
     // ---- Support (in the app, no email) -----------------------------------

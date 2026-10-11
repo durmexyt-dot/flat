@@ -17,6 +17,7 @@ import 'auth/signup_page.dart';
 import 'data/models.dart';
 import 'events/event_page.dart';
 import 'home/home_page.dart';
+import 'info/info_page.dart';
 import 'market/listing_detail_page.dart';
 import 'market/my_listings_page.dart';
 import 'market/order_detail_page.dart';
@@ -45,6 +46,7 @@ const _accountOnly = [
   '/support/new',
   '/support/ticket',
   '/admin',
+  '/events/new',
   '/settings/profile',
   '/settings/privacy',
   '/settings/notifications',
@@ -138,6 +140,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/admin/team', (_) => const TeamPage()),
       _route('/admin/events', (_) => const EventsAdminPage()),
       _route('/admin/events/new', (_) => const EventEditorPage()),
+      // Users add events too (unconfirmed until the team checks them).
+      _route(
+        '/events/new',
+        (state) => EventEditorPage(
+          forSale: state.uri.queryParameters['sell'] == '1',
+        ),
+      ),
+      _route(
+        '/info/:topic',
+        (state) => InfoPage(topic: state.pathParameters['topic']!),
+      ),
       _route(
         '/admin/events/:id',
         (state) => EventEditorPage(id: state.pathParameters['id']),

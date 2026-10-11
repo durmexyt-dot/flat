@@ -100,6 +100,198 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @genreFootball.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fudbal'**
+  String get genreFootball;
+
+  /// No description provided for @genreBasketball.
+  ///
+  /// In bs, this message translates to:
+  /// **'Košarka'**
+  String get genreBasketball;
+
+  /// No description provided for @genreHandball.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rukomet'**
+  String get genreHandball;
+
+  /// No description provided for @genreTennis.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tenis'**
+  String get genreTennis;
+
+  /// No description provided for @genreVolleyball.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odbojka'**
+  String get genreVolleyball;
+
+  /// No description provided for @genreCombat.
+  ///
+  /// In bs, this message translates to:
+  /// **'Borilački sportovi'**
+  String get genreCombat;
+
+  /// No description provided for @genreMotorsport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Moto sport'**
+  String get genreMotorsport;
+
+  /// No description provided for @genreOtherSport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostali sportovi'**
+  String get genreOtherSport;
+
+  /// No description provided for @genreRock.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rock'**
+  String get genreRock;
+
+  /// No description provided for @genrePop.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pop'**
+  String get genrePop;
+
+  /// No description provided for @genreFolk.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narodna muzika'**
+  String get genreFolk;
+
+  /// No description provided for @genreJazz.
+  ///
+  /// In bs, this message translates to:
+  /// **'Jazz'**
+  String get genreJazz;
+
+  /// No description provided for @genreHiphop.
+  ///
+  /// In bs, this message translates to:
+  /// **'Hip-hop'**
+  String get genreHiphop;
+
+  /// No description provided for @genreElectronic.
+  ///
+  /// In bs, this message translates to:
+  /// **'Elektronska muzika'**
+  String get genreElectronic;
+
+  /// No description provided for @genreClassical.
+  ///
+  /// In bs, this message translates to:
+  /// **'Klasična muzika'**
+  String get genreClassical;
+
+  /// No description provided for @genreOtherMusic.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostala muzika'**
+  String get genreOtherMusic;
+
+  /// No description provided for @genreDrama.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pozorište'**
+  String get genreDrama;
+
+  /// No description provided for @genreOpera.
+  ///
+  /// In bs, this message translates to:
+  /// **'Opera'**
+  String get genreOpera;
+
+  /// No description provided for @genreBallet.
+  ///
+  /// In bs, this message translates to:
+  /// **'Balet'**
+  String get genreBallet;
+
+  /// No description provided for @genreStandup.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stand-up komedija'**
+  String get genreStandup;
+
+  /// No description provided for @genreMusical.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mjuzikl'**
+  String get genreMusical;
+
+  /// No description provided for @genreExhibition.
+  ///
+  /// In bs, this message translates to:
+  /// **'Izložbe'**
+  String get genreExhibition;
+
+  /// No description provided for @genreFilm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Film'**
+  String get genreFilm;
+
+  /// No description provided for @genreMusicFestival.
+  ///
+  /// In bs, this message translates to:
+  /// **'Muzički festivali'**
+  String get genreMusicFestival;
+
+  /// No description provided for @genreFilmFestival.
+  ///
+  /// In bs, this message translates to:
+  /// **'Filmski festivali'**
+  String get genreFilmFestival;
+
+  /// No description provided for @genreFoodFestival.
+  ///
+  /// In bs, this message translates to:
+  /// **'Gastro festivali'**
+  String get genreFoodFestival;
+
+  /// No description provided for @genreOtherFestival.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostali festivali'**
+  String get genreOtherFestival;
+
+  /// No description provided for @genreFamily.
+  ///
+  /// In bs, this message translates to:
+  /// **'Za porodicu'**
+  String get genreFamily;
+
+  /// No description provided for @genreConference.
+  ///
+  /// In bs, this message translates to:
+  /// **'Konferencije'**
+  String get genreConference;
+
+  /// No description provided for @genreOtherEvent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostalo'**
+  String get genreOtherEvent;
+
+  /// No description provided for @genreLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podkategorija'**
+  String get genreLabel;
+
+  /// No description provided for @genreNone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez podkategorije'**
+  String get genreNone;
+
   /// No description provided for @supportUser.
   ///
   /// In bs, this message translates to:
@@ -1207,7 +1399,7 @@ abstract class AppLocalizations {
   /// No description provided for @catTheater.
   ///
   /// In bs, this message translates to:
-  /// **'Pozorište'**
+  /// **'Kultura'**
   String get catTheater;
 
   /// No description provided for @catFestivals.

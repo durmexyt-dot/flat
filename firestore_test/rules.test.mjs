@@ -31,7 +31,7 @@ const EVENT = {
 };
 // The admin-created event behind EVENT.
 const eventDoc = (over = {}) => ({
-  ...EVENT, status: 'active', hasImage: false, imageVersion: 1,
+  ...EVENT, genre: 'jazz', status: 'confirmed', createdBy: 'boss', hasImage: false, imageVersion: 1,
   createdAt: serverTimestamp(), updatedAt: serverTimestamp(), ...over,
 });
 const listing = (over = {}) => ({
@@ -339,25 +339,59 @@ test('roles: admins only from the console; admins name support accounts', async 
   await assertFails(getDocs(query(collection(db('helper'), 'users'), where('email', '==', 'amra@test.ba'))));
 });
 
-test('events: only admins create and change them', async () => {
-  await assertFails(setDoc(doc(db('seller'), 'events/X1'), eventDoc()));
-  await assertFails(setDoc(doc(db('helper'), 'events/X1'), eventDoc()));
+test('events: users add unconfirmed ones, the team checks and confirms', async () => {
+  // The team adds confirmed events.
   await assertSucceeds(setDoc(doc(db('boss'), 'events/X1'), eventDoc()));
-  await assertFails(setDoc(doc(db('boss'), 'events/X2'), eventDoc({ date: Timestamp.fromMillis(Date.now() - 1000) })));
-  await assertFails(setDoc(doc(db('boss'), 'events/X3'), eventDoc({ name: 'x' })));
-  await assertFails(setDoc(doc(db('boss'), 'events/X4'), eventDoc({ featured: true })));
+  await assertSucceeds(setDoc(doc(db('helper'), 'events/X2'), eventDoc({ createdBy: 'helper' })));
+  // Users add pending ones, for themselves, with a confirmed email.
+  const user = db('seller');
+  await assertSucceeds(setDoc(doc(user, 'events/U1'), eventDoc({ status: 'pending', createdBy: 'seller' })));
+  await assertFails(setDoc(doc(user, 'events/U2'), eventDoc({ status: 'confirmed', createdBy: 'seller' })));
+  await assertFails(setDoc(doc(user, 'events/U3'), eventDoc({ status: 'pending', createdBy: 'boss' })));
+  await assertFails(setDoc(doc(db('seller', { verified: false }), 'events/U4'), eventDoc({ status: 'pending', createdBy: 'seller' })));
+  await assertFails(setDoc(doc(db(null), 'events/U5'), eventDoc({ status: 'pending', createdBy: 'seller' })));
+  // Validation applies to everyone.
+  await assertFails(setDoc(doc(db('boss'), 'events/X3'), eventDoc({ date: Timestamp.fromMillis(Date.now() - 1000) })));
+  await assertFails(setDoc(doc(db('boss'), 'events/X4'), eventDoc({ name: 'x' })));
+  await assertFails(setDoc(doc(db('boss'), 'events/X5'), eventDoc({ featured: true })));
+  await assertFails(setDoc(doc(user, 'events/U6'), eventDoc({ status: 'pending', createdBy: 'seller', genre: 'x'.repeat(41) })));
+  // Only the team changes events: correct, confirm, hide.
+  await assertFails(updateDoc(doc(user, 'events/U1'), { name: 'Renamed', updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(user, 'events/U1'), { status: 'confirmed', updatedAt: serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(db('helper'), 'events/U1'), { name: 'Jazz Fest 2026', status: 'confirmed', updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(db('helper'), 'events/U1'), { createdBy: 'helper', updatedAt: serverTimestamp() }));
   await assertSucceeds(updateDoc(doc(db('boss'), 'events/X1'), { status: 'hidden', updatedAt: serverTimestamp() }));
-  await assertFails(updateDoc(doc(db('seller'), 'events/E1'), { name: 'Hacked', updatedAt: serverTimestamp() }));
   await assertFails(deleteDoc(doc(db('boss'), 'events/E1')));
-  // Everyone sees visible events; hidden ones only admins.
+  // Everyone sees pending and confirmed events; hidden ones only the team.
   await assertSucceeds(getDoc(doc(db(null), 'events/E1')));
+  await assertSucceeds(getDocs(query(collection(db(null), 'events'), where('status', 'in', ['pending', 'confirmed', 'active']))));
   await assertFails(getDoc(doc(db(null), 'events/X1')));
-  await assertSucceeds(getDoc(doc(db('boss'), 'events/X1')));
-  // Pictures: admins only, size-limited.
+  await assertSucceeds(getDoc(doc(db('helper'), 'events/X1')));
+  await assertSucceeds(getDocs(collection(db('helper'), 'events')));
+  await assertFails(getDocs(collection(db('seller'), 'events')));
+});
+
+test('event pictures: the team, or a user with their new event', async () => {
   await assertSucceeds(setDoc(doc(db('boss'), 'eventImages/E1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
   await assertFails(setDoc(doc(db('boss'), 'eventImages/E1'), { data: 'x'.repeat(400001), updatedAt: serverTimestamp() }));
-  await assertFails(setDoc(doc(db('seller'), 'eventImages/E1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
   await assertSucceeds(getDoc(doc(db(null), 'eventImages/E1')));
+  const fs = db('seller');
+  // Not for someone else's or an existing event.
+  await assertFails(setDoc(doc(fs, 'eventImages/E1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertSucceeds(writeBatch(fs)
+    .set(doc(fs, 'events/U1'), eventDoc({ status: 'pending', createdBy: 'seller', hasImage: true }))
+    .set(doc(fs, 'eventImages/U1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() })
+    .commit());
+  // Replacing it later is up to the team.
+  await assertFails(setDoc(doc(fs, 'eventImages/U1'), { data: 'y'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertFails(deleteDoc(doc(fs, 'eventImages/U1')));
+});
+
+test('tickets can be listed for unconfirmed events', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'events/P1'), eventDoc({ status: 'pending', createdBy: 'seller' }));
+  });
+  await assertSucceeds(setDoc(doc(db('seller'), 'listings/p1'), listing({ eventId: 'P1' })));
 });
 
 test('listings: only for a visible event, with its exact data', async () => {

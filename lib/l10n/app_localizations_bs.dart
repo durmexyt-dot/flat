@@ -10,6 +10,102 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get genreFootball => 'Fudbal';
+
+  @override
+  String get genreBasketball => 'Košarka';
+
+  @override
+  String get genreHandball => 'Rukomet';
+
+  @override
+  String get genreTennis => 'Tenis';
+
+  @override
+  String get genreVolleyball => 'Odbojka';
+
+  @override
+  String get genreCombat => 'Borilački sportovi';
+
+  @override
+  String get genreMotorsport => 'Moto sport';
+
+  @override
+  String get genreOtherSport => 'Ostali sportovi';
+
+  @override
+  String get genreRock => 'Rock';
+
+  @override
+  String get genrePop => 'Pop';
+
+  @override
+  String get genreFolk => 'Narodna muzika';
+
+  @override
+  String get genreJazz => 'Jazz';
+
+  @override
+  String get genreHiphop => 'Hip-hop';
+
+  @override
+  String get genreElectronic => 'Elektronska muzika';
+
+  @override
+  String get genreClassical => 'Klasična muzika';
+
+  @override
+  String get genreOtherMusic => 'Ostala muzika';
+
+  @override
+  String get genreDrama => 'Pozorište';
+
+  @override
+  String get genreOpera => 'Opera';
+
+  @override
+  String get genreBallet => 'Balet';
+
+  @override
+  String get genreStandup => 'Stand-up komedija';
+
+  @override
+  String get genreMusical => 'Mjuzikl';
+
+  @override
+  String get genreExhibition => 'Izložbe';
+
+  @override
+  String get genreFilm => 'Film';
+
+  @override
+  String get genreMusicFestival => 'Muzički festivali';
+
+  @override
+  String get genreFilmFestival => 'Filmski festivali';
+
+  @override
+  String get genreFoodFestival => 'Gastro festivali';
+
+  @override
+  String get genreOtherFestival => 'Ostali festivali';
+
+  @override
+  String get genreFamily => 'Za porodicu';
+
+  @override
+  String get genreConference => 'Konferencije';
+
+  @override
+  String get genreOtherEvent => 'Ostalo';
+
+  @override
+  String get genreLabel => 'Podkategorija';
+
+  @override
+  String get genreNone => 'Bez podkategorije';
+
+  @override
   String get supportUser => 'Korisnik';
 
   @override
@@ -612,7 +708,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get catSports => 'Sport';
 
   @override
-  String get catTheater => 'Pozorište';
+  String get catTheater => 'Kultura';
 
   @override
   String get catFestivals => 'Festivali';

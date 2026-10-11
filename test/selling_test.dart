@@ -24,7 +24,7 @@ Event eventOf(
     date: date ?? DateTime(2030, 7, 14, 20),
     category: category,
   ),
-  hidden: hidden,
+  status: hidden ? EventStatus.hidden : EventStatus.confirmed,
 );
 
 Listing listingOf(

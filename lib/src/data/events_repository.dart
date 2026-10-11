@@ -8,28 +8,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'models.dart';
 import 'repositories.dart';
 
-/// Events are created by admins; everybody can see the visible ones.
+/// Events: users add them unconfirmed, the team (admins and support
+/// accounts) checks, corrects and confirms them. Everybody sees all events
+/// that aren't hidden.
 abstract class EventRepository {
-  /// Visible events, soonest first. Admins pass [includeHidden].
+  /// Events that aren't hidden, soonest first. The team passes
+  /// [includeHidden].
   Stream<List<Event>> watchEvents({bool includeHidden = false});
   Stream<Event?> watchEvent(String id);
 
   /// The event's picture as a base64 JPEG, or null.
   Future<String?> loadImage(String id);
 
-  /// Creates an event with an optional picture and returns its id.
-  Future<String> createEvent(EventInfo info, {String? imageBase64});
+  /// Adds an event and returns its id: confirmed when the team adds it
+  /// ([byStaff]), otherwise waiting for the team to check it.
+  Future<String> createEvent(
+    EventInfo info, {
+    required String createdBy,
+    required bool byStaff,
+    String genre = '',
+    String? imageBase64,
+  });
 
-  /// Saves changes. [imageBase64] replaces the picture, [removeImage]
-  /// drops it.
+  /// The team saves changes. [imageBase64] replaces the picture,
+  /// [removeImage] drops it.
   Future<void> updateEvent(
     String id,
     EventInfo info, {
+    String genre = '',
     String? imageBase64,
     bool removeImage = false,
   });
-  Future<void> setHidden(String id, bool hidden);
+
+  /// The team confirms, hides or shows an event again.
+  Future<void> setStatus(String id, EventStatus status);
 }
+
+/// What the security rules accept as an event's status.
+String _statusName(EventStatus s) => s.name;
 
 class FirestoreEventRepository implements EventRepository {
   FirestoreEventRepository(this._db);
@@ -46,9 +62,10 @@ class FirestoreEventRepository implements EventRepository {
   @override
   Stream<List<Event>> watchEvents({bool includeHidden = false}) {
     // One filter only, sorted on the device: no composite index needed.
+    // The list must match the rules' list of visible statuses.
     final Query<Map<String, dynamic>> q = includeHidden
         ? _events
-        : _events.where('status', isEqualTo: 'active');
+        : _events.where('status', whereIn: visibleEventStatuses);
     return q.snapshots().map(
       (s) =>
           [for (final d in s.docs) _event(d)]
@@ -65,12 +82,22 @@ class FirestoreEventRepository implements EventRepository {
       (await _image(id).get()).data()?['data'] as String?;
 
   @override
-  Future<String> createEvent(EventInfo info, {String? imageBase64}) async {
+  Future<String> createEvent(
+    EventInfo info, {
+    required String createdBy,
+    required bool byStaff,
+    String genre = '',
+    String? imageBase64,
+  }) async {
     final ref = _events.doc();
     final batch = _db.batch()
       ..set(ref, {
         ...info.toMap(),
-        'status': 'active',
+        'genre': genre,
+        'status': _statusName(
+          byStaff ? EventStatus.confirmed : EventStatus.pending,
+        ),
+        'createdBy': createdBy,
         'hasImage': imageBase64 != null,
         'imageVersion': 1,
         'createdAt': FieldValue.serverTimestamp(),
@@ -90,12 +117,14 @@ class FirestoreEventRepository implements EventRepository {
   Future<void> updateEvent(
     String id,
     EventInfo info, {
+    String genre = '',
     String? imageBase64,
     bool removeImage = false,
   }) async {
     final batch = _db.batch()
       ..update(_events.doc(id), {
         ...info.toMap(),
+        'genre': genre,
         if (imageBase64 != null) 'hasImage': true,
         if (removeImage && imageBase64 == null) 'hasImage': false,
         if (imageBase64 != null || removeImage)
@@ -114,11 +143,15 @@ class FirestoreEventRepository implements EventRepository {
   }
 
   @override
-  Future<void> setHidden(String id, bool hidden) => _events.doc(id).update({
-    'status': hidden ? 'hidden' : 'active',
-    'updatedAt': FieldValue.serverTimestamp(),
-  });
+  Future<void> setStatus(String id, EventStatus status) =>
+      _events.doc(id).update({
+        'status': _statusName(status),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
 }
+
+/// Statuses everybody may read. "active" is how v1.3.0 stored events.
+const visibleEventStatuses = ['pending', 'confirmed', 'active'];
 
 /// Events held in memory, for tests.
 class InMemoryEventRepository implements EventRepository {
@@ -156,14 +189,25 @@ class InMemoryEventRepository implements EventRepository {
     _changes.add(null);
   }
 
+  Event _get(String id) => _events.firstWhere((e) => e.id == id);
+
   @override
-  Future<String> createEvent(EventInfo info, {String? imageBase64}) async {
+  Future<String> createEvent(
+    EventInfo info, {
+    required String createdBy,
+    required bool byStaff,
+    String genre = '',
+    String? imageBase64,
+  }) async {
     final id = 'event-${_nextId++}';
     if (imageBase64 != null) _images[id] = imageBase64;
     _put(
       Event(
         id: id,
         info: info,
+        status: byStaff ? EventStatus.confirmed : EventStatus.pending,
+        genre: genre,
+        createdBy: createdBy,
         hasImage: imageBase64 != null,
         imageVersion: 1,
         createdAt: DateTime.now(),
@@ -176,41 +220,29 @@ class InMemoryEventRepository implements EventRepository {
   Future<void> updateEvent(
     String id,
     EventInfo info, {
+    String genre = '',
     String? imageBase64,
     bool removeImage = false,
   }) async {
-    final old = _events.firstWhere((e) => e.id == id);
+    final old = _get(id);
     if (imageBase64 != null) {
       _images[id] = imageBase64;
     } else if (removeImage) {
       _images.remove(id);
     }
     _put(
-      Event(
-        id: id,
+      old.copyWith(
         info: info,
+        genre: genre,
         hasImage: _images.containsKey(id),
         imageVersion: old.imageVersion + 1,
-        hidden: old.hidden,
-        createdAt: old.createdAt,
       ),
     );
   }
 
   @override
-  Future<void> setHidden(String id, bool hidden) async {
-    final old = _events.firstWhere((e) => e.id == id);
-    _put(
-      Event(
-        id: id,
-        info: old.info,
-        hasImage: old.hasImage,
-        imageVersion: old.imageVersion,
-        hidden: hidden,
-        createdAt: old.createdAt,
-      ),
-    );
-  }
+  Future<void> setStatus(String id, EventStatus status) async =>
+      _put(_get(id).copyWith(status: status));
 }
 
 final eventRepositoryProvider = Provider<EventRepository>(
@@ -235,7 +267,15 @@ final upcomingEventsProvider = Provider<AsyncValue<List<Event>>>(
       ),
 );
 
-/// All events including hidden ones, for admins.
+/// For the team: events users added that wait for a check.
+final pendingEventsProvider = Provider<List<Event>>(
+  (ref) => [
+    for (final e in ref.watch(eventsProvider).value ?? const <Event>[])
+      if (e.pending) e,
+  ],
+);
+
+/// All events including hidden ones, for the team.
 final allEventsProvider = StreamProvider<List<Event>>(
   (ref) => ref.watch(eventRepositoryProvider).watchEvents(includeHidden: true),
 );
@@ -269,8 +309,15 @@ class EventOffer {
     required this.tickets,
     required this.minPriceMinor,
     required this.currency,
+    this.sold = 0,
   });
+
+  /// Tickets on sale.
   final int tickets;
+
+  /// Tickets already sold from listings still on sale: with [tickets] a
+  /// measure of how popular the event is.
+  final int sold;
   final int minPriceMinor;
   final String currency;
 }
@@ -283,6 +330,7 @@ final eventOffersProvider = Provider<Map<String, EventOffer>>((ref) {
     final o = offers[l.eventId];
     offers[l.eventId] = EventOffer(
       tickets: (o?.tickets ?? 0) + l.available,
+      sold: (o?.sold ?? 0) + l.quantitySold,
       minPriceMinor: o == null || l.priceMinor < o.minPriceMinor
           ? l.priceMinor
           : o.minPriceMinor,

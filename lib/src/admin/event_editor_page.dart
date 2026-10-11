@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
+import '../data/repositories.dart';
 import '../data/models.dart';
 import '../events/event_image.dart';
 import '../market/labels.dart';
@@ -27,7 +28,11 @@ import 'events_admin_page.dart';
 
 /// Creates ([id] null) or edits an event. Admins only.
 class EventEditorPage extends ConsumerWidget {
-  const EventEditorPage({super.key, this.id});
+  const EventEditorPage({super.key, this.id, this.forSale = false});
+
+  /// Opened from the sell form: after saving, go on to sell tickets for
+  /// the new event.
+  final bool forSale;
 
   /// Null for a new event.
   final String? id;
@@ -175,7 +180,12 @@ class _EventFormState extends ConsumerState<_EventForm> {
     setState(() => _saving = true);
     try {
       if (_isNew) {
-        await repo.createEvent(info, imageBase64: _newImage);
+        await repo.createEvent(
+          info,
+          createdBy: ref.read(currentUidProvider) ?? '',
+          byStaff: true,
+          imageBase64: _newImage,
+        );
         showSnack(l10n.eventsCreated);
       } else {
         await repo.updateEvent(
@@ -222,7 +232,12 @@ class _EventFormState extends ConsumerState<_EventForm> {
     );
     if (ok != true) return;
     try {
-      await ref.read(eventRepositoryProvider).setHidden(event.id, hide);
+      await ref
+          .read(eventRepositoryProvider)
+          .setStatus(
+            event.id,
+            hide ? EventStatus.hidden : EventStatus.confirmed,
+          );
       showSnack(hide ? l10n.eventsHiddenToast : l10n.eventsShownToast);
     } catch (_) {
       showSnack(l10n.saveError);

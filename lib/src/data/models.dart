@@ -237,40 +237,86 @@ class EventInfo {
   };
 }
 
-/// An event created by an admin. Sellers list tickets for it.
+/// Where an event stands. Users add events unconfirmed; admins and support
+/// accounts check, correct and confirm them. Tickets can be sold and bought
+/// for unconfirmed events too.
+enum EventStatus {
+  /// Added by a user, not yet checked by the team.
+  pending,
+
+  /// Checked by the team (or added by it).
+  confirmed,
+
+  /// Taken down by the team: not shown and no new listings.
+  hidden,
+}
+
+/// An event. Sellers list tickets for it.
 @immutable
 class Event {
   const Event({
     required this.id,
     required this.info,
+    this.status = EventStatus.confirmed,
+    this.genre = '',
+    this.createdBy = '',
     this.hasImage = false,
     this.imageVersion = 0,
-    this.hidden = false,
     this.createdAt,
   });
 
   final String id;
   final EventInfo info;
+  final EventStatus status;
+
+  /// A finer category within [EventInfo.category], e.g. "football" or
+  /// "rock" (see events/genres.dart). Empty if none.
+  final String genre;
+
+  /// Who added the event.
+  final String createdBy;
 
   /// The picture lives in eventImages/{id}, so event lists stay small.
   final bool hasImage;
 
   /// Changes with every new picture, so caches know to reload it.
   final int imageVersion;
-
-  /// Hidden by an admin: not shown and no new listings.
-  final bool hidden;
   final DateTime? createdAt;
 
+  bool get hidden => status == EventStatus.hidden;
+  bool get confirmed => status == EventStatus.confirmed;
+  bool get pending => status == EventStatus.pending;
   bool get isUpcoming => info.date.isAfter(DateTime.now());
 
   factory Event.fromMap(String id, Map<String, dynamic> m) => Event(
     id: id,
     info: EventInfo.fromMap(m),
+    // "active" is how events from v1.3.0 were stored: made by admins.
+    status: m['status'] == 'active'
+        ? EventStatus.confirmed
+        : enumByName(EventStatus.values, m['status'], EventStatus.pending),
+    genre: m['genre'] as String? ?? '',
+    createdBy: m['createdBy'] as String? ?? '',
     hasImage: m['hasImage'] == true,
     imageVersion: (m['imageVersion'] as num?)?.toInt() ?? 0,
-    hidden: m['status'] == 'hidden',
     createdAt: _date(m['createdAt']),
+  );
+
+  Event copyWith({
+    EventInfo? info,
+    EventStatus? status,
+    String? genre,
+    bool? hasImage,
+    int? imageVersion,
+  }) => Event(
+    id: id,
+    info: info ?? this.info,
+    status: status ?? this.status,
+    genre: genre ?? this.genre,
+    createdBy: createdBy,
+    hasImage: hasImage ?? this.hasImage,
+    imageVersion: imageVersion ?? this.imageVersion,
+    createdAt: createdAt,
   );
 }
 

@@ -10,6 +10,102 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get genreFootball => 'Football';
+
+  @override
+  String get genreBasketball => 'Basketball';
+
+  @override
+  String get genreHandball => 'Handball';
+
+  @override
+  String get genreTennis => 'Tennis';
+
+  @override
+  String get genreVolleyball => 'Volleyball';
+
+  @override
+  String get genreCombat => 'Combat sports';
+
+  @override
+  String get genreMotorsport => 'Motorsport';
+
+  @override
+  String get genreOtherSport => 'Other sports';
+
+  @override
+  String get genreRock => 'Rock';
+
+  @override
+  String get genrePop => 'Pop';
+
+  @override
+  String get genreFolk => 'Folk';
+
+  @override
+  String get genreJazz => 'Jazz';
+
+  @override
+  String get genreHiphop => 'Hip-hop';
+
+  @override
+  String get genreElectronic => 'Electronic';
+
+  @override
+  String get genreClassical => 'Classical';
+
+  @override
+  String get genreOtherMusic => 'Other music';
+
+  @override
+  String get genreDrama => 'Theatre';
+
+  @override
+  String get genreOpera => 'Opera';
+
+  @override
+  String get genreBallet => 'Ballet';
+
+  @override
+  String get genreStandup => 'Stand-up comedy';
+
+  @override
+  String get genreMusical => 'Musical';
+
+  @override
+  String get genreExhibition => 'Exhibitions';
+
+  @override
+  String get genreFilm => 'Film';
+
+  @override
+  String get genreMusicFestival => 'Music festivals';
+
+  @override
+  String get genreFilmFestival => 'Film festivals';
+
+  @override
+  String get genreFoodFestival => 'Food festivals';
+
+  @override
+  String get genreOtherFestival => 'Other festivals';
+
+  @override
+  String get genreFamily => 'Family';
+
+  @override
+  String get genreConference => 'Conferences';
+
+  @override
+  String get genreOtherEvent => 'Other';
+
+  @override
+  String get genreLabel => 'Subcategory';
+
+  @override
+  String get genreNone => 'No subcategory';
+
+  @override
   String get supportUser => 'User';
 
   @override
@@ -613,7 +709,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get catSports => 'Sports';
 
   @override
-  String get catTheater => 'Theater';
+  String get catTheater => 'Culture';
 
   @override
   String get catFestivals => 'Festivals';
