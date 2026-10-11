@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../ui/app_style.dart';
+import '../ui/segmented.dart';
 import '../ui/ticket.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
@@ -48,6 +48,8 @@ class AppearancePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
+    final colors = context.theme.colors;
+    final last = TextSize.values.length - 1;
 
     return SiteScaffold(
       title: l10n.appearance,
@@ -58,21 +60,16 @@ class AppearancePage extends ConsumerWidget {
         children: [
           const _Preview(),
           SettingsSectionTitle(l10n.themeModeLabel),
-          SegmentedButton<ThemeMode>(
-            segments: [
-              for (final (mode, icon) in [
-                (ThemeMode.system, FLucideIcons.sunMoon),
-                (ThemeMode.light, FLucideIcons.sun),
-                (ThemeMode.dark, FLucideIcons.moon),
-              ])
-                ButtonSegment(
-                  value: mode,
-                  icon: Icon(icon),
-                  label: Text(themeModeName(l10n, mode)),
-                ),
-            ],
-            selected: {settings.themeMode},
-            onSelectionChanged: (s) => controller.setThemeMode(s.first),
+          Segmented<ThemeMode>(
+            values: const [ThemeMode.system, ThemeMode.light, ThemeMode.dark],
+            selected: settings.themeMode,
+            label: (mode) => themeModeName(l10n, mode),
+            icon: (mode) => switch (mode) {
+              ThemeMode.system => FLucideIcons.sunMoon,
+              ThemeMode.light => FLucideIcons.sun,
+              ThemeMode.dark => FLucideIcons.moon,
+            },
+            onChanged: controller.setThemeMode,
           ),
           SettingsSectionTitle(l10n.themeColor),
           Wrap(
@@ -91,18 +88,35 @@ class AppearancePage extends ConsumerWidget {
           SettingsSectionTitle(l10n.textSize),
           Row(
             children: [
-              const Text('A', style: TextStyle(fontSize: 14)),
+              Text(
+                'A',
+                style: TextStyle(fontSize: 14, color: colors.foreground),
+              ),
+              const SizedBox(width: 12),
               Expanded(
-                child: Slider(
-                  value: settings.textSize.index.toDouble(),
-                  max: TextSize.values.length - 1,
-                  divisions: TextSize.values.length - 1,
-                  label: textSizeName(l10n, settings.textSize),
-                  onChanged: (v) =>
-                      controller.setTextSize(TextSize.values[v.round()]),
+                child: FSlider(
+                  control: .liftedDiscrete(
+                    value: FSliderValue(max: settings.textSize.index / last),
+                    onChange: (v) => controller.setTextSize(
+                      TextSize.values[(v.max * last).round()],
+                    ),
+                  ),
+                  marks: [
+                    for (final size in TextSize.values)
+                      FSliderMark(value: size.index / last, tick: true),
+                  ],
+                  tooltipBuilder: (_, v) => Text(
+                    textSizeName(l10n, TextSize.values[(v * last).round()]),
+                  ),
+                  semanticValueFormatterCallback: (v) =>
+                      textSizeName(l10n, TextSize.values[(v * last).round()]),
                 ),
               ),
-              const Text('A', style: TextStyle(fontSize: 24)),
+              const SizedBox(width: 12),
+              Text(
+                'A',
+                style: TextStyle(fontSize: 24, color: colors.foreground),
+              ),
             ],
           ),
           Center(
@@ -111,7 +125,10 @@ class AppearancePage extends ConsumerWidget {
               child: Text(
                 textSizeName(l10n, settings.textSize),
                 key: ValueKey(settings.textSize),
-                style: Theme.of(context).textTheme.labelLarge,
+                style: context.theme.typography.body.sm.copyWith(
+                  color: colors.mutedForeground,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -145,10 +162,11 @@ class _Preview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final type = theme.typography.body;
 
-    return Card.filled(
-      color: theme.colorScheme.surfaceContainer,
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -156,24 +174,31 @@ class _Preview extends StatelessWidget {
           children: [
             Text(
               l10n.preview,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: type.sm.copyWith(
+                color: colors.mutedForeground,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 12),
             TicketCard(
-              color: theme.colorScheme.surface,
+              color: colors.background,
               stub: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     '14',
-                    style: theme.textTheme.headlineSmall?.copyWith(
+                    style: type.xl.copyWith(
                       fontWeight: FontWeight.w800,
-                      color: theme.colorScheme.onSurface,
+                      color: colors.foreground,
                     ),
                   ),
-                  Text('JUL', style: theme.textTheme.labelMedium),
+                  Text(
+                    'JUL',
+                    style: type.xs.copyWith(
+                      color: colors.mutedForeground,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
               child: Column(
@@ -181,22 +206,21 @@ class _Preview extends StatelessWidget {
                 children: [
                   Text(
                     'Sarajevo Film Festival',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: type.md.copyWith(
                       fontWeight: FontWeight.w700,
+                      color: colors.foreground,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.previewTickets,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: type.sm.copyWith(color: colors.mutedForeground),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '89,00 KM',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurface,
+                    style: type.md.copyWith(
+                      color: colors.foreground,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -211,12 +235,22 @@ class _Preview extends StatelessWidget {
               spacing: 12,
               runSpacing: 8,
               children: [
-                ActionChip(
-                  avatar: const Icon(FLucideIcons.music, size: 18),
-                  label: Text(l10n.catConcerts),
-                  onPressed: () {},
+                FBadge(
+                  variant: .secondary,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(FLucideIcons.music, size: 14),
+                      const SizedBox(width: 4),
+                      Text(l10n.catConcerts),
+                    ],
+                  ),
                 ),
-                FilledButton(onPressed: () {}, child: Text(l10n.previewButton)),
+                FButton(
+                  mainAxisSize: MainAxisSize.min,
+                  onPress: () {},
+                  child: Text(l10n.previewButton),
+                ),
               ],
             ),
           ],
@@ -241,42 +275,40 @@ class _ColorDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final fill = colorSchemeFor(color, theme.brightness).primary;
+    final brightness = context.theme.colors.brightness;
+    final scheme = colorSchemeFor(color, brightness);
+    final fill = scheme.primary;
 
-    return Semantics(
-      label: label,
-      selected: selected,
-      button: true,
-      child: Tooltip(
-        message: label,
-        child: GestureDetector(
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            // No overshooting curve here: padding must not go negative.
-            curve: Curves.easeOutCubic,
-            width: 48,
-            height: 48,
-            padding: EdgeInsets.all(selected ? 4 : 0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: selected ? fill : Colors.transparent,
-                width: 2.5,
-              ),
+    return FTooltip(
+      tipBuilder: (context, _) => Text(label),
+      child: FTappable(
+        semanticsLabel: label,
+        selected: selected,
+        onPress: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          // No overshooting curve here: padding must not go negative.
+          curve: Curves.easeOutCubic,
+          width: 48,
+          height: 48,
+          padding: EdgeInsets.all(selected ? 4 : 0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: selected ? fill : Colors.transparent,
+              width: 2.5,
             ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
-              child: AnimatedScale(
-                scale: selected ? 1 : 0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOutBack,
-                child: Icon(
-                  FLucideIcons.check,
-                  size: 20,
-                  color: colorSchemeFor(color, theme.brightness).onPrimary,
-                ),
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
+            child: AnimatedScale(
+              scale: selected ? 1 : 0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: Icon(
+                FLucideIcons.check,
+                size: 20,
+                color: scheme.onPrimary,
               ),
             ),
           ),
@@ -301,62 +333,58 @@ class _StyleOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final current = AppStyle.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
     // Miniature: card and button at half size.
     final card = style.cardRadius / 2;
     final button = style == UiStyle.rounded ? 12.0 : style.controlRadius / 2;
 
-    return Semantics(
+    return FTappable(
       selected: selected,
-      button: true,
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: selected
-                ? colors.surfaceContainerHigh
-                : colors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(current.controlRadius + 4),
-            border: Border.all(
-              color: selected ? colors.primary : Colors.transparent,
-              width: 2,
-            ),
+      onPress: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected ? colors.secondary : colors.card,
+          borderRadius: theme.style.borderRadius.lg,
+          border: Border.all(
+            color: selected ? colors.primary : colors.border,
+            width: 1.5,
           ),
-          child: Column(
-            children: [
-              Container(
-                height: 44,
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: colors.background,
+                borderRadius: BorderRadius.circular(card),
+                border: Border.all(color: colors.border),
+              ),
+              alignment: Alignment.bottomRight,
+              padding: const EdgeInsets.all(6),
+              child: Container(
+                width: 32,
+                height: 12,
                 decoration: BoxDecoration(
-                  color: colors.surface,
-                  borderRadius: BorderRadius.circular(card),
-                ),
-                alignment: Alignment.bottomRight,
-                padding: const EdgeInsets.all(6),
-                child: Container(
-                  width: 32,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    borderRadius: BorderRadius.circular(button),
-                  ),
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(button),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: colors.onSurface,
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.typography.body.sm.copyWith(
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                color: colors.foreground,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

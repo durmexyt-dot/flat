@@ -68,14 +68,12 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final user = ref.watch(authStateProvider).value;
     final prefs = _prefs;
 
-    Widget toggle(String key, bool value, String title, String info) =>
-        SwitchListTile(
-          shape: const RoundedRectangleBorder(),
-          title: Text(title),
-          subtitle: Text(info),
-          value: value,
-          onChanged: (v) => _set(key, v),
-        );
+    FTile toggle(String key, bool value, String title, String info) => FTile(
+      title: Text(title),
+      subtitle: Text(info),
+      suffix: FSwitch(value: value, onChange: (v) => _set(key, v)),
+      onPress: () => _set(key, !value),
+    );
 
     final pushHint = switch (_push) {
       PushSupport.unsupported => l10n.pushUnsupported,
@@ -83,6 +81,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       _ => null,
     };
     final pushOn = prefs.push && _push == PushSupport.granted;
+    final pushAvailable =
+        _push != PushSupport.unsupported && _push != PushSupport.denied;
 
     return SiteScaffold(
       title: l10n.notifications,
@@ -94,25 +94,27 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
           SettingsSectionTitle(l10n.channels),
           SettingsGroup(
             children: [
-              SwitchListTile(
-                shape: const RoundedRectangleBorder(),
-                secondary: const Icon(FLucideIcons.mail),
+              FTile(
+                prefix: const Icon(FLucideIcons.mail),
                 title: Text(l10n.channelEmail),
                 subtitle: Text(l10n.channelEmailInfo(user?.email ?? '')),
-                value: prefs.email,
-                onChanged: (v) => _set('email', v),
+                suffix: FSwitch(
+                  value: prefs.email,
+                  onChange: (v) => _set('email', v),
+                ),
+                onPress: () => _set('email', !prefs.email),
               ),
-              SwitchListTile(
-                shape: const RoundedRectangleBorder(),
-                secondary: const Icon(FLucideIcons.bellRing),
+              FTile(
+                prefix: const Icon(FLucideIcons.bellRing),
                 title: Text(l10n.channelPush),
                 subtitle: pushHint == null ? null : Text(pushHint),
-                value: pushOn,
-                onChanged:
-                    _push == PushSupport.unsupported ||
-                        _push == PushSupport.denied
-                    ? null
-                    : _setPush,
+                enabled: pushAvailable,
+                suffix: FSwitch(
+                  value: pushOn,
+                  enabled: pushAvailable,
+                  onChange: _setPush,
+                ),
+                onPress: pushAvailable ? () => _setPush(!pushOn) : null,
               ),
             ],
           ),
@@ -123,10 +125,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                     padding: const EdgeInsets.only(top: 8),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: _sendTest,
-                        icon: const Icon(FLucideIcons.send),
-                        label: Text(l10n.sendTestNotification),
+                      child: FButton(
+                        variant: .ghost,
+                        size: .sm,
+                        mainAxisSize: MainAxisSize.min,
+                        prefix: const Icon(FLucideIcons.send),
+                        onPress: _sendTest,
+                        child: Text(l10n.sendTestNotification),
                       ),
                     ),
                   )

@@ -26,11 +26,13 @@ class TestPaymentGateway implements PaymentGateway {
 
   @override
   Future<PaymentOutcome> collect(BuildContext context, Order order) async {
-    final outcome = await showModalBottomSheet<PaymentOutcome>(
+    final outcome = await showFSheet<PaymentOutcome>(
       context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      isDismissible: false,
+      side: FLayout.btt,
+      // The form scrolls itself on short screens.
+      mainAxisMaxRatio: null,
+      barrierDismissible: false,
+      draggable: false,
       builder: (_) => PaymentSimulatorSheet(order: order),
     );
     return outcome ?? const PaymentCancelled();
@@ -78,160 +80,190 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final theme = context.theme;
+    final colors = theme.colors;
     final amount = formatMoney(
       context,
       widget.order.totalMinor,
       widget.order.currency,
     );
 
-    Widget field(String label, String value, {double? width}) => SizedBox(
-      width: width,
-      child: TextFormField(
-        initialValue: value,
-        readOnly: true,
-        enabled: !_processing,
-        decoration: InputDecoration(labelText: label),
+    Widget field(String label, String value) => FTextFormField(
+      control: FTextFieldControl.managed(
+        initial: TextEditingValue(text: value),
       ),
+      readOnly: true,
+      enabled: !_processing,
+      label: Text(label),
     );
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          0,
-          20,
-          20 + MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'stripe',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF635BFF),
-                    letterSpacing: -1,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFDE92),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'TEST',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF983705),
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  tooltip: l10n.cancel,
-                  onPressed: _processing
-                      ? null
-                      : () => Navigator.pop(context, const PaymentCancelled()),
-                  icon: const Icon(FLucideIcons.x),
-                ),
-              ],
-            ),
-            Text(
-              l10n.simulatorInfo,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            field(l10n.cardNumber, '4242 4242 4242 4242'),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(child: field(l10n.cardExpiry, '12 / 34')),
-                const SizedBox(width: 12),
-                Expanded(child: field(l10n.cardCvc, '123')),
-              ],
-            ),
-            const SizedBox(height: 8),
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: _succeed,
-              onChanged: _processing
-                  ? null
-                  : (v) => setState(() => _succeed = v ?? true),
-              title: Text(l10n.simulateSuccess),
-              subtitle: Text(l10n.simulateSuccessInfo),
-            ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
-              alignment: Alignment.topCenter,
-              child: _succeed
-                  ? const SizedBox(width: double.infinity)
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final f in _declines)
-                            ChoiceChip(
-                              label: Text(paymentFailureText(l10n, f)),
-                              selected: _failure == f,
-                              onSelected: _processing
-                                  ? null
-                                  : (_) => setState(() => _failure = f),
-                            ),
-                        ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.background,
+        border: Border(top: BorderSide(color: colors.border)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Drag handle look of a bottom sheet.
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: colors.border,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-            ),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: _processing ? null : _pay,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-                backgroundColor: const Color(0xFF635BFF),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: const Color(0xFF635BFF)
-                    .withValues(alpha: 0.7),
-              ),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: _processing
-                    ? Row(
-                        key: const ValueKey('processing'),
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.white,
+                    Row(
+                      children: [
+                        Text(
+                          'stripe',
+                          style: theme.typography.display.md.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF635BFF),
+                            letterSpacing: -1,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFDE92),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'TEST',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF983705),
+                              fontSize: 12,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            l10n.processingPayment,
-                            style: const TextStyle(color: Colors.white),
+                        ),
+                        const Spacer(),
+                        FTooltip(
+                          tipBuilder: (context, _) => Text(l10n.cancel),
+                          child: FButton.icon(
+                            variant: FButtonVariant.ghost,
+                            semanticsLabel: l10n.cancel,
+                            onPress: _processing
+                                ? null
+                                : () => Navigator.pop(
+                                    context,
+                                    const PaymentCancelled(),
+                                  ),
+                            child: const Icon(FLucideIcons.x),
                           ),
-                        ],
-                      )
-                    : Text(l10n.payAmount(amount), key: const ValueKey('pay')),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.simulatorInfo,
+                      style: theme.typography.body.sm.copyWith(
+                        color: colors.mutedForeground,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    field(l10n.cardNumber, '4242 4242 4242 4242'),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: field(l10n.cardExpiry, '12 / 34')),
+                        const SizedBox(width: 12),
+                        Expanded(child: field(l10n.cardCvc, '123')),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    FCheckbox(
+                      value: _succeed,
+                      enabled: !_processing,
+                      onChange: (v) => setState(() => _succeed = v),
+                      label: Text(l10n.simulateSuccess),
+                      description: Text(l10n.simulateSuccessInfo),
+                    ),
+                    const SizedBox(height: 12),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeOutCubic,
+                      alignment: Alignment.topCenter,
+                      child: _succeed
+                          ? const SizedBox(width: double.infinity)
+                          : Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  for (final f in _declines)
+                                    FButton(
+                                      size: FButtonSizeVariant.sm,
+                                      mainAxisSize: MainAxisSize.min,
+                                      variant: _failure == f
+                                          ? FButtonVariant.primary
+                                          : FButtonVariant.outline,
+                                      onPress: _processing
+                                          ? null
+                                          : () => setState(() => _failure = f),
+                                      child: Text(paymentFailureText(l10n, f)),
+                                    ),
+                                ],
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: 8),
+                    IgnorePointer(
+                      ignoring: _processing,
+                      child: FButton(
+                        size: FButtonSizeVariant.lg,
+                        onPress: _pay,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: _processing
+                              ? Row(
+                                  key: const ValueKey('processing'),
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    FCircularProgress.loader(
+                                      style: .delta(
+                                        iconStyle: .delta(
+                                          color: colors.primaryForeground,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(l10n.processingPayment),
+                                  ],
+                                )
+                              : Text(
+                                  l10n.payAmount(amount),
+                                  key: const ValueKey('pay'),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

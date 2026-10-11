@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
+import '../auth/auth_widgets.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
@@ -14,6 +15,7 @@ import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'labels.dart';
 import 'listing_ticket.dart';
+import '../ui/app_dialog.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 
@@ -81,49 +83,36 @@ class _Facts extends StatelessWidget {
     final seats = seatText(l10n, listing.section, listing.row, listing.seats);
     return SettingsGroup(
       children: [
-        _Fact(
+        _fact(
           FLucideIcons.calendar,
           l10n.dateTime,
           formatDateTime(context, listing.event.date),
         ),
-        _Fact(
+        _fact(
           FLucideIcons.mapPin,
           l10n.venue,
           '${listing.event.venue}, ${listing.event.city}',
         ),
-        _Fact(
+        _fact(
           FLucideIcons.ticket,
           l10n.ticketType,
           ticketTypeName(l10n, listing.ticketType),
         ),
-        if (seats.isNotEmpty) _Fact(FLucideIcons.armchair, l10n.seats, seats),
-        _Fact(
+        if (seats.isNotEmpty) _fact(FLucideIcons.armchair, l10n.seats, seats),
+        _fact(
           FLucideIcons.packageOpen,
           l10n.quantity,
           l10n.ticketsLeft('${listing.available}', '${listing.quantity}'),
         ),
         if (listing.note.isNotEmpty)
-          _Fact(FLucideIcons.notebookText, l10n.noteLabel, listing.note),
+          _fact(FLucideIcons.notebookText, l10n.noteLabel, listing.note),
       ],
     );
   }
 }
 
-class _Fact extends StatelessWidget {
-  const _Fact(this.icon, this.label, this.value);
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => ListTile(
-    shape: const RoundedRectangleBorder(),
-    leading: Icon(icon),
-    title: Text(label, style: Theme.of(context).textTheme.labelMedium),
-    subtitle: Text(value, style: Theme.of(context).textTheme.bodyLarge),
-  );
-}
+FTile _fact(IconData icon, String label, String value) =>
+    FTile(prefix: Icon(icon), title: Text(label), subtitle: Text(value));
 
 class _SellerPanel extends ConsumerWidget {
   const _SellerPanel({required this.listing});
@@ -132,9 +121,22 @@ class _SellerPanel extends ConsumerWidget {
 
   Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
-    final minor = await showDialog<int>(
+    final form = GlobalKey<_PriceFormState>();
+    final minor = await showAppDialog<int>(
       context: context,
-      builder: (_) => _PriceDialog(listing: listing),
+      title: l10n.editPrice,
+      body: _PriceForm(key: form, listing: listing),
+      actions: (ctx) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(ctx),
+          child: Text(l10n.cancel),
+        ),
+        FButton(
+          onPress: () => form.currentState?.submit(),
+          child: Text(l10n.save),
+        ),
+      ],
     );
     if (minor == null) return;
     try {
@@ -149,22 +151,22 @@ class _SellerPanel extends ConsumerWidget {
 
   Future<void> _withdraw(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
-    final ok = await showDialog<bool>(
+    final ok = await showAppDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.withdrawListing),
-        content: Text(l10n.withdrawConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.withdrawListing),
-          ),
-        ],
-      ),
+      title: l10n.withdrawListing,
+      body: Text(l10n.withdrawConfirm),
+      actions: (ctx) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(ctx, false),
+          child: Text(l10n.cancel),
+        ),
+        FButton(
+          variant: FButtonVariant.destructive,
+          onPress: () => Navigator.pop(ctx, true),
+          child: Text(l10n.withdrawListing),
+        ),
+      ],
     );
     if (ok != true) return;
     try {
@@ -179,16 +181,13 @@ class _SellerPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final active = listing.status == ListingStatus.active;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SettingsSectionTitle(l10n.yourListing),
-        Card.filled(
-          margin: EdgeInsets.zero,
-          color: theme.colorScheme.surfaceContainerLow,
+        FCard(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -205,7 +204,11 @@ class _SellerPanel extends ConsumerWidget {
                     listing.currency,
                   ),
                 ),
-                const Divider(),
+                const FDivider(
+                  style: .delta(
+                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                  ),
+                ),
                 _MoneyRow(
                   l10n.totalPayout,
                   formatMoney(
@@ -228,15 +231,19 @@ class _SellerPanel extends ConsumerWidget {
                     spacing: 12,
                     runSpacing: 8,
                     children: [
-                      FilledButton.tonalIcon(
-                        onPressed: () => _editPrice(context, ref),
-                        icon: const Icon(FLucideIcons.pencil),
-                        label: Text(l10n.editPrice),
+                      FButton(
+                        variant: FButtonVariant.secondary,
+                        mainAxisSize: MainAxisSize.min,
+                        onPress: () => _editPrice(context, ref),
+                        prefix: const Icon(FLucideIcons.pencil),
+                        child: Text(l10n.editPrice),
                       ),
-                      OutlinedButton.icon(
-                        onPressed: () => _withdraw(context, ref),
-                        icon: const Icon(FLucideIcons.eyeOff),
-                        label: Text(l10n.withdrawListing),
+                      FButton(
+                        variant: FButtonVariant.outline,
+                        mainAxisSize: MainAxisSize.min,
+                        onPress: () => _withdraw(context, ref),
+                        prefix: const Icon(FLucideIcons.eyeOff),
+                        child: Text(l10n.withdrawListing),
                       ),
                     ],
                   ),
@@ -248,18 +255,18 @@ class _SellerPanel extends ConsumerWidget {
   }
 }
 
-/// Asks for a new price. Owns its text controller, which must outlive the
-/// dialog's closing animation.
-class _PriceDialog extends StatefulWidget {
-  const _PriceDialog({required this.listing});
+/// Asks for a new price inside the dialog body. Owns its text controller,
+/// which must outlive the dialog's closing animation.
+class _PriceForm extends StatefulWidget {
+  const _PriceForm({super.key, required this.listing});
 
   final Listing listing;
 
   @override
-  State<_PriceDialog> createState() => _PriceDialogState();
+  State<_PriceForm> createState() => _PriceFormState();
 }
 
-class _PriceDialogState extends State<_PriceDialog> {
+class _PriceFormState extends State<_PriceForm> {
   final _formKey = GlobalKey<FormState>();
   late final _controller = TextEditingController(
     text: (widget.listing.priceMinor / 100).toStringAsFixed(2),
@@ -271,7 +278,7 @@ class _PriceDialogState extends State<_PriceDialog> {
     super.dispose();
   }
 
-  void _submit() {
+  void submit() {
     if (_formKey.currentState!.validate()) {
       Navigator.pop(context, parseMoney(_controller.text));
     }
@@ -280,32 +287,32 @@ class _PriceDialogState extends State<_PriceDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(l10n.editPrice),
-      content: Form(
+    final symbol = currencySymbols[widget.listing.currency];
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Form(
         key: _formKey,
-        child: TextFormField(
-          controller: _controller,
+        child: FTextFormField(
+          control: FTextFieldControl.managed(controller: _controller),
           autofocus: true,
-          decoration: InputDecoration(
-            labelText: l10n.pricePerTicket,
-            suffixText: currencySymbols[widget.listing.currency],
-          ),
+          label: Text(l10n.pricePerTicket),
+          prefixBuilder: (context, style, variants) =>
+              fieldIcon(FLucideIcons.banknote),
+          suffixBuilder: symbol == null
+              ? null
+              : (context, style, variants) => Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 12),
+                  child: Text(symbol),
+                ),
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          onFieldSubmitted: (_) => _submit(),
+          textInputAction: TextInputAction.done,
+          onSubmit: (_) => submit(),
           validator: (v) {
             final m = parseMoney(v ?? '');
             return (m == null || m <= 0) ? l10n.priceInvalid : null;
           },
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(onPressed: _submit, child: Text(l10n.save)),
-      ],
     );
   }
 }
@@ -319,23 +326,34 @@ class _MoneyRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Expanded(child: Text(label)),
+          Expanded(
+            child: Text(
+              label,
+              style: theme.typography.body.sm.copyWith(
+                color: strong
+                    ? theme.colors.foreground
+                    : theme.colors.mutedForeground,
+              ),
+            ),
+          ),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: Text(
               value,
               key: ValueKey(value),
               style: strong
-                  ? theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: theme.colorScheme.onSurface,
+                  ? theme.typography.body.lg.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colors.foreground,
                     )
-                  : null,
+                  : theme.typography.body.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
             ),
           ),
         ],
@@ -378,7 +396,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final listing = widget.listing;
     final quantity = _quantity.clamp(1, listing.available.clamp(1, 99));
     final subtotal = listing.priceMinor * quantity;
@@ -390,35 +408,46 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SettingsSectionTitle(l10n.buyTickets),
-        Card.filled(
-          margin: EdgeInsets.zero,
-          color: theme.colorScheme.surfaceContainerLow,
+        FCard(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(l10n.quantity)),
-                    IconButton.filledTonal(
-                      onPressed: quantity > 1
+                    Expanded(
+                      child: Text(
+                        l10n.quantity,
+                        style: theme.typography.body.sm.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                    ),
+                    FButton.icon(
+                      variant: FButtonVariant.outline,
+                      onPress: quantity > 1
                           ? () => setState(() => _quantity = quantity - 1)
                           : null,
-                      icon: const Icon(FLucideIcons.minus),
+                      child: const Icon(FLucideIcons.minus),
                     ),
                     SizedBox(
                       width: 40,
                       child: Text(
                         '$quantity',
                         textAlign: TextAlign.center,
-                        style: theme.textTheme.titleLarge,
+                        style: theme.typography.body.lg.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colors.foreground,
+                        ),
                       ),
                     ),
-                    IconButton.filledTonal(
-                      onPressed: quantity < listing.available
+                    FButton.icon(
+                      variant: FButtonVariant.outline,
+                      onPress: quantity < listing.available
                           ? () => setState(() => _quantity = quantity + 1)
                           : null,
-                      icon: const Icon(FLucideIcons.plus),
+                      child: const Icon(FLucideIcons.plus),
                     ),
                   ],
                 ),
@@ -431,7 +460,11 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                   '${l10n.serviceFee} (${Fees.buyerPercent} %)',
                   formatMoney(context, fee, listing.currency),
                 ),
-                const Divider(),
+                const FDivider(
+                  style: .delta(
+                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                  ),
+                ),
                 _MoneyRow(
                   l10n.total,
                   formatMoney(context, subtotal + fee, listing.currency),
@@ -442,21 +475,27 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
           ),
         ),
         const SizedBox(height: 16),
-        FilledButton.icon(
-          onPressed: available ? _buy : null,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          icon: const Icon(FLucideIcons.shoppingBag),
-          label: Text(l10n.buyTickets),
+        FButton(
+          size: FButtonSizeVariant.lg,
+          onPress: available ? _buy : null,
+          prefix: const Icon(FLucideIcons.shoppingBag),
+          child: Text(l10n.buyTickets),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Icon(FLucideIcons.shieldCheck, color: theme.colorScheme.primary),
+            Icon(
+              FLucideIcons.shieldCheck,
+              size: 18,
+              color: theme.colors.mutedForeground,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 l10n.buyerProtection,
-                style: theme.textTheme.bodySmall,
+                style: theme.typography.body.xs.copyWith(
+                  color: theme.colors.mutedForeground,
+                ),
               ),
             ),
           ],

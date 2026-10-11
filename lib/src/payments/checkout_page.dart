@@ -104,7 +104,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   Widget _body(BuildContext context, Listing listing) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
     final gateway = ref.watch(paymentGatewayProvider);
     final email = ref.watch(authStateProvider).value?.email ?? '';
     final available =
@@ -113,6 +114,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final subtotal = listing.priceMinor * quantity;
     final total = subtotal + Fees.buyerFee(subtotal);
     String money(int m) => formatMoney(context, m, listing.currency);
+    const divider = FDivider(
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 12))),
+    );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -126,55 +130,69 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               const SizedBox(height: 12),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Chip(
-                  avatar: const Icon(FLucideIcons.flaskConical, size: 18),
-                  label: Text(l10n.testModeBadge),
-                  visualDensity: VisualDensity.compact,
+                child: FBadge(
+                  variant: FBadgeVariant.secondary,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(FLucideIcons.flaskConical, size: 14),
+                      const SizedBox(width: 4),
+                      Text(l10n.testModeBadge),
+                    ],
+                  ),
                 ),
               ),
             ],
           ],
           side: [
             SettingsSectionTitle(l10n.tickets),
-            Card.filled(
-              margin: EdgeInsets.zero,
-              color: theme.colorScheme.surfaceContainerLow,
+            FCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        Expanded(child: Text(l10n.quantity)),
-                        IconButton.filledTonal(
-                          onPressed: !_busy && quantity > 1
+                        Expanded(
+                          child: Text(
+                            l10n.quantity,
+                            style: theme.typography.body.sm.copyWith(
+                              color: colors.foreground,
+                            ),
+                          ),
+                        ),
+                        FButton.icon(
+                          onPress: !_busy && quantity > 1
                               ? () => setState(() {
                                   _quantity = quantity - 1;
                                   _order = null;
                                 })
                               : null,
-                          icon: const Icon(FLucideIcons.minus),
+                          child: const Icon(FLucideIcons.minus),
                         ),
                         SizedBox(
                           width: 40,
                           child: Text(
                             '$quantity',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.titleLarge,
+                            style: theme.typography.body.lg.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colors.foreground,
+                            ),
                           ),
                         ),
-                        IconButton.filledTonal(
-                          onPressed: !_busy && quantity < listing.available
+                        FButton.icon(
+                          onPress: !_busy && quantity < listing.available
                               ? () => setState(() {
                                   _quantity = quantity + 1;
                                   _order = null;
                                 })
                               : null,
-                          icon: const Icon(FLucideIcons.plus),
+                          child: const Icon(FLucideIcons.plus),
                         ),
                       ],
                     ),
-                    const Divider(height: 24),
+                    divider,
                     _Line(
                       '$quantity × ${money(listing.priceMinor)}',
                       money(subtotal),
@@ -183,19 +201,46 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       '${l10n.serviceFee} (${Fees.buyerPercent} %)',
                       money(Fees.buyerFee(subtotal)),
                     ),
-                    const Divider(height: 24),
+                    divider,
                     _Line(l10n.total, money(total), strong: true),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 12),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(FLucideIcons.mail),
-              title: Text(l10n.buyerEmail),
-              subtitle: Text(email),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    FLucideIcons.mail,
+                    size: 18,
+                    color: colors.mutedForeground,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.buyerEmail,
+                          style: theme.typography.body.xs.copyWith(
+                            color: colors.mutedForeground,
+                          ),
+                        ),
+                        Text(
+                          email,
+                          style: theme.typography.body.sm.copyWith(
+                            color: colors.foreground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 4),
             AnimatedSize(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeOutCubic,
@@ -212,7 +257,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 child: Text(
                   l10n.notAvailableAnymore,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: theme.colorScheme.error),
+                  style: theme.typography.body.sm.copyWith(
+                    color: colors.destructive,
+                  ),
                 ),
               ),
             SubmitButton(
@@ -227,13 +274,16 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               children: [
                 Icon(
                   FLucideIcons.shieldCheck,
-                  color: theme.colorScheme.primary,
+                  size: 18,
+                  color: colors.mutedForeground,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l10n.buyerProtection,
-                    style: theme.textTheme.bodySmall,
+                    style: theme.typography.body.xs.copyWith(
+                      color: colors.mutedForeground,
+                    ),
                   ),
                 ),
               ],
@@ -254,20 +304,32 @@ class _Line extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final body = theme.typography.body;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Expanded(child: Text(label)),
+          Expanded(
+            child: Text(
+              label,
+              style: strong
+                  ? body.sm.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.foreground,
+                    )
+                  : body.sm.copyWith(color: colors.mutedForeground),
+            ),
+          ),
           Text(
             value,
             style: strong
-                ? theme.textTheme.titleMedium?.copyWith(
+                ? body.lg.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.onSurface,
+                    color: colors.foreground,
                   )
-                : null,
+                : body.sm.copyWith(color: colors.foreground),
           ),
         ],
       ),
@@ -283,37 +345,11 @@ class _FailureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.errorContainer,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(FLucideIcons.creditCard, color: colors.onErrorContainer),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.paymentFailedTitle,
-                  style: Theme.of(context).textTheme.titleSmall
-                      ?.copyWith(color: colors.onErrorContainer),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.paymentFailedInfo(paymentFailureText(l10n, failure)),
-                  style: TextStyle(color: colors.onErrorContainer),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return FAlert(
+      variant: FAlertVariant.destructive,
+      icon: const Icon(FLucideIcons.creditCard),
+      title: Text(l10n.paymentFailedTitle),
+      subtitle: Text(l10n.paymentFailedInfo(paymentFailureText(l10n, failure))),
     );
   }
 }

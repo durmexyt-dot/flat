@@ -23,7 +23,8 @@ class ProfileHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider);
 
@@ -39,8 +40,9 @@ class ProfileHeader extends ConsumerWidget {
         final private = p?.visibility == ProfileVisibility.private;
         final align = horizontal ? WrapAlignment.start : WrapAlignment.center;
 
-        final avatar = GestureDetector(
-          onTap: () => showPhotoActions(context, ref),
+        final avatar = FTappable(
+          semanticsLabel: l10n.editProfile,
+          onPress: () => showPhotoActions(context, ref),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -48,20 +50,18 @@ class ProfileHeader extends ConsumerWidget {
               Positioned(
                 right: -2,
                 bottom: -2,
-                child: Material(
-                  color: theme.colorScheme.primary,
-                  shape: CircleBorder(
-                    side: BorderSide(
-                      color: theme.colorScheme.surface,
-                      width: 3,
-                    ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colors.foreground,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.background, width: 3),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(6),
                     child: Icon(
                       FLucideIcons.camera,
-                      size: 18,
-                      color: theme.colorScheme.onPrimary,
+                      size: 16,
+                      color: colors.background,
                     ),
                   ),
                 ),
@@ -73,15 +73,16 @@ class ProfileHeader extends ConsumerWidget {
           Text(
             name,
             textAlign: horizontal ? TextAlign.start : TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: theme.typography.body.xl.copyWith(
               fontWeight: FontWeight.w700,
+              color: colors.foreground,
             ),
           ),
           if (handle != null)
             Text(
               handle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: theme.typography.body.sm.copyWith(
+                color: colors.mutedForeground,
               ),
             ),
           const SizedBox(height: 8),
@@ -91,19 +92,14 @@ class ProfileHeader extends ConsumerWidget {
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Chip(
-                avatar: Icon(
-                  private ? FLucideIcons.lock : FLucideIcons.globe,
-                  size: 16,
-                ),
-                label: Text(private ? l10n.profilePrivate : l10n.profilePublic),
-                visualDensity: VisualDensity.compact,
+              _InfoBadge(
+                icon: private ? FLucideIcons.lock : FLucideIcons.globe,
+                label: private ? l10n.profilePrivate : l10n.profilePublic,
               ),
               if (p?.createdAt case final since?)
-                Chip(
-                  avatar: const Icon(FLucideIcons.calendarCheck, size: 16),
-                  label: Text(l10n.memberSince(formatDate(context, since))),
-                  visualDensity: VisualDensity.compact,
+                _InfoBadge(
+                  icon: FLucideIcons.calendarCheck,
+                  label: l10n.memberSince(formatDate(context, since)),
                 ),
               if (horizontal) _editButton(context, l10n),
             ],
@@ -141,12 +137,35 @@ class ProfileHeader extends ConsumerWidget {
     );
   }
 
-  Widget _editButton(BuildContext context, AppLocalizations l10n) =>
-      OutlinedButton.icon(
-        onPressed: () => context.push('/settings/profile'),
-        icon: const Icon(FLucideIcons.pencil, size: 18),
-        label: Text(l10n.editProfile),
-      );
+  Widget _editButton(BuildContext context, AppLocalizations l10n) => FButton(
+    variant: .outline,
+    size: .sm,
+    mainAxisSize: MainAxisSize.min,
+    onPress: () => context.push('/settings/profile'),
+    prefix: const Icon(FLucideIcons.pencil),
+    child: Text(l10n.editProfile),
+  );
+}
+
+/// A small neutral badge with a leading icon.
+class _InfoBadge extends StatelessWidget {
+  const _InfoBadge({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => FBadge(
+    variant: .secondary,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14),
+        const SizedBox(width: 4),
+        Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+      ],
+    ),
+  );
 }
 
 class _HeaderSkeleton extends StatelessWidget {
@@ -181,9 +200,7 @@ class StatsRow extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final stats = ref.watch(statsProvider);
 
-    Widget card(ProfileStats? s, {bool failed = false}) => Card.filled(
-      margin: EdgeInsets.zero,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
+    Widget card(ProfileStats? s, {bool failed = false}) => FCard(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
@@ -194,10 +211,17 @@ class StatsRow extends ConsumerWidget {
             const _StatDivider(),
             _Stat(value: s?.bought, label: l10n.statBought),
             if (failed)
-              IconButton(
-                tooltip: l10n.retry,
-                onPressed: () => ref.invalidate(statsProvider),
-                icon: const Icon(FLucideIcons.refreshCw),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FTooltip(
+                  tipBuilder: (context, _) => Text(l10n.retry),
+                  child: FButton.icon(
+                    variant: .ghost,
+                    semanticsLabel: l10n.retry,
+                    onPress: () => ref.invalidate(statsProvider),
+                    child: const Icon(FLucideIcons.refreshCw),
+                  ),
+                ),
               ),
           ],
         ),
@@ -223,18 +247,16 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final number = theme.typography.body.xl.copyWith(
+      fontWeight: FontWeight.w800,
+    );
     return Expanded(
       child: Column(
         children: [
           if (value == null)
-            Text(
-              '–',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: theme.colorScheme.outline,
-              ),
-            )
+            Text('–', style: number.copyWith(color: colors.mutedForeground))
           else
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: value!.toDouble()),
@@ -242,16 +264,14 @@ class _Stat extends StatelessWidget {
               curve: Curves.easeOutCubic,
               builder: (context, v, _) => Text(
                 '${v.round()}',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: theme.colorScheme.onSurface,
-                ),
+                style: number.copyWith(color: colors.foreground),
               ),
             ),
           Text(
             label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+            style: theme.typography.body.xs.copyWith(
+              color: colors.mutedForeground,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -264,8 +284,6 @@ class _StatDivider extends StatelessWidget {
   const _StatDivider();
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 36,
-    child: VerticalDivider(color: Theme.of(context).colorScheme.outlineVariant),
-  );
+  Widget build(BuildContext context) =>
+      const SizedBox(height: 36, child: FDivider(axis: Axis.vertical));
 }
