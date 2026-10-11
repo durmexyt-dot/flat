@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.1.0] – 2026-10-11
+
 ### Neu
 - Versionierung: Version und Build in „Über“ und in Support-Anfragen,
   Release-Skript mit Changelog und Tags
