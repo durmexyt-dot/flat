@@ -1,4 +1,5 @@
 import 'package:flat/src/account/account_drawer.dart';
+import 'package:flat/src/account/account_sidebar.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -64,9 +65,20 @@ void main() {
     await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();
 
-    final profile = tester.getTopLeft(find.text('Uredi profil'));
-    final settings = tester.getTopLeft(find.text('Kupovine i računi'));
-    expect(settings.dx, greaterThan(profile.dx + 200));
+    // Account pages share the sidebar on the left of the content.
+    expect(find.byType(AccountSidebar), findsOneWidget);
+    final nav = tester.getTopLeft(find.text('Kupovine i računi'));
+    final edit = tester.getTopLeft(find.text('Uredi profil'));
+    expect(edit.dx, greaterThan(nav.dx + 200));
+    // The profile card shows the counts beside the name.
+    final stats = tester.getTopLeft(find.text('Ponuđeno'));
+    expect(stats.dx, greaterThan(edit.dx));
+
+    // The same sidebar on my listings, so the layout stays consistent.
+    await tester.tap(find.text('Moje ponude').last);
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountSidebar), findsOneWidget);
+    expect(find.byType(SiteHeader), findsOneWidget);
   });
 
   testWidgets('desktop: guests see sign in and sign up', (tester) async {

@@ -1173,4 +1173,21 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get heroSubtitle =>
       'Kaufe sicher von Fans oder verkaufe Tickets, die du nicht nutzen kannst.';
+
+  @override
+  String get howSellingWorks => 'So funktioniert der Verkauf';
+
+  @override
+  String get sellStep1 => 'Angebot einstellen: Event, Plätze und Preis.';
+
+  @override
+  String get sellStep2 =>
+      'Ein Käufer bezahlt. Wir halten das Geld, bis die Tickets ankommen.';
+
+  @override
+  String get sellStep3 =>
+      'Übertrage die Tickets und markiere sie als übertragen.';
+
+  @override
+  String get sellStep4 => 'Nach dem Event kommt das Geld auf deine IBAN.';
 }

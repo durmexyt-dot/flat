@@ -2253,6 +2253,36 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti.'**
   String get heroSubtitle;
+
+  /// No description provided for @howSellingWorks.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kako funkcioniše prodaja'**
+  String get howSellingWorks;
+
+  /// No description provided for @sellStep1.
+  ///
+  /// In bs, this message translates to:
+  /// **'Objavi ponudu: događaj, sjedišta i cijenu.'**
+  String get sellStep1;
+
+  /// No description provided for @sellStep2.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac plaća. Novac čuvamo dok karte ne stignu.'**
+  String get sellStep2;
+
+  /// No description provided for @sellStep3.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji karte kupcu i označi ih kao poslane.'**
+  String get sellStep3;
+
+  /// No description provided for @sellStep4.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nakon događaja novac stiže na tvoj IBAN.'**
+  String get sellStep4;
 }
 
 class _AppLocalizationsDelegate

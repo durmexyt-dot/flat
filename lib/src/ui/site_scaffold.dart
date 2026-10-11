@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/account_drawer.dart';
+import '../account/account_sidebar.dart';
 import '../account/avatar.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
@@ -18,8 +19,11 @@ bool isWideLayout(BuildContext context) =>
 
 /// Content widths on wide screens.
 abstract final class SiteWidth {
-  /// Lists and grids.
+  /// The page: header, lists and grids.
   static const wide = 1200.0;
+
+  /// No limit inside the page.
+  static const full = double.infinity;
 
   /// Detail pages.
   static const detail = 900.0;
@@ -40,6 +44,7 @@ class SiteScaffold extends StatelessWidget {
     this.maxWidth = SiteWidth.form,
     this.narrowAppBar,
     this.showTitle = true,
+    this.accountNav = false,
   });
 
   final String title;
@@ -56,6 +61,9 @@ class SiteScaffold extends StatelessWidget {
   final PreferredSizeWidget? narrowAppBar;
   final bool showTitle;
 
+  /// Shows the account sidebar on wide screens.
+  final bool accountNav;
+
   @override
   Widget build(BuildContext context) {
     if (!isWideLayout(context)) {
@@ -67,6 +75,44 @@ class SiteScaffold extends StatelessWidget {
     }
 
     final theme = Theme.of(context);
+    // Title and content, left-aligned; [maxWidth] limits the content only.
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showTitle)
+          Padding(
+            // Page bodies keep 16 px side padding; the title lines up.
+            padding: EdgeInsets.fromLTRB(context.canPop() ? 4 : 16, 24, 16, 8),
+            child: Row(
+              children: [
+                if (context.canPop()) ...[
+                  const BackButton(),
+                  const SizedBox(width: 8),
+                ],
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                ...actions,
+              ],
+            ),
+          ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: body,
+            ),
+          ),
+        ),
+      ],
+    );
+
     return Scaffold(
       endDrawer: const AccountDrawer(),
       body: Column(
@@ -76,31 +122,20 @@ class SiteScaffold extends StatelessWidget {
             child: Align(
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (showTitle)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 24, 16, 8),
-                        child: Row(
+                // Every page shares the header's width.
+                constraints: const BoxConstraints(maxWidth: SiteWidth.wide),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: accountNav
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (context.canPop()) const BackButton(),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                title,
-                                style: theme.textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            ...actions,
+                            const SizedBox(width: 248, child: AccountSidebar()),
+                            const SizedBox(width: 32),
+                            Expanded(child: content),
                           ],
-                        ),
-                      ),
-                    Expanded(child: body),
-                  ],
+                        )
+                      : content,
                 ),
               ),
             ),

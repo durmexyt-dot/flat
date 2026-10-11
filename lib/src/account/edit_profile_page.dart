@@ -88,9 +88,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     return SiteScaffold(
       title: l10n.editProfile,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-        child: Center(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        child: Align(
+          // Website layout: under the page title, not centered.
+          alignment: isWideLayout(context)
+              ? Alignment.topLeft
+              : Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
             child: Form(

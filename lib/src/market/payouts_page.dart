@@ -11,6 +11,7 @@ import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
 import '../ui/hero_tags.dart';
+import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import '../ui/status_timeline.dart';
 import 'labels.dart';
@@ -28,7 +29,8 @@ class PayoutsPage extends ConsumerWidget {
 
     return SiteScaffold(
       title: l10n.payouts,
-      maxWidth: SiteWidth.form,
+      maxWidth: SiteWidth.full,
+      accountNav: true,
       body: Column(
         children: [
           Expanded(
@@ -39,9 +41,14 @@ class PayoutsPage extends ConsumerWidget {
               data: (all) => ListView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                 children: [
-                  _Summary(payouts: all),
-                  const SizedBox(height: 12),
-                  const _MethodCard(),
+                  ResponsiveGrid(
+                    maxColumns: 2,
+                    gap: 12,
+                    children: [
+                      _Summary(payouts: all),
+                      const _MethodCard(),
+                    ],
+                  ),
                   SettingsSectionTitle(l10n.payouts),
                   if (all.isEmpty)
                     EmptyState(
@@ -50,13 +57,18 @@ class PayoutsPage extends ConsumerWidget {
                       message: l10n.noPayoutsInfo,
                     )
                   else
-                    for (final p in all) ...[
-                      PayoutCard(
-                        payout: p,
-                        onTap: () => context.push('/payout/${p.id}', extra: p),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
+                    ResponsiveGrid(
+                      maxColumns: 2,
+                      gap: 12,
+                      children: [
+                        for (final p in all)
+                          PayoutCard(
+                            payout: p,
+                            onTap: () =>
+                                context.push('/payout/${p.id}', extra: p),
+                          ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -275,6 +287,7 @@ class PayoutDetailPage extends ConsumerWidget {
     return SiteScaffold(
       title: l10n.payoutDetails,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: payout == null
           ? AsyncView<Payout?>(
               value: live,

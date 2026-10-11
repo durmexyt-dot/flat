@@ -1164,4 +1164,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get heroSubtitle =>
       'Buy safely from fans or sell the tickets you can\'t use.';
+
+  @override
+  String get howSellingWorks => 'How selling works';
+
+  @override
+  String get sellStep1 => 'List your tickets: event, seats and price.';
+
+  @override
+  String get sellStep2 =>
+      'A buyer pays. We hold the money until the tickets arrive.';
+
+  @override
+  String get sellStep3 => 'Send the tickets and mark them as sent.';
+
+  @override
+  String get sellStep4 => 'After the event the money reaches your IBAN.';
 }

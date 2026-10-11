@@ -1159,4 +1159,19 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get heroSubtitle =>
       'Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti.';
+
+  @override
+  String get howSellingWorks => 'Kako funkcioniše prodaja';
+
+  @override
+  String get sellStep1 => 'Objavi ponudu: događaj, sjedišta i cijenu.';
+
+  @override
+  String get sellStep2 => 'Kupac plaća. Novac čuvamo dok karte ne stignu.';
+
+  @override
+  String get sellStep3 => 'Pošalji karte kupcu i označi ih kao poslane.';
+
+  @override
+  String get sellStep4 => 'Nakon događaja novac stiže na tvoj IBAN.';
 }

@@ -97,6 +97,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
     return SiteScaffold(
       title: l10n.payoutMethod,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(

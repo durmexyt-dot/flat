@@ -42,6 +42,7 @@ class OrderDetailPage extends ConsumerWidget {
     return SiteScaffold(
       title: role == OrderRole.seller ? l10n.saleDetails : l10n.orderDetails,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: order == null
           ? AsyncView<Order?>(
               value: live,

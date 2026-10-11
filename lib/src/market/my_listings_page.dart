@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../ui/async_view.dart';
+import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'listing_ticket.dart';
 import '../ui/site_scaffold.dart';
@@ -44,7 +45,8 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
 
     return SiteScaffold(
       title: l10n.myListings,
-      maxWidth: SiteWidth.detail,
+      maxWidth: SiteWidth.full,
+      accountNav: true,
       actions: [
         if (isWideLayout(context))
           FilledButton.icon(
@@ -59,6 +61,7 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
         label: Text(l10n.sellTickets),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -97,19 +100,23 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                 }
                 return AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                  child: ListView.separated(
+                  child: ListView(
                     key: ValueKey(_filter),
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
-                    itemCount: shown.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, i) => ListingTicket(
-                      listing: shown[i],
-                      showStatus: true,
-                      onTap: () => context.push(
-                        '/listing/${shown[i].id}',
-                        extra: shown[i],
+                    children: [
+                      ResponsiveGrid(
+                        maxColumns: 2,
+                        children: [
+                          for (final l in shown)
+                            ListingTicket(
+                              listing: l,
+                              showStatus: true,
+                              onTap: () =>
+                                  context.push('/listing/${l.id}', extra: l),
+                            ),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
                 );
               },

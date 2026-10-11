@@ -479,5 +479,10 @@
   "navMyTickets": "Moje karte",
   "openAccountMenu": "Otvori meni računa",
   "heroTitle": "Karte za koncerte, sport i festivale",
-  "heroSubtitle": "Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti."
+  "heroSubtitle": "Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti.",
+  "howSellingWorks": "Kako funkcioniše prodaja",
+  "sellStep1": "Objavi ponudu: događaj, sjedišta i cijenu.",
+  "sellStep2": "Kupac plaća. Novac čuvamo dok karte ne stignu.",
+  "sellStep3": "Pošalji karte kupcu i označi ih kao poslane.",
+  "sellStep4": "Nakon događaja novac stiže na tvoj IBAN."
 }

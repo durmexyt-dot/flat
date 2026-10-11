@@ -9,6 +9,7 @@ import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
+import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'labels.dart';
 import 'listing_ticket.dart';
@@ -33,7 +34,7 @@ class ListingDetailPage extends ConsumerWidget {
 
     return SiteScaffold(
       title: l10n.listingDetails,
-      maxWidth: SiteWidth.form,
+      maxWidth: SiteWidth.full,
       body: listing == null
           ? AsyncView<Listing?>(
               value: live,
@@ -47,13 +48,21 @@ class ListingDetailPage extends ConsumerWidget {
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
-                ListingTicket(listing: listing, showStatus: true),
-                const SizedBox(height: 16),
-                _Facts(listing: listing),
-                if (listing.sellerId == uid)
-                  _SellerPanel(listing: listing)
-                else
-                  _BuyerPanel(listing: listing),
+                // Details left, buying or managing right on wide screens.
+                SplitView(
+                  wide: isWideLayout(context),
+                  main: [
+                    ListingTicket(listing: listing, showStatus: true),
+                    const SizedBox(height: 16),
+                    _Facts(listing: listing),
+                  ],
+                  side: [
+                    if (listing.sellerId == uid)
+                      _SellerPanel(listing: listing)
+                    else
+                      _BuyerPanel(listing: listing),
+                  ],
+                ),
               ],
             ),
     );

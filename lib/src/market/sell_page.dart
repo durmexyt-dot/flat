@@ -137,7 +137,7 @@ class _SellPageState extends ConsumerState<SellPage> {
 
     return SiteScaffold(
       title: l10n.sellTitle,
-      maxWidth: SiteWidth.form,
+      maxWidth: SiteWidth.full,
       // No selling without a payout method: the money needs somewhere to go.
       body: AsyncView<PayoutMethod?>(
         value: payoutMethod,
@@ -145,186 +145,291 @@ class _SellPageState extends ConsumerState<SellPage> {
         loading: const SkeletonTicketList(count: 3),
         data: (method) => method == null
             ? const _PayoutRequired()
-            : Form(
-                key: _formKey,
-                // Not a ListView: it would drop off-screen fields, and the form
-                // would skip validating them.
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (user != null && !user.emailVerified)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Card.filled(
-                            margin: EdgeInsets.zero,
-                            color: theme.colorScheme.secondaryContainer,
-                            child: ListTile(
-                              leading: const Icon(
-                                Icons.mark_email_unread_outlined,
-                              ),
-                              title: Text(l10n.verifyBeforeSelling),
-                              trailing: TextButton(
-                                onPressed: () =>
-                                    context.push('/settings/privacy'),
-                                child: Text(l10n.verifyNow),
-                              ),
-                            ),
-                          ),
-                        ),
-                      SettingsSectionTitle(l10n.event),
-                      TextFormField(
-                        controller: _name,
-                        decoration: InputDecoration(
-                          labelText: l10n.eventName,
-                          prefixIcon: const Icon(Icons.local_activity_outlined),
-                        ),
-                        textCapitalization: TextCapitalization.words,
-                        validator: required,
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _venue,
-                              decoration: InputDecoration(
-                                labelText: l10n.venue,
-                              ),
-                              textCapitalization: TextCapitalization.words,
-                              validator: required,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _city,
-                              decoration: InputDecoration(labelText: l10n.city),
-                              textCapitalization: TextCapitalization.words,
-                              validator: required,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      _DateField(
-                        date: _date,
-                        error: _dateError
-                            ? (_date == null ? l10n.required : l10n.dateInPast)
-                            : null,
-                        onTap: _pickDate,
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final c in EventCategory.values)
-                            ChoiceChip(
-                              avatar: Icon(categoryIcon(c), size: 18),
-                              label: Text(categoryName(l10n, c)),
-                              selected: _category == c,
-                              onSelected: (_) => setState(() => _category = c),
-                            ),
-                        ],
-                      ),
-                      SettingsSectionTitle(l10n.tickets),
-                      SegmentedButton<TicketType>(
-                        segments: [
-                          for (final t in TicketType.values)
-                            ButtonSegment(
-                              value: t,
-                              label: Text(ticketTypeName(l10n, t)),
-                            ),
-                        ],
-                        selected: {_type},
-                        onSelectionChanged: (s) =>
-                            setState(() => _type = s.first),
-                      ),
-                      const SizedBox(height: 12),
-                      _QuantityStepper(
-                        value: _quantity,
-                        onChanged: (v) => setState(() => _quantity = v),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _section,
-                              decoration: InputDecoration(
-                                labelText: l10n.section,
-                                helperText: l10n.optional,
+            : _WithGuide(
+                form: Form(
+                  key: _formKey,
+                  // Not a ListView: it would drop off-screen fields, and the form
+                  // would skip validating them.
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (user != null && !user.emailVerified)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Card.filled(
+                              margin: EdgeInsets.zero,
+                              color: theme.colorScheme.secondaryContainer,
+                              child: ListTile(
+                                leading: const Icon(
+                                  Icons.mark_email_unread_outlined,
+                                ),
+                                title: Text(l10n.verifyBeforeSelling),
+                                trailing: TextButton(
+                                  onPressed: () =>
+                                      context.push('/settings/privacy'),
+                                  child: Text(l10n.verifyNow),
+                                ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _row,
-                              decoration: InputDecoration(
-                                labelText: l10n.row,
-                                helperText: l10n.optional,
-                              ),
+                        SettingsSectionTitle(l10n.event),
+                        TextFormField(
+                          controller: _name,
+                          decoration: InputDecoration(
+                            labelText: l10n.eventName,
+                            prefixIcon: const Icon(
+                              Icons.local_activity_outlined,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _seats,
-                        decoration: InputDecoration(
-                          labelText: l10n.seats,
-                          helperText: l10n.optional,
+                          textCapitalization: TextCapitalization.words,
+                          validator: required,
                         ),
-                      ),
-                      SettingsSectionTitle(l10n.price),
-                      TextFormField(
-                        controller: _price,
-                        decoration: InputDecoration(
-                          labelText: l10n.pricePerTicket,
-                          prefixIcon: const Icon(Icons.sell_outlined),
-                          suffixText: currency.symbol,
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _venue,
+                                decoration: InputDecoration(
+                                  labelText: l10n.venue,
+                                ),
+                                textCapitalization: TextCapitalization.words,
+                                validator: required,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _city,
+                                decoration: InputDecoration(
+                                  labelText: l10n.city,
+                                ),
+                                textCapitalization: TextCapitalization.words,
+                                validator: required,
+                              ),
+                            ),
+                          ],
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                        const SizedBox(height: 12),
+                        _DateField(
+                          date: _date,
+                          error: _dateError
+                              ? (_date == null
+                                    ? l10n.required
+                                    : l10n.dateInPast)
+                              : null,
+                          onTap: _pickDate,
                         ),
-                        onChanged: (_) => setState(() {}),
-                        validator: (v) {
-                          final minor = parseMoney(v ?? '');
-                          return (minor == null || minor <= 0)
-                              ? l10n.priceInvalid
-                              : null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      _PriceBreakdown(
-                        priceMinor: parseMoney(_price.text) ?? 0,
-                        quantity: _quantity,
-                        currency: currency.code,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _note,
-                        decoration: InputDecoration(
-                          labelText: l10n.noteLabel,
-                          helperText: l10n.optional,
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final c in EventCategory.values)
+                              ChoiceChip(
+                                avatar: Icon(categoryIcon(c), size: 18),
+                                label: Text(categoryName(l10n, c)),
+                                selected: _category == c,
+                                onSelected: (_) =>
+                                    setState(() => _category = c),
+                              ),
+                          ],
                         ),
-                        maxLines: 3,
-                        minLines: 1,
-                        maxLength: 300,
-                      ),
-                      const SizedBox(height: 12),
-                      SubmitButton(
-                        label: l10n.publishListing,
-                        loading: _saving,
-                        onPressed: _publish,
-                      ),
-                    ],
+                        SettingsSectionTitle(l10n.tickets),
+                        SegmentedButton<TicketType>(
+                          segments: [
+                            for (final t in TicketType.values)
+                              ButtonSegment(
+                                value: t,
+                                label: Text(ticketTypeName(l10n, t)),
+                              ),
+                          ],
+                          selected: {_type},
+                          onSelectionChanged: (s) =>
+                              setState(() => _type = s.first),
+                        ),
+                        const SizedBox(height: 12),
+                        _QuantityStepper(
+                          value: _quantity,
+                          onChanged: (v) => setState(() => _quantity = v),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _section,
+                                decoration: InputDecoration(
+                                  labelText: l10n.section,
+                                  helperText: l10n.optional,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _row,
+                                decoration: InputDecoration(
+                                  labelText: l10n.row,
+                                  helperText: l10n.optional,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _seats,
+                          decoration: InputDecoration(
+                            labelText: l10n.seats,
+                            helperText: l10n.optional,
+                          ),
+                        ),
+                        SettingsSectionTitle(l10n.price),
+                        TextFormField(
+                          controller: _price,
+                          decoration: InputDecoration(
+                            labelText: l10n.pricePerTicket,
+                            prefixIcon: const Icon(Icons.sell_outlined),
+                            suffixText: currency.symbol,
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (_) => setState(() {}),
+                          validator: (v) {
+                            final minor = parseMoney(v ?? '');
+                            return (minor == null || minor <= 0)
+                                ? l10n.priceInvalid
+                                : null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        _PriceBreakdown(
+                          priceMinor: parseMoney(_price.text) ?? 0,
+                          quantity: _quantity,
+                          currency: currency.code,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _note,
+                          decoration: InputDecoration(
+                            labelText: l10n.noteLabel,
+                            helperText: l10n.optional,
+                          ),
+                          maxLines: 3,
+                          minLines: 1,
+                          maxLength: 300,
+                        ),
+                        const SizedBox(height: 12),
+                        SubmitButton(
+                          label: l10n.publishListing,
+                          loading: _saving,
+                          onPressed: _publish,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+      ),
+    );
+  }
+}
+
+/// The form, and on wide screens a guide to selling next to it.
+class _WithGuide extends StatelessWidget {
+  const _WithGuide({required this.form});
+
+  final Widget form;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isWideLayout(context)) return form;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: SiteWidth.form),
+              child: form,
+            ),
+          ),
+        ),
+        // The form's scroll padding already adds 16 on its right.
+        const SizedBox(width: 16),
+        const SizedBox(
+          width: 340,
+          child: Padding(
+            padding: EdgeInsets.only(top: 8, right: 16),
+            child: _SellingGuide(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SellingGuide extends StatelessWidget {
+  const _SellingGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final steps = [
+      l10n.sellStep1,
+      l10n.sellStep2,
+      l10n.sellStep3,
+      l10n.sellStep4,
+    ];
+    return Card.filled(
+      margin: EdgeInsets.zero,
+      color: theme.colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.howSellingWorks, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 16),
+            for (var i = 0; i < steps.length; i++)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 13,
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        '${i + 1}',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(steps[i])),
+                  ],
+                ),
+              ),
+            const Divider(),
+            const SizedBox(height: 8),
+            Text(
+              l10n.faqFeesA('${Fees.buyerPercent}', '${Fees.sellerPercent}'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

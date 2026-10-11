@@ -13,8 +13,11 @@ import 'avatar.dart';
 import 'photo_actions.dart';
 
 /// Photo, name, username and ticket counts at the top of the account page.
+/// [horizontal] lays it out as a wide card row (website layout).
 class ProfileHeader extends ConsumerWidget {
-  const ProfileHeader({super.key});
+  const ProfileHeader({super.key, this.horizontal = false});
+
+  final bool horizontal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,86 +36,102 @@ class ProfileHeader extends ConsumerWidget {
         final name = p?.displayName ?? user?.displayName ?? user?.email ?? '';
         final handle = p?.username != null ? '@${p!.username}' : user?.email;
         final private = p?.visibility == ProfileVisibility.private;
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: () => showPhotoActions(context, ref),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  UserAvatar(size: 96, photoBase64: p?.photoBase64, name: name),
-                  Positioned(
-                    right: -2,
-                    bottom: -2,
-                    child: Material(
-                      color: theme.colorScheme.primary,
-                      shape: CircleBorder(
-                        side: BorderSide(
-                          color: theme.colorScheme.surface,
-                          width: 3,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.photo_camera_outlined,
-                          size: 18,
-                          color: theme.colorScheme.onPrimary,
-                        ),
-                      ),
+        final align = horizontal ? WrapAlignment.start : WrapAlignment.center;
+
+        final avatar = GestureDetector(
+          onTap: () => showPhotoActions(context, ref),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              UserAvatar(size: 96, photoBase64: p?.photoBase64, name: name),
+              Positioned(
+                right: -2,
+                bottom: -2,
+                child: Material(
+                  color: theme.colorScheme.primary,
+                  shape: CircleBorder(
+                    side: BorderSide(
+                      color: theme.colorScheme.surface,
+                      width: 3,
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              name,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            if (handle != null)
-              Text(
-                handle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.photo_camera_outlined,
+                      size: 18,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: [
+            ],
+          ),
+        );
+        final details = <Widget>[
+          Text(
+            name,
+            textAlign: horizontal ? TextAlign.start : TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (handle != null)
+            Text(
+              handle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          const SizedBox(height: 8),
+          Wrap(
+            alignment: align,
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Chip(
+                avatar: Icon(
+                  private ? Icons.lock_outline : Icons.public,
+                  size: 16,
+                ),
+                label: Text(private ? l10n.profilePrivate : l10n.profilePublic),
+                visualDensity: VisualDensity.compact,
+              ),
+              if (p?.createdAt case final since?)
                 Chip(
-                  avatar: Icon(
-                    private ? Icons.lock_outline : Icons.public,
-                    size: 16,
-                  ),
-                  label: Text(
-                    private ? l10n.profilePrivate : l10n.profilePublic,
-                  ),
+                  avatar: const Icon(Icons.event_available_outlined, size: 16),
+                  label: Text(l10n.memberSince(formatDate(context, since))),
                   visualDensity: VisualDensity.compact,
                 ),
-                if (p?.createdAt case final since?)
-                  Chip(
-                    avatar: const Icon(
-                      Icons.event_available_outlined,
-                      size: 16,
-                    ),
-                    label: Text(l10n.memberSince(formatDate(context, since))),
-                    visualDensity: VisualDensity.compact,
-                  ),
-              ],
-            ),
+              if (horizontal) _editButton(context, l10n),
+            ],
+          ),
+        ];
+
+        if (horizontal) {
+          return Row(
+            children: [
+              avatar,
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: details,
+                ),
+              ),
+              const SizedBox(width: 24),
+              const SizedBox(width: 340, child: StatsRow()),
+            ],
+          );
+        }
+        return Column(
+          children: [
+            avatar,
             const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: () => context.push('/settings/profile'),
-              icon: const Icon(Icons.edit_outlined, size: 18),
-              label: Text(l10n.editProfile),
-            ),
+            ...details,
+            const SizedBox(height: 12),
+            _editButton(context, l10n),
             const SizedBox(height: 16),
             const StatsRow(),
           ],
@@ -120,6 +139,13 @@ class ProfileHeader extends ConsumerWidget {
       },
     );
   }
+
+  Widget _editButton(BuildContext context, AppLocalizations l10n) =>
+      OutlinedButton.icon(
+        onPressed: () => context.push('/settings/profile'),
+        icon: const Icon(Icons.edit_outlined, size: 18),
+        label: Text(l10n.editProfile),
+      );
 }
 
 class _HeaderSkeleton extends StatelessWidget {

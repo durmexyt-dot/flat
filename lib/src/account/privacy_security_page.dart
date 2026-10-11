@@ -36,6 +36,7 @@ class PrivacySecurityPage extends ConsumerWidget {
     return SiteScaffold(
       title: l10n.privacySecurity,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [

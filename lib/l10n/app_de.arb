@@ -358,5 +358,10 @@
   "navMyTickets": "Meine Tickets",
   "openAccountMenu": "Kontomenü öffnen",
   "heroTitle": "Tickets für Konzerte, Sport und Festivals",
-  "heroSubtitle": "Kaufe sicher von Fans oder verkaufe Tickets, die du nicht nutzen kannst."
+  "heroSubtitle": "Kaufe sicher von Fans oder verkaufe Tickets, die du nicht nutzen kannst.",
+  "howSellingWorks": "So funktioniert der Verkauf",
+  "sellStep1": "Angebot einstellen: Event, Plätze und Preis.",
+  "sellStep2": "Ein Käufer bezahlt. Wir halten das Geld, bis die Tickets ankommen.",
+  "sellStep3": "Übertrage die Tickets und markiere sie als übertragen.",
+  "sellStep4": "Nach dem Event kommt das Geld auf deine IBAN."
 }

@@ -11,6 +11,7 @@ import '../market/listing_ticket.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
+import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import '../ui/snack.dart';
 import 'checkout_repository.dart';
@@ -86,7 +87,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
     return SiteScaffold(
       title: l10n.checkout,
-      maxWidth: SiteWidth.form,
+      maxWidth: SiteWidth.full,
       body: listing == null
           ? AsyncView<Listing?>(
               value: live,
@@ -116,118 +117,126 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
       children: [
-        ListingTicket(listing: listing),
-        if (gateway.isTest) ...[
-          const SizedBox(height: 12),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Chip(
-              avatar: const Icon(Icons.science_outlined, size: 18),
-              label: Text(l10n.testModeBadge),
-              visualDensity: VisualDensity.compact,
-            ),
-          ),
-        ],
-        SettingsSectionTitle(l10n.tickets),
-        Card.filled(
-          margin: EdgeInsets.zero,
-          color: theme.colorScheme.surfaceContainerLow,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
+        // The event left, the payment right on wide screens.
+        SplitView(
+          wide: isWideLayout(context),
+          main: [
+            ListingTicket(listing: listing),
+            if (gateway.isTest) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Chip(
+                  avatar: const Icon(Icons.science_outlined, size: 18),
+                  label: Text(l10n.testModeBadge),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
+          ],
+          side: [
+            SettingsSectionTitle(l10n.tickets),
+            Card.filled(
+              margin: EdgeInsets.zero,
+              color: theme.colorScheme.surfaceContainerLow,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
                   children: [
-                    Expanded(child: Text(l10n.quantity)),
-                    IconButton.filledTonal(
-                      onPressed: !_busy && quantity > 1
-                          ? () => setState(() {
-                              _quantity = quantity - 1;
-                              _order = null;
-                            })
-                          : null,
-                      icon: const Icon(Icons.remove),
+                    Row(
+                      children: [
+                        Expanded(child: Text(l10n.quantity)),
+                        IconButton.filledTonal(
+                          onPressed: !_busy && quantity > 1
+                              ? () => setState(() {
+                                  _quantity = quantity - 1;
+                                  _order = null;
+                                })
+                              : null,
+                          icon: const Icon(Icons.remove),
+                        ),
+                        SizedBox(
+                          width: 40,
+                          child: Text(
+                            '$quantity',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.titleLarge,
+                          ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: !_busy && quantity < listing.available
+                              ? () => setState(() {
+                                  _quantity = quantity + 1;
+                                  _order = null;
+                                })
+                              : null,
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: 40,
-                      child: Text(
-                        '$quantity',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleLarge,
-                      ),
+                    const Divider(height: 24),
+                    _Line(
+                      '$quantity × ${money(listing.priceMinor)}',
+                      money(subtotal),
                     ),
-                    IconButton.filledTonal(
-                      onPressed: !_busy && quantity < listing.available
-                          ? () => setState(() {
-                              _quantity = quantity + 1;
-                              _order = null;
-                            })
-                          : null,
-                      icon: const Icon(Icons.add),
+                    _Line(
+                      '${l10n.serviceFee} (${Fees.buyerPercent} %)',
+                      money(Fees.buyerFee(subtotal)),
                     ),
+                    const Divider(height: 24),
+                    _Line(l10n.total, money(total), strong: true),
                   ],
                 ),
-                const Divider(height: 24),
-                _Line(
-                  '$quantity × ${money(listing.priceMinor)}',
-                  money(subtotal),
-                ),
-                _Line(
-                  '${l10n.serviceFee} (${Fees.buyerPercent} %)',
-                  money(Fees.buyerFee(subtotal)),
-                ),
-                const Divider(height: 24),
-                _Line(l10n.total, money(total), strong: true),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.email_outlined),
-          title: Text(l10n.buyerEmail),
-          subtitle: Text(email),
-        ),
-        AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
-          child: _failure == null
-              ? const SizedBox(width: double.infinity)
-              : Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _FailureCard(failure: _failure!),
-                ),
-        ),
-        if (!available)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Text(
-              l10n.notAvailableAnymore,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: theme.colorScheme.error),
-            ),
-          ),
-        SubmitButton(
-          label: _failure == null
-              ? l10n.payAmount(money(total))
-              : l10n.tryAgain,
-          loading: _busy,
-          onPressed: available ? () => _pay(listing) : () {},
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Icon(
-              Icons.verified_user_outlined,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                l10n.buyerProtection,
-                style: theme.textTheme.bodySmall,
               ),
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.email_outlined),
+              title: Text(l10n.buyerEmail),
+              subtitle: Text(email),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              child: _failure == null
+                  ? const SizedBox(width: double.infinity)
+                  : Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _FailureCard(failure: _failure!),
+                    ),
+            ),
+            if (!available)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  l10n.notAvailableAnymore,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
+              ),
+            SubmitButton(
+              label: _failure == null
+                  ? l10n.payAmount(money(total))
+                  : l10n.tryAgain,
+              loading: _busy,
+              onPressed: available ? () => _pay(listing) : () {},
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.verified_user_outlined,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.buyerProtection,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

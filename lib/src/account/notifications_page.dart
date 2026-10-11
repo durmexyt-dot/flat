@@ -87,6 +87,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     return SiteScaffold(
       title: l10n.notifications,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [

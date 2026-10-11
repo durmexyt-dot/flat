@@ -41,8 +41,10 @@ class SettingsPage extends ConsumerWidget {
             },
           )
         : null;
+    // On wide screens the sidebar holds buying, selling and account links.
+    final wide = isWideLayout(context);
     final sections = <Widget>[
-      if (user != null) ...[
+      if (user != null && !wide) ...[
         SettingsSectionTitle(l10n.buying),
         SettingsGroup(
           children: [
@@ -152,7 +154,7 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
-      if (user != null) ...[
+      if (user != null && !wide) ...[
         SettingsSectionTitle(l10n.account),
         SettingsGroup(
           children: [
@@ -200,43 +202,36 @@ class SettingsPage extends ConsumerWidget {
         ),
       ],
     ];
-    final wide = isWideLayout(context);
-
     return SiteScaffold(
       title: l10n.settingsTitle,
-      maxWidth: SiteWidth.wide,
+      maxWidth: SiteWidth.full,
+      accountNav: true,
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(statsProvider);
           await ref.read(statsProvider.future).catchError((_) => null);
         },
         child: wide
-            // Website account page: profile on the left, settings right.
+            // Website account page: profile card, then the settings that
+            // aren't in the sidebar.
             ? SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 48),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (header != null) ...[
-                      SizedBox(
-                        width: 360,
-                        child: Card.filled(
-                          margin: EdgeInsets.zero,
-                          color: theme.colorScheme.surfaceContainerLow,
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: header,
-                          ),
+                    if (user != null)
+                      Card.filled(
+                        margin: EdgeInsets.zero,
+                        color: theme.colorScheme.surfaceContainerLow,
+                        child: const Padding(
+                          padding: EdgeInsets.all(24),
+                          child: ProfileHeader(horizontal: true),
                         ),
-                      ),
-                      const SizedBox(width: 32),
-                    ],
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: sections,
-                      ),
-                    ),
+                      )
+                    else
+                      ?header,
+                    // Same width as the profile card above.
+                    ...sections,
                   ],
                 ),
               )

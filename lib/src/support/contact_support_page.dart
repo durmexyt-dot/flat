@@ -86,6 +86,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
     return SiteScaffold(
       title: l10n.contactSupport,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 350),
         child: _sentNumber != null

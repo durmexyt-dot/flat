@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../ui/async_view.dart';
+import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
@@ -54,8 +55,10 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
 
     return SiteScaffold(
       title: buyer ? l10n.purchases : l10n.sales,
-      maxWidth: SiteWidth.detail,
+      maxWidth: SiteWidth.full,
+      accountNav: true,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -92,19 +95,23 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
                 final shown = all.where(_matches).toList();
                 return AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                  child: ListView.separated(
+                  child: ListView(
                     key: ValueKey(_filter),
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-                    itemCount: shown.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, i) => OrderTicket(
-                      order: shown[i],
-                      role: widget.role,
-                      onTap: () => context.push(
-                        '/order/${shown[i].id}',
-                        extra: shown[i],
+                    children: [
+                      ResponsiveGrid(
+                        maxColumns: 2,
+                        children: [
+                          for (final o in shown)
+                            OrderTicket(
+                              order: o,
+                              role: widget.role,
+                              onTap: () =>
+                                  context.push('/order/${o.id}', extra: o),
+                            ),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
                 );
               },

@@ -41,6 +41,7 @@ class HelpCenterPage extends ConsumerWidget {
     return SiteScaffold(
       title: l10n.helpCenter,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [

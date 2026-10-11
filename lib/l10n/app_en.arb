@@ -358,5 +358,10 @@
   "navMyTickets": "My tickets",
   "openAccountMenu": "Open account menu",
   "heroTitle": "Tickets for concerts, sports and festivals",
-  "heroSubtitle": "Buy safely from fans or sell the tickets you can't use."
+  "heroSubtitle": "Buy safely from fans or sell the tickets you can't use.",
+  "howSellingWorks": "How selling works",
+  "sellStep1": "List your tickets: event, seats and price.",
+  "sellStep2": "A buyer pays. We hold the money until the tickets arrive.",
+  "sellStep3": "Send the tickets and mark them as sent.",
+  "sellStep4": "After the event the money reaches your IBAN."
 }

@@ -51,6 +51,7 @@ class AppearancePage extends ConsumerWidget {
     return SiteScaffold(
       title: l10n.appearance,
       maxWidth: SiteWidth.form,
+      accountNav: true,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
