@@ -1228,4 +1228,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get sellerNextCancelledBySeller =>
       'Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf.';
+
+  @override
+  String get cannotBuyOwnListing =>
+      'Das sind deine Tickets. Dein eigenes Angebot kannst du nicht kaufen.';
+
+  @override
+  String get openListing => 'Angebot öffnen';
 }

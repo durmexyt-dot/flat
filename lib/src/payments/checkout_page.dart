@@ -98,6 +98,19 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 title: l10n.listingNotFound,
               ),
             )
+          // Nobody buys their own tickets (the rules refuse it too).
+          : listing.sellerId == ref.watch(currentUidProvider)
+          ? EmptyState(
+              icon: FLucideIcons.tag,
+              title: l10n.yourListing,
+              message: l10n.cannotBuyOwnListing,
+              action: FButton(
+                mainAxisSize: MainAxisSize.min,
+                onPress: () =>
+                    context.go('/listing/${listing.id}', extra: listing),
+                child: Text(l10n.openListing),
+              ),
+            )
           : _body(context, listing),
     );
   }

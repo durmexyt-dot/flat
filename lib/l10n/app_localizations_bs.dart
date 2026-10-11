@@ -1211,4 +1211,11 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get sellerNextCancelledBySeller =>
       'Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.';
+
+  @override
+  String get cannotBuyOwnListing =>
+      'Ovo su tvoje karte. Svoju ponudu ne možeš kupiti.';
+
+  @override
+  String get openListing => 'Otvori ponudu';
 }

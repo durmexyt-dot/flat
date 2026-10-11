@@ -2343,6 +2343,18 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.'**
   String get sellerNextCancelledBySeller;
+
+  /// No description provided for @cannotBuyOwnListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovo su tvoje karte. Svoju ponudu ne možeš kupiti.'**
+  String get cannotBuyOwnListing;
+
+  /// No description provided for @openListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvori ponudu'**
+  String get openListing;
 }
 
 class _AppLocalizationsDelegate

@@ -295,6 +295,7 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
     required int quantity,
     required String buyerId,
   }) async {
+    if (listing.sellerId == buyerId) throw OwnListingException();
     final order = Order.fromMap('order-${_nextId++}', {
       'number': newOrderNumber(),
       'listingId': listing.id,

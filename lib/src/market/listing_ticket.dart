@@ -128,11 +128,15 @@ class ListingTicket extends StatelessWidget {
     super.key,
     required this.listing,
     this.showStatus = false,
+    this.own = false,
     this.onTap,
   });
 
   final Listing listing;
   final bool showStatus;
+
+  /// The viewer's own listing (in the market): marked as such.
+  final bool own;
   final VoidCallback? onTap;
 
   @override
@@ -150,6 +154,11 @@ class ListingTicket extends StatelessWidget {
           ? StatusChip(
               label: listingStatusName(l10n, listing.status),
               tone: listingTone(listing.status),
+            )
+          : own
+          ? FBadge(
+              variant: FBadgeVariant.outline,
+              child: Text(l10n.yourListing),
             )
           : null,
       lines: [

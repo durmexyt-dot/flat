@@ -408,11 +408,21 @@ final myListingsProvider = StreamProvider<List<Listing>>(
   ),
 );
 
+/// Orders the user bought. Never their own listings: those are sales, also
+/// for old test orders where buyer and seller were the same account.
 final purchasesProvider = StreamProvider<List<Order>>(
   (ref) => _forUser(
     ref,
     const <Order>[],
-    ref.watch(marketRepositoryProvider).watchPurchases,
+    (uid) => ref
+        .watch(marketRepositoryProvider)
+        .watchPurchases(uid)
+        .map(
+          (orders) => [
+            for (final o in orders)
+              if (o.sellerId != uid) o,
+          ],
+        ),
   ),
 );
 

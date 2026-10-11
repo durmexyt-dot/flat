@@ -507,5 +507,7 @@
   "keepSale": "Ne, zadrži",
   "saleCancelled": "Prodaja je otkazana. Kupcu je vraćen novac.",
   "buyerNextCancelledBySeller": "Prodavac je otkazao prodaju. Novac ti je vraćen u cijelosti.",
-  "sellerNextCancelledBySeller": "Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji."
+  "sellerNextCancelledBySeller": "Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.",
+  "cannotBuyOwnListing": "Ovo su tvoje karte. Svoju ponudu ne možeš kupiti.",
+  "openListing": "Otvori ponudu"
 }

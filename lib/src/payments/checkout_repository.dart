@@ -10,6 +10,9 @@ import 'payment_gateway.dart';
 /// Thrown when the listing has fewer tickets left than ordered.
 class SoldOutException implements Exception {}
 
+/// Thrown when someone tries to buy their own listing.
+class OwnListingException implements Exception {}
+
 /// Creates orders and records their payment.
 ///
 /// In test mode the app does this itself, guarded by the Firestore rules.
@@ -69,6 +72,7 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
     required int quantity,
     required String buyerId,
   }) async {
+    if (listing.sellerId == buyerId) throw OwnListingException();
     final ref = _db.collection('orders').doc();
     final data = <String, dynamic>{
       'number': newOrderNumber(),

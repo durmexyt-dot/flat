@@ -1217,4 +1217,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sellerNextCancelledBySeller =>
       'You cancelled this sale. The buyer has been refunded and the tickets are on sale again.';
+
+  @override
+  String get cannotBuyOwnListing =>
+      'These are your tickets. You can\'t buy your own listing.';
+
+  @override
+  String get openListing => 'Open listing';
 }

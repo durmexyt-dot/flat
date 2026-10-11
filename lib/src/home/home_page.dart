@@ -344,6 +344,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               for (final l in shown)
                 ListingTicket(
                   listing: l,
+                  own: l.sellerId == ref.watch(currentUidProvider),
                   onTap: () => context.push('/listing/${l.id}', extra: l),
                 ),
             ]);

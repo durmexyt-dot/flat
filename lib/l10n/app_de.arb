@@ -373,5 +373,7 @@
   "keepSale": "Nein, behalten",
   "saleCancelled": "Verkauf storniert. Der Käufer hat sein Geld zurück.",
   "buyerNextCancelledBySeller": "Der Verkäufer hat den Verkauf storniert. Du bekommst dein Geld vollständig zurück.",
-  "sellerNextCancelledBySeller": "Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf."
+  "sellerNextCancelledBySeller": "Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf.",
+  "cannotBuyOwnListing": "Das sind deine Tickets. Dein eigenes Angebot kannst du nicht kaufen.",
+  "openListing": "Angebot öffnen"
 }

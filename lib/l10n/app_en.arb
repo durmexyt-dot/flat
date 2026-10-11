@@ -373,5 +373,7 @@
   "keepSale": "No, keep it",
   "saleCancelled": "Sale cancelled. The buyer has been refunded.",
   "buyerNextCancelledBySeller": "The seller cancelled the sale. You've been refunded in full.",
-  "sellerNextCancelledBySeller": "You cancelled this sale. The buyer has been refunded and the tickets are on sale again."
+  "sellerNextCancelledBySeller": "You cancelled this sale. The buyer has been refunded and the tickets are on sale again.",
+  "cannotBuyOwnListing": "These are your tickets. You can't buy your own listing.",
+  "openListing": "Open listing"
 }
