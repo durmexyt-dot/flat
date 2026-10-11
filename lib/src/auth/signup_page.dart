@@ -68,12 +68,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextFormField(
-                  controller: _name,
-                  decoration: InputDecoration(
-                    labelText: l10n.nameLabel,
-                    prefixIcon: const Icon(FLucideIcons.user),
-                  ),
+                FTextFormField(
+                  control: FTextFieldControl.managed(controller: _name),
+                  label: Text(l10n.nameLabel),
+                  prefixBuilder: (context, style, variants) =>
+                      fieldIcon(FLucideIcons.user),
                   textCapitalization: TextCapitalization.words,
                   autofillHints: const [AutofillHints.name],
                   textInputAction: TextInputAction.next,
@@ -81,6 +80,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? l10n.nameRequired
                       : null,
+                  autovalidateMode: AutovalidateMode.disabled,
                 ),
                 const SizedBox(height: 12),
                 EmailField(controller: _email, enabled: !_loading),
@@ -121,9 +121,17 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(l10n.haveAccount),
-            TextButton(
-              onPressed: () => context.pop(),
+            Text(
+              l10n.haveAccount,
+              style: context.theme.typography.body.sm.copyWith(
+                color: context.theme.colors.mutedForeground,
+              ),
+            ),
+            FButton(
+              variant: FButtonVariant.ghost,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => context.pop(),
               child: Text(l10n.loginButton),
             ),
           ],

@@ -76,10 +76,12 @@ class ErrorState extends StatelessWidget {
           ),
           if (onRetry != null) ...[
             const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(FLucideIcons.refreshCw),
-              label: Text(l10n.retry),
+            FButton(
+              variant: FButtonVariant.outline,
+              mainAxisSize: MainAxisSize.min,
+              onPress: onRetry,
+              prefix: const Icon(FLucideIcons.refreshCw),
+              child: Text(l10n.retry),
             ),
           ],
         ],
@@ -117,13 +119,28 @@ class EmptyState extends StatelessWidget {
             curve: Curves.easeOutBack,
             builder: (context, v, child) =>
                 Transform.scale(scale: v, child: child),
-            child: Icon(icon, size: 64, color: theme.colorScheme.outline),
+            // Icon in a muted circle, like Forui's empty states.
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: context.theme.colors.muted,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 32,
+                color: context.theme.colors.mutedForeground,
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium,
+            style: context.theme.typography.body.lg.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.theme.colors.foreground,
+            ),
           ),
           if (message != null) ...[
             const SizedBox(height: 4),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../ui/hero_tags.dart';
 
@@ -42,52 +43,35 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final avatar = SizedBox.square(
-      dimension: size,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final side = constraints.biggest.shortestSide;
-          return ClipOval(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: photoBase64 != null
-                  ? Image(
-                      key: ValueKey(photoBase64.hashCode),
-                      image: _image(photoBase64!),
-                      width: side,
-                      height: side,
-                      fit: BoxFit.cover,
-                      gaplessPlayback: true,
-                    )
-                  : DecoratedBox(
-                      key: const ValueKey('initials'),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerHighest,
-                      ),
-                      child: SizedBox.square(
-                        dimension: side,
-                        child: Center(
-                          child: Text(
-                            initialsOf(name),
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              fontSize: side * 0.38,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-            ),
-          );
-        },
-      ),
+    final initials = Text(
+      initialsOf(name),
+      style: TextStyle(fontSize: size * 0.36, fontWeight: FontWeight.w600),
     );
-    if (!hero) return avatar;
+    // Forui avatar: the photo, or the initials on a muted circle.
+    final avatar = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: photoBase64 != null
+          ? FAvatar(
+              key: ValueKey(photoBase64.hashCode),
+              image: _image(photoBase64!),
+              size: size,
+              fallback: initials,
+            )
+          : FAvatar.raw(
+              key: const ValueKey('initials'),
+              size: size,
+              child: initials,
+            ),
+    );
+    // Scales with the hero flight's size instead of jumping.
+    final scaled = SizedBox.square(
+      dimension: size,
+      child: FittedBox(child: avatar),
+    );
+    if (!hero) return scaled;
     return Hero(
       tag: HeroTags.avatar,
-      child: Material(type: MaterialType.transparency, child: avatar),
+      child: Material(type: MaterialType.transparency, child: scaled),
     );
   }
 }

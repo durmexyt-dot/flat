@@ -20,14 +20,13 @@ List<(IconData, String, String)> accountEntries(AppLocalizations l10n) => [
   (FLucideIcons.circleQuestionMark, l10n.helpCenter, '/support'),
 ];
 
-/// Left navigation of the account area on wide screens.
+/// Left navigation of the account area on wide screens: a Forui sidebar.
 class AccountSidebar extends ConsumerWidget {
   const AccountSidebar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final colors = Theme.of(context).colorScheme;
     final location = GoRouterState.of(context).uri.path;
     final signedIn = ref.watch(authStateProvider).value != null;
     final entries = signedIn
@@ -35,39 +34,60 @@ class AccountSidebar extends ConsumerWidget {
         : accountEntries(l10n)
               .where((e) => e.$3 == '/settings' || e.$3 == '/support');
 
-    return ListView(
-      padding: const EdgeInsets.only(top: 24, bottom: 24),
+    return FSidebar(
+      style: .delta(
+        decoration: const .value(BoxDecoration()),
+        constraints: const BoxConstraints.tightFor(width: 248),
+        contentPadding: const .value(EdgeInsets.symmetric(vertical: 24)),
+      ),
+      footer: signedIn ? const LogoutItem() : null,
       children: [
-        for (final (icon, label, path) in entries)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 2),
-            child: ListTile(
-              dense: true,
-              leading: Icon(icon, size: 20),
-              title: Text(label),
-              selected: location == path,
-              selectedColor: colors.primary,
-              selectedTileColor: colors.surfaceContainerHigh,
-              onTap: () => context.go(path),
-            ),
-          ),
-        if (signedIn) ...[
-          const Divider(height: 24),
-          ListTile(
-            dense: true,
-            leading: Icon(FLucideIcons.logOut, size: 20, color: colors.error),
-            title: Text(
-              l10n.logoutButton,
-              style: TextStyle(color: colors.error),
-            ),
-            onTap: () async {
+        FSidebarGroup(
+          style: const .delta(padding: .value(EdgeInsets.zero)),
+          children: [
+            for (final (icon, label, path) in entries)
+              FSidebarItem(
+                icon: Icon(icon),
+                label: Text(label),
+                selected: location == path,
+                onPress: () => context.go(path),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Signs out and goes to the sign-in page; shared by sidebar and drawer.
+class LogoutItem extends ConsumerWidget {
+  const LogoutItem({super.key, this.beforeSignOut});
+
+  /// E.g. closing the drawer.
+  final VoidCallback? beforeSignOut;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final error = context.theme.colors.error;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const FDivider(),
+          FSidebarItem(
+            icon: Icon(FLucideIcons.logOut, color: error),
+            label: Text(l10n.logoutButton, style: TextStyle(color: error)),
+            onPress: () async {
               final router = GoRouter.of(context);
+              beforeSignOut?.call();
               await ref.read(authRepositoryProvider).signOut();
               router.go('/login');
             },
           ),
         ],
-      ],
+      ),
     );
   }
 }

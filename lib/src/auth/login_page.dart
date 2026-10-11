@@ -62,7 +62,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final error = _error == null ? '' : authErrorText(l10n, _error!);
 
     return AuthScaffold(
@@ -89,27 +89,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () => setState(() => _keepSignedIn = !_keepSignedIn),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: _keepSignedIn,
-                      onChanged: (v) => setState(() => _keepSignedIn = v!),
-                    ),
-                    Flexible(child: Text(l10n.keepSignedIn)),
-                  ],
-                ),
+              child: FCheckbox(
+                label: Text(l10n.keepSignedIn),
+                value: _keepSignedIn,
+                onChange: (v) => setState(() => _keepSignedIn = v),
               ),
             ),
             Flexible(
-              child: TextButton(
-                onPressed: () =>
+              child: FButton(
+                variant: FButtonVariant.ghost,
+                size: FButtonSizeVariant.sm,
+                mainAxisSize: MainAxisSize.min,
+                onPress: () =>
                     context.push('/forgot-password', extra: _email.text.trim()),
                 child: Text(l10n.forgotPassword, textAlign: TextAlign.end),
               ),
@@ -130,21 +125,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(l10n.noAccount, style: theme.textTheme.bodyMedium),
-            TextButton(
-              onPressed: () => context.push('/signup'),
+            Text(
+              l10n.noAccount,
+              style: theme.typography.body.sm.copyWith(
+                color: theme.colors.mutedForeground,
+              ),
+            ),
+            FButton(
+              variant: FButtonVariant.ghost,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => context.push('/signup'),
               child: Text(l10n.signUp),
             ),
           ],
         ),
         const SizedBox(height: 4),
         Center(
-          child: TextButton.icon(
-            onPressed: () => ref.read(guestModeProvider.notifier).enter(),
-            icon: const Icon(FLucideIcons.search),
-            label: Text(l10n.continueAsGuest),
-            style: TextButton.styleFrom(
-              foregroundColor: theme.colorScheme.onSurfaceVariant,
+          child: FButton(
+            variant: FButtonVariant.ghost,
+            size: FButtonSizeVariant.sm,
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => ref.read(guestModeProvider.notifier).enter(),
+            prefix: const Icon(FLucideIcons.search),
+            child: Text(
+              l10n.continueAsGuest,
+              style: TextStyle(color: theme.colors.mutedForeground),
             ),
           ),
         ),

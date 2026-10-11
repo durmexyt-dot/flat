@@ -122,9 +122,9 @@ void main() {
     expect(find.text('Naziv događaja'), findsNothing);
     await tester.tap(find.text('Dodaj način isplate'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField).first, 'Amra Test');
+    await tester.enterText(find.byType(EditableText).first, 'Amra Test');
     await tester.enterText(
-      find.byType(TextFormField).last,
+      find.byType(EditableText).last,
       'BA391290079401028494',
     );
     await tester.tap(find.text('Sačuvaj'));
@@ -141,7 +141,7 @@ void main() {
     expect(find.text('Obavezno polje'), findsWidgets);
     expect(market.watchMyListings('1').first, completion(isEmpty));
 
-    final fields = find.byType(TextFormField);
+    final fields = find.byType(EditableText);
     await tester.enterText(fields.at(0), 'Sarajevo Film Festival');
     await tester.enterText(fields.at(1), 'Narodno pozorište');
     await tester.enterText(fields.at(2), 'Sarajevo');
@@ -157,7 +157,7 @@ void main() {
     await tester.enterText(
       find.ancestor(
         of: find.byIcon(FLucideIcons.tag),
-        matching: find.byType(TextFormField),
+        matching: find.byType(EditableText),
       ),
       '50',
     );
@@ -171,7 +171,7 @@ void main() {
     expect(find.text('Aktivna'), findsOneWidget);
 
     await tapVisible(tester, find.text('Promijeni cijenu'));
-    await tester.enterText(find.byType(TextFormField).last, '60');
+    await tester.enterText(find.byType(EditableText).last, '60');
     await tester.tap(find.text('Sačuvaj'));
     await tester.pumpAndSettle();
     expect(find.textContaining('60,00'), findsWidgets);
@@ -180,7 +180,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tapVisible(tester, find.text('Povuci ponudu'));
-    await tester.tap(find.widgetWithText(FilledButton, 'Povuci ponudu'));
+    await tester.tap(find.widgetWithText(FButton, 'Povuci ponudu'));
     await tester.pumpAndSettle();
     expect(find.text('Povučena'), findsOneWidget);
     expect(find.text('Promijeni cijenu'), findsNothing);

@@ -21,13 +21,13 @@ void main() {
     await tapVisible(tester, find.text('Pomoć oko ove narudžbe'));
 
     expect(find.text('SSW-9ZC4TB'), findsOneWidget);
-    await tester.enterText(find.byType(TextFormField).last, 'Too short');
+    await tester.enterText(find.byType(EditableText).last, 'Too short');
     await tester.tap(find.text('Pošalji'));
     await tester.pumpAndSettle();
     expect(find.text('Napiši barem 20 znakova'), findsOneWidget);
 
     await tester.enterText(
-      find.byType(TextFormField).last,
+      find.byType(EditableText).last,
       'The refund has not arrived on my card yet.',
     );
     await tester.tap(find.text('Pošalji'));

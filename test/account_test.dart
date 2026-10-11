@@ -5,6 +5,7 @@ import 'package:flat/src/data/models.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/ui/hero_page.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 
@@ -113,20 +114,20 @@ void main() {
     await tester.tap(find.text('Uredi profil'));
     await tester.pumpAndSettle();
 
-    final fields = find.byType(TextFormField);
+    final fields = find.byType(EditableText);
     await tester.enterText(fields.at(0), 'Amra Begić');
     await tester.enterText(fields.at(1), 'taken');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sačuvaj'));
+    await tester.tap(find.widgetWithText(FButton, 'Sačuvaj'));
     await tester.pumpAndSettle();
     expect(find.text('Korisničko ime je zauzeto'), findsOneWidget);
 
     await tester.enterText(fields.at(1), 'Not valid!');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sačuvaj'));
+    await tester.tap(find.widgetWithText(FButton, 'Sačuvaj'));
     await tester.pumpAndSettle();
     expect(find.text('Neispravno korisničko ime'), findsOneWidget);
 
     await tester.enterText(fields.at(1), 'amra.b');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sačuvaj'));
+    await tester.tap(find.widgetWithText(FButton, 'Sačuvaj'));
     await tester.pumpAndSettle();
     expect(find.text('Amra Begić'), findsOneWidget);
     expect(find.text('@amra.b'), findsOneWidget);

@@ -79,7 +79,7 @@ Future<void> _openSimulatorAndPay(
   await tester.tap(
     find.descendant(
       of: find.byType(PaymentSimulatorSheet),
-      matching: find.byType(FilledButton),
+      matching: find.byType(FButton),
     ),
   );
   await tester.pump();

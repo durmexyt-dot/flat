@@ -90,7 +90,7 @@ void main() {
 
   testWidgets('payout method validates the IBAN', (tester) async {
     await _openAccountEntry(tester, 'Način isplate');
-    final iban = find.byType(TextFormField).last;
+    final iban = find.byType(EditableText).last;
     await tester.enterText(iban, 'BA39 1290 0794 0102 8495');
     await tester.tap(find.text('Sačuvaj'));
     await tester.pumpAndSettle();

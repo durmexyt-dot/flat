@@ -62,7 +62,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final error = _error == null ? '' : authErrorText(l10n, _error!);
 
     return AuthScaffold(
@@ -73,13 +73,15 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               Icon(
                 FLucideIcons.mailCheck,
                 size: 56,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: theme.colors.mutedForeground,
               ),
               const SizedBox(height: 16),
               Text(
                 l10n.resetSent(_email.text.trim()),
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge,
+                style: theme.typography.body.md.copyWith(
+                  color: theme.colors.foreground,
+                ),
               ),
               const SizedBox(height: 24),
               SubmitButton(

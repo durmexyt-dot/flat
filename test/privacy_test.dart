@@ -1,5 +1,6 @@
 import 'package:flat/src/data/models.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers.dart';
@@ -43,16 +44,16 @@ void main() {
   testWidgets('password change checks the current password', (tester) async {
     final auth = await _signedInAt(tester, 'Privatnost i sigurnost');
     await tapVisible(tester, find.text('Promijeni lozinku'));
-    final fields = find.byType(TextFormField);
+    final fields = find.byType(EditableText);
     await tester.enterText(fields.at(0), 'wrong');
     await tester.enterText(fields.at(1), 'newpass1');
     await tester.enterText(fields.at(2), 'newpass1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sačuvaj'));
+    await tester.tap(find.widgetWithText(FButton, 'Sačuvaj'));
     await tester.pumpAndSettle();
     expect(find.text('Pogrešan e-mail ili lozinka'), findsOneWidget);
 
     await tester.enterText(fields.at(0), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Sačuvaj'));
+    await tester.tap(find.widgetWithText(FButton, 'Sačuvaj'));
     await tester.pumpAndSettle();
     expect(auth.password, 'newpass1');
     expect(find.text('Lozinka je promijenjena'), findsOneWidget);
@@ -63,8 +64,8 @@ void main() {
   ) async {
     final auth = await _signedInAt(tester, 'Privatnost i sigurnost');
     await tapVisible(tester, find.text('Obriši račun'));
-    await tester.enterText(find.byType(TextFormField).last, 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Obriši račun'));
+    await tester.enterText(find.byType(EditableText).last, 'secret1');
+    await tester.tap(find.widgetWithText(FButton, 'Obriši račun'));
     await tester.pumpAndSettle();
     expect(auth.deleted, isTrue);
     expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);

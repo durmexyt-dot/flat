@@ -3,6 +3,7 @@ import 'package:flat/src/account/account_sidebar.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fixtures.dart';
@@ -85,7 +86,7 @@ void main() {
     await _desktop(tester);
     await tester.tap(find.text('Pretraži događaje kao gost'));
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(TextButton, 'Prijavi se'), findsWidgets);
-    expect(find.widgetWithText(FilledButton, 'Registruj se'), findsOneWidget);
+    expect(find.widgetWithText(FButton, 'Prijavi se'), findsWidgets);
+    expect(find.widgetWithText(FButton, 'Registruj se'), findsOneWidget);
   });
 }

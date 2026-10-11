@@ -41,10 +41,15 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(FLucideIcons.settings),
-      tooltip: AppLocalizations.of(context).settingsTitle,
-      onPressed: () => context.push('/settings'),
+    return FTooltip(
+      tipBuilder: (context, _) =>
+          Text(AppLocalizations.of(context).settingsTitle),
+      child: FButton.icon(
+        variant: FButtonVariant.ghost,
+        semanticsLabel: AppLocalizations.of(context).settingsTitle,
+        onPress: () => context.push('/settings'),
+        child: const Icon(FLucideIcons.settings),
+      ),
     );
   }
 }
@@ -81,7 +86,15 @@ class AuthScaffold extends StatelessWidget {
           children: [
             SizedBox(
               width: 48,
-              child: context.canPop() ? const BackButton() : null,
+              child: context.canPop()
+                  ? FButton.icon(
+                      variant: FButtonVariant.ghost,
+                      semanticsLabel: MaterialLocalizations.of(context)
+                          .backButtonTooltip,
+                      onPress: () => context.pop(),
+                      child: const Icon(FLucideIcons.arrowLeft),
+                    )
+                  : null,
             ),
             const Expanded(child: Center(child: BrandHeader())),
             const SettingsButton(),
@@ -138,11 +151,7 @@ class AuthScaffold extends StatelessWidget {
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 440),
                     child: large
-                        ? Card.filled(
-                            color: theme.colorScheme.surfaceContainerLow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                            ),
+                        ? FCard(
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(
                                 16,
@@ -190,31 +199,38 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordFieldState extends State<PasswordField> {
-  bool _obscure = true;
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return TextFormField(
-      controller: widget.controller,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        prefixIcon: const Icon(FLucideIcons.lock),
-        suffixIcon: IconButton(
-          icon: Icon(_obscure ? FLucideIcons.eye : FLucideIcons.eyeOff),
-          tooltip: _obscure ? l10n.showPassword : l10n.hidePassword,
-          onPressed: () => setState(() => _obscure = !_obscure),
-        ),
-      ),
-      obscureText: _obscure,
+    return FTextFormField.password(
+      control: FTextFieldControl.managed(controller: widget.controller),
+      label: Text(widget.label),
+      prefixBuilder: (context, style, obscure, variants) =>
+          const _FieldIcon(FLucideIcons.lock),
       autofillHints: widget.autofillHints,
       textInputAction: widget.textInputAction,
       enabled: widget.enabled,
-      onFieldSubmitted: widget.onSubmitted,
+      onSubmit: widget.onSubmitted,
       validator: widget.validator,
+      autovalidateMode: AutovalidateMode.disabled,
     );
   }
 }
+
+/// A leading icon inside a Forui text field.
+class _FieldIcon extends StatelessWidget {
+  const _FieldIcon(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.only(start: 12, end: 2),
+    child: Icon(icon, size: 18, color: context.theme.colors.mutedForeground),
+  );
+}
+
+/// A leading [icon] for [FTextFormField.prefixBuilder].
+Widget fieldIcon(IconData icon) => _FieldIcon(icon);
 
 class EmailField extends StatelessWidget {
   const EmailField({
@@ -233,18 +249,16 @@ class EmailField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: l10n.emailLabel,
-        prefixIcon: const Icon(FLucideIcons.mail),
-      ),
-      keyboardType: TextInputType.emailAddress,
-      autofillHints: const [AutofillHints.email],
+    return FTextFormField.email(
+      control: FTextFieldControl.managed(controller: controller),
+      label: Text(l10n.emailLabel),
+      prefixBuilder: (context, style, variants) =>
+          const _FieldIcon(FLucideIcons.mail),
       textInputAction: textInputAction,
       enabled: enabled,
-      onFieldSubmitted: onSubmitted,
+      onSubmit: onSubmitted,
       validator: (value) => validateEmail(l10n, value),
+      autovalidateMode: AutovalidateMode.disabled,
     );
   }
 }
@@ -272,7 +286,9 @@ class AnimatedErrorText extends StatelessWidget {
                 child: Text(
                   text,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  style: context.theme.typography.body.sm.copyWith(
+                    color: context.theme.colors.error,
+                  ),
                 ),
               ),
       ),
@@ -280,8 +296,8 @@ class AnimatedErrorText extends StatelessWidget {
   }
 }
 
-/// Primary action button. While [loading], it shrinks into a circle with a
-/// spinner and grows back once the response is there.
+/// Primary action button. While [loading], it shows a spinner, ignores
+/// taps and keeps its size, so the layout doesn't jump.
 class SubmitButton extends StatelessWidget {
   const SubmitButton({
     super.key,
@@ -294,53 +310,29 @@ class SubmitButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onPressed;
 
-  static const _height = 52.0;
-  static const _duration = Duration(milliseconds: 350);
-
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
-    return SizedBox(
-      height: _height,
-      child: LayoutBuilder(
-        builder: (context, constraints) => Center(
-          child: AnimatedContainer(
-            duration: _duration,
-            curve: Curves.easeInOutCubic,
-            width: loading ? _height : constraints.maxWidth,
-            height: _height,
-            child: IgnorePointer(
-              ignoring: loading,
-              child: FilledButton(
-                onPressed: onPressed,
-                style: FilledButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(_height, _height),
-                  shape: const StadiumBorder(),
+    return IgnorePointer(
+      ignoring: loading,
+      child: FButton(
+        onPress: onPressed,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: loading
+              ? FCircularProgress.loader(
+                  key: const ValueKey('loading'),
+                  style: .delta(
+                    iconStyle: .delta(
+                      color: context.theme.colors.primaryForeground,
+                    ),
+                  ),
+                )
+              : Text(
+                  label,
+                  key: const ValueKey('label'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: loading
-                      ? SizedBox.square(
-                          key: const ValueKey('loading'),
-                          dimension: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colors.onPrimary,
-                          ),
-                        )
-                      : Text(
-                          label,
-                          key: const ValueKey('label'),
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.clip,
-                        ),
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -354,18 +346,18 @@ class GoogleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-      icon: const Text(
+    return FButton(
+      variant: FButtonVariant.outline,
+      onPress: onPressed,
+      prefix: const Text(
         'G',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: FontWeight.w700,
           color: Color(0xFF4285F4),
         ),
       ),
-      label: Text(AppLocalizations.of(context).continueWithGoogle),
+      child: Text(AppLocalizations.of(context).continueWithGoogle),
     );
   }
 }
@@ -375,22 +367,22 @@ class OrDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         children: [
-          const Expanded(child: Divider()),
+          const Expanded(child: FDivider()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               AppLocalizations.of(context).orDivider,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: theme.typography.body.xs.copyWith(
+                color: theme.colors.mutedForeground,
               ),
             ),
           ),
-          const Expanded(child: Divider()),
+          const Expanded(child: FDivider()),
         ],
       ),
     );

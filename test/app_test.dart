@@ -1,6 +1,7 @@
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/ui/app_style.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers.dart';
@@ -16,7 +17,7 @@ void main() {
 
   testWidgets('empty login shows validation errors', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Prijavi se'));
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pumpAndSettle();
     expect(find.text('Unesite e-mail adresu'), findsOneWidget);
     expect(find.text('Unesite lozinku'), findsOneWidget);
@@ -24,9 +25,9 @@ void main() {
 
   testWidgets('sign in leads to home with greeting', (tester) async {
     await pumpApp(tester);
-    await tester.enterText(find.byType(TextFormField).at(0), 'amra@test.ba');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Prijavi se'));
+    await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
+    await tester.enterText(find.byType(EditableText).at(1), 'secret1');
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pumpAndSettle();
     expect(find.text('Zdravo, Amra'), findsOneWidget);
   });
@@ -36,13 +37,13 @@ void main() {
   ) async {
     final auth = await pumpApp(tester);
     auth.delay = const Duration(seconds: 2);
-    await tester.enterText(find.byType(TextFormField).at(0), 'amra@test.ba');
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Prijavi se'));
+    await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
+    await tester.enterText(find.byType(EditableText).at(1), 'secret1');
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    final button = find.byType(FilledButton);
+    final button = find.byType(FButton);
     expect(tester.getSize(button).width, 52);
     expect(
       find.descendant(
@@ -65,7 +66,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Pregledate kao gost'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TextButton, 'Prijavi se'));
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pumpAndSettle();
     expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);
   });
@@ -76,12 +77,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Kreirajte svoj račun'), findsOneWidget);
 
-    final fields = find.byType(TextFormField);
+    final fields = find.byType(EditableText);
     await tester.enterText(fields.at(0), 'Emir Hodžić');
     await tester.enterText(fields.at(1), 'emir@test.ba');
     await tester.enterText(fields.at(2), 'secret1');
     await tester.enterText(fields.at(3), 'secret1');
-    await tester.tap(find.widgetWithText(FilledButton, 'Kreiraj račun'));
+    await tester.tap(find.widgetWithText(FButton, 'Kreiraj račun'));
     await tester.pumpAndSettle();
     expect(find.text('Zdravo, Emir'), findsOneWidget);
   });

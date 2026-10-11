@@ -63,29 +63,23 @@ class StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Theme.of(context).colorScheme;
-    // Neutral chip; only the dot carries the status color.
-    final dot = statusToneColor(tone, c);
-    return Container(
-      padding: const EdgeInsets.fromLTRB(8, 4, 10, 4),
-      decoration: BoxDecoration(
-        color: c.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
-      ),
+    // Neutral Forui badge; only the dot carries the status color.
+    return FBadge(
+      variant: FBadgeVariant.secondary,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              color: statusToneColor(tone, c),
+              shape: BoxShape.circle,
+            ),
           ),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium!
-                .copyWith(color: c.onSurface, fontWeight: FontWeight.w600),
-          ),
+          Text(label),
         ],
       ),
     );

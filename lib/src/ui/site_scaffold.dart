@@ -43,7 +43,7 @@ class SiteScaffold extends StatelessWidget {
     this.actions = const [],
     this.floatingActionButton,
     this.maxWidth = SiteWidth.form,
-    this.narrowAppBar,
+    this.narrowHeader,
     this.showTitle = true,
     this.accountNav = false,
   });
@@ -58,8 +58,8 @@ class SiteScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final double maxWidth;
 
-  /// Replaces the default app bar on phones.
-  final PreferredSizeWidget? narrowAppBar;
+  /// Replaces the default header on phones.
+  final Widget? narrowHeader;
   final bool showTitle;
 
   /// Shows the account sidebar on wide screens.
@@ -69,13 +69,30 @@ class SiteScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!isWideLayout(context)) {
       return Scaffold(
-        appBar: narrowAppBar ?? AppBar(title: Text(title), actions: actions),
         floatingActionButton: floatingActionButton,
-        body: body,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SafeArea(
+              bottom: false,
+              child:
+                  narrowHeader ??
+                  FHeader.nested(
+                    title: Text(title),
+                    prefixes: [
+                      if (context.canPop())
+                        FHeaderAction.back(onPress: () => context.pop()),
+                    ],
+                    suffixes: actions,
+                  ),
+            ),
+            Expanded(child: body),
+          ],
+        ),
       );
     }
 
-    final theme = Theme.of(context);
+    final theme = context.theme;
     // Title and content, left-aligned; [maxWidth] limits the content only.
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,18 +104,29 @@ class SiteScaffold extends StatelessWidget {
             child: Row(
               children: [
                 if (context.canPop()) ...[
-                  const BackButton(),
+                  FButton.icon(
+                    variant: FButtonVariant.ghost,
+                    semanticsLabel: MaterialLocalizations.of(context)
+                        .backButtonTooltip,
+                    onPress: () => context.pop(),
+                    child: const Icon(FLucideIcons.arrowLeft),
+                  ),
                   const SizedBox(width: 8),
                 ],
                 Expanded(
                   child: Text(
                     title,
-                    style: theme.textTheme.headlineMedium?.copyWith(
+                    style: theme.typography.display.xl2.copyWith(
                       fontWeight: FontWeight.w700,
+                      color: theme.colors.foreground,
                     ),
                   ),
                 ),
-                ...actions,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: actions,
+                ),
               ],
             ),
           ),
@@ -154,36 +182,42 @@ class SiteHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider).value;
     final location = GoRouterState.of(context).uri.path;
 
     Widget link(String label, String path) {
       final active = location == path;
-      return TextButton(
-        onPressed: () => context.go(path),
-        style: TextButton.styleFrom(
-          foregroundColor: active
-              ? theme.colorScheme.primary
-              : theme.colorScheme.onSurface,
-          textStyle: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+      return FButton(
+        variant: FButtonVariant.ghost,
+        mainAxisSize: MainAxisSize.min,
+        selected: active,
+        onPress: () => context.go(path),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active
+                ? theme.colors.foreground
+                : theme.colors.mutedForeground,
+            fontWeight: active ? FontWeight.w600 : FontWeight.w500,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
-        child: Text(label),
       );
     }
 
-    return Material(
-      color: theme.colorScheme.surface,
+    void signIn({bool signUp = false}) {
+      ref.read(guestModeProvider.notifier).exit();
+      context.go('/login');
+      if (signUp) context.push('/signup');
+    }
+
+    return ColoredBox(
+      color: theme.colors.background,
       child: Container(
-        height: 68,
+        height: 64,
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: theme.colorScheme.outlineVariant),
-          ),
+          border: Border(bottom: BorderSide(color: theme.colors.border)),
         ),
         child: Center(
           child: ConstrainedBox(
@@ -191,57 +225,53 @@ class SiteHeader extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
+                spacing: 4,
                 children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => context.go('/'),
+                  FTappable(
+                    semanticsLabel: l10n.appTitle,
+                    onPress: () => context.go('/'),
                     child: const Padding(
                       padding: EdgeInsets.all(6),
-                      child: BrandHeader(markSize: 36, wordmarkHeight: 24),
+                      child: BrandHeader(markSize: 32, wordmarkHeight: 22),
                     ),
                   ),
-                  const SizedBox(width: 24),
+                  const SizedBox(width: 20),
                   link(l10n.navEvents, '/'),
                   link(l10n.sellTickets, '/sell'),
                   if (user != null)
                     link(l10n.navMyTickets, '/account/purchases'),
                   const Spacer(),
                   if (user == null) ...[
-                    IconButton(
-                      tooltip: l10n.settingsTitle,
-                      onPressed: () => context.push('/settings'),
-                      icon: const Icon(FLucideIcons.settings),
+                    FButton.icon(
+                      variant: FButtonVariant.ghost,
+                      semanticsLabel: l10n.settingsTitle,
+                      onPress: () => context.push('/settings'),
+                      child: const Icon(FLucideIcons.settings),
                     ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () {
-                        ref.read(guestModeProvider.notifier).exit();
-                        context.go('/login');
-                      },
+                    FButton(
+                      variant: FButtonVariant.ghost,
+                      mainAxisSize: MainAxisSize.min,
+                      onPress: signIn,
                       child: Text(l10n.loginButton),
                     ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      onPressed: () {
-                        ref.read(guestModeProvider.notifier).exit();
-                        context.go('/login');
-                        context.push('/signup');
-                      },
+                    FButton(
+                      mainAxisSize: MainAxisSize.min,
+                      onPress: () => signIn(signUp: true),
                       child: Text(l10n.signUp),
                     ),
                   ] else
                     Builder(
-                      builder: (context) => Tooltip(
-                        message: l10n.openAccountMenu,
-                        child: InkWell(
-                          customBorder: const StadiumBorder(),
-                          onTap: () => Scaffold.of(context).openEndDrawer(),
+                      builder: (context) => FTooltip(
+                        tipBuilder: (context, _) => Text(l10n.openAccountMenu),
+                        child: FTappable(
+                          semanticsLabel: l10n.openAccountMenu,
+                          onPress: () => Scaffold.of(context).openEndDrawer(),
                           child: Padding(
                             padding: const EdgeInsets.all(4),
                             child: Row(
                               children: [
                                 UserAvatar(
-                                  size: 40,
+                                  size: 36,
                                   photoBase64: profile?.photoBase64,
                                   name:
                                       profile?.displayName ??
@@ -251,7 +281,11 @@ class SiteHeader extends ConsumerWidget {
                                   hero: false,
                                 ),
                                 const SizedBox(width: 4),
-                                const Icon(FLucideIcons.chevronDown),
+                                Icon(
+                                  FLucideIcons.chevronDown,
+                                  size: 16,
+                                  color: theme.colors.mutedForeground,
+                                ),
                               ],
                             ),
                           ),
