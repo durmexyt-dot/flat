@@ -129,6 +129,10 @@ Users sign up in the app, or are created in the Firebase console
   app user write this.
 - Admins see **Administracija** in the settings: events (with pictures),
   service fee, team, support requests.
+- **Events**: users add events too; they stay "unconfirmed" (`pending`) until
+  an admin or support account checks, corrects and confirms them
+  (Settings → Tim → events to check). Tickets can be sold and bought for
+  unconfirmed events.
 - **Support accounts** are made by an admin in the app (Administracija →
   Tim): search the user by exact email or username (no user list is
   loaded), then "add as support". They answer support requests in the app.

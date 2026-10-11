@@ -9,6 +9,16 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Nutzer können Events anlegen; sie sind „nicht bestätigt“, bis Admin oder
+  Support sie prüfen, anpassen und bestätigen. Karten können trotzdem sofort
+  gekauft und verkauft werden; der Status ist überall sichtbar
+- Unterkategorien (z. B. Fußball, Rock); „Theater“ heißt jetzt „Kultur“
+- Startseite mit Filter (Stadt oder eigener Standort, Typ) und Sektionen:
+  Zuletzt angesehen, Beliebte Veranstaltungen, Für Sie empfohlen, In der Nähe,
+  beliebte Kategorien, alle Veranstaltungen
+- Footer mit „Unser Unternehmen“ (Über uns, Presse, …) und Hilfe-Links
+
 ## [1.3.0] – 2026-10-11
 
 ### Neu
