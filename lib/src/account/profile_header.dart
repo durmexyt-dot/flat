@@ -41,7 +41,7 @@ class ProfileHeader extends ConsumerWidget {
         final align = horizontal ? WrapAlignment.start : WrapAlignment.center;
 
         final avatar = FTappable(
-          semanticsLabel: l10n.editProfile,
+          semanticsLabel: l10n.changePhoto,
           onPress: () => showPhotoActions(context, ref),
           child: Stack(
             clipBehavior: Clip.none,

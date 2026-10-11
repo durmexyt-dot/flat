@@ -68,9 +68,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final user = ref.watch(authStateProvider).value;
     final prefs = _prefs;
 
+    // Tile subtitles ellipsize by default; these explanations may wrap.
     FTile toggle(String key, bool value, String title, String info) => FTile(
       title: Text(title),
-      subtitle: Text(info),
+      subtitle: Text(info, overflow: TextOverflow.visible),
       suffix: FSwitch(value: value, onChange: (v) => _set(key, v)),
       onPress: () => _set(key, !value),
     );
@@ -97,7 +98,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               FTile(
                 prefix: const Icon(FLucideIcons.mail),
                 title: Text(l10n.channelEmail),
-                subtitle: Text(l10n.channelEmailInfo(user?.email ?? '')),
+                subtitle: Text(
+                  l10n.channelEmailInfo(user?.email ?? ''),
+                  overflow: TextOverflow.visible,
+                ),
                 suffix: FSwitch(
                   value: prefs.email,
                   onChange: (v) => _set('email', v),
@@ -107,7 +111,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               FTile(
                 prefix: const Icon(FLucideIcons.bellRing),
                 title: Text(l10n.channelPush),
-                subtitle: pushHint == null ? null : Text(pushHint),
+                subtitle: pushHint == null
+                    ? null
+                    : Text(pushHint, overflow: TextOverflow.visible),
                 enabled: pushAvailable,
                 suffix: FSwitch(
                   value: pushOn,

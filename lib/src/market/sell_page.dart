@@ -14,6 +14,7 @@ import '../ui/async_view.dart';
 import '../ui/format.dart';
 import '../ui/skeleton.dart';
 import 'labels.dart';
+import '../ui/segmented.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 
@@ -128,7 +129,6 @@ class _SellPageState extends ConsumerState<SellPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final user = ref.watch(authStateProvider).value;
     final currency = ref.watch(settingsProvider).currency;
     final payoutMethod = ref.watch(payoutMethodProvider);
@@ -158,51 +158,59 @@ class _SellPageState extends ConsumerState<SellPage> {
                         if (user != null && !user.emailVerified)
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
-                            child: Card.filled(
-                              margin: EdgeInsets.zero,
-                              color: theme.colorScheme.secondaryContainer,
-                              child: ListTile(
-                                leading: const Icon(FLucideIcons.mailWarning),
-                                title: Text(l10n.verifyBeforeSelling),
-                                trailing: TextButton(
-                                  onPressed: () =>
-                                      context.push('/settings/privacy'),
-                                  child: Text(l10n.verifyNow),
+                            child: FAlert(
+                              icon: const Icon(FLucideIcons.mailWarning),
+                              title: Text(l10n.verifyBeforeSelling),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: FButton(
+                                    variant: FButtonVariant.outline,
+                                    size: FButtonSizeVariant.sm,
+                                    mainAxisSize: MainAxisSize.min,
+                                    onPress: () =>
+                                        context.push('/settings/privacy'),
+                                    child: Text(l10n.verifyNow),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         SettingsSectionTitle(l10n.event),
-                        TextFormField(
-                          controller: _name,
-                          decoration: InputDecoration(
-                            labelText: l10n.eventName,
-                            prefixIcon: const Icon(FLucideIcons.ticket),
-                          ),
+                        FTextFormField(
+                          control: FTextFieldControl.managed(controller: _name),
+                          label: Text(l10n.eventName),
+                          prefixBuilder: (context, style, variants) =>
+                              fieldIcon(FLucideIcons.ticket),
                           textCapitalization: TextCapitalization.words,
+                          textInputAction: TextInputAction.next,
                           validator: required,
                         ),
                         const SizedBox(height: 12),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: TextFormField(
-                                controller: _venue,
-                                decoration: InputDecoration(
-                                  labelText: l10n.venue,
+                              child: FTextFormField(
+                                control: FTextFieldControl.managed(
+                                  controller: _venue,
                                 ),
+                                label: Text(l10n.venue),
                                 textCapitalization: TextCapitalization.words,
+                                textInputAction: TextInputAction.next,
                                 validator: required,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: TextFormField(
-                                controller: _city,
-                                decoration: InputDecoration(
-                                  labelText: l10n.city,
+                              child: FTextFormField(
+                                control: FTextFieldControl.managed(
+                                  controller: _city,
                                 ),
+                                label: Text(l10n.city),
                                 textCapitalization: TextCapitalization.words,
+                                textInputAction: TextInputAction.next,
                                 validator: required,
                               ),
                             ),
@@ -224,27 +232,24 @@ class _SellPageState extends ConsumerState<SellPage> {
                           runSpacing: 8,
                           children: [
                             for (final c in EventCategory.values)
-                              ChoiceChip(
-                                avatar: Icon(categoryIcon(c), size: 18),
-                                label: Text(categoryName(l10n, c)),
-                                selected: _category == c,
-                                onSelected: (_) =>
-                                    setState(() => _category = c),
+                              FButton(
+                                size: FButtonSizeVariant.sm,
+                                mainAxisSize: MainAxisSize.min,
+                                variant: _category == c
+                                    ? FButtonVariant.primary
+                                    : FButtonVariant.outline,
+                                prefix: Icon(categoryIcon(c)),
+                                onPress: () => setState(() => _category = c),
+                                child: Text(categoryName(l10n, c)),
                               ),
                           ],
                         ),
                         SettingsSectionTitle(l10n.tickets),
-                        SegmentedButton<TicketType>(
-                          segments: [
-                            for (final t in TicketType.values)
-                              ButtonSegment(
-                                value: t,
-                                label: Text(ticketTypeName(l10n, t)),
-                              ),
-                          ],
-                          selected: {_type},
-                          onSelectionChanged: (s) =>
-                              setState(() => _type = s.first),
+                        Segmented<TicketType>(
+                          values: TicketType.values,
+                          selected: _type,
+                          label: (t) => ticketTypeName(l10n, t),
+                          onChanged: (t) => setState(() => _type = t),
                         ),
                         const SizedBox(height: 12),
                         _QuantityStepper(
@@ -253,48 +258,61 @@ class _SellPageState extends ConsumerState<SellPage> {
                         ),
                         const SizedBox(height: 12),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: TextFormField(
-                                controller: _section,
-                                decoration: InputDecoration(
-                                  labelText: l10n.section,
-                                  helperText: l10n.optional,
+                              child: FTextFormField(
+                                control: FTextFieldControl.managed(
+                                  controller: _section,
                                 ),
+                                label: Text(l10n.section),
+                                description: Text(l10n.optional),
+                                textInputAction: TextInputAction.next,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: TextFormField(
-                                controller: _row,
-                                decoration: InputDecoration(
-                                  labelText: l10n.row,
-                                  helperText: l10n.optional,
+                              child: FTextFormField(
+                                control: FTextFieldControl.managed(
+                                  controller: _row,
                                 ),
+                                label: Text(l10n.row),
+                                description: Text(l10n.optional),
+                                textInputAction: TextInputAction.next,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _seats,
-                          decoration: InputDecoration(
-                            labelText: l10n.seats,
-                            helperText: l10n.optional,
+                        FTextFormField(
+                          control: FTextFieldControl.managed(
+                            controller: _seats,
                           ),
+                          label: Text(l10n.seats),
+                          description: Text(l10n.optional),
+                          textInputAction: TextInputAction.next,
                         ),
                         SettingsSectionTitle(l10n.price),
-                        TextFormField(
-                          controller: _price,
-                          decoration: InputDecoration(
-                            labelText: l10n.pricePerTicket,
-                            prefixIcon: const Icon(FLucideIcons.tag),
-                            suffixText: currency.symbol,
+                        FTextFormField(
+                          control: FTextFieldControl.managed(
+                            controller: _price,
+                            onChange: (_) => setState(() {}),
+                          ),
+                          label: Text(l10n.pricePerTicket),
+                          prefixBuilder: (context, style, variants) =>
+                              fieldIcon(FLucideIcons.tag),
+                          suffixBuilder: (context, style, variants) => Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 12),
+                            child: Text(
+                              currency.symbol,
+                              style: context.theme.typography.body.sm.copyWith(
+                                color: context.theme.colors.mutedForeground,
+                              ),
+                            ),
                           ),
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          onChanged: (_) => setState(() {}),
                           validator: (v) {
                             final minor = parseMoney(v ?? '');
                             return (minor == null || minor <= 0)
@@ -309,17 +327,16 @@ class _SellPageState extends ConsumerState<SellPage> {
                           currency: currency.code,
                         ),
                         const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _note,
-                          decoration: InputDecoration(
-                            labelText: l10n.noteLabel,
-                            helperText: l10n.optional,
-                          ),
+                        FTextFormField(
+                          control: FTextFieldControl.managed(controller: _note),
+                          label: Text(l10n.noteLabel),
+                          description: Text(l10n.optional),
+                          keyboardType: TextInputType.multiline,
                           maxLines: 3,
                           minLines: 1,
                           maxLength: 300,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         SubmitButton(
                           label: l10n.publishListing,
                           loading: _saving,
@@ -376,23 +393,27 @@ class _SellingGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final steps = [
       l10n.sellStep1,
       l10n.sellStep2,
       l10n.sellStep3,
       l10n.sellStep4,
     ];
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: theme.colorScheme.surfaceContainerLow,
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.howSellingWorks, style: theme.textTheme.titleMedium),
+            Text(
+              l10n.howSellingWorks,
+              style: theme.typography.body.md.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colors.foreground,
+              ),
+            ),
             const SizedBox(height: 16),
             for (var i = 0; i < steps.length; i++)
               Padding(
@@ -400,28 +421,35 @@ class _SellingGuide extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 13,
-                      backgroundColor:
-                          theme.colorScheme.surfaceContainerHighest,
+                    FAvatar.raw(
+                      size: 26,
                       child: Text(
                         '${i + 1}',
-                        style: theme.textTheme.labelMedium?.copyWith(
+                        style: theme.typography.body.xs.copyWith(
                           fontWeight: FontWeight.w700,
+                          color: theme.colors.foreground,
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(steps[i])),
+                    Expanded(
+                      child: Text(
+                        steps[i],
+                        style: theme.typography.body.sm.copyWith(
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            const Divider(),
-            const SizedBox(height: 8),
+            const FDivider(
+              style: .delta(padding: .value(EdgeInsets.only(bottom: 12))),
+            ),
             Text(
               l10n.faqFeesA('${Fees.buyerPercent}', '${Fees.sellerPercent}'),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: theme.typography.body.xs.copyWith(
+                color: theme.colors.mutedForeground,
               ),
             ),
           ],
@@ -444,10 +472,11 @@ class _PayoutRequired extends StatelessWidget {
           icon: FLucideIcons.landmark,
           title: l10n.payoutRequiredTitle,
           message: l10n.payoutRequiredInfo,
-          action: FilledButton.icon(
-            onPressed: () => context.push('/account/payout-method'),
-            icon: const Icon(FLucideIcons.plus),
-            label: Text(l10n.setUpPayout),
+          action: FButton(
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => context.push('/account/payout-method'),
+            prefix: const Icon(FLucideIcons.plus),
+            child: Text(l10n.setUpPayout),
           ),
         ),
       ),
@@ -469,18 +498,29 @@ class _DateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: l10n.dateTime,
-          prefixIcon: const Icon(FLucideIcons.calendar),
-          errorText: error,
+    // Read-only: tapping opens the date and time pickers.
+    return FTextFormField(
+      control: FTextFieldControl.lifted(
+        value: TextEditingValue(
+          text: date == null ? '' : formatDateTime(context, date!),
         ),
-        isEmpty: date == null,
-        child: Text(date == null ? '' : formatDateTime(context, date!)),
+        onChange: (_) {},
       ),
+      label: Text(l10n.dateTime),
+      prefixBuilder: (context, style, variants) =>
+          fieldIcon(FLucideIcons.calendar),
+      suffixBuilder: (context, style, variants) => Padding(
+        padding: const EdgeInsetsDirectional.only(end: 12),
+        child: Icon(
+          FLucideIcons.chevronDown,
+          size: 16,
+          color: context.theme.colors.mutedForeground,
+        ),
+      ),
+      readOnly: true,
+      enableInteractiveSelection: false,
+      onTap: onTap,
+      forceErrorText: error,
     );
   }
 }
@@ -494,13 +534,22 @@ class _QuantityStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     return Row(
       children: [
-        Expanded(child: Text(l10n.quantity, style: theme.textTheme.titleSmall)),
-        IconButton.filledTonal(
-          onPressed: value > 1 ? () => onChanged(value - 1) : null,
-          icon: const Icon(FLucideIcons.minus),
+        Expanded(
+          child: Text(
+            l10n.quantity,
+            style: theme.typography.body.sm.copyWith(
+              fontWeight: FontWeight.w500,
+              color: theme.colors.foreground,
+            ),
+          ),
+        ),
+        FButton.icon(
+          variant: FButtonVariant.outline,
+          onPress: value > 1 ? () => onChanged(value - 1) : null,
+          child: const Icon(FLucideIcons.minus),
         ),
         SizedBox(
           width: 48,
@@ -514,13 +563,17 @@ class _QuantityStepper extends StatelessWidget {
               '$value',
               key: ValueKey(value),
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge,
+              style: theme.typography.body.lg.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colors.foreground,
+              ),
             ),
           ),
         ),
-        IconButton.filledTonal(
-          onPressed: value < 20 ? () => onChanged(value + 1) : null,
-          icon: const Icon(FLucideIcons.plus),
+        FButton.icon(
+          variant: FButtonVariant.outline,
+          onPress: value < 20 ? () => onChanged(value + 1) : null,
+          child: const Icon(FLucideIcons.plus),
         ),
       ],
     );
@@ -541,34 +594,43 @@ class _PriceBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final perTicket = priceMinor - Fees.sellerFee(priceMinor);
 
     Widget row(String label, int minor, {bool strong = false}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Expanded(child: Text(label)),
+          Expanded(
+            child: Text(
+              label,
+              style: theme.typography.body.sm.copyWith(
+                color: strong
+                    ? theme.colors.foreground
+                    : theme.colors.mutedForeground,
+              ),
+            ),
+          ),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: Text(
               formatMoney(context, minor, currency),
               key: ValueKey(minor),
               style: strong
-                  ? theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: theme.colorScheme.onSurface,
+                  ? theme.typography.body.lg.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: theme.colors.foreground,
                     )
-                  : null,
+                  : theme.typography.body.sm.copyWith(
+                      color: theme.colors.foreground,
+                    ),
             ),
           ),
         ],
       ),
     );
 
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: theme.colorScheme.surfaceContainerLow,
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -578,7 +640,9 @@ class _PriceBreakdown extends StatelessWidget {
               priceMinor + Fees.buyerFee(priceMinor),
             ),
             row(l10n.youReceive('${Fees.sellerPercent}'), perTicket),
-            const Divider(),
+            const FDivider(
+              style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 8))),
+            ),
             row(l10n.totalPayout, perTicket * quantity, strong: true),
           ],
         ),

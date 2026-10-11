@@ -9,7 +9,6 @@ import '../auth/auth_widgets.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
-import '../ui/app_style.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 
@@ -19,7 +18,6 @@ class PrivacySecurityPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider).value;
     if (user == null) return const Scaffold();
@@ -60,33 +58,34 @@ class PrivacySecurityPage extends ConsumerWidget {
           SettingsGroup(
             children: [
               _EmailTile(user: user),
-              ListTile(
-                shape: const RoundedRectangleBorder(),
-                leading: const Icon(FLucideIcons.key),
+              FTile(
+                prefix: const Icon(FLucideIcons.key),
                 title: Text(l10n.signInMethods),
-                subtitle: Wrap(
-                  spacing: 6,
-                  children: [
-                    if (user.hasPassword)
-                      Chip(
-                        label: Text(l10n.methodPassword),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    if (user.providers.contains('google.com'))
-                      const Chip(
-                        label: Text('Google'),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                  ],
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      if (user.hasPassword)
+                        FBadge(
+                          variant: .outline,
+                          child: Text(l10n.methodPassword),
+                        ),
+                      if (user.providers.contains('google.com'))
+                        FBadge(variant: .outline, child: const Text('Google')),
+                    ],
+                  ),
                 ),
               ),
               if (user.hasPassword)
                 SettingsLinkTile(
                   icon: FLucideIcons.keyRound,
                   title: l10n.changePassword,
-                  onTap: () => showDialog<void>(
+                  onTap: () => showFDialog<void>(
                     context: context,
-                    builder: (_) => const _ChangePasswordDialog(),
+                    builder: (_, _, animation) =>
+                        _ChangePasswordDialog(animation: animation),
                   ),
                 ),
             ],
@@ -94,20 +93,19 @@ class PrivacySecurityPage extends ConsumerWidget {
           SettingsSectionTitle(l10n.dangerZone),
           SettingsGroup(
             children: [
-              ListTile(
-                shape: const RoundedRectangleBorder(),
-                leading: Icon(
-                  FLucideIcons.trash2,
-                  color: theme.colorScheme.error,
+              FTile(
+                variant: .destructive,
+                prefix: const Icon(FLucideIcons.trash2),
+                title: Text(l10n.deleteAccount),
+                subtitle: Text(
+                  l10n.deleteAccountInfo,
+                  overflow: TextOverflow.visible,
                 ),
-                title: Text(
-                  l10n.deleteAccount,
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
-                subtitle: Text(l10n.deleteAccountInfo),
-                onTap: () => showDialog<void>(
+                suffix: const Icon(FLucideIcons.chevronRight),
+                onPress: () => showFDialog<void>(
                   context: context,
-                  builder: (_) => _DeleteAccountDialog(user: user),
+                  builder: (_, _, animation) =>
+                      _DeleteAccountDialog(user: user, animation: animation),
                 ),
               ),
             ],
@@ -135,64 +133,71 @@ class _VisibilityOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(AppStyle.of(context).cardRadius);
-    return Semantics(
+    final theme = context.theme;
+    final colors = theme.colors;
+    return FTappable(
       selected: selected,
-      button: true,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: radius,
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              color: selected
-                  ? colors.surfaceContainerHigh
-                  : colors.surfaceContainerLow,
-              border: Border.all(
-                color: selected ? colors.primary : Colors.transparent,
-                width: 2,
+      onPress: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: theme.style.borderRadius.lg,
+          color: selected ? colors.secondary : colors.card,
+          border: Border.all(
+            color: selected ? colors.primary : colors.border,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: selected ? colors.primary : colors.mutedForeground,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.typography.body.sm.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.foreground,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    info,
+                    style: theme.typography.body.sm.copyWith(
+                      color: colors.mutedForeground,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, color: selected ? colors.primary : null),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(info),
-                    ],
-                  ),
-                ),
-                AnimatedScale(
-                  scale: selected ? 1 : 0,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOutBack,
-                  child: Icon(FLucideIcons.circleCheck, color: colors.primary),
-                ),
-              ],
+            AnimatedScale(
+              scale: selected ? 1 : 0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: Icon(
+                FLucideIcons.circleCheck,
+                size: 20,
+                color: colors.primary,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _EmailTile extends ConsumerStatefulWidget {
+class _EmailTile extends ConsumerStatefulWidget with FTileMixin {
   const _EmailTile({required this.user});
 
   final AppUser user;
@@ -222,79 +227,135 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.theme.colors;
     final verified = widget.user.emailVerified;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return FTile(
+      prefix: const Icon(FLucideIcons.mail),
+      title: Text(widget.user.email ?? ''),
+      details: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) =>
+            ScaleTransition(scale: animation, child: child),
+        child: FBadge(
+          key: ValueKey(verified),
+          variant: verified ? .secondary : .destructive,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(FLucideIcons.mail),
-              const SizedBox(width: 16),
-              Expanded(child: Text(widget.user.email ?? '')),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) =>
-                    ScaleTransition(scale: animation, child: child),
-                child: Chip(
-                  key: ValueKey(verified),
-                  avatar: Icon(
-                    verified
-                        ? FLucideIcons.badgeCheck
-                        : FLucideIcons.circleAlert,
-                    size: 16,
-                    color: verified ? colors.primary : colors.error,
-                  ),
-                  label: Text(
-                    verified ? l10n.emailVerified : l10n.emailNotVerified,
-                  ),
-                  visualDensity: VisualDensity.compact,
-                ),
+              Icon(
+                verified ? FLucideIcons.badgeCheck : FLucideIcons.circleAlert,
+                size: 14,
               ),
+              const SizedBox(width: 4),
+              Text(verified ? l10n.emailVerified : l10n.emailNotVerified),
             ],
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 250),
-            alignment: Alignment.topCenter,
-            child: verified
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(left: 40, top: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      ),
+      subtitle: AnimatedSize(
+        duration: const Duration(milliseconds: 250),
+        alignment: Alignment.topCenter,
+        child: verified
+            ? const SizedBox(width: double.infinity)
+            : Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.verifyEmailInfo,
+                      overflow: TextOverflow.visible,
+                      style: TextStyle(color: colors.mutedForeground),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        Text(l10n.verifyEmailInfo),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            FilledButton.tonal(
-                              onPressed: _sending ? null : _send,
-                              child: Text(l10n.sendVerification),
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  ref.read(authRepositoryProvider).reloadUser(),
-                              child: Text(l10n.checkVerification),
-                            ),
-                          ],
+                        FButton(
+                          variant: .secondary,
+                          size: .sm,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: _sending ? null : _send,
+                          child: Text(l10n.sendVerification),
+                        ),
+                        FButton(
+                          variant: .ghost,
+                          size: .sm,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: () =>
+                              ref.read(authRepositoryProvider).reloadUser(),
+                          child: Text(l10n.checkVerification),
                         ),
                       ],
                     ),
-                  ),
-          ),
-        ],
+                  ],
+                ),
+              ),
       ),
     );
   }
 }
 
+/// Dialog body and actions, laid out like [showAppDialog] (which can't hold
+/// the form state these dialogs need).
+class _DialogLayout extends StatelessWidget {
+  const _DialogLayout({
+    required this.animation,
+    required this.title,
+    required this.body,
+    required this.actions,
+  });
+
+  final Animation<double>? animation;
+  final String title;
+  final Widget body;
+  final List<Widget> actions;
+
+  @override
+  Widget build(BuildContext context) => FDialog(
+    animation: animation,
+    builder: (context, style) {
+      final narrow = MediaQuery.sizeOf(context).width < 600;
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(title, style: style.titleTextStyle),
+            const SizedBox(height: 8),
+            DefaultTextStyle.merge(
+              style: style.bodyTextStyle.copyWith(
+                fontSize: context.theme.typography.body.sm.fontSize,
+              ),
+              child: body,
+            ),
+            const SizedBox(height: 20),
+            if (narrow)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 8,
+                children: actions.reversed.toList(),
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 8,
+                children: [for (final a in actions) IntrinsicWidth(child: a)],
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 class _ChangePasswordDialog extends ConsumerStatefulWidget {
-  const _ChangePasswordDialog();
+  const _ChangePasswordDialog({this.animation});
+
+  final Animation<double>? animation;
 
   @override
   ConsumerState<_ChangePasswordDialog> createState() =>
@@ -343,67 +404,63 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(l10n.changePassword),
-      content: SizedBox(
-        width: 400,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              PasswordField(
-                controller: _current,
-                label: l10n.currentPassword,
-                enabled: !_loading,
-                textInputAction: TextInputAction.next,
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? l10n.passwordRequired : null,
-              ),
-              const SizedBox(height: 12),
-              PasswordField(
-                controller: _new,
-                label: l10n.newPassword,
-                enabled: !_loading,
-                autofillHints: const [AutofillHints.newPassword],
-                textInputAction: TextInputAction.next,
-                validator: (v) =>
-                    (v == null || v.length < 6) ? l10n.passwordTooShort : null,
-              ),
-              const SizedBox(height: 12),
-              PasswordField(
-                controller: _confirm,
-                label: l10n.confirmPasswordLabel,
-                enabled: !_loading,
-                autofillHints: const [AutofillHints.newPassword],
-                onSubmitted: (_) => _submit(),
-                validator: (v) =>
-                    v != _new.text ? l10n.passwordsDontMatch : null,
-              ),
-              AnimatedErrorText(_error),
-            ],
-          ),
+    return _DialogLayout(
+      animation: widget.animation,
+      title: l10n.changePassword,
+      body: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PasswordField(
+              controller: _current,
+              label: l10n.currentPassword,
+              enabled: !_loading,
+              textInputAction: TextInputAction.next,
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? l10n.passwordRequired : null,
+            ),
+            const SizedBox(height: 12),
+            PasswordField(
+              controller: _new,
+              label: l10n.newPassword,
+              enabled: !_loading,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.next,
+              validator: (v) =>
+                  (v == null || v.length < 6) ? l10n.passwordTooShort : null,
+            ),
+            const SizedBox(height: 12),
+            PasswordField(
+              controller: _confirm,
+              label: l10n.confirmPasswordLabel,
+              enabled: !_loading,
+              autofillHints: const [AutofillHints.newPassword],
+              onSubmitted: (_) => _submit(),
+              validator: (v) => v != _new.text ? l10n.passwordsDontMatch : null,
+            ),
+            AnimatedErrorText(_error),
+          ],
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),
-        FilledButton(
-          onPressed: _loading ? null : _submit,
-          child: Text(l10n.save),
-        ),
+        FButton(onPress: _loading ? null : _submit, child: Text(l10n.save)),
       ],
     );
   }
 }
 
 class _DeleteAccountDialog extends ConsumerStatefulWidget {
-  const _DeleteAccountDialog({required this.user});
+  const _DeleteAccountDialog({required this.user, this.animation});
 
   final AppUser user;
+  final Animation<double>? animation;
 
   @override
   ConsumerState<_DeleteAccountDialog> createState() =>
@@ -459,42 +516,36 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = Theme.of(context).colorScheme;
-    return AlertDialog(
-      icon: Icon(FLucideIcons.trash2, color: colors.error),
-      title: Text(l10n.deleteAccount),
-      content: SizedBox(
-        width: 400,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.deleteAccountInfo),
-            const SizedBox(height: 16),
-            if (widget.user.hasPassword)
-              PasswordField(
-                controller: _password,
-                label: l10n.deleteAccountConfirm,
-                enabled: !_loading,
-                onSubmitted: (_) => _delete(),
-              )
-            else
-              Text(l10n.deleteAccountGoogle),
-            AnimatedErrorText(_error),
-          ],
-        ),
+    return _DialogLayout(
+      animation: widget.animation,
+      title: l10n.deleteAccount,
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.deleteAccountInfo),
+          const SizedBox(height: 16),
+          if (widget.user.hasPassword)
+            PasswordField(
+              controller: _password,
+              label: l10n.deleteAccountConfirm,
+              enabled: !_loading,
+              onSubmitted: (_) => _delete(),
+            )
+          else
+            Text(l10n.deleteAccountGoogle),
+          AnimatedErrorText(_error),
+        ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),
-        FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: colors.error,
-            foregroundColor: colors.onError,
-          ),
-          onPressed: _loading ? null : _delete,
+        FButton(
+          variant: .destructive,
+          onPress: _loading ? null : _delete,
           child: Text(l10n.deleteAccount),
         ),
       ],
