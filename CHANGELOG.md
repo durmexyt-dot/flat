@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.5.1] – 2026-10-11
+
 ### Geändert
 - Team-Konten: Abschnitt „Tim“ (Support-Anfragen, Events zur Prüfung,
   Administration) steht in den Einstellungen ganz oben; keine Kauf-/
