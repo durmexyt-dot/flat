@@ -149,18 +149,22 @@ class CountPill extends StatelessWidget {
         constraints: const BoxConstraints(minWidth: 22),
         height: 22,
         padding: const EdgeInsets.symmetric(horizontal: 7),
-        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: colors.primary,
           borderRadius: BorderRadius.circular(11),
         ),
-        child: Text(
-          count > 99 ? '99+' : '$count',
-          style: TextStyle(
-            color: colors.primaryForeground,
-            fontSize: 12,
-            height: 1,
-            fontWeight: FontWeight.w700,
+        // Shrink-wrapped: as a tile's details it would otherwise take the
+        // whole row and squeeze the title out.
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            count > 99 ? '99+' : '$count',
+            style: TextStyle(
+              color: colors.primaryForeground,
+              fontSize: 12,
+              height: 1,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ),
