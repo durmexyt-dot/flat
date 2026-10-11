@@ -509,5 +509,43 @@
   "buyerNextCancelledBySeller": "Prodavac je otkazao prodaju. Novac ti je vraćen u cijelosti.",
   "sellerNextCancelledBySeller": "Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.",
   "cannotBuyOwnListing": "Ovo su tvoje karte. Svoju ponudu ne možeš kupiti.",
-  "openListing": "Otvori ponudu"
+  "openListing": "Otvori ponudu",
+  "alertSoldTitle": "Prodane karte: {event}",
+  "@alertSoldTitle": {
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "alertSoldBody": "{quantity} kom. · {amount}. Pošalji karte kupcu.",
+  "@alertSoldBody": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "alertTicketsSentTitle": "Karte su poslane",
+  "alertTicketsSentBody": "{event}: prodavac je poslao tvoje karte.",
+  "@alertTicketsSentBody": {
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "alertRefundTitle": "Prodaja otkazana",
+  "alertRefundBody": "{event}: prodavac je otkazao prodaju, novac ti je vraćen.",
+  "@alertRefundBody": {
+    "placeholders": {
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "alertView": "Pogledaj"
 }

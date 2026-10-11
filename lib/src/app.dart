@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 
 import '../l10n/app_localizations.dart';
 import 'data/repositories.dart';
+import 'notifications/live_alerts.dart';
 import 'router.dart';
 import 'settings/settings_controller.dart';
 import 'ui/forui_theme.dart';
@@ -48,7 +49,7 @@ class FlatApp extends ConsumerWidget {
             motion: const FThemeMotion(duration: Duration(milliseconds: 300)),
             child: FToaster(
               key: toasterKey,
-              child: FTooltipGroup(child: child!),
+              child: FTooltipGroup(child: LiveAlerts(child: child!)),
             ),
           ),
         );

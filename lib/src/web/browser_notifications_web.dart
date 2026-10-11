@@ -31,3 +31,30 @@ void showTestNotification(String title, String body) {
     web.NotificationOptions(body: body, icon: 'icons/Icon-192.png'),
   );
 }
+
+/// True while the tab is in the background or the window minimized.
+bool pageHidden() => web.document.visibilityState == 'hidden';
+
+/// A system notification; a click brings the tab to the front and runs
+/// [onClick]. Notifications with the same [tag] replace each other.
+void showSystemNotification(
+  String title,
+  String body, {
+  String? tag,
+  void Function()? onClick,
+}) {
+  if (pushSupport() != PushSupport.granted) return;
+  final n = web.Notification(
+    title,
+    web.NotificationOptions(
+      body: body,
+      icon: 'icons/Icon-192.png',
+      tag: tag ?? '',
+    ),
+  );
+  n.onclick = ((web.Event _) {
+    web.window.focus();
+    n.close();
+    onClick?.call();
+  }).toJS;
+}

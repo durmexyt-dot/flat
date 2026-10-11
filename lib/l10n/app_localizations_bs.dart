@@ -1218,4 +1218,33 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get openListing => 'Otvori ponudu';
+
+  @override
+  String alertSoldTitle(String event) {
+    return 'Prodane karte: $event';
+  }
+
+  @override
+  String alertSoldBody(String quantity, String amount) {
+    return '$quantity kom. · $amount. Pošalji karte kupcu.';
+  }
+
+  @override
+  String get alertTicketsSentTitle => 'Karte su poslane';
+
+  @override
+  String alertTicketsSentBody(String event) {
+    return '$event: prodavac je poslao tvoje karte.';
+  }
+
+  @override
+  String get alertRefundTitle => 'Prodaja otkazana';
+
+  @override
+  String alertRefundBody(String event) {
+    return '$event: prodavac je otkazao prodaju, novac ti je vraćen.';
+  }
+
+  @override
+  String get alertView => 'Pogledaj';
 }

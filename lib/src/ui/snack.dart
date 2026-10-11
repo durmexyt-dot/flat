@@ -9,7 +9,12 @@ FToasterEntry? _current;
 
 /// Shows [text] as a Forui toast right away, replacing a visible one instead
 /// of stacking behind it. With [actionLabel], the toast gets a button.
-void showSnack(String text, {String? actionLabel, VoidCallback? onAction}) {
+void showSnack(
+  String text, {
+  String? description,
+  String? actionLabel,
+  VoidCallback? onAction,
+}) {
   final toaster = toasterKey.currentState;
   if (toaster == null) return;
   // An entry from an earlier toaster (e.g. after a hot restart) is gone.
@@ -27,6 +32,7 @@ void showSnack(String text, {String? actionLabel, VoidCallback? onAction}) {
     duration: const Duration(seconds: 4),
     builder: (context, entry) => FToast(
       title: Text(text),
+      description: description == null ? null : Text(description),
       suffix: actionLabel == null
           ? null
           : FButton(

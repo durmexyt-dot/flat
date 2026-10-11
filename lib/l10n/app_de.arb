@@ -375,5 +375,12 @@
   "buyerNextCancelledBySeller": "Der Verkäufer hat den Verkauf storniert. Du bekommst dein Geld vollständig zurück.",
   "sellerNextCancelledBySeller": "Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf.",
   "cannotBuyOwnListing": "Das sind deine Tickets. Dein eigenes Angebot kannst du nicht kaufen.",
-  "openListing": "Angebot öffnen"
+  "openListing": "Angebot öffnen",
+  "alertSoldTitle": "Tickets verkauft: {event}",
+  "alertSoldBody": "{quantity} Stk. · {amount}. Sende die Tickets an den Käufer.",
+  "alertTicketsSentTitle": "Tickets verschickt",
+  "alertTicketsSentBody": "{event}: Der Verkäufer hat deine Tickets geschickt.",
+  "alertRefundTitle": "Verkauf storniert",
+  "alertRefundBody": "{event}: Der Verkäufer hat storniert, du bekommst dein Geld zurück.",
+  "alertView": "Ansehen"
 }

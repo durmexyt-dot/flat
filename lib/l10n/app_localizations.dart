@@ -2355,6 +2355,48 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Otvori ponudu'**
   String get openListing;
+
+  /// No description provided for @alertSoldTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodane karte: {event}'**
+  String alertSoldTitle(String event);
+
+  /// No description provided for @alertSoldBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{quantity} kom. · {amount}. Pošalji karte kupcu.'**
+  String alertSoldBody(String quantity, String amount);
+
+  /// No description provided for @alertTicketsSentTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte su poslane'**
+  String get alertTicketsSentTitle;
+
+  /// No description provided for @alertTicketsSentBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: prodavac je poslao tvoje karte.'**
+  String alertTicketsSentBody(String event);
+
+  /// No description provided for @alertRefundTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja otkazana'**
+  String get alertRefundTitle;
+
+  /// No description provided for @alertRefundBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: prodavac je otkazao prodaju, novac ti je vraćen.'**
+  String alertRefundBody(String event);
+
+  /// No description provided for @alertView.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pogledaj'**
+  String get alertView;
 }
 
 class _AppLocalizationsDelegate

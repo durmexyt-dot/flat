@@ -284,4 +284,39 @@ void main() {
     expect(find.text('Detalji narudžbe'), findsOneWidget);
     expect(find.text('Otkaži prodaju'), findsNothing);
   });
+
+  testWidgets('the seller sees a sale live, the moment the buyer pays', (
+    tester,
+  ) async {
+    final market = InMemoryMarketRepository(
+      listings: [
+        Listing.fromMap('jazz', {..._jazz().toMap(), 'sellerId': '1'}),
+      ],
+    );
+    final auth = await pumpApp(tester, marketRepository: market);
+    await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Prodane karte'), findsNothing);
+
+    // Somewhere else, a buyer pays.
+    final listing = (await market.watchListing('jazz').first)!;
+    await tester.runAsync(() async {
+      final order = await market.createOrder(
+        listing: listing,
+        quantity: 2,
+        buyerId: 'buyer',
+      );
+      await market.completePayment(
+        order,
+        const PaymentSucceeded(paymentId: 'pi_1', methodLabel: 'Visa'),
+      );
+    });
+    await tester.pumpAndSettle();
+    expect(find.text('Prodane karte: Sarajevo Jazz Festival'), findsOneWidget);
+
+    // The toast leads to the sale.
+    await tester.tap(find.text('Pogledaj'));
+    await tester.pumpAndSettle();
+    expect(find.text('Detalji prodaje'), findsOneWidget);
+  });
 }

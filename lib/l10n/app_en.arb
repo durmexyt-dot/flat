@@ -375,5 +375,12 @@
   "buyerNextCancelledBySeller": "The seller cancelled the sale. You've been refunded in full.",
   "sellerNextCancelledBySeller": "You cancelled this sale. The buyer has been refunded and the tickets are on sale again.",
   "cannotBuyOwnListing": "These are your tickets. You can't buy your own listing.",
-  "openListing": "Open listing"
+  "openListing": "Open listing",
+  "alertSoldTitle": "Tickets sold: {event}",
+  "alertSoldBody": "{quantity} pcs · {amount}. Send the tickets to the buyer.",
+  "alertTicketsSentTitle": "Tickets sent",
+  "alertTicketsSentBody": "{event}: the seller sent your tickets.",
+  "alertRefundTitle": "Sale cancelled",
+  "alertRefundBody": "{event}: the seller cancelled, you've been refunded.",
+  "alertView": "View"
 }

@@ -1224,4 +1224,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openListing => 'Open listing';
+
+  @override
+  String alertSoldTitle(String event) {
+    return 'Tickets sold: $event';
+  }
+
+  @override
+  String alertSoldBody(String quantity, String amount) {
+    return '$quantity pcs · $amount. Send the tickets to the buyer.';
+  }
+
+  @override
+  String get alertTicketsSentTitle => 'Tickets sent';
+
+  @override
+  String alertTicketsSentBody(String event) {
+    return '$event: the seller sent your tickets.';
+  }
+
+  @override
+  String get alertRefundTitle => 'Sale cancelled';
+
+  @override
+  String alertRefundBody(String event) {
+    return '$event: the seller cancelled, you\'ve been refunded.';
+  }
+
+  @override
+  String get alertView => 'View';
 }

@@ -1235,4 +1235,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get openListing => 'Angebot öffnen';
+
+  @override
+  String alertSoldTitle(String event) {
+    return 'Tickets verkauft: $event';
+  }
+
+  @override
+  String alertSoldBody(String quantity, String amount) {
+    return '$quantity Stk. · $amount. Sende die Tickets an den Käufer.';
+  }
+
+  @override
+  String get alertTicketsSentTitle => 'Tickets verschickt';
+
+  @override
+  String alertTicketsSentBody(String event) {
+    return '$event: Der Verkäufer hat deine Tickets geschickt.';
+  }
+
+  @override
+  String get alertRefundTitle => 'Verkauf storniert';
+
+  @override
+  String alertRefundBody(String event) {
+    return '$event: Der Verkäufer hat storniert, du bekommst dein Geld zurück.';
+  }
+
+  @override
+  String get alertView => 'Ansehen';
 }
