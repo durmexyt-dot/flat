@@ -355,5 +355,7 @@
   "markTicketsSent": "Tickets als übertragen markieren",
   "ticketsMarkedSent": "Der Käufer wurde informiert",
   "buyerEmail": "Tickets gehen an",
-  "notAvailableAnymore": "Dieses Angebot ist nicht mehr verfügbar"
+  "notAvailableAnymore": "Dieses Angebot ist nicht mehr verfügbar",
+  "payoutRequiredTitle": "Zuerst Auszahlungsmethode hinzufügen",
+  "payoutRequiredInfo": "Damit wir dir das Geld aus Verkäufen auszahlen können, brauchen wir dein Bankkonto (IBAN). Danach kannst du sofort Tickets einstellen."
 }

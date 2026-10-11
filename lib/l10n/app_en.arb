@@ -355,5 +355,7 @@
   "markTicketsSent": "Mark tickets as sent",
   "ticketsMarkedSent": "The buyer has been notified",
   "buyerEmail": "Tickets go to",
-  "notAvailableAnymore": "This listing is no longer available"
+  "notAvailableAnymore": "This listing is no longer available",
+  "payoutRequiredTitle": "Add a payout method first",
+  "payoutRequiredInfo": "To pay you for your sales we need your bank account (IBAN). After that you can list tickets right away."
 }

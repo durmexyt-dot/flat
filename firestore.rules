@@ -67,6 +67,8 @@ service cloud.firestore {
         || isUser(resource.data.sellerId);
       allow create: if signedIn()
         && request.resource.data.sellerId == request.auth.uid
+        // Sellers need a payout method before listing tickets.
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
         && request.resource.data.status == 'active'
         && request.resource.data.quantitySold == 0
         && request.resource.data.quantity is int

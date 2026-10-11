@@ -21,17 +21,16 @@ class AsyncView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget child = switch (value) {
-      AsyncData(:final value) => KeyedSubtree(
-        key: const ValueKey('data'),
-        child: data(value),
-      ),
-      AsyncError() => ErrorState(
-        key: const ValueKey('error'),
-        onRetry: onRetry,
-      ),
-      _ => KeyedSubtree(key: const ValueKey('loading'), child: loading),
-    };
+    // Riverpod keeps a failed provider "loading" while it retries, with the
+    // error attached; show the error then instead of an endless skeleton.
+    final Widget child = value.hasError
+        ? ErrorState(key: const ValueKey('error'), onRetry: onRetry)
+        : value.hasValue
+        ? KeyedSubtree(
+            key: const ValueKey('data'),
+            child: data(value.requireValue),
+          )
+        : KeyedSubtree(key: const ValueKey('loading'), child: loading);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeOut,

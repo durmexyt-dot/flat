@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'src/app.dart';
 import 'src/auth/auth_repository.dart';
+import 'src/data/retry_policy.dart';
 import 'src/settings/settings_controller.dart';
 
 Future<void> main() async {
@@ -20,6 +21,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
+      retry: retryPolicy,
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: const FlatApp(),
     ),

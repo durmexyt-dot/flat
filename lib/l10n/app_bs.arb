@@ -476,5 +476,7 @@
   "markTicketsSent": "Označi karte kao poslane",
   "ticketsMarkedSent": "Kupac je obaviješten",
   "buyerEmail": "Karte stižu na",
-  "notAvailableAnymore": "Ova ponuda više nije dostupna"
+  "notAvailableAnymore": "Ova ponuda više nije dostupna",
+  "payoutRequiredTitle": "Prvo dodaj način isplate",
+  "payoutRequiredInfo": "Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte."
 }

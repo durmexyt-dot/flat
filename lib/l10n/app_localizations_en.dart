@@ -1154,4 +1154,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notAvailableAnymore => 'This listing is no longer available';
+
+  @override
+  String get payoutRequiredTitle => 'Add a payout method first';
+
+  @override
+  String get payoutRequiredInfo =>
+      'To pay you for your sales we need your bank account (IBAN). After that you can list tickets right away.';
 }

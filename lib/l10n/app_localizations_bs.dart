@@ -1149,4 +1149,11 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get notAvailableAnymore => 'Ova ponuda više nije dostupna';
+
+  @override
+  String get payoutRequiredTitle => 'Prvo dodaj način isplate';
+
+  @override
+  String get payoutRequiredInfo =>
+      'Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte.';
 }

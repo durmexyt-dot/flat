@@ -116,7 +116,22 @@ void main() {
 
     await tester.tap(find.text('Prodaj karte'));
     await tester.pumpAndSettle();
+    // Without a payout method the form is locked.
+    expect(find.text('Prvo dodaj način isplate'), findsOneWidget);
+    expect(find.text('Naziv događaja'), findsNothing);
+    await tester.tap(find.text('Dodaj način isplate'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, 'Amra Test');
+    await tester.enterText(
+      find.byType(TextFormField).last,
+      'BA391290079401028494',
+    );
+    await tester.tap(find.text('Sačuvaj'));
+    await tester.pumpAndSettle();
     expect(find.text('Naziv događaja'), findsOneWidget);
+    // Let the "saved" snack bar go; it covers the bottom of the form.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
 
     // Missing fields are reported.
     await tapVisible(tester, find.text('Objavi ponudu'));

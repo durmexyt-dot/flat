@@ -1163,4 +1163,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notAvailableAnymore => 'Dieses Angebot ist nicht mehr verfügbar';
+
+  @override
+  String get payoutRequiredTitle => 'Zuerst Auszahlungsmethode hinzufügen';
+
+  @override
+  String get payoutRequiredInfo =>
+      'Damit wir dir das Geld aus Verkäufen auszahlen können, brauchen wir dein Bankkonto (IBAN). Danach kannst du sofort Tickets einstellen.';
 }

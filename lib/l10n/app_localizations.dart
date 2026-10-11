@@ -2235,6 +2235,18 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Ova ponuda više nije dostupna'**
   String get notAvailableAnymore;
+
+  /// No description provided for @payoutRequiredTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prvo dodaj način isplate'**
+  String get payoutRequiredTitle;
+
+  /// No description provided for @payoutRequiredInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte.'**
+  String get payoutRequiredInfo;
 }
 
 class _AppLocalizationsDelegate

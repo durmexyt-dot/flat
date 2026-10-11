@@ -9,7 +9,9 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_controller.dart';
 import '../settings/settings_widgets.dart';
+import '../ui/async_view.dart';
 import '../ui/format.dart';
+import '../ui/skeleton.dart';
 import 'labels.dart';
 import '../ui/snack.dart';
 
@@ -128,182 +130,221 @@ class _SellPageState extends ConsumerState<SellPage> {
     final theme = Theme.of(context);
     final user = ref.watch(authStateProvider).value;
     final currency = ref.watch(settingsProvider).currency;
+    final payoutMethod = ref.watch(payoutMethodProvider);
     String? required(String? v) =>
         (v == null || v.trim().isEmpty) ? l10n.required : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.sellTitle)),
-      body: Form(
-        key: _formKey,
-        // Not a ListView: it would drop off-screen fields, and the form
-        // would skip validating them.
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (user != null && !user.emailVerified)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Card.filled(
-                    margin: EdgeInsets.zero,
-                    color: theme.colorScheme.secondaryContainer,
-                    child: ListTile(
-                      leading: const Icon(Icons.mark_email_unread_outlined),
-                      title: Text(l10n.verifyBeforeSelling),
-                      trailing: TextButton(
-                        onPressed: () => context.push('/settings/privacy'),
-                        child: Text(l10n.verifyNow),
+      // No selling without a payout method: the money needs somewhere to go.
+      body: AsyncView<PayoutMethod?>(
+        value: payoutMethod,
+        onRetry: () => ref.invalidate(payoutMethodProvider),
+        loading: const SkeletonTicketList(count: 3),
+        data: (method) => method == null
+            ? const _PayoutRequired()
+            : Form(
+                key: _formKey,
+                // Not a ListView: it would drop off-screen fields, and the form
+                // would skip validating them.
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (user != null && !user.emailVerified)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Card.filled(
+                            margin: EdgeInsets.zero,
+                            color: theme.colorScheme.secondaryContainer,
+                            child: ListTile(
+                              leading: const Icon(
+                                Icons.mark_email_unread_outlined,
+                              ),
+                              title: Text(l10n.verifyBeforeSelling),
+                              trailing: TextButton(
+                                onPressed: () =>
+                                    context.push('/settings/privacy'),
+                                child: Text(l10n.verifyNow),
+                              ),
+                            ),
+                          ),
+                        ),
+                      SettingsSectionTitle(l10n.event),
+                      TextFormField(
+                        controller: _name,
+                        decoration: InputDecoration(
+                          labelText: l10n.eventName,
+                          prefixIcon: const Icon(Icons.local_activity_outlined),
+                        ),
+                        textCapitalization: TextCapitalization.words,
+                        validator: required,
                       ),
-                    ),
-                  ),
-                ),
-              SettingsSectionTitle(l10n.event),
-              TextFormField(
-                controller: _name,
-                decoration: InputDecoration(
-                  labelText: l10n.eventName,
-                  prefixIcon: const Icon(Icons.local_activity_outlined),
-                ),
-                textCapitalization: TextCapitalization.words,
-                validator: required,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _venue,
-                      decoration: InputDecoration(labelText: l10n.venue),
-                      textCapitalization: TextCapitalization.words,
-                      validator: required,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _city,
-                      decoration: InputDecoration(labelText: l10n.city),
-                      textCapitalization: TextCapitalization.words,
-                      validator: required,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _DateField(
-                date: _date,
-                error: _dateError
-                    ? (_date == null ? l10n.required : l10n.dateInPast)
-                    : null,
-                onTap: _pickDate,
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final c in EventCategory.values)
-                    ChoiceChip(
-                      avatar: Icon(categoryIcon(c), size: 18),
-                      label: Text(categoryName(l10n, c)),
-                      selected: _category == c,
-                      onSelected: (_) => setState(() => _category = c),
-                    ),
-                ],
-              ),
-              SettingsSectionTitle(l10n.tickets),
-              SegmentedButton<TicketType>(
-                segments: [
-                  for (final t in TicketType.values)
-                    ButtonSegment(
-                      value: t,
-                      label: Text(ticketTypeName(l10n, t)),
-                    ),
-                ],
-                selected: {_type},
-                onSelectionChanged: (s) => setState(() => _type = s.first),
-              ),
-              const SizedBox(height: 12),
-              _QuantityStepper(
-                value: _quantity,
-                onChanged: (v) => setState(() => _quantity = v),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _section,
-                      decoration: InputDecoration(
-                        labelText: l10n.section,
-                        helperText: l10n.optional,
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _venue,
+                              decoration: InputDecoration(
+                                labelText: l10n.venue,
+                              ),
+                              textCapitalization: TextCapitalization.words,
+                              validator: required,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _city,
+                              decoration: InputDecoration(labelText: l10n.city),
+                              textCapitalization: TextCapitalization.words,
+                              validator: required,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _row,
-                      decoration: InputDecoration(
-                        labelText: l10n.row,
-                        helperText: l10n.optional,
+                      const SizedBox(height: 12),
+                      _DateField(
+                        date: _date,
+                        error: _dateError
+                            ? (_date == null ? l10n.required : l10n.dateInPast)
+                            : null,
+                        onTap: _pickDate,
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final c in EventCategory.values)
+                            ChoiceChip(
+                              avatar: Icon(categoryIcon(c), size: 18),
+                              label: Text(categoryName(l10n, c)),
+                              selected: _category == c,
+                              onSelected: (_) => setState(() => _category = c),
+                            ),
+                        ],
+                      ),
+                      SettingsSectionTitle(l10n.tickets),
+                      SegmentedButton<TicketType>(
+                        segments: [
+                          for (final t in TicketType.values)
+                            ButtonSegment(
+                              value: t,
+                              label: Text(ticketTypeName(l10n, t)),
+                            ),
+                        ],
+                        selected: {_type},
+                        onSelectionChanged: (s) =>
+                            setState(() => _type = s.first),
+                      ),
+                      const SizedBox(height: 12),
+                      _QuantityStepper(
+                        value: _quantity,
+                        onChanged: (v) => setState(() => _quantity = v),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _section,
+                              decoration: InputDecoration(
+                                labelText: l10n.section,
+                                helperText: l10n.optional,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _row,
+                              decoration: InputDecoration(
+                                labelText: l10n.row,
+                                helperText: l10n.optional,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _seats,
+                        decoration: InputDecoration(
+                          labelText: l10n.seats,
+                          helperText: l10n.optional,
+                        ),
+                      ),
+                      SettingsSectionTitle(l10n.price),
+                      TextFormField(
+                        controller: _price,
+                        decoration: InputDecoration(
+                          labelText: l10n.pricePerTicket,
+                          prefixIcon: const Icon(Icons.sell_outlined),
+                          suffixText: currency.symbol,
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        onChanged: (_) => setState(() {}),
+                        validator: (v) {
+                          final minor = parseMoney(v ?? '');
+                          return (minor == null || minor <= 0)
+                              ? l10n.priceInvalid
+                              : null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _PriceBreakdown(
+                        priceMinor: parseMoney(_price.text) ?? 0,
+                        quantity: _quantity,
+                        currency: currency.code,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _note,
+                        decoration: InputDecoration(
+                          labelText: l10n.noteLabel,
+                          helperText: l10n.optional,
+                        ),
+                        maxLines: 3,
+                        minLines: 1,
+                        maxLength: 300,
+                      ),
+                      const SizedBox(height: 12),
+                      SubmitButton(
+                        label: l10n.publishListing,
+                        loading: _saving,
+                        onPressed: _publish,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _seats,
-                decoration: InputDecoration(
-                  labelText: l10n.seats,
-                  helperText: l10n.optional,
                 ),
               ),
-              SettingsSectionTitle(l10n.price),
-              TextFormField(
-                controller: _price,
-                decoration: InputDecoration(
-                  labelText: l10n.pricePerTicket,
-                  prefixIcon: const Icon(Icons.sell_outlined),
-                  suffixText: currency.symbol,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                onChanged: (_) => setState(() {}),
-                validator: (v) {
-                  final minor = parseMoney(v ?? '');
-                  return (minor == null || minor <= 0)
-                      ? l10n.priceInvalid
-                      : null;
-                },
-              ),
-              const SizedBox(height: 12),
-              _PriceBreakdown(
-                priceMinor: parseMoney(_price.text) ?? 0,
-                quantity: _quantity,
-                currency: currency.code,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _note,
-                decoration: InputDecoration(
-                  labelText: l10n.noteLabel,
-                  helperText: l10n.optional,
-                ),
-                maxLines: 3,
-                minLines: 1,
-                maxLength: 300,
-              ),
-              const SizedBox(height: 12),
-              SubmitButton(
-                label: l10n.publishListing,
-                loading: _saving,
-                onPressed: _publish,
-              ),
-            ],
+      ),
+    );
+  }
+}
+
+/// Explains why a payout method is needed and leads to the form.
+class _PayoutRequired extends StatelessWidget {
+  const _PayoutRequired();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        child: EmptyState(
+          icon: Icons.account_balance_outlined,
+          title: l10n.payoutRequiredTitle,
+          message: l10n.payoutRequiredInfo,
+          action: FilledButton.icon(
+            onPressed: () => context.push('/account/payout-method'),
+            icon: const Icon(Icons.add),
+            label: Text(l10n.setUpPayout),
           ),
         ),
       ),

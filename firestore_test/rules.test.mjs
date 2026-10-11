@@ -1,7 +1,7 @@
 import { test, before, after, beforeEach } from 'node:test';
 import fs from 'node:fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
-import { doc, setDoc, getDoc, updateDoc, writeBatch, collection, query, where, getDocs, Timestamp, arrayUnion } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, writeBatch, runTransaction, collection, query, where, getDocs, Timestamp, arrayUnion, serverTimestamp } from 'firebase/firestore';
 
 let env;
 const RULES = fs.readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8');
@@ -17,6 +17,7 @@ beforeEach(async () => {
   await env.clearFirestore();
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), 'listings/L1'), listing());
+    await setDoc(doc(ctx.firestore(), 'users/seller/private/payoutMethod'), { accountHolder: 'S', iban: 'X' });
   });
 });
 
@@ -46,6 +47,48 @@ async function openOrder(id = 'O1', over = {}) {
 test('anyone can read and query active listings', async () => {
   await assertSucceeds(getDoc(doc(db(null), 'listings/L1')));
   await assertSucceeds(getDocs(query(collection(db(null), 'listings'), where('status', '==', 'active'))));
+});
+
+test('sellers need a payout method before listing', async () => {
+  await assertFails(setDoc(doc(db('newbie'), 'listings/L9'), listing({ sellerId: 'newbie' })));
+  await assertSucceeds(setDoc(doc(db('newbie'), 'users/newbie/private/payoutMethod'), { accountHolder: 'N', iban: 'BA391290079401028494' }));
+  await assertSucceeds(setDoc(doc(db('newbie'), 'listings/L9'), listing({ sellerId: 'newbie' })));
+});
+
+test('profile flows of the app are allowed', async () => {
+  const fs = db('amra');
+  // ensureProfile
+  await assertSucceeds(writeBatch(fs)
+    .set(doc(fs, 'users/amra'), { displayName: 'Amra', email: 'a@b.ba', visibility: 'public', notifications: { email: true }, createdAt: serverTimestamp() })
+    .set(doc(fs, 'publicProfiles/amra'), { displayName: 'Amra', visibility: 'public' })
+    .commit());
+  // updateDisplayName / setPhoto / setVisibility
+  await assertSucceeds(writeBatch(fs)
+    .set(doc(fs, 'users/amra'), { displayName: 'Amra B', photo: 'abc' }, { merge: true })
+    .set(doc(fs, 'publicProfiles/amra'), { displayName: 'Amra B', photo: 'abc' }, { merge: true })
+    .commit());
+  // setUsername (transaction, like the app)
+  const claim = (name) => runTransaction(fs, async (tx) => {
+    const user = await tx.get(doc(fs, 'users/amra'));
+    const taken = await tx.get(doc(fs, `usernames/${name}`));
+    if (taken.exists() && taken.data().uid !== 'amra') throw new Error('taken');
+    const previous = user.data()?.username;
+    if (previous && previous !== name) tx.delete(doc(fs, `usernames/${previous}`));
+    tx.set(doc(fs, `usernames/${name}`), { uid: 'amra' })
+      .set(doc(fs, 'users/amra'), { username: name }, { merge: true })
+      .set(doc(fs, 'publicProfiles/amra'), { username: name }, { merge: true });
+  });
+  await assertSucceeds(claim('amra.b'));
+  await assertSucceeds(claim('amra_2'));
+  await assertFails(claim('Not Valid'));
+  // Someone else can't take it.
+  await assertFails(setDoc(doc(db('other'), 'usernames/amra_2'), { uid: 'other' }));
+  // Notifications and payout method.
+  await assertSucceeds(setDoc(doc(fs, 'users/amra'), { notifications: { newsletter: true } }, { merge: true }));
+  await assertSucceeds(setDoc(doc(fs, 'users/amra/private/payoutMethod'), { accountHolder: 'A', iban: 'X' }));
+  await assertFails(getDoc(doc(db('other'), 'users/amra/private/payoutMethod')));
+  // Public profile readable while public.
+  await assertSucceeds(getDoc(doc(db('other'), 'publicProfiles/amra')));
 });
 
 test('sellers create listings only for themselves and unsold', async () => {
