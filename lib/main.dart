@@ -5,14 +5,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
+import 'firebase_options_prod.dart';
+import 'src/config/app_info.dart';
 import 'src/app.dart';
 import 'src/auth/auth_repository.dart';
 import 'src/data/retry_policy.dart';
 import 'src/settings/settings_controller.dart';
 
+/// The Firebase project of this build's environment.
+FirebaseOptions firebaseOptions() {
+  if (!AppInfo.isProd) return DefaultFirebaseOptions.currentPlatform;
+  return ProdFirebaseOptions.web ??
+      (throw StateError(
+        'Prod Firebase config missing: see '
+        'lib/firebase_options_prod.dart',
+      ));
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: firebaseOptions());
   final prefs = await SharedPreferences.getInstance();
   await FirebaseAuthRepository.dropUnwantedSession(
     FirebaseAuth.instance,

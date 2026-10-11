@@ -1277,4 +1277,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get deleteAccountOpenOrders =>
       'Du hast offene Verkäufe oder Käufe. Schließe sie ab oder storniere sie, bevor du dein Konto löschst.';
+
+  @override
+  String get newVersionTitle => 'Neue Version verfügbar';
+
+  @override
+  String get newVersionBody =>
+      'Lade die Seite neu für die neueste Version von Stubswap.';
+
+  @override
+  String get reload => 'Neu laden';
 }

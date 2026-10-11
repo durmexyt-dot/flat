@@ -2421,6 +2421,24 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa.'**
   String get deleteAccountOpenOrders;
+
+  /// No description provided for @newVersionTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nova verzija je dostupna'**
+  String get newVersionTitle;
+
+  /// No description provided for @newVersionBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'Osvježi stranicu za najnoviju verziju Stubswapa.'**
+  String get newVersionBody;
+
+  /// No description provided for @reload.
+  ///
+  /// In bs, this message translates to:
+  /// **'Osvježi'**
+  String get reload;
 }
 
 class _AppLocalizationsDelegate

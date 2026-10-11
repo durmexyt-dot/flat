@@ -1260,4 +1260,14 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get deleteAccountOpenOrders =>
       'Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa.';
+
+  @override
+  String get newVersionTitle => 'Nova verzija je dostupna';
+
+  @override
+  String get newVersionBody =>
+      'Osvježi stranicu za najnoviju verziju Stubswapa.';
+
+  @override
+  String get reload => 'Osvježi';
 }

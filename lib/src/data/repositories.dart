@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_repository.dart';
+import '../config/app_info.dart';
 import 'models.dart';
 
 /// Thrown when a username is already taken.
@@ -336,6 +337,8 @@ class FirestoreMarketRepository implements MarketRepository {
       'topic': topic.name,
       'reference': reference,
       'message': message,
+      // Which app version the user had: helps to reproduce a problem.
+      'appVersion': AppInfo.label,
       'status': 'open',
       'createdAt': FieldValue.serverTimestamp(),
     });

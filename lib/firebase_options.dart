@@ -1,4 +1,5 @@
-// Firebase configuration.
+// Firebase configuration of the STAGING project (stubswap-eda59): test
+// accounts and test data. Prod is in firebase_options_prod.dart.
 //
 // Web is configured by hand from the Firebase console. For Android, iOS and
 // macOS run `flutterfire configure` on a Mac; it regenerates this file with

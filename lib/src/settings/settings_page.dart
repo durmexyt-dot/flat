@@ -9,13 +9,13 @@ import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
 import '../ui/app_dialog.dart';
+import '../config/app_info.dart';
 import '../ui/site_scaffold.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
 
 /// Shown in the about dialog; keep in sync with pubspec.yaml.
-const appVersion = '1.0.0';
 
 /// Account hub: profile on top, then grouped settings.
 class SettingsPage extends ConsumerWidget {
@@ -248,7 +248,7 @@ void _showAbout(BuildContext context) {
             const BrandMark(size: 48),
             const SizedBox(width: 12),
             Text(
-              appVersion,
+              AppInfo.label,
               style: context.theme.typography.body.sm.copyWith(
                 color: context.theme.colors.mutedForeground,
               ),
@@ -265,7 +265,7 @@ void _showAbout(BuildContext context) {
         onPress: () => showLicensePage(
           context: ctx,
           applicationName: 'Stubswap',
-          applicationVersion: appVersion,
+          applicationVersion: AppInfo.label,
           applicationIcon: const BrandMark(size: 48),
         ),
         child: Flexible(child: Text(material.viewLicensesButtonLabel)),

@@ -14,6 +14,7 @@ void showSnack(
   String? description,
   String? actionLabel,
   VoidCallback? onAction,
+  Duration? duration = const Duration(seconds: 4),
 }) {
   final toaster = toasterKey.currentState;
   if (toaster == null) return;
@@ -29,7 +30,7 @@ void showSnack(
       if (identical(_current, entry)) _current = null;
     },
     alignment: FToastAlignment.bottomCenter,
-    duration: const Duration(seconds: 4),
+    duration: duration,
     builder: (context, entry) => FToast(
       title: Text(text),
       description: description == null ? null : Text(description),

@@ -1266,4 +1266,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountOpenOrders =>
       'You have open sales or purchases. Complete or cancel them before deleting your account.';
+
+  @override
+  String get newVersionTitle => 'New version available';
+
+  @override
+  String get newVersionBody =>
+      'Reload the page to get the latest version of Stubswap.';
+
+  @override
+  String get reload => 'Reload';
 }

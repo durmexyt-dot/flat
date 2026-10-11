@@ -296,7 +296,7 @@ test('payout method: only a well-formed IBAN, only the owner', async () => {
 test('support requests: own email, limited size, no reading others', async () => {
   const req = (over = {}) => ({
     number: 'SUP-ABC234', uid: 'eve', email: 'eve@test.ba', topic: 'order',
-    reference: 'SSW-TEST01', message: 'Help', status: 'open', createdAt: serverTimestamp(), ...over,
+    reference: 'SSW-TEST01', message: 'Help', appVersion: '1.1.0 (7 · abc1234)', status: 'open', createdAt: serverTimestamp(), ...over,
   });
   const fs = db('eve');
   await assertSucceeds(setDoc(doc(fs, 'supportRequests/s1'), req()));
@@ -304,6 +304,7 @@ test('support requests: own email, limited size, no reading others', async () =>
   await assertFails(setDoc(doc(fs, 'supportRequests/s3'), req({ message: 'x'.repeat(2001) })));
   await assertFails(setDoc(doc(fs, 'supportRequests/s4'), req({ status: 'resolved' })));
   await assertFails(setDoc(doc(fs, 'supportRequests/s5'), req({ uid: 'amra' })));
+  await assertFails(setDoc(doc(fs, 'supportRequests/s6'), req({ appVersion: 'x'.repeat(61) })));
   await assertFails(getDoc(doc(db('amra'), 'supportRequests/s1')));
   await assertFails(updateDoc(doc(fs, 'supportRequests/s1'), { status: 'resolved' }));
 });

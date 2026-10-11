@@ -551,5 +551,8 @@
   "changeIban": "Promijeni IBAN",
   "keepCurrentIban": "Zadrži sačuvani IBAN",
   "ibanHint": "npr. BA39 1290 0794 0102 8494",
-  "deleteAccountOpenOrders": "Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa."
+  "deleteAccountOpenOrders": "Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa.",
+  "newVersionTitle": "Nova verzija je dostupna",
+  "newVersionBody": "Osvježi stranicu za najnoviju verziju Stubswapa.",
+  "reload": "Osvježi"
 }

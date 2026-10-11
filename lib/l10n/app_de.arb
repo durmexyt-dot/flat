@@ -386,5 +386,8 @@
   "changeIban": "IBAN ändern",
   "keepCurrentIban": "Gespeicherte IBAN behalten",
   "ibanHint": "z. B. BA39 1290 0794 0102 8494",
-  "deleteAccountOpenOrders": "Du hast offene Verkäufe oder Käufe. Schließe sie ab oder storniere sie, bevor du dein Konto löschst."
+  "deleteAccountOpenOrders": "Du hast offene Verkäufe oder Käufe. Schließe sie ab oder storniere sie, bevor du dein Konto löschst.",
+  "newVersionTitle": "Neue Version verfügbar",
+  "newVersionBody": "Lade die Seite neu für die neueste Version von Stubswap.",
+  "reload": "Neu laden"
 }

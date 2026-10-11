@@ -386,5 +386,8 @@
   "changeIban": "Change IBAN",
   "keepCurrentIban": "Keep the saved IBAN",
   "ibanHint": "e.g. BA39 1290 0794 0102 8494",
-  "deleteAccountOpenOrders": "You have open sales or purchases. Complete or cancel them before deleting your account."
+  "deleteAccountOpenOrders": "You have open sales or purchases. Complete or cancel them before deleting your account.",
+  "newVersionTitle": "New version available",
+  "newVersionBody": "Reload the page to get the latest version of Stubswap.",
+  "reload": "Reload"
 }

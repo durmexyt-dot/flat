@@ -5,7 +5,9 @@ import 'package:forui/forui.dart';
 
 import '../l10n/app_localizations.dart';
 import 'data/repositories.dart';
+import 'config/app_info.dart';
 import 'notifications/live_alerts.dart';
+import 'notifications/update_notifier.dart';
 import 'router.dart';
 import 'settings/settings_controller.dart';
 import 'ui/forui_theme.dart';
@@ -49,7 +51,11 @@ class FlatApp extends ConsumerWidget {
             motion: const FThemeMotion(duration: Duration(milliseconds: 300)),
             child: FToaster(
               key: toasterKey,
-              child: FTooltipGroup(child: LiveAlerts(child: child!)),
+              child: FTooltipGroup(
+                child: UpdateNotifier(
+                  child: LiveAlerts(child: _StagingBanner(child: child!)),
+                ),
+              ),
             ),
           ),
         );
@@ -64,6 +70,30 @@ class FlatApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: router,
+    );
+  }
+}
+
+/// Marks staging builds, so test and real data are never mixed up.
+class _StagingBanner extends StatelessWidget {
+  const _StagingBanner({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (AppInfo.isProd) return child;
+    return Banner(
+      message: 'STAGING',
+      location: BannerLocation.topEnd,
+      color: const Color(0xFFE0A100),
+      textStyle: const TextStyle(
+        color: Color(0xFF1B1B1B),
+        fontSize: 10,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1,
+      ),
+      child: child,
     );
   }
 }

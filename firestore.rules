@@ -325,7 +325,8 @@ service cloud.firestore {
     match /supportRequests/{id} {
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['number', 'uid', 'email', 'topic',
-            'reference', 'message', 'status', 'createdAt'])
+            'reference', 'message', 'appVersion', 'status', 'createdAt'])
+        && optStr(request.resource.data, 'appVersion', 60)
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.email
         && request.resource.data.number.matches('^SUP-[A-Z0-9]{6}$')
