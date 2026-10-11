@@ -9,6 +9,7 @@ import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../events/event_image.dart';
+import '../events/event_status_badge.dart';
 import '../ui/app_style.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
@@ -100,11 +101,35 @@ class _EventBanner extends ConsumerWidget {
           child: visible
               ? Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: EventImage(
-                    event: event,
-                    borderRadius: BorderRadius.circular(
-                      AppStyle.of(context).cardRadius,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      EventImage(
+                        event: event,
+                        borderRadius: BorderRadius.circular(
+                          AppStyle.of(context).cardRadius,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          EventCategoryBadge(event),
+                          EventStatusBadge(event),
+                        ],
+                      ),
+                      if (event.pending) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          l10n.eventStatusPendingInfo,
+                          style: context.theme.typography.body.xs.copyWith(
+                            color: context.theme.colors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 )
               : const SizedBox(width: double.infinity),

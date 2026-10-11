@@ -10,6 +10,300 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get eventsUserDateTooFar => 'The date can be at most two years ahead';
+
+  @override
+  String get homeCityPick => 'Choose a city';
+
+  @override
+  String get homeCitySearch => 'Search cities';
+
+  @override
+  String homeCityUseTyped(String city) {
+    return 'Use “$city”';
+  }
+
+  @override
+  String get homeCityUseLocation => 'Use my location';
+
+  @override
+  String get homeCityLocationUnavailable =>
+      'Location isn’t available. Please choose a city.';
+
+  @override
+  String get homeCityClear => 'Remove';
+
+  @override
+  String get homeCityFromLocation => 'Based on your location';
+
+  @override
+  String get homeCityMostEvents => 'City with the most events';
+
+  @override
+  String get homeAllTypes => 'All types';
+
+  @override
+  String get homeRecentlyViewed => 'Recently viewed';
+
+  @override
+  String get homePopular => 'Popular events';
+
+  @override
+  String get homeRecommended => 'Recommended for you';
+
+  @override
+  String homeNearby(String city) {
+    return 'Happening near $city';
+  }
+
+  @override
+  String get homeNearbyChange => 'Change';
+
+  @override
+  String get homePopularCategories => 'Popular categories';
+
+  @override
+  String get homeAllEvents => 'All events';
+
+  @override
+  String homeAllEventsOfType(String type) {
+    return 'All events: $type';
+  }
+
+  @override
+  String get homeSearchResults => 'Search results';
+
+  @override
+  String get homeAddEvent => 'Add an event';
+
+  @override
+  String get homeScrollBack => 'Previous';
+
+  @override
+  String get homeScrollForward => 'Next';
+
+  @override
+  String get footerClaim => 'Safe ticket resale – from fans, for fans.';
+
+  @override
+  String get footerCompany => 'Our company';
+
+  @override
+  String get footerQuestions => 'Any questions?';
+
+  @override
+  String footerCopyright(int year) {
+    return '© $year Stubswap';
+  }
+
+  @override
+  String footerVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get infoAboutTitle => 'About us';
+
+  @override
+  String get infoPressTitle => 'Press';
+
+  @override
+  String get infoHowTitle => 'How it works';
+
+  @override
+  String get infoSafetyTitle => 'Buying safely';
+
+  @override
+  String get infoNotFound => 'Page not found';
+
+  @override
+  String get infoNotFoundInfo => 'This page doesn’t exist or has moved.';
+
+  @override
+  String get infoAboutIntro =>
+      'Stubswap is a marketplace where fans in Bosnia and Herzegovina and the region safely resell tickets for concerts, sports, culture and festivals.';
+
+  @override
+  String get infoAboutFansTitle => 'From fans, for fans';
+
+  @override
+  String get infoAboutFansText =>
+      'Can’t make it? Offer your ticket to someone who wants to go instead of letting it go to waste. Sold out? Someone may be selling theirs right now.';
+
+  @override
+  String get infoAboutTrustTitle => 'Safety first';
+
+  @override
+  String get infoAboutTrustText =>
+      'Payments go through Stubswap: sellers are paid only after the event, and our support team helps if something goes wrong.';
+
+  @override
+  String get infoPressIntro =>
+      'Writing about Stubswap? We’re happy to answer media questions.';
+
+  @override
+  String get infoPressFactsTitle => 'In short';
+
+  @override
+  String get infoPressFact1 =>
+      'An online marketplace for ticket resale between fans.';
+
+  @override
+  String get infoPressFact2 =>
+      'Focused on Bosnia and Herzegovina and the region.';
+
+  @override
+  String get infoPressFact3 =>
+      'Available on the web and on mobile, in Bosnian, German and English.';
+
+  @override
+  String get infoPressContactTitle => 'Press contact';
+
+  @override
+  String get infoPressContactText =>
+      'Please send media enquiries through the help center. We’ll get back to you as soon as we can.';
+
+  @override
+  String get infoHowBuyTitle => 'Buying';
+
+  @override
+  String get infoHowBuy1 => 'Find your event and compare offers from fans.';
+
+  @override
+  String get infoHowBuy2 =>
+      'Pay safely – we hold the money until your tickets arrive.';
+
+  @override
+  String get infoHowBuy3 =>
+      'The seller sends you the tickets; follow the status in Purchases & invoices.';
+
+  @override
+  String get infoHowSellTitle => 'Selling';
+
+  @override
+  String get infoSafetyIntro =>
+      'On Stubswap you buy from other fans – and we make sure everything goes right.';
+
+  @override
+  String get infoSafetyPaymentTitle => 'Money held until the event';
+
+  @override
+  String get infoSafetyPaymentText =>
+      'You pay through Stubswap, never directly to the seller. The seller is paid only after the event.';
+
+  @override
+  String get infoSafetySellersTitle => 'Verified sellers';
+
+  @override
+  String get infoSafetySellersText =>
+      'Sellers must verify their email address before they can publish an offer.';
+
+  @override
+  String get infoSafetySupportTitle => 'Support when you need it';
+
+  @override
+  String get infoSafetySupportText =>
+      'If tickets don’t arrive or aren’t valid, contact support – we’ll refund you.';
+
+  @override
+  String get eventStatusConfirmed => 'Confirmed';
+
+  @override
+  String get eventStatusPending => 'Not confirmed';
+
+  @override
+  String get eventStatusHidden => 'Hidden';
+
+  @override
+  String get eventStatusPendingInfo =>
+      'A user added this event and our team hasn\'t checked it yet. You can still buy and sell tickets.';
+
+  @override
+  String get eventsUserNewTitle => 'Add an event';
+
+  @override
+  String get eventsUserInfoTitle => 'Our team will check this event';
+
+  @override
+  String get eventsUserInfo =>
+      'Until then it\'s marked as “Not confirmed”. You can sell tickets for it right away.';
+
+  @override
+  String get eventsUserVerifyFirst =>
+      'Confirm your email address to add events.';
+
+  @override
+  String get eventsUserAdded => 'Event added – awaiting review';
+
+  @override
+  String get eventsUserNotListed => 'Event not listed?';
+
+  @override
+  String get eventsUserAddIt => 'Add it';
+
+  @override
+  String get eventsUserNoneToSellInfo =>
+      'No upcoming events yet. Add your event and sell tickets for it right away.';
+
+  @override
+  String get eventsReviewEdit => 'Edit / review';
+
+  @override
+  String get eventsReviewConfirm => 'Confirm';
+
+  @override
+  String get eventsReviewConfirmTitle => 'Confirm event?';
+
+  @override
+  String get eventsReviewConfirmInfo =>
+      'Check the name, place and date. Everybody will see the event as confirmed.';
+
+  @override
+  String get eventsReviewConfirmedToast => 'Event confirmed';
+
+  @override
+  String eventsReviewTabPending(int count) {
+    return 'To review ($count)';
+  }
+
+  @override
+  String get eventsReviewTabConfirmed => 'Confirmed';
+
+  @override
+  String get eventsReviewTabHidden => 'Hidden';
+
+  @override
+  String get eventsReviewTabPast => 'Past';
+
+  @override
+  String get eventsReviewEmptyPending => 'Nothing to review';
+
+  @override
+  String get eventsReviewEmptyPendingInfo =>
+      'When a user adds an event, it shows up here.';
+
+  @override
+  String get eventsReviewEmpty => 'No events here';
+
+  @override
+  String eventsReviewAddedBy(String who) {
+    return 'Added by: $who';
+  }
+
+  @override
+  String get eventsReviewAddedByYou => 'you';
+
+  @override
+  String get eventsReviewAddedByUser => 'a user';
+
+  @override
+  String get eventsReviewQueue => 'Events to review';
+
+  @override
+  String get eventsReviewNoAccessInfo =>
+      'Only team members can open this page.';
+
+  @override
   String get genreFootball => 'Football';
 
   @override

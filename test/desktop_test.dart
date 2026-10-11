@@ -36,9 +36,12 @@ void main() {
     expect(find.byType(AppBar), findsNothing);
     expect(find.byType(FloatingActionButton), findsNothing);
 
-    final derby = tester.getTopLeft(find.text('FK Sarajevo – FK Željezničar'));
-    final tribute = tester.getTopLeft(find.text('Bijelo Dugme Tribute'));
-    expect(derby.dy, tribute.dy, reason: 'first two events share a row');
+    // The first row (popular events) shows its cards side by side.
+    final derby = tester.getTopLeft(
+      find.text('FK Sarajevo – FK Željezničar').first,
+    );
+    final tribute = tester.getTopLeft(find.text('Bijelo Dugme Tribute').first);
+    expect(derby.dy, tribute.dy, reason: 'popular events share a row');
   });
 
   testWidgets('desktop: account drawer opens and navigates', (tester) async {

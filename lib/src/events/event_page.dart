@@ -4,13 +4,14 @@ import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
-import '../market/labels.dart';
 import '../market/listing_ticket.dart';
 import '../settings/settings_widgets.dart';
+import '../ui/app_dialog.dart';
 import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
@@ -20,9 +21,11 @@ import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import '../ui/snack.dart';
 import 'event_image.dart';
+import 'event_status_badge.dart';
+import 'recently_viewed.dart';
 
 /// One event: picture, details, selling and all offers, cheapest first.
-class EventPage extends ConsumerWidget {
+class EventPage extends ConsumerStatefulWidget {
   const EventPage({super.key, required this.id, this.initial});
 
   final String id;
@@ -31,14 +34,35 @@ class EventPage extends ConsumerWidget {
   final Event? initial;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventPage> createState() => _EventPageState();
+}
+
+class _EventPageState extends ConsumerState<EventPage> {
+  /// The id last remembered as viewed: once per opened event.
+  String? _recorded;
+
+  void _remember() {
+    if (_recorded == widget.id) return;
+    _recorded = widget.id;
+    final id = widget.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(recentlyViewedIdsProvider.notifier).add(id);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _remember();
+    final id = widget.id;
     final l10n = AppLocalizations.of(context);
     final live = ref.watch(eventProvider(id));
-    final event = live.hasValue ? live.value : initial;
+    final event = live.hasValue ? live.value : widget.initial;
     final wide = isWideLayout(context);
+    // The team still sees hidden events, e.g. to show them again.
+    final isStaff = ref.watch(isStaffProvider);
 
     final Widget body;
-    if (event == null || event.hidden) {
+    if (event == null || (event.hidden && !isStaff)) {
       body = AsyncView<Event?>(
         value: live,
         onRetry: () => ref.invalidate(eventProvider(id)),
@@ -121,16 +145,10 @@ class _Details extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        FBadge(
-          variant: FBadgeVariant.secondary,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(categoryIcon(info.category), size: 14),
-              const SizedBox(width: 4),
-              Text(categoryName(l10n, info.category)),
-            ],
-          ),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [EventCategoryBadge(event), EventStatusBadge(event)],
         ),
         const SizedBox(height: 8),
         Text(
@@ -140,6 +158,37 @@ class _Details extends ConsumerWidget {
             color: theme.colors.foreground,
             height: 1.15,
           ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          alignment: Alignment.topCenter,
+          child: event.pending
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Icon(
+                          FLucideIcons.info,
+                          size: 14,
+                          color: theme.colors.mutedForeground,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          l10n.eventStatusPendingInfo,
+                          style: theme.typography.body.sm.copyWith(
+                            color: theme.colors.mutedForeground,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox(width: double.infinity),
         ),
         const SizedBox(height: 12),
         _Fact(
@@ -152,7 +201,9 @@ class _Details extends ConsumerWidget {
         AnimatedSize(
           duration: const Duration(milliseconds: 250),
           alignment: Alignment.topCenter,
-          child: upcoming
+          child: event.hidden
+              ? const SizedBox(width: double.infinity)
+              : upcoming
               ? FButton(
                   onPress: () => _sell(context, ref),
                   prefix: const Icon(FLucideIcons.tag),
@@ -166,9 +217,94 @@ class _Details extends ConsumerWidget {
                   title: Text(l10n.eventsIsOver),
                 ),
         ),
+        if (ref.watch(isStaffProvider)) ...[
+          const SizedBox(height: 8),
+          _TeamActions(event: event),
+        ],
       ],
     );
   }
+}
+
+/// For admins and support accounts: review the event.
+class _TeamActions extends ConsumerWidget {
+  const _TeamActions({required this.event});
+
+  final Event event;
+
+  Future<void> _confirm(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await confirmEventDialog(context);
+    if (!ok) return;
+    try {
+      await ref
+          .read(eventRepositoryProvider)
+          .setStatus(event.id, EventStatus.confirmed);
+      showSnack(l10n.eventsReviewConfirmedToast);
+    } catch (_) {
+      showSnack(l10n.saveError);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        FButton(
+          variant: FButtonVariant.outline,
+          size: FButtonSizeVariant.sm,
+          mainAxisSize: MainAxisSize.min,
+          onPress: () => context.push('/admin/events/${event.id}'),
+          prefix: const Icon(FLucideIcons.squarePen),
+          child: Text(l10n.eventsReviewEdit, overflow: TextOverflow.ellipsis),
+        ),
+        if (event.pending)
+          FButton(
+            variant: FButtonVariant.outline,
+            size: FButtonSizeVariant.sm,
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => _confirm(context, ref),
+            prefix: const Icon(FLucideIcons.badgeCheck),
+            child: Text(
+              l10n.eventsReviewConfirm,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Asks the team member to confirm an event. True when confirmed.
+Future<bool> confirmEventDialog(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  final ok = await showAppDialog<bool>(
+    context: context,
+    title: l10n.eventsReviewConfirmTitle,
+    body: Text(l10n.eventsReviewConfirmInfo),
+    actions: (ctx) => [
+      FButton(
+        variant: FButtonVariant.outline,
+        onPress: () => Navigator.pop(ctx, false),
+        child: Flexible(
+          child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+        ),
+      ),
+      FButton(
+        onPress: () => Navigator.pop(ctx, true),
+        child: Flexible(
+          child: Text(
+            l10n.eventsReviewConfirm,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    ],
+  );
+  return ok == true;
 }
 
 class _Fact extends StatelessWidget {

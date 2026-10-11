@@ -10,6 +10,7 @@ import '../ui/format.dart';
 import '../ui/hero_tags.dart';
 import '../ui/skeleton.dart';
 import 'event_image.dart';
+import 'event_status_badge.dart';
 
 /// An upcoming event on the home page: picture, name, when, where and the
 /// cheapest offer. The picture flies into the event page.
@@ -43,7 +44,19 @@ class EventCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            EventImage(event: event, heroTag: HeroTags.event(event.id)),
+            Stack(
+              children: [
+                EventImage(event: event, heroTag: HeroTags.event(event.id)),
+                // Only unconfirmed events are marked: most are confirmed,
+                // and a badge on every card would be noise.
+                if (!event.confirmed)
+                  PositionedDirectional(
+                    start: 8,
+                    top: 8,
+                    child: EventStatusBadge(event, onImage: true),
+                  ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               child: Column(

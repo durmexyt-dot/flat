@@ -33,20 +33,21 @@ void main() {
   testWidgets('home shows upcoming events with their offers', (tester) async {
     await _signedIn(tester);
 
-    expect(find.text('FK Sarajevo – FK Željezničar'), findsOneWidget);
-    expect(find.text('Dubioza kolektiv'), findsOneWidget);
+    // Events show up in several sections (popular, nearby, all …).
+    expect(find.text('FK Sarajevo – FK Željezničar'), findsWidgets);
+    expect(find.text('Dubioza kolektiv'), findsWidgets);
     // Past events are not offered.
     expect(find.text('Hamlet'), findsNothing);
     // Derby: 6 − 2 tickets from 35,00; Dubioza: 1 of the own listing.
-    expect(find.textContaining('od 35,00'), findsOneWidget);
-    expect(find.textContaining('· 4 karte'), findsOneWidget);
-    expect(find.textContaining('· 1 karta'), findsOneWidget);
+    expect(find.textContaining('od 35,00'), findsWidgets);
+    expect(find.textContaining('· 4 karte'), findsWidgets);
+    expect(find.textContaining('· 1 karta'), findsWidgets);
   });
 
   testWidgets('tapping an event shows its offers', (tester) async {
     await _signedIn(tester);
 
-    await tester.tap(find.text('FK Sarajevo – FK Željezničar'));
+    await tester.tap(find.text('FK Sarajevo – FK Željezničar').first);
     await tester.pumpAndSettle();
     expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -73,7 +74,7 @@ void main() {
     auth.verifyEmail();
     await tester.pumpAndSettle();
 
-    await tapVisible(tester, find.text('Bijelo Dugme Tribute'));
+    await tapVisible(tester, find.text('Bijelo Dugme Tribute').first);
     await tapVisible(tester, find.text('Prodaj karte za ovaj događaj'));
     // Preselected.
     expect(find.text('Bijelo Dugme Tribute'), findsOneWidget);
@@ -108,8 +109,17 @@ void main() {
       admin: InMemoryAdminRepository(roles: {'1': StaffRole.admin}),
     );
     await _go(tester, '/admin/events');
+    // Nothing waits for a check: confirmed upcoming events come first.
+    expect(find.text('Hamlet'), findsNothing);
+    await tester.ensureVisible(find.text('Prošli'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Prošli'));
+    await tester.pumpAndSettle();
     expect(find.text('Hamlet'), findsOneWidget);
-    expect(find.text('Prošao'), findsWidgets);
+    await tester.ensureVisible(find.text('Potvrđeni'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Potvrđeni'));
+    await tester.pumpAndSettle();
 
     await tester.tap(byLabel('Novi događaj').first);
     await tester.pumpAndSettle();

@@ -58,8 +58,13 @@ class _SellPageState extends ConsumerState<SellPage> {
   /// from the event page.
   Event? _selected(List<Event> events) {
     if (!_preselected) {
-      _preselected = true;
-      _event ??= events.where((e) => e.id == widget.eventId).firstOrNull;
+      final match = events.where((e) => e.id == widget.eventId).firstOrNull;
+      // A just added event may reach the list a moment later: keep
+      // looking for it until it's there.
+      if (match != null || widget.eventId == null) {
+        _preselected = true;
+        _event ??= match;
+      }
     }
     final id = _event?.id;
     return events.where((e) => e.id == id).firstOrNull;
@@ -70,6 +75,7 @@ class _SellPageState extends ConsumerState<SellPage> {
       context,
       events: events,
       selectedId: _event?.id,
+      onAddEvent: () => _addEvent(context),
     );
     if (event == null || !mounted) return;
     setState(() {
@@ -446,7 +452,13 @@ class _PayoutRequired extends StatelessWidget {
   }
 }
 
-/// Events come from the Stubswap team; until there is one, nothing to sell.
+/// Adds a missing event: the editor comes back here with it preselected.
+/// It replaces this page, so going back afterwards doesn't land on an
+/// outdated sell form.
+void _addEvent(BuildContext context) =>
+    GoRouter.of(context).pushReplacement('/events/new?sell=1');
+
+/// No upcoming events yet: users can add theirs.
 class _NoEvents extends StatelessWidget {
   const _NoEvents();
 
@@ -458,7 +470,8 @@ class _NoEvents extends StatelessWidget {
         child: EmptyState(
           icon: FLucideIcons.calendarX,
           title: l10n.eventsNoneToSell,
-          message: l10n.eventsNoneToSellInfo,
+          message: l10n.eventsUserNoneToSellInfo,
+          action: AddEventPrompt(onPress: () => _addEvent(context)),
         ),
       ),
     );

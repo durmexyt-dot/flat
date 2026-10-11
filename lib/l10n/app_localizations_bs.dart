@@ -10,6 +10,299 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get eventsUserDateTooFar =>
+      'Datum može biti najviše dvije godine unaprijed';
+
+  @override
+  String get homeCityPick => 'Odaberi grad';
+
+  @override
+  String get homeCitySearch => 'Pretraži gradove';
+
+  @override
+  String homeCityUseTyped(String city) {
+    return 'Koristi „$city”';
+  }
+
+  @override
+  String get homeCityUseLocation => 'Koristi moju lokaciju';
+
+  @override
+  String get homeCityLocationUnavailable =>
+      'Lokacija nije dostupna. Odaberi grad ručno.';
+
+  @override
+  String get homeCityClear => 'Ukloni';
+
+  @override
+  String get homeCityFromLocation => 'Prema tvojoj lokaciji';
+
+  @override
+  String get homeCityMostEvents => 'Grad s najviše događaja';
+
+  @override
+  String get homeAllTypes => 'Svi tipovi';
+
+  @override
+  String get homeRecentlyViewed => 'Nedavno pregledano';
+
+  @override
+  String get homePopular => 'Popularni događaji';
+
+  @override
+  String get homeRecommended => 'Preporučeno za vas';
+
+  @override
+  String homeNearby(String city) {
+    return 'Aktuelno u blizini: $city';
+  }
+
+  @override
+  String get homeNearbyChange => 'Promijeni';
+
+  @override
+  String get homePopularCategories => 'Popularne kategorije';
+
+  @override
+  String get homeAllEvents => 'Svi događaji';
+
+  @override
+  String homeAllEventsOfType(String type) {
+    return 'Svi događaji: $type';
+  }
+
+  @override
+  String get homeSearchResults => 'Rezultati pretrage';
+
+  @override
+  String get homeAddEvent => 'Dodaj događaj';
+
+  @override
+  String get homeScrollBack => 'Prethodni';
+
+  @override
+  String get homeScrollForward => 'Sljedeći';
+
+  @override
+  String get footerClaim => 'Sigurna preprodaja karata – od fanova za fanove.';
+
+  @override
+  String get footerCompany => 'Naša kompanija';
+
+  @override
+  String get footerQuestions => 'Imate pitanja?';
+
+  @override
+  String footerCopyright(int year) {
+    return '© $year Stubswap';
+  }
+
+  @override
+  String footerVersion(String version) {
+    return 'Verzija $version';
+  }
+
+  @override
+  String get infoAboutTitle => 'O nama';
+
+  @override
+  String get infoPressTitle => 'Press';
+
+  @override
+  String get infoHowTitle => 'Kako funkcioniše';
+
+  @override
+  String get infoSafetyTitle => 'Sigurnost kupovine';
+
+  @override
+  String get infoNotFound => 'Stranica nije pronađena';
+
+  @override
+  String get infoNotFoundInfo => 'Ova stranica ne postoji ili je premještena.';
+
+  @override
+  String get infoAboutIntro =>
+      'Stubswap je tržište na kojem fanovi u Bosni i Hercegovini i regionu sigurno preprodaju karte za koncerte, sport, kulturu i festivale.';
+
+  @override
+  String get infoAboutFansTitle => 'Od fanova za fanove';
+
+  @override
+  String get infoAboutFansText =>
+      'Ne možeš na događaj? Ponudi kartu nekome ko želi ići, umjesto da propadne. Rasprodano? Možda neko upravo prodaje svoju.';
+
+  @override
+  String get infoAboutTrustTitle => 'Sigurnost na prvom mjestu';
+
+  @override
+  String get infoAboutTrustText =>
+      'Plaćanje ide preko Stubswapa: prodavac dobija novac tek nakon događaja, a naša podrška pomaže ako nešto nije u redu.';
+
+  @override
+  String get infoPressIntro =>
+      'Pišete o Stubswapu? Rado odgovaramo na pitanja medija.';
+
+  @override
+  String get infoPressFactsTitle => 'Ukratko';
+
+  @override
+  String get infoPressFact1 =>
+      'Online tržište za preprodaju karata između fanova.';
+
+  @override
+  String get infoPressFact2 => 'Fokus na Bosnu i Hercegovinu i region.';
+
+  @override
+  String get infoPressFact3 =>
+      'Dostupno na webu i mobilnim uređajima, na bosanskom, njemačkom i engleskom jeziku.';
+
+  @override
+  String get infoPressContactTitle => 'Kontakt za medije';
+
+  @override
+  String get infoPressContactText =>
+      'Upite medija pošaljite preko centra za pomoć. Javit ćemo vam se što prije.';
+
+  @override
+  String get infoHowBuyTitle => 'Kupovina';
+
+  @override
+  String get infoHowBuy1 => 'Pronađi događaj i uporedi ponude fanova.';
+
+  @override
+  String get infoHowBuy2 => 'Plati sigurno – novac čuvamo dok karte ne stignu.';
+
+  @override
+  String get infoHowBuy3 =>
+      'Prodavac ti šalje karte, a status pratiš u Kupovine i računi.';
+
+  @override
+  String get infoHowSellTitle => 'Prodaja';
+
+  @override
+  String get infoSafetyIntro =>
+      'Na Stubswapu kupuješ od drugih fanova – a mi pazimo da sve prođe kako treba.';
+
+  @override
+  String get infoSafetyPaymentTitle => 'Novac čuvamo do događaja';
+
+  @override
+  String get infoSafetyPaymentText =>
+      'Plaćaš preko Stubswapa, nikad direktno prodavcu. Prodavac dobija novac tek nakon događaja.';
+
+  @override
+  String get infoSafetySellersTitle => 'Provjereni prodavci';
+
+  @override
+  String get infoSafetySellersText =>
+      'Prodavci moraju potvrditi svoju e-mail adresu prije nego što objave ponudu.';
+
+  @override
+  String get infoSafetySupportTitle => 'Podrška kad zatreba';
+
+  @override
+  String get infoSafetySupportText =>
+      'Ako karte ne stignu ili nisu važeće, javi se podršci – vraćamo ti novac.';
+
+  @override
+  String get eventStatusConfirmed => 'Potvrđen';
+
+  @override
+  String get eventStatusPending => 'Nije potvrđen';
+
+  @override
+  String get eventStatusHidden => 'Skriven';
+
+  @override
+  String get eventStatusPendingInfo =>
+      'Ovaj događaj je dodao korisnik i tim ga još nije provjerio. Karte možeš kupiti i prodati.';
+
+  @override
+  String get eventsUserNewTitle => 'Dodaj događaj';
+
+  @override
+  String get eventsUserInfoTitle => 'Tim će provjeriti događaj';
+
+  @override
+  String get eventsUserInfo =>
+      'Dok ga ne provjerimo, događaj je označen kao „Nije potvrđen“. Karte za njega možeš prodavati odmah.';
+
+  @override
+  String get eventsUserVerifyFirst =>
+      'Potvrdi e-mail adresu da bi mogao dodavati događaje.';
+
+  @override
+  String get eventsUserAdded => 'Događaj dodan – čeka provjeru';
+
+  @override
+  String get eventsUserNotListed => 'Događaj nije na listi?';
+
+  @override
+  String get eventsUserAddIt => 'Dodaj ga';
+
+  @override
+  String get eventsUserNoneToSellInfo =>
+      'Još nema nadolazećih događaja. Dodaj svoj događaj i odmah prodaj karte za njega.';
+
+  @override
+  String get eventsReviewEdit => 'Uredi / provjeri';
+
+  @override
+  String get eventsReviewConfirm => 'Potvrdi';
+
+  @override
+  String get eventsReviewConfirmTitle => 'Potvrditi događaj?';
+
+  @override
+  String get eventsReviewConfirmInfo =>
+      'Provjeri naziv, mjesto i datum. Događaj će svima biti prikazan kao potvrđen.';
+
+  @override
+  String get eventsReviewConfirmedToast => 'Događaj je potvrđen';
+
+  @override
+  String eventsReviewTabPending(int count) {
+    return 'Na provjeri ($count)';
+  }
+
+  @override
+  String get eventsReviewTabConfirmed => 'Potvrđeni';
+
+  @override
+  String get eventsReviewTabHidden => 'Skriveni';
+
+  @override
+  String get eventsReviewTabPast => 'Prošli';
+
+  @override
+  String get eventsReviewEmptyPending => 'Nema događaja na provjeri';
+
+  @override
+  String get eventsReviewEmptyPendingInfo =>
+      'Kad korisnik doda događaj, pojavit će se ovdje.';
+
+  @override
+  String get eventsReviewEmpty => 'Ovdje nema događaja';
+
+  @override
+  String eventsReviewAddedBy(String who) {
+    return 'Dodao: $who';
+  }
+
+  @override
+  String get eventsReviewAddedByYou => 'Ti';
+
+  @override
+  String get eventsReviewAddedByUser => 'Korisnik';
+
+  @override
+  String get eventsReviewQueue => 'Događaji na provjeri';
+
+  @override
+  String get eventsReviewNoAccessInfo =>
+      'Ovu stranicu mogu otvoriti samo članovi tima.';
+
+  @override
   String get genreFootball => 'Fudbal';
 
   @override

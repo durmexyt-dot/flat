@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../settings/settings_widgets.dart';
 import '../support/support_repository.dart';
@@ -26,6 +27,7 @@ class AdminPage extends ConsumerWidget {
         builder: (context) {
           final fees = ref.watch(feeConfigProvider).value;
           final unread = ref.watch(unreadForStaffProvider);
+          final pending = ref.watch(pendingEventsProvider).length;
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
             children: [
@@ -36,6 +38,7 @@ class AdminPage extends ConsumerWidget {
                     icon: FLucideIcons.calendarDays,
                     title: l10n.adminEvents,
                     subtitle: l10n.adminEventsInfo,
+                    trailing: CountPill(count: pending),
                     onTap: () => context.push('/admin/events'),
                   ),
                   SettingsLinkTile(

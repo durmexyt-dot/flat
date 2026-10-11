@@ -100,6 +100,522 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @eventsUserDateTooFar.
+  ///
+  /// In bs, this message translates to:
+  /// **'Datum može biti najviše dvije godine unaprijed'**
+  String get eventsUserDateTooFar;
+
+  /// No description provided for @homeCityPick.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi grad'**
+  String get homeCityPick;
+
+  /// No description provided for @homeCitySearch.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pretraži gradove'**
+  String get homeCitySearch;
+
+  /// No description provided for @homeCityUseTyped.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koristi „{city}”'**
+  String homeCityUseTyped(String city);
+
+  /// No description provided for @homeCityUseLocation.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koristi moju lokaciju'**
+  String get homeCityUseLocation;
+
+  /// No description provided for @homeCityLocationUnavailable.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lokacija nije dostupna. Odaberi grad ručno.'**
+  String get homeCityLocationUnavailable;
+
+  /// No description provided for @homeCityClear.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni'**
+  String get homeCityClear;
+
+  /// No description provided for @homeCityFromLocation.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prema tvojoj lokaciji'**
+  String get homeCityFromLocation;
+
+  /// No description provided for @homeCityMostEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Grad s najviše događaja'**
+  String get homeCityMostEvents;
+
+  /// No description provided for @homeAllTypes.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi tipovi'**
+  String get homeAllTypes;
+
+  /// No description provided for @homeRecentlyViewed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nedavno pregledano'**
+  String get homeRecentlyViewed;
+
+  /// No description provided for @homePopular.
+  ///
+  /// In bs, this message translates to:
+  /// **'Popularni događaji'**
+  String get homePopular;
+
+  /// No description provided for @homeRecommended.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preporučeno za vas'**
+  String get homeRecommended;
+
+  /// No description provided for @homeNearby.
+  ///
+  /// In bs, this message translates to:
+  /// **'Aktuelno u blizini: {city}'**
+  String homeNearby(String city);
+
+  /// No description provided for @homeNearbyChange.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni'**
+  String get homeNearbyChange;
+
+  /// No description provided for @homePopularCategories.
+  ///
+  /// In bs, this message translates to:
+  /// **'Popularne kategorije'**
+  String get homePopularCategories;
+
+  /// No description provided for @homeAllEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi događaji'**
+  String get homeAllEvents;
+
+  /// No description provided for @homeAllEventsOfType.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi događaji: {type}'**
+  String homeAllEventsOfType(String type);
+
+  /// No description provided for @homeSearchResults.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rezultati pretrage'**
+  String get homeSearchResults;
+
+  /// No description provided for @homeAddEvent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj događaj'**
+  String get homeAddEvent;
+
+  /// No description provided for @homeScrollBack.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prethodni'**
+  String get homeScrollBack;
+
+  /// No description provided for @homeScrollForward.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sljedeći'**
+  String get homeScrollForward;
+
+  /// No description provided for @footerClaim.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sigurna preprodaja karata – od fanova za fanove.'**
+  String get footerClaim;
+
+  /// No description provided for @footerCompany.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naša kompanija'**
+  String get footerCompany;
+
+  /// No description provided for @footerQuestions.
+  ///
+  /// In bs, this message translates to:
+  /// **'Imate pitanja?'**
+  String get footerQuestions;
+
+  /// No description provided for @footerCopyright.
+  ///
+  /// In bs, this message translates to:
+  /// **'© {year} Stubswap'**
+  String footerCopyright(int year);
+
+  /// No description provided for @footerVersion.
+  ///
+  /// In bs, this message translates to:
+  /// **'Verzija {version}'**
+  String footerVersion(String version);
+
+  /// No description provided for @infoAboutTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'O nama'**
+  String get infoAboutTitle;
+
+  /// No description provided for @infoPressTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Press'**
+  String get infoPressTitle;
+
+  /// No description provided for @infoHowTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kako funkcioniše'**
+  String get infoHowTitle;
+
+  /// No description provided for @infoSafetyTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sigurnost kupovine'**
+  String get infoSafetyTitle;
+
+  /// No description provided for @infoNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stranica nije pronađena'**
+  String get infoNotFound;
+
+  /// No description provided for @infoNotFoundInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova stranica ne postoji ili je premještena.'**
+  String get infoNotFoundInfo;
+
+  /// No description provided for @infoAboutIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stubswap je tržište na kojem fanovi u Bosni i Hercegovini i regionu sigurno preprodaju karte za koncerte, sport, kulturu i festivale.'**
+  String get infoAboutIntro;
+
+  /// No description provided for @infoAboutFansTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Od fanova za fanove'**
+  String get infoAboutFansTitle;
+
+  /// No description provided for @infoAboutFansText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ne možeš na događaj? Ponudi kartu nekome ko želi ići, umjesto da propadne. Rasprodano? Možda neko upravo prodaje svoju.'**
+  String get infoAboutFansText;
+
+  /// No description provided for @infoAboutTrustTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sigurnost na prvom mjestu'**
+  String get infoAboutTrustTitle;
+
+  /// No description provided for @infoAboutTrustText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje ide preko Stubswapa: prodavac dobija novac tek nakon događaja, a naša podrška pomaže ako nešto nije u redu.'**
+  String get infoAboutTrustText;
+
+  /// No description provided for @infoPressIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pišete o Stubswapu? Rado odgovaramo na pitanja medija.'**
+  String get infoPressIntro;
+
+  /// No description provided for @infoPressFactsTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukratko'**
+  String get infoPressFactsTitle;
+
+  /// No description provided for @infoPressFact1.
+  ///
+  /// In bs, this message translates to:
+  /// **'Online tržište za preprodaju karata između fanova.'**
+  String get infoPressFact1;
+
+  /// No description provided for @infoPressFact2.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fokus na Bosnu i Hercegovinu i region.'**
+  String get infoPressFact2;
+
+  /// No description provided for @infoPressFact3.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dostupno na webu i mobilnim uređajima, na bosanskom, njemačkom i engleskom jeziku.'**
+  String get infoPressFact3;
+
+  /// No description provided for @infoPressContactTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kontakt za medije'**
+  String get infoPressContactTitle;
+
+  /// No description provided for @infoPressContactText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upite medija pošaljite preko centra za pomoć. Javit ćemo vam se što prije.'**
+  String get infoPressContactText;
+
+  /// No description provided for @infoHowBuyTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupovina'**
+  String get infoHowBuyTitle;
+
+  /// No description provided for @infoHowBuy1.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pronađi događaj i uporedi ponude fanova.'**
+  String get infoHowBuy1;
+
+  /// No description provided for @infoHowBuy2.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plati sigurno – novac čuvamo dok karte ne stignu.'**
+  String get infoHowBuy2;
+
+  /// No description provided for @infoHowBuy3.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac ti šalje karte, a status pratiš u Kupovine i računi.'**
+  String get infoHowBuy3;
+
+  /// No description provided for @infoHowSellTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja'**
+  String get infoHowSellTitle;
+
+  /// No description provided for @infoSafetyIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Na Stubswapu kupuješ od drugih fanova – a mi pazimo da sve prođe kako treba.'**
+  String get infoSafetyIntro;
+
+  /// No description provided for @infoSafetyPaymentTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac čuvamo do događaja'**
+  String get infoSafetyPaymentTitle;
+
+  /// No description provided for @infoSafetyPaymentText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćaš preko Stubswapa, nikad direktno prodavcu. Prodavac dobija novac tek nakon događaja.'**
+  String get infoSafetyPaymentText;
+
+  /// No description provided for @infoSafetySellersTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjereni prodavci'**
+  String get infoSafetySellersTitle;
+
+  /// No description provided for @infoSafetySellersText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavci moraju potvrditi svoju e-mail adresu prije nego što objave ponudu.'**
+  String get infoSafetySellersText;
+
+  /// No description provided for @infoSafetySupportTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podrška kad zatreba'**
+  String get infoSafetySupportTitle;
+
+  /// No description provided for @infoSafetySupportText.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ako karte ne stignu ili nisu važeće, javi se podršci – vraćamo ti novac.'**
+  String get infoSafetySupportText;
+
+  /// No description provided for @eventStatusConfirmed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrđen'**
+  String get eventStatusConfirmed;
+
+  /// No description provided for @eventStatusPending.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nije potvrđen'**
+  String get eventStatusPending;
+
+  /// No description provided for @eventStatusHidden.
+  ///
+  /// In bs, this message translates to:
+  /// **'Skriven'**
+  String get eventStatusHidden;
+
+  /// No description provided for @eventStatusPendingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovaj događaj je dodao korisnik i tim ga još nije provjerio. Karte možeš kupiti i prodati.'**
+  String get eventStatusPendingInfo;
+
+  /// No description provided for @eventsUserNewTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj događaj'**
+  String get eventsUserNewTitle;
+
+  /// No description provided for @eventsUserInfoTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tim će provjeriti događaj'**
+  String get eventsUserInfoTitle;
+
+  /// No description provided for @eventsUserInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dok ga ne provjerimo, događaj je označen kao „Nije potvrđen“. Karte za njega možeš prodavati odmah.'**
+  String get eventsUserInfo;
+
+  /// No description provided for @eventsUserVerifyFirst.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi e-mail adresu da bi mogao dodavati događaje.'**
+  String get eventsUserVerifyFirst;
+
+  /// No description provided for @eventsUserAdded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj dodan – čeka provjeru'**
+  String get eventsUserAdded;
+
+  /// No description provided for @eventsUserNotListed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj nije na listi?'**
+  String get eventsUserNotListed;
+
+  /// No description provided for @eventsUserAddIt.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj ga'**
+  String get eventsUserAddIt;
+
+  /// No description provided for @eventsUserNoneToSellInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema nadolazećih događaja. Dodaj svoj događaj i odmah prodaj karte za njega.'**
+  String get eventsUserNoneToSellInfo;
+
+  /// No description provided for @eventsReviewEdit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uredi / provjeri'**
+  String get eventsReviewEdit;
+
+  /// No description provided for @eventsReviewConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi'**
+  String get eventsReviewConfirm;
+
+  /// No description provided for @eventsReviewConfirmTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrditi događaj?'**
+  String get eventsReviewConfirmTitle;
+
+  /// No description provided for @eventsReviewConfirmInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjeri naziv, mjesto i datum. Događaj će svima biti prikazan kao potvrđen.'**
+  String get eventsReviewConfirmInfo;
+
+  /// No description provided for @eventsReviewConfirmedToast.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je potvrđen'**
+  String get eventsReviewConfirmedToast;
+
+  /// No description provided for @eventsReviewTabPending.
+  ///
+  /// In bs, this message translates to:
+  /// **'Na provjeri ({count})'**
+  String eventsReviewTabPending(int count);
+
+  /// No description provided for @eventsReviewTabConfirmed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrđeni'**
+  String get eventsReviewTabConfirmed;
+
+  /// No description provided for @eventsReviewTabHidden.
+  ///
+  /// In bs, this message translates to:
+  /// **'Skriveni'**
+  String get eventsReviewTabHidden;
+
+  /// No description provided for @eventsReviewTabPast.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prošli'**
+  String get eventsReviewTabPast;
+
+  /// No description provided for @eventsReviewEmptyPending.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema događaja na provjeri'**
+  String get eventsReviewEmptyPending;
+
+  /// No description provided for @eventsReviewEmptyPendingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kad korisnik doda događaj, pojavit će se ovdje.'**
+  String get eventsReviewEmptyPendingInfo;
+
+  /// No description provided for @eventsReviewEmpty.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovdje nema događaja'**
+  String get eventsReviewEmpty;
+
+  /// No description provided for @eventsReviewAddedBy.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodao: {who}'**
+  String eventsReviewAddedBy(String who);
+
+  /// No description provided for @eventsReviewAddedByYou.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ti'**
+  String get eventsReviewAddedByYou;
+
+  /// No description provided for @eventsReviewAddedByUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik'**
+  String get eventsReviewAddedByUser;
+
+  /// No description provided for @eventsReviewQueue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaji na provjeri'**
+  String get eventsReviewQueue;
+
+  /// No description provided for @eventsReviewNoAccessInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovu stranicu mogu otvoriti samo članovi tima.'**
+  String get eventsReviewNoAccessInfo;
+
   /// No description provided for @genreFootball.
   ///
   /// In bs, this message translates to:

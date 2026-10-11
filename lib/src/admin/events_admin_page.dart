@@ -7,21 +7,43 @@ import '../../l10n/app_localizations.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../events/event_picker.dart';
-import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
+import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import 'admin_repository.dart';
 
-/// Admins manage events here: upcoming first, then past ones.
-class EventsAdminPage extends ConsumerWidget {
+/// Which events the team's list shows.
+enum EventsFilter { pending, confirmed, hidden, past }
+
+/// Whether [e] belongs under [filter]. Events waiting for a check stay
+/// under "pending" whatever their date, so nothing slips through.
+bool eventMatches(Event e, EventsFilter filter) => switch (filter) {
+  EventsFilter.pending => e.pending,
+  EventsFilter.confirmed => e.confirmed && e.isUpcoming,
+  EventsFilter.hidden => e.hidden,
+  EventsFilter.past => e.confirmed && !e.isUpcoming,
+};
+
+/// The team (admins and support accounts) reviews events here: those users
+/// added and that wait for a check first, then confirmed, hidden and past
+/// ones.
+class EventsAdminPage extends ConsumerStatefulWidget {
   const EventsAdminPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventsAdminPage> createState() => _EventsAdminPageState();
+}
+
+class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
+  /// Events to check come first, if there are any.
+  EventsFilter? _filter;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final role = ref.watch(staffRoleProvider);
-    final isAdmin = ref.watch(isAdminProvider);
+    final isStaff = ref.watch(isStaffProvider);
     final wide = isWideLayout(context);
     void create() => context.push('/admin/events/new');
 
@@ -30,7 +52,7 @@ class EventsAdminPage extends ConsumerWidget {
       maxWidth: SiteWidth.full,
       accountNav: true,
       actions: [
-        if (isAdmin)
+        if (isStaff)
           wide
               ? FButton(
                   mainAxisSize: MainAxisSize.min,
@@ -46,7 +68,7 @@ class EventsAdminPage extends ConsumerWidget {
       ],
       body: !role.hasValue && !role.hasError
           ? const SkeletonTicketList(count: 4)
-          : !isAdmin
+          : !isStaff
           ? const EventsNoAccess()
           : AsyncView<List<Event>>(
               value: ref.watch(allEventsProvider),
@@ -73,67 +95,96 @@ class EventsAdminPage extends ConsumerWidget {
                     ),
                   );
                 }
-                final upcoming = [
-                  for (final e in all)
-                    if (e.isUpcoming) e,
-                ];
-                // Most recent past events first.
-                final past = [
-                  for (final e in all.reversed)
-                    if (!e.isUpcoming) e,
-                ];
-                return ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                  children: [
-                    if (upcoming.isNotEmpty) ...[
-                      SettingsSectionTitle(l10n.eventsUpcomingSection),
-                      for (final e in upcoming) _row(context, e),
-                    ],
-                    if (past.isNotEmpty) ...[
-                      SettingsSectionTitle(l10n.eventsPastSection),
-                      for (final e in past) _row(context, e),
-                    ],
-                  ],
-                );
+                return _list(context, all);
               },
             ),
     );
   }
 
-  Widget _row(BuildContext context, Event e) {
+  Widget _list(BuildContext context, List<Event> all) {
     final l10n = AppLocalizations.of(context);
+    final pendingCount = all.where((e) => e.pending).length;
+    // Decided once, when the events first load: confirming the last event
+    // to check doesn't switch the list away under the reviewer.
+    final filter = _filter ??= pendingCount > 0
+        ? EventsFilter.pending
+        : EventsFilter.confirmed;
+    final shown = [
+      for (final e in all)
+        if (eventMatches(e, filter)) e,
+    ];
+    // Most recent past events first; everything else soonest first.
+    final ordered = filter == EventsFilter.past
+        ? shown.reversed.toList()
+        : shown;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Segmented<EventsFilter>(
+            values: EventsFilter.values,
+            selected: filter,
+            scrollable: true,
+            label: (f) => switch (f) {
+              EventsFilter.pending => l10n.eventsReviewTabPending(pendingCount),
+              EventsFilter.confirmed => l10n.eventsReviewTabConfirmed,
+              EventsFilter.hidden => l10n.eventsReviewTabHidden,
+              EventsFilter.past => l10n.eventsReviewTabPast,
+            },
+            onChanged: (f) => setState(() => _filter = f),
+          ),
+        ),
+        Expanded(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: ordered.isEmpty
+                ? Center(
+                    key: ValueKey('empty-$filter'),
+                    child: SingleChildScrollView(
+                      child: EmptyState(
+                        icon: filter == EventsFilter.pending
+                            ? FLucideIcons.badgeCheck
+                            : FLucideIcons.calendarX,
+                        title: filter == EventsFilter.pending
+                            ? l10n.eventsReviewEmptyPending
+                            : l10n.eventsReviewEmpty,
+                        message: filter == EventsFilter.pending
+                            ? l10n.eventsReviewEmptyPendingInfo
+                            : null,
+                      ),
+                    ),
+                  )
+                : ListView(
+                    key: ValueKey(filter),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                    children: [for (final e in ordered) _row(context, e)],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _row(BuildContext context, Event e) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: EventRow(
         event: e,
+        showConfirmed: true,
         onTap: () => context.push('/admin/events/${e.id}'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 6,
-          children: [
-            if (e.hidden)
-              FBadge(
-                variant: FBadgeVariant.outline,
-                child: Text(l10n.eventsHiddenBadge),
-              ),
-            if (!e.isUpcoming)
-              FBadge(
-                variant: FBadgeVariant.secondary,
-                child: Text(l10n.eventsPastBadge),
-              ),
-            Icon(
-              FLucideIcons.chevronRight,
-              size: 16,
-              color: context.theme.colors.mutedForeground,
-            ),
-          ],
+        trailing: Icon(
+          FLucideIcons.chevronRight,
+          size: 16,
+          color: context.theme.colors.mutedForeground,
         ),
       ),
     );
   }
 }
 
-/// Shown to everybody who isn't an admin.
+/// Shown to everybody who isn't in the team.
 class EventsNoAccess extends StatelessWidget {
   const EventsNoAccess({super.key});
 
@@ -145,7 +196,7 @@ class EventsNoAccess extends StatelessWidget {
         child: EmptyState(
           icon: FLucideIcons.shieldOff,
           title: l10n.eventsAdminNoAccess,
-          message: l10n.eventsAdminNoAccessInfo,
+          message: l10n.eventsReviewNoAccessInfo,
         ),
       ),
     );

@@ -400,3 +400,17 @@ InMemoryEventRepository buildSampleEvents({DateTime? now}) {
     ],
   );
 }
+
+/// The sample events as a list, e.g. to add more before building an
+/// [InMemoryEventRepository].
+List<Event> sampleEventList({DateTime? now}) {
+  final t = now ?? DateTime.now();
+  return [
+    for (final MapEntry(:key, :value) in _sampleEventMaps(t).entries)
+      Event(
+        id: key,
+        info: EventInfo.fromMap(value),
+        createdAt: DateTime(t.year, t.month, t.day - 30),
+      ),
+  ];
+}

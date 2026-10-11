@@ -9,6 +9,7 @@ import '../admin/admin_page.dart';
 import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
+import '../data/events_repository.dart';
 import '../data/repositories.dart';
 import '../support/support_repository.dart';
 import '../ui/app_dialog.dart';
@@ -38,6 +39,7 @@ class SettingsPage extends ConsumerWidget {
     final isStaff = user != null && ref.watch(isStaffProvider);
     final isAdmin = user != null && ref.watch(isAdminProvider);
     final staffUnread = isStaff ? ref.watch(unreadForStaffProvider) : 0;
+    final pendingEvents = isStaff ? ref.watch(pendingEventsProvider).length : 0;
     final supportAnswers = user == null
         ? 0
         : ref.watch(unreadSupportAnswersProvider);
@@ -148,6 +150,14 @@ class SettingsPage extends ConsumerWidget {
               title: l10n.adminSupportInbox,
               trailing: staffUnread > 0 ? CountPill(count: staffUnread) : null,
               onTap: () => context.push('/admin/support'),
+            ),
+            SettingsLinkTile(
+              icon: FLucideIcons.calendarClock,
+              title: l10n.eventsReviewQueue,
+              trailing: pendingEvents > 0
+                  ? CountPill(count: pendingEvents)
+                  : null,
+              onTap: () => context.push('/admin/events'),
             ),
             if (isAdmin)
               SettingsLinkTile(

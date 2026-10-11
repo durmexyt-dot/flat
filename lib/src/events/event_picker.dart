@@ -9,6 +9,7 @@ import '../ui/async_view.dart';
 import '../ui/format.dart';
 import 'event_card.dart';
 import 'event_image.dart';
+import 'event_status_badge.dart';
 
 /// A sheet with a search field and the given events. Returns the chosen
 /// one, or null if dismissed.
@@ -16,19 +17,31 @@ Future<Event?> showEventPicker(
   BuildContext context, {
   required List<Event> events,
   String? selectedId,
+  VoidCallback? onAddEvent,
 }) => showFSheet<Event>(
   context: context,
   side: FLayout.btt,
   mainAxisMaxRatio: 0.85,
   constraints: const BoxConstraints(maxWidth: 640),
-  builder: (_) => _EventPickerSheet(events: events, selectedId: selectedId),
+  builder: (_) => _EventPickerSheet(
+    events: events,
+    selectedId: selectedId,
+    onAddEvent: onAddEvent,
+  ),
 );
 
 class _EventPickerSheet extends StatefulWidget {
-  const _EventPickerSheet({required this.events, this.selectedId});
+  const _EventPickerSheet({
+    required this.events,
+    this.selectedId,
+    this.onAddEvent,
+  });
 
   final List<Event> events;
   final String? selectedId;
+
+  /// Shows "Event not listed? Add it"; called after the sheet closes.
+  final VoidCallback? onAddEvent;
 
   @override
   State<_EventPickerSheet> createState() => _EventPickerSheetState();
@@ -122,10 +135,53 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
                         ),
                 ),
               ),
+              if (widget.onAddEvent != null) ...[
+                const SizedBox(height: 4),
+                AddEventPrompt(
+                  onPress: () {
+                    Navigator.pop(context);
+                    widget.onAddEvent!();
+                  },
+                ),
+              ],
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "Event not listed? Add it": leads users to add a missing event.
+class AddEventPrompt extends StatelessWidget {
+  const AddEventPrompt({super.key, required this.onPress});
+
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
+      children: [
+        Text(
+          l10n.eventsUserNotListed,
+          style: theme.typography.body.sm.copyWith(
+            color: theme.colors.mutedForeground,
+          ),
+        ),
+        FButton(
+          variant: FButtonVariant.ghost,
+          size: FButtonSizeVariant.sm,
+          mainAxisSize: MainAxisSize.min,
+          onPress: onPress,
+          prefix: const Icon(FLucideIcons.calendarPlus),
+          child: Text(l10n.eventsUserAddIt, overflow: TextOverflow.ellipsis),
+        ),
+      ],
     );
   }
 }
@@ -138,10 +194,18 @@ class EventRow extends StatelessWidget {
     this.selected = false,
     this.trailing,
     this.onTap,
+    this.showStatus = true,
+    this.showConfirmed = false,
   });
 
   final Event event;
   final bool selected;
+
+  /// Marks events that aren't confirmed (confirmed ones stay unmarked).
+  final bool showStatus;
+
+  /// Marks confirmed events too, e.g. in the team's list.
+  final bool showConfirmed;
   final Widget? trailing;
   final VoidCallback? onTap;
 
@@ -201,6 +265,10 @@ class EventRow extends StatelessWidget {
                       color: colors.mutedForeground,
                     ),
                   ),
+                  if (showStatus && (showConfirmed || !event.confirmed)) ...[
+                    const SizedBox(height: 4),
+                    EventStatusBadge(event),
+                  ],
                 ],
               ),
             ),

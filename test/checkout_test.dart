@@ -42,7 +42,7 @@ Future<void> _toCheckout(WidgetTester tester, {int quantity = 4}) async {
   await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
   await tester.pumpAndSettle();
   // Home shows the event; its page lists the offer.
-  await tester.tap(find.text('Sarajevo Jazz Festival'));
+  await tester.tap(find.text('Sarajevo Jazz Festival').first);
   await tester.pumpAndSettle();
   await tapVisible(
     tester,

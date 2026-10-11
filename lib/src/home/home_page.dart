@@ -12,15 +12,23 @@ import '../brand/brand.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
+import '../events/genres.dart';
+import '../events/recently_viewed.dart';
+import '../location/location_controller.dart';
 import '../market/labels.dart';
 import '../ui/app_style.dart';
 import '../ui/async_view.dart';
+import '../ui/segmented.dart';
+import '../ui/site_footer.dart';
 import '../ui/site_scaffold.dart';
-import '../ui/skeleton.dart';
 import '../ui/snack.dart';
-import '../events/event_card.dart';
+import 'city_picker.dart';
+import 'event_row.dart';
+import 'home_sections.dart';
 
-/// Event discovery: upcoming events with their offers. Open to guests too.
+/// Event discovery: filters by city and type, rows of recently viewed,
+/// popular, recommended and nearby events, popular categories and all
+/// events. Open to guests too.
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -30,7 +38,13 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   final _search = TextEditingController();
-  EventCategory? _category;
+
+  /// The chosen event type; null for all.
+  EventCategory? _type;
+
+  /// The section whose card was opened last: only its pictures fly, as an
+  /// event can be in several sections.
+  String? _heroSection;
 
   @override
   void initState() {
@@ -48,21 +62,27 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.dispose();
   }
 
-  bool _matches(Event e) {
-    if (_category != null && e.info.category != _category) return false;
+  bool _matches(AppLocalizations l10n, Event e) {
     final q = _search.text.trim().toLowerCase();
     if (q.isEmpty) return true;
     return [
       e.info.name,
       e.info.venue,
       e.info.city,
+      if (e.genre.isNotEmpty) genreName(l10n, e.genre),
     ].any((s) => s.toLowerCase().contains(q));
   }
 
-  void _sell() {
+  void _open(String section, Event e) {
+    setState(() => _heroSection = section);
+    context.push('/event/${e.id}', extra: e);
+  }
+
+  /// Signed-in users go to [path]; guests are asked to sign in.
+  void _signedInOnly(String path) {
     final l10n = AppLocalizations.of(context);
     if (ref.read(currentUidProvider) != null) {
-      context.push('/sell');
+      context.push(path);
       return;
     }
     showSnack(
@@ -76,6 +96,17 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final wide = isWideLayout(context);
+    final events = ref.watch(upcomingEventsProvider);
+    final types = homeTypes(events.value ?? const []);
+    final type = types.contains(_type) ? _type : null;
+    // Phones: content keeps 16 px to the edge, rows scroll up to it.
+    final gutter = wide ? 0.0 : 16.0;
+    Widget padded(Widget child) => wide
+        ? child
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: child,
+          );
 
     return SiteScaffold(
       title: l10n.navEvents,
@@ -84,7 +115,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       narrowHeader: _narrowHeader(context),
       floatingActionButton: FButton(
         mainAxisSize: MainAxisSize.min,
-        onPress: _sell,
+        onPress: () => _signedInOnly('/sell'),
         prefix: const Icon(FLucideIcons.tag),
         child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
       ),
@@ -96,33 +127,265 @@ class _HomePageState extends ConsumerState<HomePage> {
         },
         child: ListView(
           padding: wide
-              ? const EdgeInsets.fromLTRB(16, 32, 16, 48)
-              : const EdgeInsets.fromLTRB(16, 8, 16, 96),
+              ? const EdgeInsets.fromLTRB(16, 32, 16, 32)
+              : const EdgeInsets.only(top: 8),
           children: [
-            if (wide) _wideIntro(context) else _narrowIntro(context),
-            const SizedBox(height: 12),
-            _categories(context),
+            padded(wide ? _wideIntro(context) : _narrowIntro(context)),
+            const SizedBox(height: 16),
+            padded(_filters(context, types, type)),
             if (ref.watch(authStateProvider).value == null) ...[
               const SizedBox(height: 12),
-              _guestBanner(context),
+              padded(_guestBanner(context)),
             ],
-            const SizedBox(height: 24),
-            Text(
-              l10n.upcomingEvents,
-              style:
-                  (wide
-                          ? context.theme.typography.display.xl
-                          : context.theme.typography.body.lg)
-                      .copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: context.theme.colors.foreground,
+            SizedBox(height: wide ? 40 : 28),
+            AsyncView<List<Event>>(
+              value: events,
+              onRetry: () => ref.invalidate(eventsProvider),
+              loading: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 32,
+                children: [
+                  for (var i = 0; i < 2; i++) SkeletonEventRow(gutter: gutter),
+                ],
+              ),
+              data: (all) => all.isEmpty
+                  ? EmptyState(
+                      icon: FLucideIcons.ticket,
+                      title: l10n.noEvents,
+                      message: l10n.noEventsInfo,
+                      action: FButton(
+                        mainAxisSize: MainAxisSize.min,
+                        prefix: const Icon(FLucideIcons.calendarPlus),
+                        onPress: () => _signedInOnly('/events/new'),
+                        child: Text(
+                          l10n.homeAddEvent,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                    )
+                  : _sections(context, all, type, gutter, padded),
             ),
-            const SizedBox(height: 12),
-            _events(context),
+            SizedBox(height: wide ? 56 : 40),
+            SiteFooter(bottomInset: wide ? 0 : 72),
           ],
         ),
       ),
+    );
+  }
+
+  /// City and event type.
+  Widget _filters(
+    BuildContext context,
+    List<EventCategory> types,
+    EventCategory? type,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    final wide = isWideLayout(context);
+    final chosen = ref.watch(chosenCityProvider);
+
+    final city = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: FButton(
+            variant: FButtonVariant.outline,
+            mainAxisSize: MainAxisSize.min,
+            prefix: const Icon(FLucideIcons.mapPin),
+            suffix: const Icon(FLucideIcons.chevronDown),
+            onPress: () => showCityPicker(context),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: Text(
+                chosen?.name ?? l10n.homeCityPick,
+                key: ValueKey(chosen?.name),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ),
+        if (chosen?.source == CitySource.location) ...[
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              l10n.homeCityFromLocation,
+              overflow: TextOverflow.ellipsis,
+              style: theme.typography.body.xs.copyWith(
+                color: theme.colors.mutedForeground,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+    if (types.isEmpty) {
+      return Align(alignment: Alignment.centerLeft, child: city);
+    }
+
+    final typeBar = Segmented<EventCategory?>(
+      values: [null, ...types],
+      selected: type,
+      scrollable: !wide,
+      label: (c) => c == null ? l10n.homeAllTypes : categoryName(l10n, c),
+      icon: (c) => c == null ? FLucideIcons.layoutGrid : categoryIcon(c),
+      onChanged: (c) => setState(() => _type = c),
+    );
+    if (wide) {
+      return Row(
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: city,
+          ),
+          const SizedBox(width: 16),
+          Expanded(child: typeBar),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(alignment: Alignment.centerLeft, child: city),
+        const SizedBox(height: 12),
+        typeBar,
+      ],
+    );
+  }
+
+  Widget _sections(
+    BuildContext context,
+    List<Event> all,
+    EventCategory? type,
+    double gutter,
+    Widget Function(Widget child) padded,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final wide = isWideLayout(context);
+    final city = ref.watch(homeCityProvider);
+    final sections = buildHomeSections(
+      events: all,
+      offers: ref.watch(eventOffersProvider),
+      recent: ref.watch(recentlyViewedEventsProvider),
+      city: city?.name,
+      type: type,
+    );
+    final gap = SizedBox(height: wide ? 48 : 36);
+
+    // Searching shows only the matching events.
+    final query = _search.text.trim();
+    if (query.isNotEmpty) {
+      final found = [
+        for (final e in sections.all)
+          if (_matches(l10n, e)) e,
+      ];
+      return padded(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            HomeSectionHeader(title: l10n.homeSearchResults),
+            const SizedBox(height: 12),
+            if (found.isEmpty)
+              EmptyState(
+                icon: FLucideIcons.searchX,
+                title: l10n.searchNoResults(query),
+              )
+            else
+              EventGrid(
+                events: found,
+                heroes: _heroSection == 'search',
+                onOpen: (e) => _open('search', e),
+              ),
+          ],
+        ),
+      );
+    }
+
+    Widget row(HomeSection s, {bool small = false}) {
+      final (title, subtitle, actions) = switch (s.kind) {
+        HomeSectionKind.recentlyViewed => (
+          l10n.homeRecentlyViewed,
+          null,
+          const <Widget>[],
+        ),
+        HomeSectionKind.popular => (l10n.homePopular, null, const <Widget>[]),
+        HomeSectionKind.recommended => (
+          l10n.homeRecommended,
+          null,
+          const <Widget>[],
+        ),
+        HomeSectionKind.nearby => (
+          l10n.homeNearby(city?.name ?? ''),
+          switch (city?.source) {
+            CitySource.location => l10n.homeCityFromLocation,
+            CitySource.fallback => l10n.homeCityMostEvents,
+            _ => null,
+          },
+          [
+            FButton(
+              variant: FButtonVariant.ghost,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => showCityPicker(context),
+              child: Text(
+                l10n.homeNearbyChange,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        HomeSectionKind.genre => (
+          genreName(l10n, s.genre ?? ''),
+          null,
+          const <Widget>[],
+        ),
+        HomeSectionKind.category => (
+          categoryName(l10n, s.category ?? EventCategory.other),
+          null,
+          const <Widget>[],
+        ),
+      };
+      return EventRowSection(
+        key: ValueKey(s.id),
+        title: title,
+        subtitle: subtitle,
+        actions: actions,
+        events: s.events,
+        small: small,
+        gutter: gutter,
+        heroes: _heroSection == s.id,
+        onOpen: (e) => _open(s.id, e),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final s in sections.rows) ...[row(s), gap],
+        if (sections.popularCategories.isNotEmpty) ...[
+          padded(HomeSectionHeader(title: l10n.homePopularCategories)),
+          const SizedBox(height: 16),
+          for (final (i, s) in sections.popularCategories.indexed) ...[
+            if (i > 0) const SizedBox(height: 28),
+            row(s, small: true),
+          ],
+          gap,
+        ],
+        padded(
+          HomeSectionHeader(
+            title: type == null
+                ? l10n.homeAllEvents
+                : l10n.homeAllEventsOfType(categoryName(l10n, type)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        padded(
+          EventGrid(
+            events: sections.all,
+            heroes: _heroSection == 'all',
+            onOpen: (e) => _open('all', e),
+          ),
+        ),
+      ],
     );
   }
 
@@ -241,35 +504,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _categories(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        spacing: 8,
-        children: [
-          for (final c in EventCategory.values.where(
-            (c) => c != EventCategory.other,
-          ))
-            FButton(
-              size: FButtonSizeVariant.sm,
-              mainAxisSize: MainAxisSize.min,
-              variant: _category == c
-                  ? FButtonVariant.primary
-                  : FButtonVariant.outline,
-              prefix: Icon(categoryIcon(c)),
-              onPress: () =>
-                  setState(() => _category = _category == c ? null : c),
-              child: Text(
-                categoryName(l10n, c),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _guestBanner(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.theme.colors;
@@ -303,61 +537,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  /// Upcoming events in as many columns as fit (one on phones).
-  Widget _events(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final events = ref.watch(upcomingEventsProvider);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const gap = 16.0;
-        final columns = (constraints.maxWidth / 340).floor().clamp(1, 3);
-        final itemWidth =
-            (constraints.maxWidth - gap * (columns - 1)) / columns;
-
-        Widget grid(List<Widget> children) => Wrap(
-          spacing: gap,
-          runSpacing: gap,
-          children: [
-            for (final c in children) SizedBox(width: itemWidth, child: c),
-          ],
-        );
-
-        return AsyncView<List<Event>>(
-          value: events,
-          onRetry: () => ref.invalidate(eventsProvider),
-          loading: Shimmer(
-            child: grid([
-              for (var i = 0; i < columns * 2; i++) const SkeletonEventCard(),
-            ]),
-          ),
-          data: (all) {
-            if (all.isEmpty) {
-              return EmptyState(
-                icon: FLucideIcons.ticket,
-                title: l10n.noEvents,
-                message: l10n.noEventsInfo,
-              );
-            }
-            final shown = all.where(_matches).toList();
-            if (shown.isEmpty) {
-              return EmptyState(
-                icon: FLucideIcons.searchX,
-                title: l10n.searchNoResults(_search.text.trim()),
-              );
-            }
-            return grid([
-              for (final e in shown)
-                EventCard(
-                  event: e,
-                  onTap: () => context.push('/event/${e.id}', extra: e),
-                ),
-            ]);
-          },
-        );
-      },
     );
   }
 }

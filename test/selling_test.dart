@@ -80,18 +80,22 @@ void main() {
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    expect(find.text('Dubioza kolektiv'), findsOneWidget);
-    expect(find.text('FK Sarajevo – FK Željezničar'), findsOneWidget);
+    // Events show up in several sections (popular, nearby, all …).
+    expect(find.text('Dubioza kolektiv'), findsWidgets);
+    expect(find.text('FK Sarajevo – FK Željezničar'), findsWidgets);
     expect(find.text('Past show'), findsNothing);
     expect(find.text('Hidden show'), findsNothing);
-    expect(find.textContaining('· 3 karte'), findsOneWidget);
-    expect(find.textContaining('od 45,00'), findsOneWidget);
-    expect(find.text('Još nema ponuda'), findsOneWidget);
+    expect(find.textContaining('· 3 karte'), findsWidgets);
+    expect(find.textContaining('od 45,00'), findsWidgets);
+    expect(find.text('Još nema ponuda'), findsWidgets);
 
-    await tester.tap(find.text('Sport'));
+    Finder type(String name) =>
+        find.descendant(of: find.byType(FTabs), matching: find.text(name));
+    await tester.tap(type('Sport'));
     await tester.pumpAndSettle();
     expect(find.text('Dubioza kolektiv'), findsNothing);
-    await tester.tap(find.text('Sport'));
+    expect(find.text('Svi događaji: Sport'), findsOneWidget);
+    await tester.tap(type('Svi tipovi'));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(EditableText), 'dubioza');
@@ -115,7 +119,7 @@ void main() {
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Dubioza kolektiv'));
+    await tester.tap(find.text('Dubioza kolektiv').first);
     await tester.pumpAndSettle();
     expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
     expect(find.text('Ponude'), findsOneWidget);
