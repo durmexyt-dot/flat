@@ -441,7 +441,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
               autofillHints: const [AutofillHints.newPassword],
               textInputAction: TextInputAction.next,
               validator: (v) =>
-                  (v == null || v.length < 6) ? l10n.passwordTooShort : null,
+                  (v == null || v.length < 8) ? l10n.passwordTooShort : null,
             ),
             const SizedBox(height: 12),
             PasswordField(

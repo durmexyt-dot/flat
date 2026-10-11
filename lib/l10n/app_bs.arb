@@ -19,7 +19,7 @@
   "nameLabel": "Ime",
   "nameRequired": "Unesite ime",
   "confirmPasswordLabel": "Potvrdite lozinku",
-  "passwordTooShort": "Lozinka mora imati najmanje 6 znakova",
+  "passwordTooShort": "Lozinka mora imati najmanje 8 znakova",
   "passwordsDontMatch": "Lozinke se ne podudaraju",
   "createAccountButton": "Kreiraj račun",
   "haveAccount": "Već imate račun?",

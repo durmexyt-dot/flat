@@ -19,7 +19,7 @@
   "nameLabel": "Name",
   "nameRequired": "Please enter your name",
   "confirmPasswordLabel": "Confirm password",
-  "passwordTooShort": "Password must be at least 6 characters",
+  "passwordTooShort": "Password must be at least 8 characters",
   "passwordsDontMatch": "Passwords don't match",
   "createAccountButton": "Create account",
   "haveAccount": "Already have an account?",

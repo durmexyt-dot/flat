@@ -67,7 +67,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get confirmPasswordLabel => 'Potvrdite lozinku';
 
   @override
-  String get passwordTooShort => 'Lozinka mora imati najmanje 6 znakova';
+  String get passwordTooShort => 'Lozinka mora imati najmanje 8 znakova';
 
   @override
   String get passwordsDontMatch => 'Lozinke se ne podudaraju';

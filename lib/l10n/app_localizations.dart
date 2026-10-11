@@ -217,7 +217,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordTooShort.
   ///
   /// In bs, this message translates to:
-  /// **'Lozinka mora imati najmanje 6 znakova'**
+  /// **'Lozinka mora imati najmanje 8 znakova'**
   String get passwordTooShort;
 
   /// No description provided for @passwordsDontMatch.

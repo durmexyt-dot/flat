@@ -75,8 +75,8 @@ void main() {
     final fields = find.byType(EditableText);
     await tester.enterText(fields.at(0), 'Emir Hodžić');
     await tester.enterText(fields.at(1), 'emir@test.ba');
-    await tester.enterText(fields.at(2), 'secret1');
-    await tester.enterText(fields.at(3), 'secret1');
+    await tester.enterText(fields.at(2), 'secret123');
+    await tester.enterText(fields.at(3), 'secret123');
     await tester.tap(find.widgetWithText(FButton, 'Kreiraj račun'));
     await tester.pumpAndSettle();
     expect(find.text('Zdravo, Emir'), findsOneWidget);

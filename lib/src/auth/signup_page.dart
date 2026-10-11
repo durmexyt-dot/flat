@@ -93,7 +93,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   enabled: !_loading,
                   autofillHints: const [AutofillHints.newPassword],
                   textInputAction: TextInputAction.next,
-                  validator: (v) => (v == null || v.length < 6)
+                  validator: (v) => (v == null || v.length < 8)
                       ? l10n.passwordTooShort
                       : null,
                 ),

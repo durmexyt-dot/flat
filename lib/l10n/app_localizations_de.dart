@@ -67,7 +67,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get confirmPasswordLabel => 'Passwort bestätigen';
 
   @override
-  String get passwordTooShort => 'Passwort muss mindestens 6 Zeichen haben';
+  String get passwordTooShort => 'Passwort muss mindestens 8 Zeichen haben';
 
   @override
   String get passwordsDontMatch => 'Passwörter stimmen nicht überein';
