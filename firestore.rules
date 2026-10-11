@@ -44,6 +44,55 @@ service cloud.firestore {
         && after.sellerId == request.auth.uid;
     }
 
+    // ---- Validation helpers ---------------------------------------------
+    // Everything not explicitly allowed below is denied. Writes must keep to
+    // known fields, types and sizes, so nobody can store junk, oversized
+    // data or fields the app would trust (e.g. "verified").
+
+    function str(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+    function optStr(d, key, max) {
+      return !(key in d) || d[key] == null || str(d[key], 0, max);
+    }
+    function verifiedEmail() {
+      return request.auth.token.email_verified == true;
+    }
+    function usernamePath(name) {
+      return /databases/$(database)/documents/usernames/$(name);
+    }
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+    // A username in a profile must be reserved by this user.
+    function ownsUsername(d) {
+      return !('username' in d) || d.username == null
+        || (d.username is string
+          && getAfter(usernamePath(d.username)).data.uid == request.auth.uid);
+    }
+    function validVisibility(d) {
+      return !('visibility' in d) || d.visibility in ['public', 'private'];
+    }
+    // Profile photo: a small inline JPEG (256 px), well under 200 KB.
+    function validPhoto(d) {
+      return !('photo' in d) || d.photo == null || str(d.photo, 1, 200000);
+    }
+    function validEvent(e) {
+      return e is map
+        && e.keys().hasOnly(['name', 'venue', 'city', 'date', 'category'])
+        && str(e.name, 2, 100)
+        && str(e.venue, 1, 100)
+        && str(e.city, 1, 60)
+        && e.date is timestamp
+        && e.date > request.time
+        && e.date < request.time + duration.value(730, 'd')
+        && e.category in ['concerts', 'sports', 'theater', 'festivals', 'other'];
+    }
+    // Ticket price per piece: 0.01 to 10 000.00 in the listing's currency.
+    function validPrice(p) {
+      return p is int && p > 0 && p <= 1000000;
+    }
+
     // Seller's share: ticket price minus the 10 % seller fee.
     function sellerEarnings(o) {
       return o.unitPriceMinor * o.quantity
@@ -52,49 +101,102 @@ service cloud.firestore {
 
     // Private profile: settings, notification preferences.
     match /users/{uid} {
-      allow read, write: if isUser(uid);
+      function validUser(d) {
+        return d.keys().hasOnly(['displayName', 'email', 'username', 'photo',
+            'visibility', 'notifications', 'createdAt', 'updatedAt'])
+          && optStr(d, 'displayName', 80)
+          // The sign-in's own email, nothing made up.
+          && (!('email' in d) || d.email == null
+            || d.email == request.auth.token.email)
+          && validPhoto(d)
+          && validVisibility(d)
+          && (!('notifications' in d) || (d.notifications is map
+            && d.notifications.keys().hasOnly(['orderUpdates', 'saleUpdates',
+              'payoutUpdates', 'priceAlerts', 'eventReminders', 'newsletter',
+              'email', 'push'])))
+          && ownsUsername(d);
+      }
 
+      allow read: if isUser(uid);
+      allow create: if isUser(uid) && validUser(request.resource.data);
+      allow update: if isUser(uid) && validUser(request.resource.data)
+        // A changed username frees the old reservation in the same write.
+        && (resource.data.get('username', null) == null
+          || resource.data.username == request.resource.data.get('username', null)
+          || !existsAfter(usernamePath(resource.data.username)));
+      allow delete: if isUser(uid);
+
+      // Only the payout method, with a well-formed IBAN.
       match /private/{doc} {
-        allow read, write: if isUser(uid);
+        allow read, delete: if isUser(uid);
+        allow write: if isUser(uid)
+          && doc == 'payoutMethod'
+          && request.resource.data.keys().hasOnly(['accountHolder', 'iban', 'updatedAt'])
+          && str(request.resource.data.accountHolder, 2, 100)
+          && request.resource.data.iban.matches('^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$');
       }
     }
 
     // What other users may see: name, username, photo.
     match /publicProfiles/{uid} {
       allow read: if isUser(uid) || resource.data.visibility == 'public';
-      allow write: if isUser(uid);
+      allow write: if isUser(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'username', 'photo', 'visibility'])
+        && optStr(request.resource.data, 'displayName', 80)
+        && validPhoto(request.resource.data)
+        && validVisibility(request.resource.data)
+        && ownsUsername(request.resource.data);
+      allow delete: if isUser(uid);
     }
 
-    // Username reservations, one document per lowercase username.
+    // Username reservations, one document per lowercase username. A user
+    // holds one at a time: the profile must point to it.
     match /usernames/{name} {
       allow read: if signedIn();
       allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid'])
         && request.resource.data.uid == request.auth.uid
-        && name.matches('^[a-z0-9_.]{3,20}$');
-      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+        && name.matches('^[a-z0-9_.]{3,20}$')
+        && getAfter(userPath(request.auth.uid)).data.get('username', null) == name;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid
+        && (!existsAfter(userPath(request.auth.uid))
+          || getAfter(userPath(request.auth.uid)).data.get('username', null) != name);
     }
 
     match /listings/{id} {
       allow read: if resource.data.status == 'active'
         || isUser(resource.data.sellerId);
       allow create: if signedIn()
+        // Only sellers with a confirmed email address list tickets.
+        && verifiedEmail()
         && request.resource.data.sellerId == request.auth.uid
         // Sellers need a payout method before listing tickets.
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
+        && request.resource.data.keys().hasOnly(['sellerId', 'event', 'ticketType',
+            'quantity', 'quantitySold', 'priceMinor', 'currency', 'status',
+            'section', 'row', 'seats', 'note', 'createdAt', 'updatedAt'])
+        && validEvent(request.resource.data.event)
+        && request.resource.data.ticketType in ['eTicket', 'mobile', 'paper']
         && request.resource.data.status == 'active'
         && request.resource.data.quantitySold == 0
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0
-        && request.resource.data.priceMinor is int
-        && request.resource.data.priceMinor > 0;
+        && request.resource.data.quantity <= 50
+        && validPrice(request.resource.data.priceMinor)
+        && request.resource.data.currency in ['BAM', 'EUR', 'USD']
+        && optStr(request.resource.data, 'section', 40)
+        && optStr(request.resource.data, 'row', 40)
+        && optStr(request.resource.data, 'seats', 60)
+        && optStr(request.resource.data, 'note', 300)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
       allow update: if
         // Sellers may change the price or withdraw while the listing is active.
         (isUser(resource.data.sellerId)
           && resource.data.status == 'active'
           && (
             (onlyChanges(['priceMinor', 'updatedAt'])
-              && request.resource.data.priceMinor is int
-              && request.resource.data.priceMinor > 0)
+              && validPrice(request.resource.data.priceMinor))
             || (onlyChanges(['status', 'updatedAt'])
               && request.resource.data.status == 'withdrawn')
           ))
@@ -134,9 +236,29 @@ service cloud.firestore {
         && request.resource.data.testMode == true
         && request.resource.data.buyerId == request.auth.uid
         && request.resource.data.status == 'pendingPayment'
+        && request.resource.data.keys().hasOnly(['number', 'listingId', 'buyerId',
+            'sellerId', 'event', 'quantity', 'unitPriceMinor', 'currency',
+            'ticketType', 'section', 'row', 'seats', 'status', 'history',
+            'testMode', 'createdAt'])
+        && request.resource.data.number.matches('^SSW-[A-Z0-9]{6}$')
+        && request.resource.data.history is list
+        && request.resource.data.history.size() == 1
+        && request.resource.data.createdAt is timestamp
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0
+        && request.resource.data.quantity <= 10
         && request.resource.data.sellerId != request.auth.uid
+        // The ticket details are the listing's, not made up by the buyer.
+        && request.resource.data.event
+          == get(listingPath(request.resource.data.listingId)).data.event
+        && request.resource.data.ticketType
+          == get(listingPath(request.resource.data.listingId)).data.ticketType
+        && request.resource.data.section
+          == get(listingPath(request.resource.data.listingId)).data.get('section', '')
+        && request.resource.data.row
+          == get(listingPath(request.resource.data.listingId)).data.get('row', '')
+        && request.resource.data.seats
+          == get(listingPath(request.resource.data.listingId)).data.get('seats', '')
         && get(listingPath(request.resource.data.listingId)).data.status == 'active'
         && request.resource.data.sellerId
           == get(listingPath(request.resource.data.listingId)).data.sellerId
@@ -201,7 +323,17 @@ service cloud.firestore {
     }
 
     match /supportRequests/{id} {
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['number', 'uid', 'email', 'topic',
+            'reference', 'message', 'status', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.number.matches('^SUP-[A-Z0-9]{6}$')
+        && request.resource.data.topic in ['order', 'sale', 'payout', 'account', 'other']
+        && str(request.resource.data.reference, 0, 60)
+        && str(request.resource.data.message, 1, 2000)
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time;
       allow read: if isUser(resource.data.uid);
     }
   }

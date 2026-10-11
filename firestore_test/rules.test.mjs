@@ -17,20 +17,33 @@ beforeEach(async () => {
   await env.clearFirestore();
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), 'listings/L1'), listing());
-    await setDoc(doc(ctx.firestore(), 'users/seller/private/payoutMethod'), { accountHolder: 'S', iban: 'X' });
+    await setDoc(doc(ctx.firestore(), 'users/seller/private/payoutMethod'), { accountHolder: 'Seller', iban: IBAN });
   });
 });
 
+// An event a month from now.
+const EVENT = {
+  name: 'Jazz Fest', venue: 'Dom mladih', city: 'Sarajevo',
+  date: Timestamp.fromMillis(Date.now() + 30 * 24 * 3600 * 1000), category: 'concerts',
+};
 const listing = (over = {}) => ({
-  sellerId: 'seller', event: { name: 'Jazz', date: Timestamp.now() },
-  quantity: 4, quantitySold: 0, priceMinor: 3500, currency: 'BAM', status: 'active', ...over,
+  sellerId: 'seller', event: EVENT, ticketType: 'eTicket',
+  quantity: 4, quantitySold: 0, priceMinor: 3500, currency: 'BAM', status: 'active',
+  section: '', row: '', seats: '', note: '',
+  createdAt: serverTimestamp(), updatedAt: serverTimestamp(), ...over,
 });
 const order = (over = {}) => ({
   number: 'SSW-TEST01', listingId: 'L1', buyerId: 'buyer', sellerId: 'seller',
-  event: { name: 'Jazz' }, quantity: 2, unitPriceMinor: 3500, currency: 'BAM',
-  status: 'pendingPayment', history: [], testMode: true, ...over,
+  event: EVENT, quantity: 2, unitPriceMinor: 3500, currency: 'BAM', ticketType: 'eTicket',
+  section: '', row: '', seats: '',
+  status: 'pendingPayment', history: [{ status: 'pendingPayment' }], testMode: true,
+  createdAt: Timestamp.now(), ...over,
 });
-const db = (uid) => (uid ? env.authenticatedContext(uid) : env.unauthenticatedContext()).firestore();
+// Signed in with a confirmed email address unless [verified] is false.
+const db = (uid, { verified = true } = {}) => (uid
+  ? env.authenticatedContext(uid, { email: `${uid}@test.ba`, email_verified: verified })
+  : env.unauthenticatedContext()).firestore();
+const IBAN = 'BA391290079401028494';
 
 // The payment transaction the app runs.
 function payBatch(fs, { quantitySold = 2, status = 'active', amount = 6300, orderId = 'O1' } = {}) {
@@ -51,7 +64,7 @@ test('anyone can read and query active listings', async () => {
 
 test('sellers need a payout method before listing', async () => {
   await assertFails(setDoc(doc(db('newbie'), 'listings/L9'), listing({ sellerId: 'newbie' })));
-  await assertSucceeds(setDoc(doc(db('newbie'), 'users/newbie/private/payoutMethod'), { accountHolder: 'N', iban: 'BA391290079401028494' }));
+  await assertSucceeds(setDoc(doc(db('newbie'), 'users/newbie/private/payoutMethod'), { accountHolder: 'Newbie', iban: IBAN }));
   await assertSucceeds(setDoc(doc(db('newbie'), 'listings/L9'), listing({ sellerId: 'newbie' })));
 });
 
@@ -59,7 +72,7 @@ test('profile flows of the app are allowed', async () => {
   const fs = db('amra');
   // ensureProfile
   await assertSucceeds(writeBatch(fs)
-    .set(doc(fs, 'users/amra'), { displayName: 'Amra', email: 'a@b.ba', visibility: 'public', notifications: { email: true }, createdAt: serverTimestamp() })
+    .set(doc(fs, 'users/amra'), { displayName: 'Amra', email: 'amra@test.ba', visibility: 'public', notifications: { email: true }, createdAt: serverTimestamp() })
     .set(doc(fs, 'publicProfiles/amra'), { displayName: 'Amra', visibility: 'public' })
     .commit());
   // updateDisplayName / setPhoto / setVisibility
@@ -85,7 +98,7 @@ test('profile flows of the app are allowed', async () => {
   await assertFails(setDoc(doc(db('other'), 'usernames/amra_2'), { uid: 'other' }));
   // Notifications and payout method.
   await assertSucceeds(setDoc(doc(fs, 'users/amra'), { notifications: { newsletter: true } }, { merge: true }));
-  await assertSucceeds(setDoc(doc(fs, 'users/amra/private/payoutMethod'), { accountHolder: 'A', iban: 'X' }));
+  await assertSucceeds(setDoc(doc(fs, 'users/amra/private/payoutMethod'), { accountHolder: 'Amra B', iban: IBAN, updatedAt: serverTimestamp() }));
   await assertFails(getDoc(doc(db('other'), 'users/amra/private/payoutMethod')));
   // Public profile readable while public.
   await assertSucceeds(getDoc(doc(db('other'), 'publicProfiles/amra')));
@@ -140,7 +153,7 @@ test('tickets cannot be counted without a payment in the same batch', async () =
 
 test('a failed payment cancels the order', async () => {
   await openOrder();
-  await assertSucceeds(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'cancelled', failureReason: 'cardDeclined', history: [] }));
+  await assertSucceeds(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'cancelled', failureReason: 'cardDeclined', history: arrayUnion({ status: 'cancelled' }) }));
   await assertFails(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'pendingPayment' }));
 });
 
@@ -149,7 +162,7 @@ test('only the seller marks tickets sent, after payment', async () => {
   await assertFails(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent' }));
   await assertSucceeds(payBatch(db('buyer')).commit());
   await assertFails(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'ticketsSent' }));
-  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: [] }));
+  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
 });
 
 test('profiles are private', async () => {
@@ -210,4 +223,95 @@ test('a cancel must return the tickets and drop the payout', async () => {
   await assertFails(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'refunded', cancelledBy: 'seller' }));
   // Payout alone.
   await assertFails(deleteDoc(doc(db('seller'), 'payouts/O1')));
+});
+
+
+// ---- Attacks: everything outside what the app writes is refused ----------
+
+test('listings: no extra fields, sane numbers, future events, verified sellers', async () => {
+  const fs = db('seller');
+  await assertSucceeds(setDoc(doc(fs, 'listings/ok'), listing()));
+  await assertFails(setDoc(doc(fs, 'listings/a1'), listing({ verified: true })));
+  await assertFails(setDoc(doc(fs, 'listings/a2'), listing({ quantity: 1000 })));
+  await assertFails(setDoc(doc(fs, 'listings/a3'), listing({ priceMinor: 1000001 })));
+  await assertFails(setDoc(doc(fs, 'listings/a4'), listing({ priceMinor: 12.5 })));
+  await assertFails(setDoc(doc(fs, 'listings/a5'), listing({ currency: 'BTC' })));
+  await assertFails(setDoc(doc(fs, 'listings/a6'), listing({ event: { ...EVENT, date: Timestamp.fromMillis(Date.now() - 86400000) } })));
+  await assertFails(setDoc(doc(fs, 'listings/a7'), listing({ event: { ...EVENT, name: 'x'.repeat(101) } })));
+  await assertFails(setDoc(doc(fs, 'listings/a8'), listing({ event: { ...EVENT, hack: 1 } })));
+  await assertFails(setDoc(doc(fs, 'listings/a9'), listing({ note: 'x'.repeat(301) })));
+  await assertFails(setDoc(doc(fs, 'listings/a10'), listing({ createdAt: Timestamp.fromMillis(0) })));
+  // Unconfirmed email: no selling.
+  await assertFails(setDoc(doc(db('seller', { verified: false }), 'listings/a11'), listing()));
+  // Price changes stay in range; other fields can't be touched.
+  await assertFails(updateDoc(doc(fs, 'listings/ok'), { priceMinor: 99999999 }));
+  await assertFails(updateDoc(doc(fs, 'listings/ok'), { quantity: 40 }));
+  await assertFails(updateDoc(doc(fs, 'listings/ok'), { sellerId: 'other' }));
+  // Strangers can't touch it at all.
+  await assertFails(updateDoc(doc(db('other'), 'listings/ok'), { priceMinor: 1 }));
+  await assertFails(deleteDoc(doc(fs, 'listings/ok')));
+});
+
+test('orders: ticket details come from the listing', async () => {
+  await assertFails(setDoc(doc(db('buyer'), 'orders/F1'), order({ event: { ...EVENT, name: 'Fake' } })));
+  await assertFails(setDoc(doc(db('buyer'), 'orders/F2'), order({ seats: 'VIP 1' })));
+  await assertFails(setDoc(doc(db('buyer'), 'orders/F3'), order({ number: '<script>' })));
+  await assertFails(setDoc(doc(db('buyer'), 'orders/F4'), order({ paymentId: 'pi_fake' })));
+  await assertFails(setDoc(doc(db('buyer'), 'orders/F5'), order({ history: [{ status: 'paid' }, { status: 'completed' }] })));
+  await assertFails(setDoc(doc(db(null), 'orders/F6'), order()));
+  // Orders can't be deleted, not even by their own buyer.
+  await openOrder();
+  await assertFails(deleteDoc(doc(db('buyer'), 'orders/O1')));
+  // Nobody else reads them.
+  await assertFails(getDoc(doc(db('other'), 'orders/O1')));
+});
+
+test('profiles: no extra fields, own email, small photo, reserved username', async () => {
+  const fs = db('eve');
+  await assertFails(setDoc(doc(fs, 'users/eve'), { displayName: 'Eve', role: 'admin' }));
+  await assertFails(setDoc(doc(fs, 'users/eve'), { displayName: 'Eve', email: 'ceo@stubswap.ba' }));
+  await assertFails(setDoc(doc(fs, 'users/eve'), { photo: 'x'.repeat(200001) }));
+  await assertFails(setDoc(doc(fs, 'users/eve'), { visibility: 'everyone' }));
+  await assertSucceeds(setDoc(doc(fs, 'users/eve'), { displayName: 'Eve', email: 'eve@test.ba' }));
+  // Claiming a username without reserving it, or someone else's.
+  await assertFails(setDoc(doc(fs, 'publicProfiles/eve'), { username: 'stubswap' }));
+  await assertFails(setDoc(doc(fs, 'users/eve'), { username: 'stubswap' }, { merge: true }));
+  // Hoarding names without using them.
+  await assertFails(setDoc(doc(fs, 'usernames/admin'), { uid: 'eve' }));
+  await assertFails(setDoc(doc(fs, 'publicProfiles/eve'), { displayName: 'Eve', verified: true }));
+  // Writing someone else's profile.
+  await assertFails(setDoc(doc(fs, 'users/amra'), { displayName: 'Hacked' }));
+  await assertFails(setDoc(doc(fs, 'publicProfiles/amra'), { displayName: 'Hacked' }));
+});
+
+test('payout method: only a well-formed IBAN, only the owner', async () => {
+  const fs = db('eve');
+  await assertFails(setDoc(doc(fs, 'users/eve/private/payoutMethod'), { accountHolder: 'Eve', iban: 'NOT AN IBAN' }));
+  await assertFails(setDoc(doc(fs, 'users/eve/private/payoutMethod'), { accountHolder: 'Eve', iban: IBAN, admin: true }));
+  await assertFails(setDoc(doc(fs, 'users/eve/private/secrets'), { accountHolder: 'Eve', iban: IBAN }));
+  await assertFails(setDoc(doc(fs, 'users/seller/private/payoutMethod'), { accountHolder: 'Eve', iban: IBAN }));
+  await assertSucceeds(setDoc(doc(fs, 'users/eve/private/payoutMethod'), { accountHolder: 'Eve', iban: IBAN }));
+});
+
+test('support requests: own email, limited size, no reading others', async () => {
+  const req = (over = {}) => ({
+    number: 'SUP-ABC234', uid: 'eve', email: 'eve@test.ba', topic: 'order',
+    reference: 'SSW-TEST01', message: 'Help', status: 'open', createdAt: serverTimestamp(), ...over,
+  });
+  const fs = db('eve');
+  await assertSucceeds(setDoc(doc(fs, 'supportRequests/s1'), req()));
+  await assertFails(setDoc(doc(fs, 'supportRequests/s2'), req({ email: 'victim@test.ba' })));
+  await assertFails(setDoc(doc(fs, 'supportRequests/s3'), req({ message: 'x'.repeat(2001) })));
+  await assertFails(setDoc(doc(fs, 'supportRequests/s4'), req({ status: 'resolved' })));
+  await assertFails(setDoc(doc(fs, 'supportRequests/s5'), req({ uid: 'amra' })));
+  await assertFails(getDoc(doc(db('amra'), 'supportRequests/s1')));
+  await assertFails(updateDoc(doc(fs, 'supportRequests/s1'), { status: 'resolved' }));
+});
+
+test('unknown collections and anonymous writes are refused', async () => {
+  await assertFails(setDoc(doc(db('eve'), 'admins/eve'), { admin: true }));
+  await assertFails(setDoc(doc(db(null), 'listings/x'), listing()));
+  await assertFails(getDocs(collection(db('eve'), 'orders')));
+  await assertFails(getDocs(collection(db('eve'), 'payouts')));
+  await assertFails(getDocs(collection(db('eve'), 'users')));
 });
