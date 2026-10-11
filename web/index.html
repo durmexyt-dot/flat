@@ -20,29 +20,20 @@
   <title>Stubswap</title>
   <link rel="manifest" href="manifest.json">
 
-  <script>
-    // Match the theme the app will use (stored by shared_preferences), so the
-    // loading splash doesn't flash in the wrong colors.
-    (function () {
-      var mode = null;
-      try { mode = JSON.parse(localStorage.getItem('flutter.themeMode')); } catch (e) {}
-      var dark = mode === 'dark' ||
-        (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-      // The user's theme color, saved by the app as a JSON string.
-      try {
-        var colors = JSON.parse(JSON.parse(localStorage.getItem('flutter.splashColors')));
-        var c = colors && colors[dark ? 'dark' : 'light'];
-        if (c) {
-          var root = document.documentElement.style;
-          root.setProperty('--surface', c.surface);
-          root.setProperty('--on-surface', c.onSurface);
-          root.setProperty('--primary', c.primary);
-          root.setProperty('--on-primary', c.onPrimary);
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <!-- Security: scripts only from this site and Google/Firebase, no inline
+       scripts, data only to Firebase. GitHub Pages can't send headers, so the
+       policy is a meta tag (frame-ancestors needs a header: see
+       firebase.json; the frame guard below covers clickjacking meanwhile).
+       The sha256 hashes allow exactly the inline scripts FlutterFire injects
+       to load the Firebase SDK. After upgrading firebase_* packages, check
+       the browser console for "Refused to execute inline script" and put
+       the hash it names here (also in firebase.json). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-rfg7hv0pkrN9jeIyHIK7vibT9cn0Kq7ZRLaivuDuWks=' 'sha256-CUvLjkG73E0SHKSIhFgZD0F2EeVOnhhrNXG5sz99PX8=' 'sha256-pPjjoSpBd13bHnogATkOaA29BKZz9GGHosqgFMogFpk=' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://www.gstatic.com https://fonts.gstatic.com; frame-src https://stubswap-eda59.firebaseapp.com https://accounts.google.com https://apis.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Never shown inside another site's frame (clickjacking). -->
+  <script src="frame_guard.js"></script>
+  <!-- Match the theme the app will use, so the splash doesn't flash. -->
+  <script src="splash_theme.js"></script>
   <style>
     :root, [data-theme="light"] {
       --surface: #ffffff; --on-surface: #0a0a0a; --primary: #5d2bff;
