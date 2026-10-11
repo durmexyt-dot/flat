@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.1.1] – 2026-10-11
+
 ### Behoben
 - Profilfoto hochladen: Die Sicherheitsrichtlinie (CSP) blockierte das Lesen
   der gewählten Datei („Bild konnte nicht geladen werden“)
