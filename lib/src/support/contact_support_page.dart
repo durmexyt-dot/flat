@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -10,6 +9,7 @@ import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/snack.dart';
+import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
 
 /// What a support request is about, passed from order or payout pages.
@@ -97,7 +97,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                   title: l10n.requestSent,
                   message: l10n.requestSentInfo(_sentNumber!, email),
                   action: FilledButton(
-                    onPressed: () => context.pop(),
+                    onPressed: () => popOrGo(context, '/support'),
                     child: Text(l10n.done),
                   ),
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
@@ -9,6 +8,7 @@ import '../data/repositories.dart';
 import 'avatar.dart';
 import 'photo_actions.dart';
 import '../ui/snack.dart';
+import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
 
 final usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
@@ -66,7 +66,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         await repo.setUsername(uid, username);
       }
       showSnack(messenger, l10n.saved);
-      if (mounted) context.pop();
+      if (mounted) popOrGo(context, '/settings');
     } on UsernameTakenException {
       if (mounted) {
         setState(() => _usernameTaken = true);

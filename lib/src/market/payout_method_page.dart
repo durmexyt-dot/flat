@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_widgets.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../ui/snack.dart';
+import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
 
 /// Groups an IBAN in blocks of four while typing. Keeps the cursor where
@@ -81,7 +81,6 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
-    final router = GoRouter.of(context);
     setState(() => _saving = true);
     try {
       await ref
@@ -99,13 +98,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
       return;
     }
     showSnack(messenger, l10n.payoutMethodSaved);
-    if (mounted) setState(() => _saving = false);
-    // Opened from the sidebar or a link there is nothing to go back to.
-    if (router.canPop()) {
-      router.pop();
-    } else {
-      router.go('/account/payouts');
-    }
+    if (!mounted) return;
+    setState(() => _saving = false);
+    popOrGo(context, '/account/payouts');
   }
 
   @override
