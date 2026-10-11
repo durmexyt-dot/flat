@@ -9,7 +9,7 @@ const heroTransitionDuration = Duration(milliseconds: 700);
 CustomTransitionPage<void> heroPage(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
-    child: _ReadableWidth(child: child),
+    child: child,
     transitionDuration: heroTransitionDuration,
     reverseTransitionDuration: heroTransitionDuration,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -29,27 +29,4 @@ CustomTransitionPage<void> heroPage(GoRouterState state, Widget child) {
       );
     },
   );
-}
-
-/// On wide screens pages keep a comfortable reading width, centered on the
-/// page background.
-class _ReadableWidth extends StatelessWidget {
-  const _ReadableWidth({required this.child});
-
-  final Widget child;
-
-  static const maxWidth = 760.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surfaceContainerLowest,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: maxWidth),
-          child: child,
-        ),
-      ),
-    );
-  }
 }

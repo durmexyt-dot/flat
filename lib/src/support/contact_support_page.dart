@@ -10,6 +10,7 @@ import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 /// What a support request is about, passed from order or payout pages.
 class SupportContext {
@@ -82,8 +83,9 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
     final l10n = AppLocalizations.of(context);
     final email = ref.watch(authStateProvider).value?.email ?? '';
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.contactSupport)),
+    return SiteScaffold(
+      title: l10n.contactSupport,
+      maxWidth: SiteWidth.form,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 350),
         child: _sentNumber != null

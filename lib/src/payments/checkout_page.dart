@@ -17,6 +17,7 @@ import 'checkout_repository.dart';
 import 'pay_flow.dart';
 import 'payment_gateway.dart';
 import 'test_payment_gateway.dart';
+import '../ui/site_scaffold.dart';
 
 /// Buying tickets from a listing: summary, then payment.
 class CheckoutPage extends ConsumerStatefulWidget {
@@ -83,8 +84,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final live = ref.watch(listingProvider(widget.listingId));
     final listing = live.value ?? widget.initial;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.checkout)),
+    return SiteScaffold(
+      title: l10n.checkout,
+      maxWidth: SiteWidth.form,
       body: listing == null
           ? AsyncView<Listing?>(
               value: live,

@@ -474,5 +474,10 @@
   "buyerEmail": "Karte stižu na",
   "notAvailableAnymore": "Ova ponuda više nije dostupna",
   "payoutRequiredTitle": "Prvo dodaj način isplate",
-  "payoutRequiredInfo": "Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte."
+  "payoutRequiredInfo": "Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte.",
+  "navEvents": "Događaji",
+  "navMyTickets": "Moje karte",
+  "openAccountMenu": "Otvori meni računa",
+  "heroTitle": "Karte za koncerte, sport i festivale",
+  "heroSubtitle": "Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti."
 }

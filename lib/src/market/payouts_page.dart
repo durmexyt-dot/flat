@@ -16,6 +16,7 @@ import '../ui/status_timeline.dart';
 import 'labels.dart';
 import 'order_detail_page.dart';
 import 'order_labels.dart';
+import '../ui/site_scaffold.dart';
 
 class PayoutsPage extends ConsumerWidget {
   const PayoutsPage({super.key});
@@ -25,8 +26,9 @@ class PayoutsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final payouts = ref.watch(payoutsProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.payouts)),
+    return SiteScaffold(
+      title: l10n.payouts,
+      maxWidth: SiteWidth.form,
       body: Column(
         children: [
           Expanded(
@@ -274,8 +276,9 @@ class PayoutDetailPage extends ConsumerWidget {
     final live = ref.watch(payoutProvider(id));
     final payout = live.value ?? initial;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.payoutDetails)),
+    return SiteScaffold(
+      title: l10n.payoutDetails,
+      maxWidth: SiteWidth.form,
       body: payout == null
           ? AsyncView<Payout?>(
               value: live,

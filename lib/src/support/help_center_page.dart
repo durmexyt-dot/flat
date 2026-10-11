@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
+import '../ui/site_scaffold.dart';
 
 class HelpCenterPage extends ConsumerWidget {
   const HelpCenterPage({super.key});
@@ -37,8 +38,9 @@ class HelpCenterPage extends ConsumerWidget {
       ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.helpCenter)),
+    return SiteScaffold(
+      title: l10n.helpCenter,
+      maxWidth: SiteWidth.form,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [

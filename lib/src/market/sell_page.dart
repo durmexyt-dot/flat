@@ -14,6 +14,7 @@ import '../ui/format.dart';
 import '../ui/skeleton.dart';
 import 'labels.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 class SellPage extends ConsumerStatefulWidget {
   const SellPage({super.key});
@@ -134,8 +135,9 @@ class _SellPageState extends ConsumerState<SellPage> {
     String? required(String? v) =>
         (v == null || v.trim().isEmpty) ? l10n.required : null;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.sellTitle)),
+    return SiteScaffold(
+      title: l10n.sellTitle,
+      maxWidth: SiteWidth.form,
       // No selling without a payout method: the money needs somewhere to go.
       body: AsyncView<PayoutMethod?>(
         value: payoutMethod,

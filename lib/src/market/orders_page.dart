@@ -9,6 +9,7 @@ import '../ui/async_view.dart';
 import '../ui/skeleton.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
+import '../ui/site_scaffold.dart';
 
 enum _Filter { all, inProgress, completed, cancelled }
 
@@ -51,8 +52,9 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
       _Filter.cancelled: l10n.filterCancelled,
     };
 
-    return Scaffold(
-      appBar: AppBar(title: Text(buyer ? l10n.purchases : l10n.sales)),
+    return SiteScaffold(
+      title: buyer ? l10n.purchases : l10n.sales,
+      maxWidth: SiteWidth.detail,
       body: Column(
         children: [
           SingleChildScrollView(

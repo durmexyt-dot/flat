@@ -1143,4 +1143,20 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get payoutRequiredInfo =>
       'Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte.';
+
+  @override
+  String get navEvents => 'Događaji';
+
+  @override
+  String get navMyTickets => 'Moje karte';
+
+  @override
+  String get openAccountMenu => 'Otvori meni računa';
+
+  @override
+  String get heroTitle => 'Karte za koncerte, sport i festivale';
+
+  @override
+  String get heroSubtitle =>
+      'Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti.';
 }

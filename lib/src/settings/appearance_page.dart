@@ -6,6 +6,7 @@ import '../ui/app_style.dart';
 import '../ui/ticket.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
+import '../ui/site_scaffold.dart';
 
 String brandColorName(AppLocalizations l10n, BrandColor c) => switch (c) {
   BrandColor.violet => l10n.colorViolet,
@@ -47,8 +48,9 @@ class AppearancePage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.appearance)),
+    return SiteScaffold(
+      title: l10n.appearance,
+      maxWidth: SiteWidth.form,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [

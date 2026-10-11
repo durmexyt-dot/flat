@@ -1157,4 +1157,20 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get payoutRequiredInfo =>
       'Damit wir dir das Geld aus Verkäufen auszahlen können, brauchen wir dein Bankkonto (IBAN). Danach kannst du sofort Tickets einstellen.';
+
+  @override
+  String get navEvents => 'Events';
+
+  @override
+  String get navMyTickets => 'Meine Tickets';
+
+  @override
+  String get openAccountMenu => 'Kontomenü öffnen';
+
+  @override
+  String get heroTitle => 'Tickets für Konzerte, Sport und Festivals';
+
+  @override
+  String get heroSubtitle =>
+      'Kaufe sicher von Fans oder verkaufe Tickets, die du nicht nutzen kannst.';
 }

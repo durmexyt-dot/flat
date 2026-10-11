@@ -353,5 +353,10 @@
   "buyerEmail": "Tickets go to",
   "notAvailableAnymore": "This listing is no longer available",
   "payoutRequiredTitle": "Add a payout method first",
-  "payoutRequiredInfo": "To pay you for your sales we need your bank account (IBAN). After that you can list tickets right away."
+  "payoutRequiredInfo": "To pay you for your sales we need your bank account (IBAN). After that you can list tickets right away.",
+  "navEvents": "Events",
+  "navMyTickets": "My tickets",
+  "openAccountMenu": "Open account menu",
+  "heroTitle": "Tickets for concerts, sports and festivals",
+  "heroSubtitle": "Buy safely from fans or sell the tickets you can't use."
 }

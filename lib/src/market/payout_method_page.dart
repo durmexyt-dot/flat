@@ -8,6 +8,7 @@ import '../auth/auth_widgets.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 /// Groups an IBAN in blocks of four while typing.
 class _IbanFormatter extends TextInputFormatter {
@@ -93,8 +94,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.payoutMethod)),
+    return SiteScaffold(
+      title: l10n.payoutMethod,
+      maxWidth: SiteWidth.form,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(

@@ -154,26 +154,35 @@ class StatsRow extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final stats = ref.watch(statsProvider);
 
-    return AsyncView<ProfileStats?>(
-      value: stats,
-      onRetry: () => ref.invalidate(statsProvider),
-      loading: const Shimmer(child: SkeletonBox(height: 76, radius: 16)),
-      data: (s) => Card.filled(
-        margin: EdgeInsets.zero,
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              _Stat(value: s?.listed ?? 0, label: l10n.statListed),
-              const _StatDivider(),
-              _Stat(value: s?.sold ?? 0, label: l10n.statSold),
-              const _StatDivider(),
-              _Stat(value: s?.bought ?? 0, label: l10n.statBought),
-            ],
-          ),
+    Widget card(ProfileStats? s, {bool failed = false}) => Card.filled(
+      margin: EdgeInsets.zero,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            _Stat(value: s?.listed, label: l10n.statListed),
+            const _StatDivider(),
+            _Stat(value: s?.sold, label: l10n.statSold),
+            const _StatDivider(),
+            _Stat(value: s?.bought, label: l10n.statBought),
+            if (failed)
+              IconButton(
+                tooltip: l10n.retry,
+                onPressed: () => ref.invalidate(statsProvider),
+                icon: const Icon(Icons.refresh),
+              ),
+          ],
         ),
       ),
+    );
+
+    // A failed count is no reason for a big error box: dashes and a retry.
+    if (stats.hasError) return card(null, failed: true);
+    return AsyncView<ProfileStats?>(
+      value: stats,
+      loading: const Shimmer(child: SkeletonBox(height: 76, radius: 16)),
+      data: (s) => card(s ?? const ProfileStats(listed: 0, sold: 0, bought: 0)),
     );
   }
 }
@@ -181,7 +190,8 @@ class StatsRow extends ConsumerWidget {
 class _Stat extends StatelessWidget {
   const _Stat({required this.value, required this.label});
 
-  final int value;
+  /// Null when unknown.
+  final int? value;
   final String label;
 
   @override
@@ -190,18 +200,27 @@ class _Stat extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: value.toDouble()),
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeOutCubic,
-            builder: (context, v, _) => Text(
-              '${v.round()}',
+          if (value == null)
+            Text(
+              '–',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.outline,
+              ),
+            )
+          else
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: value!.toDouble()),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (context, v, _) => Text(
+                '${v.round()}',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
-          ),
           Text(
             label,
             style: theme.textTheme.labelMedium?.copyWith(

@@ -1148,4 +1148,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get payoutRequiredInfo =>
       'To pay you for your sales we need your bank account (IBAN). After that you can list tickets right away.';
+
+  @override
+  String get navEvents => 'Events';
+
+  @override
+  String get navMyTickets => 'My tickets';
+
+  @override
+  String get openAccountMenu => 'Open account menu';
+
+  @override
+  String get heroTitle => 'Tickets for concerts, sports and festivals';
+
+  @override
+  String get heroSubtitle =>
+      'Buy safely from fans or sell the tickets you can\'t use.';
 }

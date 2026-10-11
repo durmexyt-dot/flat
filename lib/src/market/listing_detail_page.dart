@@ -13,6 +13,7 @@ import '../ui/skeleton.dart';
 import 'labels.dart';
 import 'listing_ticket.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 /// A listing as its seller (manage) or a buyer (buy) sees it.
 class ListingDetailPage extends ConsumerWidget {
@@ -30,8 +31,9 @@ class ListingDetailPage extends ConsumerWidget {
     final listing = live.value ?? initial;
     final uid = ref.watch(currentUidProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.listingDetails)),
+    return SiteScaffold(
+      title: l10n.listingDetails,
+      maxWidth: SiteWidth.form,
       body: listing == null
           ? AsyncView<Listing?>(
               value: live,

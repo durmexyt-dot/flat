@@ -22,6 +22,7 @@ import 'labels.dart';
 import 'listing_ticket.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
+import '../ui/site_scaffold.dart';
 
 /// One order with its progress and invoice; for the buyer or the seller.
 class OrderDetailPage extends ConsumerWidget {
@@ -38,12 +39,9 @@ class OrderDetailPage extends ConsumerWidget {
     final uid = ref.watch(currentUidProvider);
     final role = order?.sellerId == uid ? OrderRole.seller : OrderRole.buyer;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          role == OrderRole.seller ? l10n.saleDetails : l10n.orderDetails,
-        ),
-      ),
+    return SiteScaffold(
+      title: role == OrderRole.seller ? l10n.saleDetails : l10n.orderDetails,
+      maxWidth: SiteWidth.form,
       body: order == null
           ? AsyncView<Order?>(
               value: live,

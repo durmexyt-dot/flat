@@ -10,6 +10,7 @@ import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/app_style.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 class PrivacySecurityPage extends ConsumerWidget {
   const PrivacySecurityPage({super.key});
@@ -32,8 +33,9 @@ class PrivacySecurityPage extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.privacySecurity)),
+    return SiteScaffold(
+      title: l10n.privacySecurity,
+      maxWidth: SiteWidth.form,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [

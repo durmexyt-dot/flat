@@ -2223,6 +2223,36 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Da bismo ti mogli isplatiti novac od prodaje, potreban nam je tvoj bankovni račun (IBAN). Nakon toga možeš odmah objaviti karte.'**
   String get payoutRequiredInfo;
+
+  /// No description provided for @navEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaji'**
+  String get navEvents;
+
+  /// No description provided for @navMyTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Moje karte'**
+  String get navMyTickets;
+
+  /// No description provided for @openAccountMenu.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvori meni računa'**
+  String get openAccountMenu;
+
+  /// No description provided for @heroTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte za koncerte, sport i festivale'**
+  String get heroTitle;
+
+  /// No description provided for @heroSubtitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupi sigurno od fanova ili prodaj karte koje ne možeš iskoristiti.'**
+  String get heroSubtitle;
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,7 @@ import '../data/repositories.dart';
 import '../ui/async_view.dart';
 import '../ui/skeleton.dart';
 import 'listing_ticket.dart';
+import '../ui/site_scaffold.dart';
 
 enum _Filter { all, active, soldOut, ended }
 
@@ -41,8 +42,17 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
       _Filter.ended: l10n.ended,
     };
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.myListings)),
+    return SiteScaffold(
+      title: l10n.myListings,
+      maxWidth: SiteWidth.detail,
+      actions: [
+        if (isWideLayout(context))
+          FilledButton.icon(
+            onPressed: () => context.push('/sell'),
+            icon: const Icon(Icons.add),
+            label: Text(l10n.sellTickets),
+          ),
+      ],
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/sell'),
         icon: const Icon(Icons.add),

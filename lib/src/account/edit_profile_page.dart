@@ -9,6 +9,7 @@ import '../data/repositories.dart';
 import 'avatar.dart';
 import 'photo_actions.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 final usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
 
@@ -84,8 +85,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final profile = ref.watch(profileProvider).value;
     final user = ref.watch(authStateProvider).value;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.editProfile)),
+    return SiteScaffold(
+      title: l10n.editProfile,
+      maxWidth: SiteWidth.form,
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
         child: Center(

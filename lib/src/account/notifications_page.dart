@@ -8,6 +8,7 @@ import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../web/browser_notifications.dart';
 import '../ui/snack.dart';
+import '../ui/site_scaffold.dart';
 
 /// Which alerts to get and where. Saved in the profile, so the server sends
 /// only what the user wants, on every device.
@@ -83,8 +84,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     };
     final pushOn = prefs.push && _push == PushSupport.granted;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.notifications)),
+    return SiteScaffold(
+      title: l10n.notifications,
+      maxWidth: SiteWidth.form,
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         children: [
