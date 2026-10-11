@@ -233,6 +233,13 @@ void main() {
     expect(find.text('Detalji ponude'), findsOneWidget);
     expect(find.text('Tvoja ponuda'), findsOneWidget);
     expect(find.text('Aktivna'), findsOneWidget);
+    // Created for the chosen event, with the current fees.
+    final created = (await market.watchMyListings('1').first).single;
+    expect(created.eventId, 'e-sff');
+    expect(created.event.name, 'Sarajevo Film Festival');
+    // Let the "published" toast go; it covers the buttons below.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
 
     await tapVisible(tester, find.text('Promijeni cijenu'));
     await tester.enterText(find.byType(EditableText).last, '60');

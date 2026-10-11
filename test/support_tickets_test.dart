@@ -13,9 +13,9 @@ import 'helpers.dart';
 
 /// Opens [path] like a link.
 Future<void> go(WidgetTester tester, String path) async {
-  ProviderScope.containerOf(
-    tester.element(find.byType(FlatApp)),
-  ).read(routerProvider).push(path);
+  ProviderScope.containerOf(tester.element(find.byType(FlatApp)))
+      .read(routerProvider)
+      .push(path);
   await tester.pumpAndSettle();
 }
 
@@ -190,5 +190,24 @@ void main() {
     await go(tester, '/admin/support');
     expect(find.text('Nemaš pristup'), findsOneWidget);
     expect(find.text('My tickets never arrived.'), findsNothing);
+  });
+
+  testWidgets('on desktop the sidebar leads the team to the inbox', (
+    tester,
+  ) async {
+    final s = InMemorySupportRepository();
+    await _ticketFrom(s, uid: '5');
+    await _signedIn(tester, s: s, roles: {'1': StaffRole.admin});
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1;
+    await tester.pumpAndSettle();
+    await go(tester, '/support');
+    expect(find.text('Administracija'), findsOneWidget);
+    await tester.tap(find.text('Upiti podrške'));
+    await tester.pumpAndSettle();
+    expect(find.text('My tickets never arrived.'), findsOneWidget);
+    await tester.tap(find.text('My tickets never arrived.'));
+    await tester.pumpAndSettle();
+    expect(find.text('kemal@test.ba'), findsOneWidget);
   });
 }
