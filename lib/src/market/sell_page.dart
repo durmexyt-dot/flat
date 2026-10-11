@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
@@ -47,13 +48,7 @@ class _SellPageState extends ConsumerState<SellPage> {
 
   @override
   void dispose() {
-    for (final c in [
-      _section,
-      _row,
-      _seats,
-      _price,
-      _note,
-    ]) {
+    for (final c in [_section, _row, _seats, _price, _note]) {
       c.dispose();
     }
     super.dispose();
@@ -174,160 +169,147 @@ class _SellPageState extends ConsumerState<SellPage> {
     final currency = ref.watch(settingsProvider).currency;
     final selected = _selected(events);
     return _WithGuide(
-                form: Form(
-                  key: _formKey,
-                  // Not a ListView: it would drop off-screen fields, and the form
-                  // would skip validating them.
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (user != null && !user.emailVerified)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: FAlert(
-                              icon: const Icon(FLucideIcons.mailWarning),
-                              title: Text(l10n.verifyBeforeSelling),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: FButton(
-                                    variant: FButtonVariant.outline,
-                                    size: FButtonSizeVariant.sm,
-                                    mainAxisSize: MainAxisSize.min,
-                                    onPress: () =>
-                                        context.push('/settings/privacy'),
-                                    child: Text(
-                                      l10n.verifyNow,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+      form: Form(
+        key: _formKey,
+        // Not a ListView: it would drop off-screen fields, and the form
+        // would skip validating them.
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (user != null && !user.emailVerified)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: FAlert(
+                    icon: const Icon(FLucideIcons.mailWarning),
+                    title: Text(l10n.verifyBeforeSelling),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: FButton(
+                          variant: FButtonVariant.outline,
+                          size: FButtonSizeVariant.sm,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: () => context.push('/settings/privacy'),
+                          child: Text(
+                            l10n.verifyNow,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        SettingsSectionTitle(l10n.event),
-                        EventField(
-                          event: selected,
-                          error: _eventError && selected == null
-                              ? l10n.eventsPickRequired
-                              : null,
-                          onTap: () => _chooseEvent(events),
                         ),
-                        SettingsSectionTitle(l10n.tickets),
-                        Segmented<TicketType>(
-                          values: TicketType.values,
-                          selected: _type,
-                          label: (t) => ticketTypeName(l10n, t),
-                          onChanged: (t) => setState(() => _type = t),
-                        ),
-                        const SizedBox(height: 12),
-                        _QuantityStepper(
-                          value: _quantity,
-                          onChanged: (v) => setState(() => _quantity = v),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: FTextFormField(
-                                control: FTextFieldControl.managed(
-                                  controller: _section,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(40),
-                                ],
-                                label: Text(l10n.section),
-                                description: Text(l10n.optional),
-                                textInputAction: TextInputAction.next,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: FTextFormField(
-                                control: FTextFieldControl.managed(
-                                  controller: _row,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(40),
-                                ],
-                                label: Text(l10n.row),
-                                description: Text(l10n.optional),
-                                textInputAction: TextInputAction.next,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        FTextFormField(
-                          control: FTextFieldControl.managed(
-                            controller: _seats,
-                          ),
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(60),
-                          ],
-                          label: Text(l10n.seats),
-                          description: Text(l10n.optional),
-                          textInputAction: TextInputAction.next,
-                        ),
-                        SettingsSectionTitle(l10n.price),
-                        FTextFormField(
-                          control: FTextFieldControl.managed(
-                            controller: _price,
-                            onChange: (_) => setState(() {}),
-                          ),
-                          label: Text(l10n.pricePerTicket),
-                          prefixBuilder: (context, style, variants) =>
-                              fieldIcon(FLucideIcons.tag),
-                          suffixBuilder: (context, style, variants) => Padding(
-                            padding: const EdgeInsetsDirectional.only(end: 12),
-                            child: Text(
-                              currency.symbol,
-                              style: context.theme.typography.body.sm.copyWith(
-                                color: context.theme.colors.mutedForeground,
-                              ),
-                            ),
-                          ),
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          validator: (v) {
-                            final minor = parseMoney(v ?? '');
-                            return (minor == null || minor <= 0)
-                                ? l10n.priceInvalid
-                                : null;
-                          },
-                        ),
-                        const SizedBox(height: 12),
-                        _PriceBreakdown(
-                          priceMinor: parseMoney(_price.text) ?? 0,
-                          quantity: _quantity,
-                          currency: currency.code,
-                        ),
-                        const SizedBox(height: 12),
-                        FTextFormField(
-                          control: FTextFieldControl.managed(controller: _note),
-                          label: Text(l10n.noteLabel),
-                          description: Text(l10n.optional),
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 3,
-                          minLines: 1,
-                          maxLength: 300,
-                        ),
-                        const SizedBox(height: 16),
-                        SubmitButton(
-                          label: l10n.publishListing,
-                          loading: _saving,
-                          onPressed: _publish,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              );
+              SettingsSectionTitle(l10n.event),
+              EventField(
+                event: selected,
+                error: _eventError && selected == null
+                    ? l10n.eventsPickRequired
+                    : null,
+                onTap: () => _chooseEvent(events),
+              ),
+              SettingsSectionTitle(l10n.tickets),
+              Segmented<TicketType>(
+                values: TicketType.values,
+                selected: _type,
+                label: (t) => ticketTypeName(l10n, t),
+                onChanged: (t) => setState(() => _type = t),
+              ),
+              const SizedBox(height: 12),
+              _QuantityStepper(
+                value: _quantity,
+                onChanged: (v) => setState(() => _quantity = v),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: FTextFormField(
+                      control: FTextFieldControl.managed(controller: _section),
+                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
+                      label: Text(l10n.section),
+                      description: Text(l10n.optional),
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FTextFormField(
+                      control: FTextFieldControl.managed(controller: _row),
+                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
+                      label: Text(l10n.row),
+                      description: Text(l10n.optional),
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              FTextFormField(
+                control: FTextFieldControl.managed(controller: _seats),
+                inputFormatters: [LengthLimitingTextInputFormatter(60)],
+                label: Text(l10n.seats),
+                description: Text(l10n.optional),
+                textInputAction: TextInputAction.next,
+              ),
+              SettingsSectionTitle(l10n.price),
+              FTextFormField(
+                control: FTextFieldControl.managed(
+                  controller: _price,
+                  onChange: (_) => setState(() {}),
+                ),
+                label: Text(l10n.pricePerTicket),
+                prefixBuilder: (context, style, variants) =>
+                    fieldIcon(FLucideIcons.tag),
+                suffixBuilder: (context, style, variants) => Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 12),
+                  child: Text(
+                    currency.symbol,
+                    style: context.theme.typography.body.sm.copyWith(
+                      color: context.theme.colors.mutedForeground,
+                    ),
+                  ),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                validator: (v) {
+                  final minor = parseMoney(v ?? '');
+                  return (minor == null || minor <= 0)
+                      ? l10n.priceInvalid
+                      : null;
+                },
+              ),
+              const SizedBox(height: 12),
+              _PriceBreakdown(
+                priceMinor: parseMoney(_price.text) ?? 0,
+                quantity: _quantity,
+                currency: currency.code,
+              ),
+              const SizedBox(height: 12),
+              FTextFormField(
+                control: FTextFieldControl.managed(controller: _note),
+                label: Text(l10n.noteLabel),
+                description: Text(l10n.optional),
+                keyboardType: TextInputType.multiline,
+                maxLines: 3,
+                minLines: 1,
+                maxLength: 300,
+              ),
+              const SizedBox(height: 16),
+              SubmitButton(
+                label: l10n.publishListing,
+                loading: _saving,
+                onPressed: _publish,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

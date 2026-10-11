@@ -97,10 +97,12 @@ cd firestore_test && npm install && npm test
 ```
 
 Data model (collections): `users` (private profile, notification settings,
-`private/payoutMethod`), `publicProfiles`, `usernames`, `listings`,
-`orders` and `payouts` (server-written), `supportRequests`.
-Profile photos are stored as small JPEGs in the profile, so no Storage
-bucket (Blaze plan) is needed.
+`private/payoutMethod`), `publicProfiles`, `usernames`, `roles` (team),
+`config/fees`, `events` + `eventImages`, `listings` (each for one event, with
+the fees in force when it was created), `orders` and `payouts`
+(server-written), `supportTickets` with `messages` (in-app support).
+Profile photos, event pictures and support pictures are stored as small
+JPEGs in Firestore, so no Storage bucket (Blaze plan) is needed.
 
 ## Run locally
 
@@ -117,6 +119,21 @@ After editing an `.arb` file, `flutter gen-l10n` (or any build) regenerates
 
 Users sign up in the app, or are created in the Firebase console
 (Authentication → Users → Add user).
+
+### Team: admins and support
+
+- **Admins** are made only in the Firebase console (once per project,
+  staging and prod): copy the user's **User UID** from Authentication →
+  Users, then Firestore → `roles` → add a document with that UID as
+  **document ID** and a field `role` (string) = `admin`. The rules let no
+  app user write this.
+- Admins see **Administracija** in the settings: events (with pictures),
+  service fee, team, support requests.
+- **Support accounts** are made by an admin in the app (Administracija →
+  Tim): search the user by exact email or username (no user list is
+  loaded), then "add as support". They answer support requests in the app.
+- **Fees**: a changed service fee applies to listings created afterwards;
+  existing listings and their orders keep theirs.
 
 ## Environments
 

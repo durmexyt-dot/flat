@@ -390,10 +390,11 @@ test('fees: admins set them; new listings and their orders keep them', async () 
   await assertFails(setDoc(doc(db('buyer'), 'orders/O9'), order({ buyerFeePercent: 0, sellerFeePercent: 0 })));
   await assertSucceeds(setDoc(doc(db('buyer'), 'orders/O8'), order({ listingId: 'f3', buyerFeePercent: 12, sellerFeePercent: 8 })));
   // The seller's payout uses the order's seller fee: 2 × 35 − 8 % = 64.40.
-  await assertSucceeds(writeBatch(db('buyer'))
-    .update(doc(db('buyer'), 'orders/O8'), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
-    .update(doc(db('buyer'), 'listings/f3'), { quantitySold: 2, status: 'active', lastOrderId: 'O8' })
-    .set(doc(db('buyer'), 'payouts/O8'), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: 6440, currency: 'BAM', status: 'pending', testMode: true })
+  const b = db('buyer');
+  await assertSucceeds(writeBatch(b)
+    .update(doc(b, 'orders/O8'), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
+    .update(doc(b, 'listings/f3'), { quantitySold: 2, status: 'active', lastOrderId: 'O8' })
+    .set(doc(b, 'payouts/O8'), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: 6440, currency: 'BAM', status: 'pending', testMode: true })
     .commit());
 });
 

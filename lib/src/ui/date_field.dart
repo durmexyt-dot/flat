@@ -6,7 +6,10 @@ import '../auth/auth_widgets.dart';
 import 'format.dart';
 
 /// Asks for a day, then a time. Null if either picker is cancelled.
-Future<DateTime?> pickDateTime(BuildContext context, {DateTime? initial}) async {
+Future<DateTime?> pickDateTime(
+  BuildContext context, {
+  DateTime? initial,
+}) async {
   final now = DateTime.now();
   final start = initial ?? now.add(const Duration(days: 7));
   // An existing (past) date stays pickable, so editing doesn't break.

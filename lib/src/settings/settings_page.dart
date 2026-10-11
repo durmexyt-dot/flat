@@ -5,9 +5,12 @@ import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/profile_header.dart';
+import '../admin/admin_page.dart';
+import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
+import '../support/support_repository.dart';
 import '../ui/app_dialog.dart';
 import '../config/app_info.dart';
 import '../ui/site_scaffold.dart';
@@ -32,6 +35,12 @@ class SettingsPage extends ConsumerWidget {
     final payoutMethod = user == null
         ? null
         : ref.watch(payoutMethodProvider).value;
+    final isStaff = user != null && ref.watch(isStaffProvider);
+    final isAdmin = user != null && ref.watch(isAdminProvider);
+    final staffUnread = isStaff ? ref.watch(unreadForStaffProvider) : 0;
+    final supportAnswers = user == null
+        ? 0
+        : ref.watch(unreadSupportAnswersProvider);
 
     final Widget? header = user != null
         ? const ProfileHeader()
@@ -130,12 +139,34 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
+      if (isStaff) ...[
+        SettingsSectionTitle(l10n.adminTeamSection),
+        SettingsGroup(
+          children: [
+            SettingsLinkTile(
+              icon: FLucideIcons.inbox,
+              title: l10n.adminSupportInbox,
+              trailing: staffUnread > 0 ? CountPill(count: staffUnread) : null,
+              onTap: () => context.push('/admin/support'),
+            ),
+            if (isAdmin)
+              SettingsLinkTile(
+                icon: FLucideIcons.shieldCheck,
+                title: l10n.adminTitle,
+                onTap: () => context.push('/admin'),
+              ),
+          ],
+        ),
+      ],
       SettingsSectionTitle(l10n.support),
       SettingsGroup(
         children: [
           SettingsLinkTile(
             icon: FLucideIcons.circleQuestionMark,
             title: l10n.helpCenter,
+            trailing: supportAnswers > 0
+                ? CountPill(count: supportAnswers)
+                : null,
             onTap: () => context.push('/support'),
           ),
           if (user != null)

@@ -6,7 +6,10 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
+import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../events/event_image.dart';
+import '../ui/app_style.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
@@ -55,6 +58,10 @@ class ListingDetailPage extends ConsumerWidget {
                 SplitView(
                   wide: isWideLayout(context),
                   main: [
+                    if (listing.eventId.isNotEmpty) ...[
+                      _EventBanner(eventId: listing.eventId),
+                      const SizedBox(height: 16),
+                    ],
                     ListingTicket(listing: listing, showStatus: true),
                     const SizedBox(height: 16),
                     _Facts(listing: listing),
@@ -68,6 +75,52 @@ class ListingDetailPage extends ConsumerWidget {
                 ),
               ],
             ),
+    );
+  }
+}
+
+/// The event's picture and a way to all of its offers.
+class _EventBanner extends ConsumerWidget {
+  const _EventBanner({required this.eventId});
+
+  final String eventId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final event = ref.watch(eventProvider(eventId)).value;
+    final visible = event != null && !event.hidden;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          alignment: Alignment.topCenter,
+          child: visible
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: EventImage(
+                    event: event,
+                    borderRadius: BorderRadius.circular(
+                      AppStyle.of(context).cardRadius,
+                    ),
+                  ),
+                )
+              : const SizedBox(width: double.infinity),
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FButton(
+            variant: FButtonVariant.ghost,
+            size: FButtonSizeVariant.sm,
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => context.push('/event/$eventId', extra: event),
+            suffix: const Icon(FLucideIcons.arrowRight),
+            child: Text(l10n.eventsAllOffers, overflow: TextOverflow.ellipsis),
+          ),
+        ),
+      ],
     );
   }
 }

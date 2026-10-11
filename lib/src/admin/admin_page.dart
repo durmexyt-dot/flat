@@ -167,3 +167,39 @@ class CountPill extends StatelessWidget {
     );
   }
 }
+
+/// A muted info box.
+class AdminNotice extends StatelessWidget {
+  const AdminNotice({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colors.muted,
+        borderRadius: theme.style.borderRadius.lg,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(FLucideIcons.info, size: 18, color: theme.colors.foreground),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                text,
+                style: theme.typography.body.sm.copyWith(
+                  color: theme.colors.foreground,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

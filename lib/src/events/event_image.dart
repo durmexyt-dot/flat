@@ -57,10 +57,8 @@ class EventImage extends ConsumerWidget {
         borderRadius: borderRadius,
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          layoutBuilder: (current, previous) => Stack(
-            fit: StackFit.expand,
-            children: [...previous, ?current],
-          ),
+          layoutBuilder: (current, previous) =>
+              Stack(fit: StackFit.expand, children: [...previous, ?current]),
           child: child,
         ),
       ),

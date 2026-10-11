@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../auth/auth_widgets.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_controller.dart';
@@ -185,12 +184,12 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
         ),
         _Example(fees: edited ?? current),
         const SizedBox(height: 16),
-        _Notice(text: l10n.adminFeesNotice),
+        AdminNotice(text: l10n.adminFeesNotice),
         const SizedBox(height: 24),
-        SubmitButton(
-          label: l10n.adminFeesSave,
-          loading: _saving,
-          onPressed: changed ? _save : null,
+        FButton(
+          onPress: changed && !_saving ? _save : null,
+          prefix: _saving ? FCircularProgress.loader() : null,
+          child: Text(l10n.adminFeesSave),
         ),
       ],
     );
@@ -393,42 +392,6 @@ class _Example extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// A muted info box.
-class _Notice extends StatelessWidget {
-  const _Notice({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.colors.muted,
-        borderRadius: theme.style.borderRadius.lg,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(FLucideIcons.info, size: 18, color: theme.colors.foreground),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                text,
-                style: theme.typography.body.sm.copyWith(
-                  color: theme.colors.foreground,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

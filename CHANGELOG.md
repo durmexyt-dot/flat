@@ -9,6 +9,20 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Events werden vom Admin angelegt (mit Bild); die Startseite zeigt Events,
+  die Angebote erscheinen auf der Event-Seite; Verkaufen = Event auswählen
+- Admin-Bereich: Events, Servicegebühr, Team (Support-Konten vergeben),
+  Support-Anfragen
+- Servicegebühr einstellbar; gilt nur für neu eingestellte Angebote, alte
+  Angebote und Bestellungen behalten ihre Gebühr
+- Support in der App statt per E-Mail: Anfragen mit Bildern, Verlauf,
+  Antworten des Teams, Anfrage schließen; Hinweis-Badge am Profilbild und
+  Live-Benachrichtigung bei Antworten bzw. neuen Anfragen
+
+### Sicherheit
+- Regeln für Rollen, Events, Gebühren und Support-Tickets mit Angriffstests
+
 ## [1.2.2] – 2026-10-11
 
 ### Behoben
