@@ -110,56 +110,76 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       name: _name.text,
                     ),
                   ),
+                  const SizedBox(height: 8),
                   Center(
-                    child: TextButton.icon(
-                      onPressed: () => showPhotoActions(context, ref),
-                      icon: const Icon(FLucideIcons.camera),
-                      label: Text(l10n.changePhoto),
+                    child: FButton(
+                      variant: FButtonVariant.ghost,
+                      size: FButtonSizeVariant.sm,
+                      mainAxisSize: MainAxisSize.min,
+                      onPress: () => showPhotoActions(context, ref),
+                      prefix: const Icon(FLucideIcons.camera),
+                      child: Text(l10n.changePhoto),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _name,
-                    decoration: InputDecoration(
-                      labelText: l10n.nameLabel,
-                      prefixIcon: const Icon(FLucideIcons.user),
-                    ),
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (_) => setState(() {}),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? l10n.nameRequired
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _username,
-                    decoration: InputDecoration(
-                      labelText: l10n.usernameLabel,
-                      prefixIcon: const Icon(FLucideIcons.atSign),
-                      helperText: l10n.usernameHint,
-                      helperMaxLines: 2,
-                    ),
-                    autocorrect: false,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _save(),
-                    validator: (v) {
-                      final value = (v ?? '').trim().toLowerCase();
-                      if (_usernameTaken) return l10n.usernameTaken;
-                      if (value.isNotEmpty &&
-                          !usernamePattern.hasMatch(value)) {
-                        return l10n.usernameInvalid;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    initialValue: user?.email ?? '',
-                    enabled: false,
-                    decoration: InputDecoration(
-                      labelText: l10n.emailLabel,
-                      prefixIcon: const Icon(FLucideIcons.mail),
+                  FCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          FTextFormField(
+                            control: FTextFieldControl.managed(
+                              controller: _name,
+                              onChange: (_) => setState(() {}),
+                            ),
+                            label: Text(l10n.nameLabel),
+                            prefixBuilder: (context, style, variants) =>
+                                fieldIcon(FLucideIcons.user),
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            autovalidateMode: AutovalidateMode.disabled,
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? l10n.nameRequired
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+                          FTextFormField(
+                            control: FTextFieldControl.managed(
+                              controller: _username,
+                            ),
+                            label: Text(l10n.usernameLabel),
+                            description: Text(l10n.usernameHint),
+                            prefixBuilder: (context, style, variants) =>
+                                fieldIcon(FLucideIcons.atSign),
+                            autocorrect: false,
+                            textInputAction: TextInputAction.done,
+                            onSubmit: (_) => _save(),
+                            autovalidateMode: AutovalidateMode.disabled,
+                            validator: (v) {
+                              final value = (v ?? '').trim().toLowerCase();
+                              if (_usernameTaken) return l10n.usernameTaken;
+                              if (value.isNotEmpty &&
+                                  !usernamePattern.hasMatch(value)) {
+                                return l10n.usernameInvalid;
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          FTextFormField(
+                            control: FTextFieldControl.managed(
+                              initial: TextEditingValue(
+                                text: user?.email ?? '',
+                              ),
+                            ),
+                            enabled: false,
+                            label: Text(l10n.emailLabel),
+                            prefixBuilder: (context, style, variants) =>
+                                fieldIcon(FLucideIcons.mail),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

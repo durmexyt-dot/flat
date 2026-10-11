@@ -96,8 +96,9 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                   icon: FLucideIcons.mailCheck,
                   title: l10n.requestSent,
                   message: l10n.requestSentInfo(_sentNumber!, email),
-                  action: FilledButton(
-                    onPressed: () => popOrGo(context, '/support'),
+                  action: FButton(
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: () => popOrGo(context, '/support'),
                     child: Text(l10n.done),
                   ),
                 ),
@@ -116,38 +117,46 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                         runSpacing: 8,
                         children: [
                           for (final t in SupportTopic.values)
-                            ChoiceChip(
-                              label: Text(supportTopicName(l10n, t)),
+                            FButton(
+                              size: FButtonSizeVariant.sm,
+                              mainAxisSize: MainAxisSize.min,
+                              variant: _topic == t
+                                  ? FButtonVariant.primary
+                                  : FButtonVariant.outline,
                               selected: _topic == t,
-                              onSelected: (_) => setState(() => _topic = t),
+                              onPress: () => setState(() => _topic = t),
+                              child: Text(supportTopicName(l10n, t)),
                             ),
                         ],
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _reference,
-                        decoration: InputDecoration(
-                          labelText: l10n.reference,
-                          helperText: l10n.optional,
-                          prefixIcon: const Icon(FLucideIcons.hash),
+                      FTextFormField(
+                        control: FTextFieldControl.managed(
+                          controller: _reference,
                         ),
+                        label: Text(l10n.reference),
+                        description: Text(l10n.optional),
+                        prefixBuilder: (context, style, variants) =>
+                            fieldIcon(FLucideIcons.hash),
                         textCapitalization: TextCapitalization.characters,
+                        textInputAction: TextInputAction.next,
                       ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _message,
-                        decoration: InputDecoration(
-                          labelText: l10n.message,
-                          hintText: l10n.messageHint,
-                          alignLabelWithHint: true,
+                      const SizedBox(height: 16),
+                      FTextFormField.multiline(
+                        control: FTextFieldControl.managed(
+                          controller: _message,
                         ),
+                        label: Text(l10n.message),
+                        hint: l10n.messageHint,
                         minLines: 5,
                         maxLines: 10,
                         maxLength: 2000,
+                        autovalidateMode: AutovalidateMode.disabled,
                         validator: (v) => (v ?? '').trim().length < 20
                             ? l10n.messageTooShort
                             : null,
                       ),
+                      const SizedBox(height: 16),
                       const SizedBox(height: 12),
                       SubmitButton(
                         label: l10n.send,

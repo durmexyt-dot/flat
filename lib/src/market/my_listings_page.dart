@@ -10,6 +10,7 @@ import '../ui/async_view.dart';
 import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'listing_ticket.dart';
+import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 
 enum _Filter { all, active, soldOut, ended }
@@ -50,35 +51,36 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
       accountNav: true,
       actions: [
         if (isWideLayout(context))
-          FilledButton.icon(
-            onPressed: () => context.push('/sell'),
-            icon: const Icon(FLucideIcons.plus),
-            label: Text(l10n.sellTickets),
+          FButton(
+            mainAxisSize: MainAxisSize.min,
+            onPress: () => context.push('/sell'),
+            prefix: const Icon(FLucideIcons.plus),
+            child: Text(l10n.sellTickets),
           ),
       ],
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/sell'),
-        icon: const Icon(FLucideIcons.plus),
-        label: Text(l10n.sellTickets),
+      floatingActionButton: FButton(
+        mainAxisSize: MainAxisSize.min,
+        onPress: () => context.push('/sell'),
+        prefix: const Icon(FLucideIcons.plus),
+        child: Text(l10n.sellTickets),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                for (final f in _Filter.values)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(labels[f]!),
-                      selected: _filter == f,
-                      onSelected: (_) => setState(() => _filter = f),
-                    ),
-                  ),
-              ],
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Segmented<_Filter>(
+                  values: _Filter.values,
+                  selected: _filter,
+                  label: (f) => labels[f]!,
+                  scrollable: !isWideLayout(context),
+                  onChanged: (f) => setState(() => _filter = f),
+                ),
+              ),
             ),
           ),
           Expanded(
@@ -93,8 +95,9 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                     icon: FLucideIcons.tag,
                     title: l10n.noListings,
                     message: l10n.noListingsInfo,
-                    action: FilledButton(
-                      onPressed: () => context.push('/sell'),
+                    action: FButton(
+                      mainAxisSize: MainAxisSize.min,
+                      onPress: () => context.push('/sell'),
                       child: Text(l10n.sellTickets),
                     ),
                   );

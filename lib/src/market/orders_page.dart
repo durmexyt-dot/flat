@@ -11,6 +11,7 @@ import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
+import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 
 enum _Filter { all, inProgress, completed, cancelled }
@@ -61,21 +62,20 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Row(
-              children: [
-                for (final f in _Filter.values)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(labels[f]!),
-                      selected: _filter == f,
-                      onSelected: (_) => setState(() => _filter = f),
-                    ),
-                  ),
-              ],
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 560),
+                child: Segmented<_Filter>(
+                  values: _Filter.values,
+                  selected: _filter,
+                  label: (f) => labels[f]!,
+                  scrollable: !isWideLayout(context),
+                  onChanged: (f) => setState(() => _filter = f),
+                ),
+              ),
             ),
           ),
           Expanded(

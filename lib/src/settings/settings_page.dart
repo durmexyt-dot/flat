@@ -8,6 +8,7 @@ import '../account/profile_header.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
+import '../ui/app_dialog.dart';
 import '../ui/site_scaffold.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
@@ -23,7 +24,7 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
     final user = ref.watch(authStateProvider).value;
@@ -95,36 +96,37 @@ class SettingsPage extends ConsumerWidget {
                 '${uiStyleName(l10n, settings.uiStyle)}',
             onTap: () => context.push('/settings/appearance'),
           ),
-          ListTile(
-            shape: const RoundedRectangleBorder(),
-            leading: const Icon(FLucideIcons.languages),
+          FSelectMenuTile<String>.fromMap(
+            {for (final e in languageNames.entries) e.value: e.key},
+            prefix: const Icon(FLucideIcons.languages),
             title: Text(l10n.language),
-            trailing: DropdownButton<String>(
-              value: settings.locale.languageCode,
-              underline: const SizedBox.shrink(),
-              onChanged: (code) => controller.setLocale(Locale(code!)),
-              items: [
-                for (final e in languageNames.entries)
-                  DropdownMenuItem(value: e.key, child: Text(e.value)),
-              ],
+            selectControl: .lifted(
+              value: {settings.locale.languageCode},
+              onChange: (codes) {
+                final next = codes.difference({settings.locale.languageCode});
+                if (next.isNotEmpty) controller.setLocale(Locale(next.first));
+              },
+            ),
+            menuIntrinsicWidth: true,
+            detailsBuilder: (context, _, _) => Text(
+              languageNames[settings.locale.languageCode] ??
+                  settings.locale.languageCode,
             ),
           ),
-          ListTile(
-            shape: const RoundedRectangleBorder(),
-            leading: const Icon(FLucideIcons.banknote),
+          FSelectMenuTile<Currency>.fromMap(
+            {for (final c in Currency.values) _currencyLabel(c): c},
+            prefix: const Icon(FLucideIcons.banknote),
             title: Text(l10n.currency),
-            trailing: DropdownButton<Currency>(
-              value: settings.currency,
-              underline: const SizedBox.shrink(),
-              onChanged: (c) => controller.setCurrency(c!),
-              items: [
-                for (final c in Currency.values)
-                  DropdownMenuItem(
-                    value: c,
-                    child: Text('${c.code} (${c.symbol})'),
-                  ),
-              ],
+            selectControl: .lifted(
+              value: {settings.currency},
+              onChange: (values) {
+                final next = values.difference({settings.currency});
+                if (next.isNotEmpty) controller.setCurrency(next.first);
+              },
             ),
+            menuIntrinsicWidth: true,
+            detailsBuilder: (context, _, _) =>
+                Text(_currencyLabel(settings.currency)),
           ),
         ],
       ),
@@ -145,13 +147,7 @@ class SettingsPage extends ConsumerWidget {
           SettingsLinkTile(
             icon: FLucideIcons.info,
             title: l10n.about,
-            onTap: () => showAboutDialog(
-              context: context,
-              applicationName: 'Stubswap',
-              applicationVersion: appVersion,
-              applicationIcon: const BrandMark(size: 48),
-              children: [Text(l10n.aboutText)],
-            ),
+            onTap: () => _showAbout(context),
           ),
         ],
       ),
@@ -169,16 +165,10 @@ class SettingsPage extends ConsumerWidget {
               title: l10n.privacySecurity,
               trailing: user.emailVerified
                   ? null
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          FLucideIcons.circleAlert,
-                          size: 18,
-                          color: theme.colorScheme.error,
-                        ),
-                        const Icon(FLucideIcons.chevronRight),
-                      ],
+                  : Icon(
+                      FLucideIcons.circleAlert,
+                      size: 18,
+                      color: theme.colors.destructive,
                     ),
               onTap: () => context.push('/settings/privacy'),
             ),
@@ -187,17 +177,11 @@ class SettingsPage extends ConsumerWidget {
         const SizedBox(height: 24),
         SettingsGroup(
           children: [
-            ListTile(
-              shape: const RoundedRectangleBorder(),
-              leading: Icon(
-                FLucideIcons.logOut,
-                color: theme.colorScheme.error,
-              ),
-              title: Text(
-                l10n.logoutButton,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
-              onTap: () async {
+            FTile(
+              variant: .destructive,
+              prefix: const Icon(FLucideIcons.logOut),
+              title: Text(l10n.logoutButton),
+              onPress: () async {
                 await ref.read(authRepositoryProvider).signOut();
                 if (context.mounted) context.go('/login');
               },
@@ -224,10 +208,8 @@ class SettingsPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (user != null)
-                      Card.filled(
-                        margin: EdgeInsets.zero,
-                        color: theme.colorScheme.surfaceContainerLow,
-                        child: const Padding(
+                      const FCard(
+                        child: Padding(
                           padding: EdgeInsets.all(24),
                           child: ProfileHeader(horizontal: true),
                         ),
@@ -248,6 +230,55 @@ class SettingsPage extends ConsumerWidget {
   }
 }
 
+String _currencyLabel(Currency c) => '${c.code} (${c.symbol})';
+
+/// App name, version and description, with a link to the licenses.
+void _showAbout(BuildContext context) {
+  final l10n = AppLocalizations.of(context);
+  final material = MaterialLocalizations.of(context);
+  showAppDialog<void>(
+    context: context,
+    title: 'Stubswap',
+    body: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const BrandMark(size: 48),
+            const SizedBox(width: 12),
+            Text(
+              appVersion,
+              style: context.theme.typography.body.sm.copyWith(
+                color: context.theme.colors.mutedForeground,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(l10n.aboutText),
+      ],
+    ),
+    actions: (ctx) => [
+      FButton(
+        variant: .ghost,
+        onPress: () => showLicensePage(
+          context: ctx,
+          applicationName: 'Stubswap',
+          applicationVersion: appVersion,
+          applicationIcon: const BrandMark(size: 48),
+        ),
+        child: Text(material.viewLicensesButtonLabel),
+      ),
+      FButton(
+        variant: .outline,
+        onPress: () => Navigator.pop(ctx),
+        child: Text(material.closeButtonLabel),
+      ),
+    ],
+  );
+}
+
 class _GuestCard extends StatelessWidget {
   const _GuestCard({required this.onSignIn});
 
@@ -256,33 +287,38 @@ class _GuestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: theme.colorScheme.surfaceContainerLow,
+    final theme = context.theme;
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            FAvatar.raw(
+              size: 64,
               child: Icon(
                 FLucideIcons.user,
                 size: 32,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: theme.colors.mutedForeground,
               ),
             ),
             const SizedBox(height: 12),
-            Text(l10n.guest, style: theme.textTheme.titleLarge),
+            Text(
+              l10n.guest,
+              style: theme.typography.body.lg.copyWith(
+                color: theme.colors.foreground,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               l10n.guestSignInPrompt,
               textAlign: TextAlign.center,
-              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.typography.body.sm.copyWith(
+                color: theme.colors.mutedForeground,
+              ),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onSignIn, child: Text(l10n.signInOrUp)),
+            FButton(onPress: onSignIn, child: Text(l10n.signInOrUp)),
           ],
         ),
       ),

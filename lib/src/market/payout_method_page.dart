@@ -106,7 +106,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     // The saved method may arrive after the page opened: fill it in then,
     // unless the user already started typing.
     ref.listen(payoutMethodProvider, (_, next) {
@@ -130,41 +130,53 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
             children: [
               Text(
                 l10n.payoutMethodInfo,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                style: theme.typography.body.sm.copyWith(
+                  color: theme.colors.mutedForeground,
                 ),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _holder,
-                decoration: InputDecoration(
-                  labelText: l10n.accountHolder,
-                  prefixIcon: const Icon(FLucideIcons.user),
+              FCard(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FTextFormField(
+                        control: FTextFieldControl.managed(controller: _holder),
+                        label: Text(l10n.accountHolder),
+                        prefixBuilder: (context, style, variants) =>
+                            fieldIcon(FLucideIcons.user),
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
+                        autovalidateMode: AutovalidateMode.disabled,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? l10n.required
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      FTextFormField(
+                        control: FTextFieldControl.managed(controller: _iban),
+                        label: Text(l10n.iban),
+                        hint: 'BA39 1290 0794 0102 8494',
+                        prefixBuilder: (context, style, variants) =>
+                            fieldIcon(FLucideIcons.landmark),
+                        // No autocorrect, suggestions or smart punctuation: iOS would
+                        // otherwise change letters and digits of the IBAN.
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        smartDashesType: SmartDashesType.disabled,
+                        smartQuotesType: SmartQuotesType.disabled,
+                        textCapitalization: TextCapitalization.characters,
+                        autofillHints: const [],
+                        inputFormatters: [IbanFormatter()],
+                        onSubmit: (_) => _save(),
+                        autovalidateMode: AutovalidateMode.disabled,
+                        validator: (v) =>
+                            isValidIban(v ?? '') ? null : l10n.ibanInvalid,
+                      ),
+                    ],
+                  ),
                 ),
-                textCapitalization: TextCapitalization.words,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? l10n.required : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _iban,
-                decoration: InputDecoration(
-                  labelText: l10n.iban,
-                  hintText: 'BA39 1290 0794 0102 8494',
-                  prefixIcon: const Icon(FLucideIcons.landmark),
-                ),
-                // No autocorrect, suggestions or smart punctuation: iOS would
-                // otherwise change letters and digits of the IBAN.
-                autocorrect: false,
-                enableSuggestions: false,
-                smartDashesType: SmartDashesType.disabled,
-                smartQuotesType: SmartQuotesType.disabled,
-                textCapitalization: TextCapitalization.characters,
-                autofillHints: const [],
-                inputFormatters: [IbanFormatter()],
-                onFieldSubmitted: (_) => _save(),
-                validator: (v) =>
-                    isValidIban(v ?? '') ? null : l10n.ibanInvalid,
               ),
               const SizedBox(height: 24),
               SubmitButton(

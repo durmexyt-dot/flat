@@ -78,8 +78,9 @@ class OrderDetailPage extends ConsumerWidget {
                 SettingsSectionTitle(l10n.invoice),
                 _Invoice(order: order, role: role),
                 const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => context.push(
+                FButton(
+                  variant: FButtonVariant.outline,
+                  onPress: () => context.push(
                     '/support/new',
                     extra: SupportContext(
                       topic: role == OrderRole.buyer
@@ -88,16 +89,17 @@ class OrderDetailPage extends ConsumerWidget {
                       reference: order.number,
                     ),
                   ),
-                  icon: const Icon(FLucideIcons.headset),
-                  label: Text(l10n.getHelpOrder),
+                  prefix: const Icon(FLucideIcons.headset),
+                  child: Text(l10n.getHelpOrder),
                 ),
                 if (role == OrderRole.seller &&
                     order.status == OrderStatus.completed) ...[
                   const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => context.push('/account/payouts'),
-                    icon: const Icon(FLucideIcons.landmark),
-                    label: Text(l10n.payouts),
+                  FButton(
+                    variant: FButtonVariant.outline,
+                    onPress: () => context.push('/account/payouts'),
+                    prefix: const Icon(FLucideIcons.landmark),
+                    child: Text(l10n.payouts),
                   ),
                 ],
               ],
@@ -175,7 +177,7 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
   }
 }
 
-/// What happens next, colored by the status tone.
+/// What happens next; only problems get the destructive alert style.
 class NextStepCard extends StatelessWidget {
   const NextStepCard({super.key, required this.text, required this.tone});
 
@@ -185,53 +187,21 @@ class NextStepCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final c = Theme.of(context).colorScheme;
-    final (bg, fg, icon) = switch (tone) {
-      StatusTone.negative => (
-        c.errorContainer,
-        c.onErrorContainer,
-        FLucideIcons.octagonAlert,
-      ),
-      // Neutral card; only problems get a colored surface.
-      StatusTone.positive => (
-        c.surfaceContainerHigh,
-        c.onSurface,
-        FLucideIcons.circleCheck,
-      ),
-      StatusTone.neutral => (
-        c.surfaceContainerHigh,
-        c.onSurface,
-        FLucideIcons.info,
-      ),
-      _ => (c.surfaceContainerHigh, c.onSurface, FLucideIcons.clock),
+    final icon = switch (tone) {
+      StatusTone.negative => FLucideIcons.octagonAlert,
+      StatusTone.positive => FLucideIcons.circleCheck,
+      StatusTone.neutral => FLucideIcons.info,
+      _ => FLucideIcons.clock,
     };
-    return AnimatedContainer(
+    final negative = tone == StatusTone.negative;
+    return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: fg),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.whatsNext,
-                  style: Theme.of(context).textTheme.labelLarge
-                      ?.copyWith(color: fg),
-                ),
-                const SizedBox(height: 2),
-                Text(text, style: TextStyle(color: fg)),
-              ],
-            ),
-          ),
-        ],
+      child: FAlert(
+        key: ValueKey(tone),
+        variant: negative ? FAlertVariant.destructive : FAlertVariant.primary,
+        icon: Icon(icon),
+        title: Text(l10n.whatsNext),
+        subtitle: Text(text),
       ),
     );
   }
@@ -246,9 +216,14 @@ class _Invoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final body = theme.typography.body;
     String money(int m) => formatMoney(context, m, order.currency);
     final seats = seatText(l10n, order.section, order.row, order.seats);
+    const divider = FDivider(
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 12))),
+    );
 
     Widget row(String label, String value, {bool strong = false}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -259,8 +234,11 @@ class _Invoice extends StatelessWidget {
             child: Text(
               label,
               style: strong
-                  ? theme.textTheme.titleSmall
-                  : theme.textTheme.bodyMedium,
+                  ? body.sm.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.foreground,
+                    )
+                  : body.sm.copyWith(color: colors.mutedForeground),
             ),
           ),
           const SizedBox(width: 12),
@@ -268,19 +246,17 @@ class _Invoice extends StatelessWidget {
             value,
             textAlign: TextAlign.end,
             style: strong
-                ? theme.textTheme.titleMedium?.copyWith(
+                ? body.lg.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: theme.colorScheme.onSurface,
+                    color: colors.foreground,
                   )
-                : theme.textTheme.bodyMedium,
+                : body.sm.copyWith(color: colors.foreground),
           ),
         ],
       ),
     );
 
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: theme.colorScheme.surfaceContainerLow,
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -294,36 +270,46 @@ class _Invoice extends StatelessWidget {
                     children: [
                       Text(
                         l10n.orderNumber,
-                        style: theme.textTheme.labelMedium,
+                        style: body.xs.copyWith(
+                          color: colors.mutedForeground,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       SelectableText(
                         order.number,
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: body.lg.copyWith(
                           letterSpacing: 1,
                           fontWeight: FontWeight.w700,
+                          color: colors.foreground,
                         ),
                       ),
                     ],
                   ),
                 ),
-                IconButton(
-                  tooltip: l10n.copy,
-                  icon: const Icon(FLucideIcons.copy),
-                  onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: order.number));
-                    showSnack(l10n.copied);
-                  },
+                FTooltip(
+                  tipBuilder: (context, _) => Text(l10n.copy),
+                  child: FButton.icon(
+                    variant: FButtonVariant.ghost,
+                    semanticsLabel: l10n.copy,
+                    onPress: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: order.number),
+                      );
+                      showSnack(l10n.copied);
+                    },
+                    child: const Icon(FLucideIcons.copy),
+                  ),
                 ),
               ],
             ),
-            const Divider(height: 24),
+            divider,
             if (order.createdAt case final at?)
               row(l10n.orderDate, formatDateTime(context, at)),
             row(l10n.ticketType, ticketTypeName(l10n, order.ticketType)),
             if (seats.isNotEmpty) row(l10n.seats, seats),
             if (role == OrderRole.buyer && order.paymentMethod.isNotEmpty)
               row(l10n.paymentMethod, order.paymentMethod),
-            const Divider(height: 24),
+            divider,
             if (role == OrderRole.buyer) ...[
               row(
                 '${order.quantity} × ${money(order.unitPriceMinor)}',
@@ -333,7 +319,7 @@ class _Invoice extends StatelessWidget {
                 '${l10n.serviceFee} (${Fees.buyerPercent} %)',
                 money(order.buyerFeeMinor),
               ),
-              const Divider(height: 24),
+              divider,
               row(l10n.total, money(order.totalMinor), strong: true),
             ] else ...[
               row(l10n.saleAmount, money(order.subtotalMinor)),
@@ -341,7 +327,7 @@ class _Invoice extends StatelessWidget {
                 '${l10n.sellerFeeLabel} (${Fees.sellerPercent} %)',
                 '− ${money(order.sellerFeeMinor)}',
               ),
-              const Divider(height: 24),
+              divider,
               row(
                 l10n.yourEarnings,
                 money(order.sellerEarningsMinor),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -31,7 +32,9 @@ class EventTicket extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final type = theme.typography;
     final (day, month) = formatStubDate(context, event.date);
     final time = TimeOfDay.fromDateTime(event.date).format(context);
 
@@ -44,19 +47,24 @@ class EventTicket extends StatelessWidget {
           children: [
             Text(
               day,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: type.display.xl.copyWith(
                 fontWeight: FontWeight.w800,
-                color: theme.colorScheme.onSurfaceVariant,
+                color: colors.foreground,
                 height: 1,
               ),
             ),
-            Text(month, style: theme.textTheme.labelMedium),
+            Text(
+              month,
+              style: type.body.xs.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colors.mutedForeground,
+                letterSpacing: 0.8,
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               time,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: type.body.xs.copyWith(color: colors.mutedForeground),
             ),
           ],
         ),
@@ -70,7 +78,7 @@ class EventTicket extends StatelessWidget {
                 Icon(
                   categoryIcon(event.category),
                   size: 18,
-                  color: theme.colorScheme.onSurface,
+                  color: colors.foreground,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -78,8 +86,9 @@ class EventTicket extends StatelessWidget {
                     event.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    style: type.body.md.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colors.foreground,
                     ),
                   ),
                 ),
@@ -91,9 +100,7 @@ class EventTicket extends StatelessWidget {
               [event.venue, event.city].where((s) => s.isNotEmpty).join(' · '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: type.body.sm.copyWith(color: colors.mutedForeground),
             ),
             ...lines,
           ],
@@ -130,7 +137,8 @@ class ListingTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final colors = context.theme.colors;
+    final type = context.theme.typography;
     final seats = seatText(l10n, listing.section, listing.row, listing.seats);
 
     return EventTicket(
@@ -152,14 +160,14 @@ class ListingTicket extends StatelessWidget {
           children: [
             Text(
               formatMoney(context, listing.priceMinor, listing.currency),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w800,
+              style: type.body.lg.copyWith(
+                color: colors.foreground,
+                fontWeight: FontWeight.w700,
               ),
             ),
             Text(
               l10n.ticketsLeft('${listing.available}', '${listing.quantity}'),
-              style: theme.textTheme.bodySmall,
+              style: type.body.xs.copyWith(color: colors.mutedForeground),
             ),
           ],
         ),
@@ -168,9 +176,7 @@ class ListingTicket extends StatelessWidget {
             seats,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: type.body.xs.copyWith(color: colors.mutedForeground),
           ),
       ],
     );

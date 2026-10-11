@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
@@ -24,7 +25,8 @@ class OrderTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final colors = context.theme.colors;
+    final type = context.theme.typography;
     final amount = role == OrderRole.buyer
         ? order.totalMinor
         : order.sellerEarningsMinor;
@@ -47,21 +49,21 @@ class OrderTicket extends StatelessWidget {
           children: [
             Text(
               formatMoney(context, amount, order.currency),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w800,
+              style: type.body.lg.copyWith(
+                color: colors.foreground,
+                fontWeight: FontWeight.w700,
               ),
             ),
             Text(
               l10n.ticketsCount('${order.quantity}'),
-              style: theme.textTheme.bodySmall,
+              style: type.body.xs.copyWith(color: colors.mutedForeground),
             ),
           ],
         ),
         Text(
           order.number,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+          style: type.body.xs.copyWith(
+            color: colors.mutedForeground,
             letterSpacing: 0.8,
           ),
         ),

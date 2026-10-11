@@ -8,7 +8,6 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../support/contact_support_page.dart';
-import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
 import '../ui/hero_tags.dart';
@@ -110,7 +109,8 @@ class _Summary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
     final currency = payouts.firstOrNull?.currency ?? 'BAM';
     int sum(bool Function(Payout) f) =>
         payouts.where(f).fold(0, (total, p) => total + p.amountMinor);
@@ -123,11 +123,17 @@ class _Summary extends StatelessWidget {
     );
     final paid = sum((p) => p.status == PayoutStatus.paid);
 
-    Widget figure(String label, int minor, Color color) => Expanded(
+    Widget figure(String label, int minor) => Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: theme.textTheme.labelMedium),
+          Text(
+            label,
+            style: theme.typography.body.xs.copyWith(
+              color: colors.mutedForeground,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 4),
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: minor.toDouble()),
@@ -135,9 +141,9 @@ class _Summary extends StatelessWidget {
             curve: Curves.easeOutCubic,
             builder: (context, v, _) => Text(
               formatMoney(context, v.round(), currency),
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: theme.typography.display.sm.copyWith(
                 fontWeight: FontWeight.w800,
-                color: color,
+                color: colors.foreground,
               ),
             ),
           ),
@@ -145,15 +151,13 @@ class _Summary extends StatelessWidget {
       ),
     );
 
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: theme.colorScheme.surfaceContainerLow,
+    return FCard(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            figure(l10n.payoutsUpcoming, upcoming, theme.colorScheme.onSurface),
-            figure(l10n.payoutsPaidTotal, paid, theme.colorScheme.onSurface),
+            figure(l10n.payoutsUpcoming, upcoming),
+            figure(l10n.payoutsPaidTotal, paid),
           ],
         ),
       ),
@@ -167,22 +171,20 @@ class _MethodCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final colors = context.theme.colors;
     final method = ref.watch(payoutMethodProvider).value;
     return SettingsGroup(
       children: [
-        ListTile(
-          shape: const RoundedRectangleBorder(),
-          leading: Icon(
+        FTile(
+          prefix: Icon(
             method == null ? FLucideIcons.circleAlert : FLucideIcons.landmark,
-            color: method == null ? theme.colorScheme.error : null,
+            color: method == null ? colors.destructive : null,
           ),
           title: Text(l10n.payoutMethod),
           subtitle: Text(method?.masked ?? l10n.payoutMethodMissing),
-          trailing: TextButton(
-            onPressed: () => context.push('/account/payout-method'),
-            child: Text(method == null ? l10n.setUpPayout : l10n.change),
-          ),
+          details: Text(method == null ? l10n.setUpPayout : l10n.change),
+          suffix: const Icon(FLucideIcons.chevronRight),
+          onPress: () => context.push('/account/payout-method'),
         ),
       ],
     );
@@ -199,73 +201,68 @@ class PayoutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final body = theme.typography.body;
     final when = payout.status == PayoutStatus.paid
         ? payout.reachedAt(PayoutStatus.paid)
         : payout.expectedAt;
 
+    final card = FCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            FAvatar.raw(
+              size: 40,
+              child: Icon(
+                FLucideIcons.landmark,
+                size: 20,
+                color: colors.mutedForeground,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    formatMoney(context, payout.amountMinor, payout.currency),
+                    style: body.lg.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: colors.foreground,
+                    ),
+                  ),
+                  if (when != null)
+                    Text(
+                      payout.status == PayoutStatus.paid
+                          ? formatDate(context, when)
+                          : l10n.expectedOn(formatDate(context, when)),
+                      style: body.sm.copyWith(color: colors.foreground),
+                    ),
+                  Text(
+                    payout.orderNumbers.join(', '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: body.xs.copyWith(color: colors.mutedForeground),
+                  ),
+                ],
+              ),
+            ),
+            StatusChip(
+              label: payoutStatusName(l10n, payout.status),
+              tone: payoutTone(payout.status),
+            ),
+          ],
+        ),
+      ),
+    );
+
     return Hero(
       tag: HeroTags.payout(payout.id),
       child: Material(
-        color: theme.colorScheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppStyle.of(context).cardRadius),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    FLucideIcons.landmark,
-                    color: theme.colorScheme.onSecondaryContainer,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        formatMoney(
-                          context,
-                          payout.amountMinor,
-                          payout.currency,
-                        ),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      if (when != null)
-                        Text(
-                          payout.status == PayoutStatus.paid
-                              ? formatDate(context, when)
-                              : l10n.expectedOn(formatDate(context, when)),
-                          style: theme.textTheme.bodySmall,
-                        ),
-                      Text(
-                        payout.orderNumbers.join(', '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                StatusChip(
-                  label: payoutStatusName(l10n, payout.status),
-                  tone: payoutTone(payout.status),
-                ),
-              ],
-            ),
-          ),
-        ),
+        type: MaterialType.transparency,
+        child: onTap == null ? card : FTappable(onPress: onTap, child: card),
       ),
     );
   }
@@ -306,8 +303,9 @@ class PayoutDetailPage extends ConsumerWidget {
                 ),
                 if (payout.failureReason.isNotEmpty) ...[
                   const SizedBox(height: 12),
-                  ListTile(
-                    leading: const Icon(FLucideIcons.info),
+                  FAlert(
+                    variant: FAlertVariant.destructive,
+                    icon: const Icon(FLucideIcons.info),
                     title: Text(l10n.failureReason),
                     subtitle: Text(payout.failureReason),
                   ),
@@ -315,30 +313,29 @@ class PayoutDetailPage extends ConsumerWidget {
                 SettingsSectionTitle(l10n.statusHistory),
                 StatusTimeline(steps: payoutTimeline(context, payout)),
                 const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => context.push(
+                FButton(
+                  variant: FButtonVariant.outline,
+                  onPress: () => context.push(
                     '/support/new',
                     extra: SupportContext(
                       topic: SupportTopic.payout,
                       reference: payout.orderNumbers.join(', '),
                     ),
                   ),
-                  icon: const Icon(FLucideIcons.headset),
-                  label: Text(l10n.getHelpPayout),
+                  prefix: const Icon(FLucideIcons.headset),
+                  child: Text(l10n.getHelpPayout),
                 ),
                 SettingsSectionTitle(l10n.payoutOrders),
                 SettingsGroup(
                   children: [
                     for (final n in payout.orderNumbers)
-                      ListTile(
-                        shape: const RoundedRectangleBorder(),
-                        leading: const Icon(FLucideIcons.receipt),
+                      FTile(
+                        prefix: const Icon(FLucideIcons.receipt),
                         title: Text(n),
                       ),
                     if (payout.method.isNotEmpty)
-                      ListTile(
-                        shape: const RoundedRectangleBorder(),
-                        leading: const Icon(FLucideIcons.landmark),
+                      FTile(
+                        prefix: const Icon(FLucideIcons.landmark),
                         title: Text(l10n.payoutMethod),
                         subtitle: Text(payout.method),
                       ),

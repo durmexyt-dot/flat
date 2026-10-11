@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import 'app_style.dart';
 
@@ -107,50 +108,71 @@ class TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.theme.colors;
     final style = AppStyle.of(context);
     const notch = 10.0;
+    final base = color ?? colors.card;
 
-    return Material(
-      color: color ?? theme.colorScheme.surfaceContainerLow,
-      shape: TicketBorder(
-        radius: style.cardRadius,
-        notchRadius: notch,
-        stubWidth: stubWidth,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Padding(padding: const EdgeInsets.all(14), child: child),
-              ),
-              SizedBox(
-                width: 2,
-                child: CustomPaint(
-                  painter: _PerforationPainter(
-                    theme.colorScheme.outlineVariant,
-                    notch + 4,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: stubWidth - 1,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 14,
-                  ),
-                  child: Center(child: stub),
-                ),
-              ),
-            ],
-          ),
+    Widget ticket(Color fill) => DecoratedBox(
+      decoration: ShapeDecoration(
+        color: fill,
+        shape: TicketBorder(
+          radius: style.cardRadius,
+          notchRadius: notch,
+          stubWidth: stubWidth,
+          side: BorderSide(color: colors.border),
         ),
       ),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(padding: const EdgeInsets.all(14), child: child),
+            ),
+            SizedBox(
+              width: 2,
+              child: CustomPaint(
+                painter: _PerforationPainter(colors.border, notch + 4),
+              ),
+            ),
+            SizedBox(
+              width: stubWidth - 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 14,
+                ),
+                child: Center(child: stub),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Transparent Material keeps text styled while the ticket flies as a Hero.
+    return Material(
+      type: MaterialType.transparency,
+      child: onTap == null
+          ? ticket(base)
+          : FTappable(
+              onPress: onTap,
+              builder: (context, variants, _) => TweenAnimationBuilder<Color?>(
+                duration: const Duration(milliseconds: 150),
+                tween: ColorTween(
+                  end:
+                      variants.contains(FTappableVariant.hovered) ||
+                          variants.contains(FTappableVariant.pressed)
+                      ? Color.alphaBlend(
+                          colors.muted.withValues(alpha: 0.6),
+                          base,
+                        )
+                      : base,
+                ),
+                builder: (context, fill, _) => ticket(fill ?? base),
+              ),
+            ),
     );
   }
 }

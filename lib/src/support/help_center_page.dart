@@ -15,7 +15,7 @@ class HelpCenterPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final signedIn = ref.watch(currentUidProvider) != null;
     final buyer = '${Fees.buyerPercent}';
     final seller = '${Fees.sellerPercent}';
@@ -48,45 +48,57 @@ class HelpCenterPage extends ConsumerWidget {
         children: [
           for (final (title, faqs) in sections) ...[
             SettingsSectionTitle(title),
-            SettingsGroup(
-              children: [
-                for (final (q, a) in faqs)
-                  ExpansionTile(
-                    shape: const RoundedRectangleBorder(),
-                    collapsedShape: const RoundedRectangleBorder(),
-                    title: Text(q),
-                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    expandedAlignment: Alignment.centerLeft,
-                    children: [
-                      Text(
-                        a,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+            FCard(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: FAccordion(
+                  children: [
+                    for (final (q, a) in faqs)
+                      FAccordionItem(
+                        title: Text(q),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            a,
+                            style: theme.typography.body.sm.copyWith(
+                              color: theme.colors.mutedForeground,
+                            ),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-              ],
+                  ],
+                ),
+              ),
             ),
           ],
           const SizedBox(height: 24),
-          Card.filled(
-            margin: EdgeInsets.zero,
-            color: theme.colorScheme.surfaceContainerLow,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.colors.muted,
+              borderRadius: theme.style.borderRadius.lg,
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Icon(
                     FLucideIcons.headset,
                     size: 40,
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: theme.colors.mutedForeground,
                   ),
                   const SizedBox(height: 8),
-                  Text(l10n.stillNeedHelp, style: theme.textTheme.titleMedium),
+                  Text(
+                    l10n.stillNeedHelp,
+                    textAlign: TextAlign.center,
+                    style: theme.typography.body.md.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colors.foreground,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: () => signedIn
+                  FButton(
+                    mainAxisSize: MainAxisSize.min,
+                    onPress: () => signedIn
                         ? context.push('/support/new')
                         : context.go('/login'),
                     child: Text(

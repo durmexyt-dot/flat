@@ -14,31 +14,42 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
   if (uid == null) return;
   final hasPhoto = ref.read(profileProvider).value?.photoBase64 != null;
 
-  final action = await showModalBottomSheet<String>(
+  final action = await showFSheet<String>(
     context: context,
-    showDragHandle: true,
-    builder: (context) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(FLucideIcons.images),
-            title: Text(l10n.changePhoto),
-            onTap: () => Navigator.pop(context, 'change'),
-          ),
-          if (hasPhoto)
-            ListTile(
-              leading: Icon(
-                FLucideIcons.trash2,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(l10n.removePhoto),
-              onTap: () => Navigator.pop(context, 'remove'),
+    side: FLayout.btt,
+    mainAxisMaxRatio: null,
+    builder: (context) {
+      final theme = context.theme;
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: theme.colors.background,
+          border: Border(top: BorderSide(color: theme.colors.border)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FTileGroup(
+              children: [
+                FTile(
+                  prefix: const Icon(FLucideIcons.images),
+                  title: Text(l10n.changePhoto),
+                  onPress: () => Navigator.pop(context, 'change'),
+                ),
+                if (hasPhoto)
+                  FTile(
+                    variant: FItemVariant.destructive,
+                    prefix: const Icon(FLucideIcons.trash2),
+                    title: Text(l10n.removePhoto),
+                    onPress: () => Navigator.pop(context, 'remove'),
+                  ),
+              ],
             ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    ),
+          ),
+        ),
+      );
+    },
   );
   if (action == null || !context.mounted) return;
 

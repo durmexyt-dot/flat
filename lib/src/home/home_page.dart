@@ -31,7 +31,17 @@ class _HomePageState extends ConsumerState<HomePage> {
   EventCategory? _category;
 
   @override
+  void initState() {
+    super.initState();
+    // Rebuild on typing and when the clear button empties the field.
+    _search.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() => setState(() {});
+
+  @override
   void dispose() {
+    _search.removeListener(_onSearchChanged);
     _search.dispose();
     super.dispose();
   }
@@ -69,11 +79,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       title: l10n.navEvents,
       showTitle: false,
       maxWidth: SiteWidth.wide,
-      narrowAppBar: _narrowAppBar(context),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _sell,
-        icon: const Icon(FLucideIcons.tag),
-        label: Text(l10n.sellTickets),
+      narrowHeader: _narrowHeader(context),
+      floatingActionButton: FButton(
+        mainAxisSize: MainAxisSize.min,
+        onPress: _sell,
+        prefix: const Icon(FLucideIcons.tag),
+        child: Text(l10n.sellTickets),
       ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(activeListingsProvider),
@@ -92,10 +103,14 @@ class _HomePageState extends ConsumerState<HomePage> {
             const SizedBox(height: 24),
             Text(
               l10n.upcomingEvents,
-              style: wide
-                  ? Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w700)
-                  : Theme.of(context).textTheme.titleMedium,
+              style:
+                  (wide
+                          ? context.theme.typography.display.xl
+                          : context.theme.typography.body.lg)
+                      .copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: context.theme.colors.foreground,
+                      ),
             ),
             const SizedBox(height: 12),
             _listings(context),
@@ -105,37 +120,38 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  PreferredSizeWidget _narrowAppBar(BuildContext context) {
+  Widget _narrowHeader(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider).value;
-    return AppBar(
-      titleSpacing: 16,
+    return FHeader(
       title: const Align(
         alignment: Alignment.centerLeft,
         child: BrandHeader(markSize: 32, wordmarkHeight: 22),
       ),
-      actions: [
+      suffixes: [
         if (user == null)
           const SettingsButton()
         else
-          IconButton(
-            tooltip: l10n.settingsTitle,
-            onPressed: () => context.push('/settings'),
-            icon: UserAvatar(
-              size: 34,
-              photoBase64: profile?.photoBase64,
-              name: profile?.displayName ?? user.displayName ?? user.email,
+          FTooltip(
+            tipBuilder: (context, _) => Text(l10n.settingsTitle),
+            child: FTappable(
+              semanticsLabel: l10n.settingsTitle,
+              onPress: () => context.push('/settings'),
+              child: UserAvatar(
+                size: 34,
+                photoBase64: profile?.photoBase64,
+                name: profile?.displayName ?? user.displayName ?? user.email,
+              ),
             ),
           ),
-        const SizedBox(width: 4),
       ],
     );
   }
 
   Widget _narrowIntro(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final theme = context.theme;
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider).value;
     final name =
@@ -147,15 +163,16 @@ class _HomePageState extends ConsumerState<HomePage> {
       children: [
         Text(
           user == null ? l10n.homeGuest : l10n.homeGreeting(name),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+          style: theme.typography.body.md.copyWith(
+            color: theme.colors.mutedForeground,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           l10n.homeHeadline,
-          style: theme.textTheme.headlineSmall?.copyWith(
+          style: theme.typography.display.xl.copyWith(
             fontWeight: FontWeight.w700,
+            color: theme.colors.foreground,
           ),
         ),
         const SizedBox(height: 16),
@@ -167,13 +184,13 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// A landing section like on a website: big headline and a wide search.
   Widget _wideIntro(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final type = context.theme.typography;
+    final colors = context.theme.colors;
     return Container(
       padding: const EdgeInsets.fromLTRB(40, 40, 40, 32),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppStyle.of(context).cardRadius),
-        color: colors.surfaceContainerLow,
+        color: colors.muted,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,9 +199,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             constraints: const BoxConstraints(maxWidth: 720),
             child: Text(
               l10n.heroTitle,
-              style: theme.textTheme.displaySmall?.copyWith(
+              style: type.display.xl3.copyWith(
                 fontWeight: FontWeight.w800,
-                color: colors.onSurface,
+                color: colors.foreground,
                 height: 1.1,
               ),
             ),
@@ -192,9 +209,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           const SizedBox(height: 12),
           Text(
             l10n.heroSubtitle,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
+            style: type.body.lg.copyWith(color: colors.mutedForeground),
           ),
           const SizedBox(height: 28),
           ConstrainedBox(
@@ -208,22 +223,13 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _searchBar(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return SearchBar(
-      controller: _search,
-      hintText: l10n.searchHint,
-      leading: const Icon(FLucideIcons.search),
-      trailing: [
-        if (_search.text.isNotEmpty)
-          IconButton(
-            icon: const Icon(FLucideIcons.x),
-            onPressed: () => setState(_search.clear),
-          ),
-      ],
-      onChanged: (_) => setState(() {}),
-      elevation: const WidgetStatePropertyAll(0),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 16),
-      ),
+    return FTextField(
+      control: FTextFieldControl.managed(controller: _search),
+      hint: l10n.searchHint,
+      textInputAction: TextInputAction.search,
+      prefixBuilder: (context, style, variants) =>
+          fieldIcon(FLucideIcons.search),
+      clearable: (value) => value.text.isNotEmpty,
     );
   }
 
@@ -232,18 +238,21 @@ class _HomePageState extends ConsumerState<HomePage> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
+        spacing: 8,
         children: [
           for (final c in EventCategory.values.where(
             (c) => c != EventCategory.other,
           ))
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: FilterChip(
-                avatar: Icon(categoryIcon(c), size: 18),
-                label: Text(categoryName(l10n, c)),
-                selected: _category == c,
-                onSelected: (on) => setState(() => _category = on ? c : null),
-              ),
+            FButton(
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              variant: _category == c
+                  ? FButtonVariant.primary
+                  : FButtonVariant.outline,
+              prefix: Icon(categoryIcon(c)),
+              onPress: () =>
+                  setState(() => _category = _category == c ? null : c),
+              child: Text(categoryName(l10n, c)),
             ),
         ],
       ),
@@ -252,19 +261,32 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _guestBanner(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = Theme.of(context).colorScheme;
-    return Card.filled(
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerHigh,
+    final colors = context.theme.colors;
+    return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
         child: Row(
           children: [
-            Icon(FLucideIcons.lockOpen, color: colors.onSurfaceVariant),
+            Icon(
+              FLucideIcons.lockOpen,
+              size: 20,
+              color: colors.mutedForeground,
+            ),
             const SizedBox(width: 12),
-            Expanded(child: Text(l10n.guestSignInPrompt)),
-            TextButton(
-              onPressed: () => ref.read(guestModeProvider.notifier).exit(),
+            Expanded(
+              child: Text(
+                l10n.guestSignInPrompt,
+                style: context.theme.typography.body.sm.copyWith(
+                  color: colors.foreground,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            FButton(
+              variant: FButtonVariant.outline,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => ref.read(guestModeProvider.notifier).exit(),
               child: Text(l10n.loginButton),
             ),
           ],
