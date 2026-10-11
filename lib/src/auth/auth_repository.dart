@@ -247,6 +247,8 @@ class FirebaseAuthRepository implements AuthRepository {
       case 'account-exists-with-different-credential':
         return AuthError.emailInUse;
       case 'weak-password':
+      // The project's password policy (Authentication → Settings).
+      case 'password-does-not-meet-requirements':
         return AuthError.weakPassword;
       case 'user-disabled':
         return AuthError.userDisabled;

@@ -33,7 +33,7 @@
   "passwordRequired": "Please enter your password",
   "errorInvalidCredentials": "Incorrect email or password",
   "errorEmailInUse": "This email is already registered",
-  "errorWeakPassword": "Password is too weak",
+  "errorWeakPassword": "Password is too weak: at least 8 characters",
   "errorUserDisabled": "This account has been disabled",
   "errorTooManyRequests": "Too many attempts. Please try again later",
   "errorNetwork": "No internet connection",

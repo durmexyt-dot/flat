@@ -33,7 +33,7 @@
   "passwordRequired": "Bitte Passwort eingeben",
   "errorInvalidCredentials": "E-Mail oder Passwort ist falsch",
   "errorEmailInUse": "Diese E-Mail-Adresse ist bereits registriert",
-  "errorWeakPassword": "Das Passwort ist zu schwach",
+  "errorWeakPassword": "Das Passwort ist zu schwach: mindestens 8 Zeichen",
   "errorUserDisabled": "Dieses Konto wurde deaktiviert",
   "errorTooManyRequests": "Zu viele Versuche. Bitte später erneut versuchen",
   "errorNetwork": "Keine Internetverbindung",

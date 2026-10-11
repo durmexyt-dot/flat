@@ -112,7 +112,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get errorEmailInUse => 'Ova e-mail adresa je već registrovana';
 
   @override
-  String get errorWeakPassword => 'Lozinka je preslaba';
+  String get errorWeakPassword => 'Lozinka je preslaba: najmanje 8 znakova';
 
   @override
   String get errorUserDisabled => 'Ovaj račun je deaktiviran';

@@ -112,7 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorEmailInUse => 'This email is already registered';
 
   @override
-  String get errorWeakPassword => 'Password is too weak';
+  String get errorWeakPassword => 'Password is too weak: at least 8 characters';
 
   @override
   String get errorUserDisabled => 'This account has been disabled';

@@ -112,7 +112,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorEmailInUse => 'Diese E-Mail-Adresse ist bereits registriert';
 
   @override
-  String get errorWeakPassword => 'Das Passwort ist zu schwach';
+  String get errorWeakPassword =>
+      'Das Passwort ist zu schwach: mindestens 8 Zeichen';
 
   @override
   String get errorUserDisabled => 'Dieses Konto wurde deaktiviert';

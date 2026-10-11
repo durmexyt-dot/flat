@@ -301,7 +301,7 @@ abstract class AppLocalizations {
   /// No description provided for @errorWeakPassword.
   ///
   /// In bs, this message translates to:
-  /// **'Lozinka je preslaba'**
+  /// **'Lozinka je preslaba: najmanje 8 znakova'**
   String get errorWeakPassword;
 
   /// No description provided for @errorUserDisabled.

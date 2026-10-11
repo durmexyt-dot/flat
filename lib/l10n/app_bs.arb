@@ -40,7 +40,7 @@
   "passwordRequired": "Unesite lozinku",
   "errorInvalidCredentials": "Pogrešan e-mail ili lozinka",
   "errorEmailInUse": "Ova e-mail adresa je već registrovana",
-  "errorWeakPassword": "Lozinka je preslaba",
+  "errorWeakPassword": "Lozinka je preslaba: najmanje 8 znakova",
   "errorUserDisabled": "Ovaj račun je deaktiviran",
   "errorTooManyRequests": "Previše pokušaja. Pokušajte ponovo kasnije",
   "errorNetwork": "Nema internet konekcije",
