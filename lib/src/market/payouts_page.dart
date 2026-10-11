@@ -13,7 +13,6 @@ import '../ui/format.dart';
 import '../ui/hero_tags.dart';
 import '../ui/skeleton.dart';
 import '../ui/status_timeline.dart';
-import 'demo_banner.dart';
 import 'labels.dart';
 import 'order_detail_page.dart';
 import 'order_labels.dart';
@@ -30,7 +29,6 @@ class PayoutsPage extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.payouts)),
       body: Column(
         children: [
-          const DemoBanner(),
           Expanded(
             child: AsyncView<List<Payout>>(
               value: payouts,

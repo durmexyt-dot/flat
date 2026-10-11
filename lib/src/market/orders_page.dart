@@ -7,7 +7,6 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../ui/async_view.dart';
 import '../ui/skeleton.dart';
-import 'demo_banner.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
 
@@ -56,7 +55,6 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
       appBar: AppBar(title: Text(buyer ? l10n.purchases : l10n.sales)),
       body: Column(
         children: [
-          const DemoBanner(),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

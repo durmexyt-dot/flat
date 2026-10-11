@@ -1,16 +1,16 @@
 import 'package:flat/l10n/app_localizations.dart';
-import 'package:flat/src/data/demo_data.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/market/order_labels.dart';
 import 'package:flat/src/ui/status_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'fixtures.dart';
 import 'helpers.dart';
 
 /// Signs in as user '1' with the demo data and opens an account entry.
 Future<void> _openAccountEntry(WidgetTester tester, String entry) async {
-  final auth = await pumpApp(tester, marketRepository: buildDemoMarket('1'));
+  final auth = await pumpApp(tester, marketRepository: buildSampleMarket('1'));
   await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
   await tester.pumpAndSettle();
   await tester.tap(find.byTooltip('Postavke'));
@@ -20,7 +20,10 @@ Future<void> _openAccountEntry(WidgetTester tester, String entry) async {
 
 void main() {
   testWidgets('account counts follow orders and listings', (tester) async {
-    final auth = await pumpApp(tester, marketRepository: buildDemoMarket('1'));
+    final auth = await pumpApp(
+      tester,
+      marketRepository: buildSampleMarket('1'),
+    );
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Postavke'));

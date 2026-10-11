@@ -6,7 +6,6 @@ import '../../l10n/app_localizations.dart';
 import '../account/profile_header.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
-import '../data/demo_data.dart';
 import '../data/repositories.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
@@ -186,22 +185,6 @@ class SettingsPage extends ConsumerWidget {
                             ],
                           ),
                     onTap: () => context.push('/settings/privacy'),
-                  ),
-                ],
-              ),
-              SettingsSectionTitle(l10n.tools),
-              SettingsGroup(
-                children: [
-                  SwitchListTile(
-                    shape: const RoundedRectangleBorder(),
-                    secondary: const Icon(Icons.science_outlined),
-                    title: Text(l10n.demoMode),
-                    subtitle: Text(l10n.demoModeInfo),
-                    value: ref.watch(demoModeProvider),
-                    onChanged: (on) {
-                      ref.read(demoModeProvider.notifier).set(on);
-                      ref.invalidate(statsProvider);
-                    },
                   ),
                 ],
               ),

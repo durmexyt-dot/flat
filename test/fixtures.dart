@@ -1,28 +1,9 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flat/src/data/memory_repositories.dart';
+import 'package:flat/src/data/models.dart';
 
-import '../settings/settings_controller.dart';
-import 'memory_repositories.dart';
-import 'models.dart';
-
-const _demoKey = 'demoMode';
-
-/// Shows example orders, sales and payouts instead of the user's real data.
-/// Real orders need the payment backend; this makes every status visible.
-class DemoMode extends Notifier<bool> {
-  @override
-  bool build() =>
-      ref.watch(sharedPreferencesProvider).getBool(_demoKey) ?? false;
-
-  Future<void> set(bool on) async {
-    state = on;
-    await ref.read(sharedPreferencesProvider).setBool(_demoKey, on);
-  }
-}
-
-final demoModeProvider = NotifierProvider<DemoMode, bool>(DemoMode.new);
-
-/// Example marketplace data around [uid], dated relative to [now].
-InMemoryMarketRepository buildDemoMarket(String uid, {DateTime? now}) {
+/// Sample marketplace data around [uid], dated relative to [now]: orders,
+/// sales and payouts in every status.
+InMemoryMarketRepository buildSampleMarket(String uid, {DateTime? now}) {
   final t = now ?? DateTime.now();
   DateTime days(int d, [int h = 20]) => DateTime(t.year, t.month, t.day + d, h);
 

@@ -1,12 +1,15 @@
-import 'package:flat/src/data/demo_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'fixtures.dart';
 import 'helpers.dart';
 
 void main() {
   testWidgets('help request from an order carries its number', (tester) async {
-    final auth = await pumpApp(tester, marketRepository: buildDemoMarket('1'));
+    final auth = await pumpApp(
+      tester,
+      marketRepository: buildSampleMarket('1'),
+    );
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Postavke'));

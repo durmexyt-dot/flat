@@ -158,7 +158,7 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
 }
 
 final checkoutRepositoryProvider = Provider<CheckoutRepository>((ref) {
-  // In-memory markets (demo mode, tests) handle checkout themselves.
+  // In-memory markets (tests) handle checkout themselves.
   final MarketRepository market = ref.watch(marketRepositoryProvider);
   if (market case final CheckoutRepository checkout) return checkout;
   return FirestoreCheckoutRepository(ref.watch(firestoreProvider));

@@ -939,20 +939,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get change => 'Promijeni';
 
   @override
-  String get demoMode => 'Demo podaci';
-
-  @override
-  String get demoModeInfo =>
-      'Prikazuje primjere narudžbi, prodaja i isplata. Ništa se ne sprema.';
-
-  @override
-  String get demoBanner => 'Demo – primjeri podataka';
-
-  @override
   String get buyer => 'Kupac';
-
-  @override
-  String get tools => 'Alati';
 
   @override
   String get support => 'Podrška';

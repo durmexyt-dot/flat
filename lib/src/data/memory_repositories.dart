@@ -108,7 +108,7 @@ class InMemoryProfileRepository implements ProfileRepository {
   void reserveUsername(String name, String uid) => _usernames[name] = uid;
 }
 
-/// Marketplace data held in memory: used by tests and by the demo mode.
+/// Marketplace data held in memory, for tests.
 /// Handles checkout too, like the server will.
 class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   InMemoryMarketRepository({

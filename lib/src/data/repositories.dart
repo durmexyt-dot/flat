@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_repository.dart';
-import 'demo_data.dart';
 import 'models.dart';
 
 /// Thrown when a username is already taken.
@@ -371,12 +370,9 @@ final profileRepositoryProvider = Provider<ProfileRepository>(
   (ref) => FirestoreProfileRepository(ref.watch(firestoreProvider)),
 );
 
-final marketRepositoryProvider = Provider<MarketRepository>((ref) {
-  if (ref.watch(demoModeProvider)) {
-    return buildDemoMarket(ref.watch(currentUidProvider) ?? 'guest');
-  }
-  return FirestoreMarketRepository(ref.watch(firestoreProvider));
-});
+final marketRepositoryProvider = Provider<MarketRepository>(
+  (ref) => FirestoreMarketRepository(ref.watch(firestoreProvider)),
+);
 
 /// The signed-in user's uid, or null.
 final currentUidProvider = Provider<String?>(

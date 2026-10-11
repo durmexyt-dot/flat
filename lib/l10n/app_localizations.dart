@@ -1846,35 +1846,11 @@ abstract class AppLocalizations {
   /// **'Promijeni'**
   String get change;
 
-  /// No description provided for @demoMode.
-  ///
-  /// In bs, this message translates to:
-  /// **'Demo podaci'**
-  String get demoMode;
-
-  /// No description provided for @demoModeInfo.
-  ///
-  /// In bs, this message translates to:
-  /// **'Prikazuje primjere narudžbi, prodaja i isplata. Ništa se ne sprema.'**
-  String get demoModeInfo;
-
-  /// No description provided for @demoBanner.
-  ///
-  /// In bs, this message translates to:
-  /// **'Demo – primjeri podataka'**
-  String get demoBanner;
-
   /// No description provided for @buyer.
   ///
   /// In bs, this message translates to:
   /// **'Kupac'**
   String get buyer;
-
-  /// No description provided for @tools.
-  ///
-  /// In bs, this message translates to:
-  /// **'Alati'**
-  String get tools;
 
   /// No description provided for @support.
   ///

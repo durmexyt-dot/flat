@@ -944,20 +944,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change => 'Change';
 
   @override
-  String get demoMode => 'Demo data';
-
-  @override
-  String get demoModeInfo =>
-      'Shows example orders, sales and payouts. Nothing is saved.';
-
-  @override
-  String get demoBanner => 'Demo – example data';
-
-  @override
   String get buyer => 'Buyer';
-
-  @override
-  String get tools => 'Tools';
 
   @override
   String get support => 'Support';
