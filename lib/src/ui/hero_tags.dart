@@ -12,4 +12,5 @@ abstract final class HeroTags {
   static String listing(String id) => 'listing-$id';
   static String order(String id) => 'order-$id';
   static String payout(String id) => 'payout-$id';
+  static String event(String id) => 'event-$id';
 }

@@ -10,6 +10,461 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get supportMyRequests => 'Meine Anfragen';
+
+  @override
+  String get supportNoRequests => 'Du hast noch keine Anfragen an den Support.';
+
+  @override
+  String get supportStatusOpen => 'Offen';
+
+  @override
+  String get supportStatusAnswered => 'Beantwortet';
+
+  @override
+  String get supportStatusClosed => 'Geschlossen';
+
+  @override
+  String get supportNewAnswer => 'Neue Antwort';
+
+  @override
+  String get supportRequestSent => 'Anfrage gesendet';
+
+  @override
+  String get supportMessageTooShort => 'Schreib mindestens 10 Zeichen';
+
+  @override
+  String get supportAnswerInApp =>
+      'Wir antworten hier in der App, meist innerhalb von 24 Stunden. Du wirst benachrichtigt.';
+
+  @override
+  String get supportImages => 'Bilder';
+
+  @override
+  String supportImagesInfo(int count) {
+    return 'Screenshots oder Fotos, höchstens $count';
+  }
+
+  @override
+  String get supportAddImage => 'Bild hinzufügen';
+
+  @override
+  String get supportRemoveImage => 'Bild entfernen';
+
+  @override
+  String get supportImageError => 'Das Bild kann nicht gelesen werden';
+
+  @override
+  String get supportImage => 'Bild';
+
+  @override
+  String get supportTeamName => 'Stubswap-Support';
+
+  @override
+  String get supportYou => 'Du';
+
+  @override
+  String get supportTicket => 'Anfrage';
+
+  @override
+  String get supportCloseTicket => 'Anfrage schließen';
+
+  @override
+  String get supportResolveTicket => 'Problem gelöst – Anfrage schließen';
+
+  @override
+  String get supportCloseConfirm => 'Anfrage schließen?';
+
+  @override
+  String get supportCloseConfirmInfo =>
+      'In eine geschlossene Anfrage kann nicht mehr geschrieben werden. Tritt das Problem wieder auf, eröffne eine neue Anfrage.';
+
+  @override
+  String get supportCloseConfirmStaff =>
+      'Der Nutzer kann in diese Anfrage nicht mehr schreiben.';
+
+  @override
+  String get supportClosed => 'Die Anfrage ist geschlossen';
+
+  @override
+  String get supportClosedByUser => 'Vom Nutzer geschlossen.';
+
+  @override
+  String get supportClosedByYou => 'Auf deinen Wunsch geschlossen.';
+
+  @override
+  String get supportClosedByStaff => 'Vom Support geschlossen.';
+
+  @override
+  String get supportNewRequest => 'Neue Anfrage';
+
+  @override
+  String get supportWriteMessage => 'Nachricht schreiben…';
+
+  @override
+  String get supportNotFound => 'Anfrage nicht gefunden';
+
+  @override
+  String get supportNoAccess => 'Kein Zugriff';
+
+  @override
+  String get supportNoAccessInfo => 'Diese Seite ist nur für das Support-Team.';
+
+  @override
+  String get supportInbox => 'Support-Anfragen';
+
+  @override
+  String get supportFilterOpen => 'Offen';
+
+  @override
+  String get supportFilterAnswered => 'Beantwortet';
+
+  @override
+  String get supportFilterClosed => 'Geschlossen';
+
+  @override
+  String get supportFilterAll => 'Alle';
+
+  @override
+  String get supportInboxEmpty => 'Keine Anfragen';
+
+  @override
+  String get supportAppVersion => 'App-Version';
+
+  @override
+  String get supportEmail => 'E-Mail';
+
+  @override
+  String get supportAlertAnswered => 'Der Support hat geantwortet';
+
+  @override
+  String get supportAlertNew => 'Neue Support-Anfrage';
+
+  @override
+  String supportAlertNewMessage(String number) {
+    return 'Neue Nachricht in Anfrage $number';
+  }
+
+  @override
+  String get supportAlertOpen => 'Öffnen';
+
+  @override
+  String get supportAdministration => 'Verwaltung';
+
+  @override
+  String get adminTitle => 'Administration';
+
+  @override
+  String get adminTeamSection => 'Team';
+
+  @override
+  String get adminNoAccess => 'Kein Zugriff';
+
+  @override
+  String get adminNoAccessInfo => 'Diese Seite ist nur für Administratoren.';
+
+  @override
+  String get adminEvents => 'Events';
+
+  @override
+  String get adminEventsInfo => 'Events anlegen und bearbeiten';
+
+  @override
+  String get adminFeesTitle => 'Servicegebühr';
+
+  @override
+  String adminFeesSummary(int buyer, int seller) {
+    return 'Käufer $buyer % · Verkäufer $seller %';
+  }
+
+  @override
+  String get adminTeamTitle => 'Team und Support';
+
+  @override
+  String get adminTeamInfo => 'Support-Konten und Administratoren';
+
+  @override
+  String get adminSupportInbox => 'Supportanfragen';
+
+  @override
+  String get adminSupportInboxInfo => 'Anfragen der Nutzer beantworten';
+
+  @override
+  String get adminBuyerFee => 'Käufergebühr';
+
+  @override
+  String get adminBuyerFeeInfo =>
+      'Zahlt der Käufer zusätzlich zum Ticketpreis.';
+
+  @override
+  String get adminSellerFee => 'Verkäufergebühr';
+
+  @override
+  String get adminSellerFeeInfo =>
+      'Wird vom Ticketpreis des Verkäufers abgezogen.';
+
+  @override
+  String adminFeeRange(int max) {
+    return 'Gib eine ganze Zahl von 0 bis $max ein';
+  }
+
+  @override
+  String get adminFeeDecrease => 'Verringern';
+
+  @override
+  String get adminFeeIncrease => 'Erhöhen';
+
+  @override
+  String adminFeesCurrent(String summary) {
+    return 'Aktuell: $summary';
+  }
+
+  @override
+  String adminFeesExample(String price) {
+    return 'Beispiel für ein Ticket zu $price';
+  }
+
+  @override
+  String get adminTicketPrice => 'Ticketpreis';
+
+  @override
+  String get adminBuyerPays => 'Käufer zahlt';
+
+  @override
+  String get adminSellerReceives => 'Verkäufer erhält';
+
+  @override
+  String get adminPlatformEarns => 'Stubswap verdient';
+
+  @override
+  String get adminFeesNotice =>
+      'Die neue Gebühr gilt nur für Angebote, die ab jetzt veröffentlicht werden. Bestehende Angebote und Bestellungen behalten ihre Gebühr.';
+
+  @override
+  String get adminFeesConfirmTitle => 'Gebühr ändern?';
+
+  @override
+  String get adminFeesSave => 'Gebühr speichern';
+
+  @override
+  String get adminFeesSaved => 'Gebühr gespeichert';
+
+  @override
+  String get adminRoleAdmin => 'Admin';
+
+  @override
+  String get adminRoleSupport => 'Support';
+
+  @override
+  String get adminTeamMembers => 'Teammitglieder';
+
+  @override
+  String adminGrantedAt(String date) {
+    return 'Hinzugefügt am $date';
+  }
+
+  @override
+  String get adminYou => 'Du';
+
+  @override
+  String get adminNoName => 'Ohne Namen';
+
+  @override
+  String get adminRemoveSupport => 'Aus dem Support entfernen';
+
+  @override
+  String get adminRemoveSupportTitle => 'Aus dem Support entfernen?';
+
+  @override
+  String adminRemoveSupportBody(String name) {
+    return '$name sieht danach keine Supportanfragen mehr. Das Konto bleibt bestehen.';
+  }
+
+  @override
+  String get adminRemove => 'Entfernen';
+
+  @override
+  String get adminSupportRemoved => 'Aus dem Support entfernt';
+
+  @override
+  String get adminAdminsInfo =>
+      'Admins legst du nur in der Firebase-Konsole an (Firestore → roles → Dokument mit der ID des Nutzers, Feld role = admin).';
+
+  @override
+  String get adminAddSupport => 'Support-Konto hinzufügen';
+
+  @override
+  String get adminAddSupportInfo =>
+      'Suche nach der genauen E-Mail-Adresse oder dem Benutzernamen. Die Person muss sich mindestens einmal bei Stubswap angemeldet haben.';
+
+  @override
+  String get adminFindUserLabel => 'E-Mail oder Benutzername';
+
+  @override
+  String get adminFindUser => 'Suchen';
+
+  @override
+  String get adminUserNotFound => 'Nutzer nicht gefunden';
+
+  @override
+  String get adminUserNotFoundInfo =>
+      'Prüfe die Adresse oder den Benutzernamen. Die Person muss sich mindestens einmal angemeldet haben.';
+
+  @override
+  String get adminMakeSupport => 'Als Support hinzufügen';
+
+  @override
+  String get adminSupportAdded => 'Zum Support hinzugefügt';
+
+  @override
+  String adminAlreadyInTeam(String role) {
+    return 'Bereits im Team als $role';
+  }
+
+  @override
+  String get adminThatsYou => 'Das bist du';
+
+  @override
+  String eventsOffer(String price, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tickets',
+      one: '1 Ticket',
+    );
+    return 'ab $price · $_temp0';
+  }
+
+  @override
+  String get eventsNoOffers => 'Noch keine Angebote';
+
+  @override
+  String get eventsNoOffersInfo =>
+      'Verkaufe als Erste:r Tickets für dieses Event.';
+
+  @override
+  String get eventsSellForEvent => 'Tickets für dieses Event verkaufen';
+
+  @override
+  String get eventsOffers => 'Angebote';
+
+  @override
+  String get eventsNotFound => 'Event nicht gefunden';
+
+  @override
+  String get eventsNotFoundInfo =>
+      'Es wurde vielleicht entfernt oder ist nicht mehr verfügbar.';
+
+  @override
+  String get eventsIsOver =>
+      'Dieses Event ist vorbei. Dafür werden keine Tickets mehr verkauft.';
+
+  @override
+  String get eventsPick => 'Event auswählen';
+
+  @override
+  String get eventsPickRequired => 'Wähle ein Event aus';
+
+  @override
+  String get eventsChange => 'Ändern';
+
+  @override
+  String get eventsSearch => 'Events durchsuchen';
+
+  @override
+  String get eventsNoneToSell => 'Derzeit keine Events';
+
+  @override
+  String get eventsNoneToSellInfo =>
+      'Events werden vom Stubswap-Team hinzugefügt. Sobald ein neues Event erscheint, kannst du hier Tickets dafür verkaufen.';
+
+  @override
+  String get eventsAllOffers => 'Alle Angebote für dieses Event';
+
+  @override
+  String get eventsAdminTitle => 'Events';
+
+  @override
+  String get eventsAdminNoAccess => 'Kein Zugriff';
+
+  @override
+  String get eventsAdminNoAccessInfo =>
+      'Nur Administratoren können diese Seite öffnen.';
+
+  @override
+  String get eventsNew => 'Neues Event';
+
+  @override
+  String get eventsEdit => 'Event bearbeiten';
+
+  @override
+  String get eventsHiddenBadge => 'Ausgeblendet';
+
+  @override
+  String get eventsPastBadge => 'Vorbei';
+
+  @override
+  String get eventsUpcomingSection => 'Bevorstehend';
+
+  @override
+  String get eventsPastSection => 'Vergangen';
+
+  @override
+  String get eventsHide => 'Event ausblenden';
+
+  @override
+  String get eventsShow => 'Event einblenden';
+
+  @override
+  String get eventsHideConfirm =>
+      'Das Event wird nicht mehr angezeigt und es können keine neuen Angebote dafür erstellt werden. Bestehende Angebote bleiben.';
+
+  @override
+  String get eventsShowConfirm =>
+      'Das Event ist wieder für alle sichtbar und es können wieder Tickets dafür verkauft werden.';
+
+  @override
+  String get eventsHiddenToast => 'Event ausgeblendet';
+
+  @override
+  String get eventsShownToast => 'Event wieder sichtbar';
+
+  @override
+  String get eventsPicture => 'Bild';
+
+  @override
+  String get eventsPicturePick => 'Bild auswählen';
+
+  @override
+  String get eventsPictureReplace => 'Ersetzen';
+
+  @override
+  String get eventsPictureRemove => 'Entfernen';
+
+  @override
+  String get eventsPictureHint => 'Das Bild wird auf 16:9 zugeschnitten.';
+
+  @override
+  String get eventsPictureError => 'Dieses Bild kann nicht geladen werden';
+
+  @override
+  String get eventsCreated => 'Event erstellt';
+
+  @override
+  String get eventsListingsKeepData =>
+      'Bestehende Angebote behalten die Eventdaten vom Zeitpunkt ihrer Veröffentlichung.';
+
+  @override
+  String get eventsNameTooShort => 'Mindestens 2 Zeichen';
+
+  @override
+  String get eventsNoneYet => 'Noch keine Events';
+
+  @override
+  String get eventsNoneYetInfo =>
+      'Füge das erste Event hinzu, damit Verkäufer Angebote erstellen können.';
+
+  @override
   String get appTitle => 'Stubswap';
 
   @override

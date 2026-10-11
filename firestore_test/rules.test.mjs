@@ -18,6 +18,9 @@ beforeEach(async () => {
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), 'listings/L1'), listing());
     await setDoc(doc(ctx.firestore(), 'users/seller/private/payoutMethod'), { accountHolder: 'Seller', iban: IBAN });
+    await setDoc(doc(ctx.firestore(), 'events/E1'), eventDoc());
+    await setDoc(doc(ctx.firestore(), 'roles/boss'), { role: 'admin' });
+    await setDoc(doc(ctx.firestore(), 'roles/helper'), { role: 'support' });
   });
 });
 
@@ -26,8 +29,13 @@ const EVENT = {
   name: 'Jazz Fest', venue: 'Dom mladih', city: 'Sarajevo',
   date: Timestamp.fromMillis(Date.now() + 30 * 24 * 3600 * 1000), category: 'concerts',
 };
+// The admin-created event behind EVENT.
+const eventDoc = (over = {}) => ({
+  ...EVENT, status: 'active', hasImage: false, imageVersion: 1,
+  createdAt: serverTimestamp(), updatedAt: serverTimestamp(), ...over,
+});
 const listing = (over = {}) => ({
-  sellerId: 'seller', event: EVENT, ticketType: 'eTicket',
+  sellerId: 'seller', eventId: 'E1', event: EVENT, buyerFeePercent: 10, sellerFeePercent: 10, ticketType: 'eTicket',
   quantity: 4, quantitySold: 0, priceMinor: 3500, currency: 'BAM', status: 'active',
   section: '', row: '', seats: '', note: '',
   createdAt: serverTimestamp(), updatedAt: serverTimestamp(), ...over,
@@ -105,6 +113,7 @@ test('profile flows of the app are allowed', async () => {
 });
 
 test('sellers create listings only for themselves and unsold', async () => {
+  // (EVENT is the admin-created event E1.)
   await assertSucceeds(setDoc(doc(db('seller'), 'listings/L2'), listing()));
   await assertFails(setDoc(doc(db('seller'), 'listings/L3'), listing({ sellerId: 'other' })));
   await assertFails(setDoc(doc(db('seller'), 'listings/L4'), listing({ quantitySold: 1 })));
@@ -293,20 +302,176 @@ test('payout method: only a well-formed IBAN, only the owner', async () => {
   await assertSucceeds(setDoc(doc(fs, 'users/eve/private/payoutMethod'), { accountHolder: 'Eve', iban: IBAN }));
 });
 
-test('support requests: own email, limited size, no reading others', async () => {
-  const req = (over = {}) => ({
-    number: 'SUP-ABC234', uid: 'eve', email: 'eve@test.ba', topic: 'order',
-    reference: 'SSW-TEST01', message: 'Help', appVersion: '1.1.0 (7 · abc1234)', status: 'open', createdAt: serverTimestamp(), ...over,
+test('old support requests: readable by their author only, no new ones', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'supportRequests/s1'), { uid: 'eve', message: 'Help' });
   });
-  const fs = db('eve');
-  await assertSucceeds(setDoc(doc(fs, 'supportRequests/s1'), req()));
-  await assertFails(setDoc(doc(fs, 'supportRequests/s2'), req({ email: 'victim@test.ba' })));
-  await assertFails(setDoc(doc(fs, 'supportRequests/s3'), req({ message: 'x'.repeat(2001) })));
-  await assertFails(setDoc(doc(fs, 'supportRequests/s4'), req({ status: 'resolved' })));
-  await assertFails(setDoc(doc(fs, 'supportRequests/s5'), req({ uid: 'amra' })));
-  await assertFails(setDoc(doc(fs, 'supportRequests/s6'), req({ appVersion: 'x'.repeat(61) })));
+  await assertSucceeds(getDoc(doc(db('eve'), 'supportRequests/s1')));
   await assertFails(getDoc(doc(db('amra'), 'supportRequests/s1')));
-  await assertFails(updateDoc(doc(fs, 'supportRequests/s1'), { status: 'resolved' }));
+  await assertFails(setDoc(doc(db('eve'), 'supportRequests/s2'), { uid: 'eve', message: 'Help' }));
+});
+
+// ---- Roles, events, fees ----------------------------------------------------
+
+test('roles: admins only from the console; admins name support accounts', async () => {
+  // Nobody makes themselves admin or support.
+  await assertFails(setDoc(doc(db('eve'), 'roles/eve'), { role: 'admin' }));
+  await assertFails(setDoc(doc(db('eve'), 'roles/eve'), { role: 'support', grantedBy: 'eve', grantedAt: serverTimestamp() }));
+  const grant = (over = {}) => ({ role: 'support', name: 'Eve', email: 'eve@test.ba', grantedBy: 'boss', grantedAt: serverTimestamp(), ...over });
+  // Support accounts can't name others.
+  await assertFails(setDoc(doc(db('helper'), 'roles/eve'), grant({ grantedBy: 'helper' })));
+  // The admin can, but not admins and not with made-up fields.
+  await assertFails(setDoc(doc(db('boss'), 'roles/eve'), grant({ role: 'admin' })));
+  await assertFails(setDoc(doc(db('boss'), 'roles/eve'), grant({ superpower: true })));
+  await assertFails(setDoc(doc(db('boss'), 'roles/boss'), grant()));
+  await assertSucceeds(setDoc(doc(db('boss'), 'roles/eve'), grant()));
+  // Own role is readable; the team list only for admins.
+  await assertSucceeds(getDoc(doc(db('eve'), 'roles/eve')));
+  await assertFails(getDocs(collection(db('eve'), 'roles')));
+  await assertSucceeds(getDocs(collection(db('boss'), 'roles')));
+  // Support can be removed; admins can't (not even by an admin).
+  await assertFails(deleteDoc(doc(db('eve'), 'roles/eve')));
+  await assertSucceeds(deleteDoc(doc(db('boss'), 'roles/eve')));
+  await assertFails(deleteDoc(doc(db('boss'), 'roles/boss')));
+  // Admins find single users; others don't read profiles.
+  await assertSucceeds(setDoc(doc(db('amra'), 'users/amra'), { displayName: 'Amra', email: 'amra@test.ba' }));
+  await assertSucceeds(getDocs(query(collection(db('boss'), 'users'), where('email', '==', 'amra@test.ba'))));
+  await assertFails(getDocs(query(collection(db('helper'), 'users'), where('email', '==', 'amra@test.ba'))));
+});
+
+test('events: only admins create and change them', async () => {
+  await assertFails(setDoc(doc(db('seller'), 'events/X1'), eventDoc()));
+  await assertFails(setDoc(doc(db('helper'), 'events/X1'), eventDoc()));
+  await assertSucceeds(setDoc(doc(db('boss'), 'events/X1'), eventDoc()));
+  await assertFails(setDoc(doc(db('boss'), 'events/X2'), eventDoc({ date: Timestamp.fromMillis(Date.now() - 1000) })));
+  await assertFails(setDoc(doc(db('boss'), 'events/X3'), eventDoc({ name: 'x' })));
+  await assertFails(setDoc(doc(db('boss'), 'events/X4'), eventDoc({ featured: true })));
+  await assertSucceeds(updateDoc(doc(db('boss'), 'events/X1'), { status: 'hidden', updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(db('seller'), 'events/E1'), { name: 'Hacked', updatedAt: serverTimestamp() }));
+  await assertFails(deleteDoc(doc(db('boss'), 'events/E1')));
+  // Everyone sees visible events; hidden ones only admins.
+  await assertSucceeds(getDoc(doc(db(null), 'events/E1')));
+  await assertFails(getDoc(doc(db(null), 'events/X1')));
+  await assertSucceeds(getDoc(doc(db('boss'), 'events/X1')));
+  // Pictures: admins only, size-limited.
+  await assertSucceeds(setDoc(doc(db('boss'), 'eventImages/E1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertFails(setDoc(doc(db('boss'), 'eventImages/E1'), { data: 'x'.repeat(400001), updatedAt: serverTimestamp() }));
+  await assertFails(setDoc(doc(db('seller'), 'eventImages/E1'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(db(null), 'eventImages/E1')));
+});
+
+test('listings: only for a visible event, with its exact data', async () => {
+  const fs = db('seller');
+  await assertFails(setDoc(doc(fs, 'listings/e1'), listing({ eventId: 'nope' })));
+  await assertFails(setDoc(doc(fs, 'listings/e2'), listing({ event: { ...EVENT, venue: 'Elsewhere' } })));
+  const { eventId, ...withoutEvent } = listing();
+  await assertFails(setDoc(doc(fs, 'listings/e3'), withoutEvent));
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'events/H1'), eventDoc({ status: 'hidden' }));
+  });
+  await assertFails(setDoc(doc(fs, 'listings/e4'), listing({ eventId: 'H1' })));
+});
+
+test('fees: admins set them; new listings and their orders keep them', async () => {
+  const fees = (over = {}) => ({ buyerPercent: 12, sellerPercent: 8, updatedBy: 'boss', updatedAt: serverTimestamp(), ...over });
+  await assertFails(setDoc(doc(db('seller'), 'config/fees'), fees({ updatedBy: 'seller' })));
+  await assertFails(setDoc(doc(db('boss'), 'config/fees'), fees({ buyerPercent: 31 })));
+  await assertFails(setDoc(doc(db('boss'), 'config/fees'), fees({ sellerPercent: 7.5 })));
+  await assertSucceeds(setDoc(doc(db('boss'), 'config/fees'), fees()));
+  await assertSucceeds(getDoc(doc(db(null), 'config/fees')));
+  // Listings must take the new fees, not the old or made-up ones.
+  const fs = db('seller');
+  await assertFails(setDoc(doc(fs, 'listings/f1'), listing()));
+  await assertFails(setDoc(doc(fs, 'listings/f2'), listing({ buyerFeePercent: 0, sellerFeePercent: 0 })));
+  await assertSucceeds(setDoc(doc(fs, 'listings/f3'), listing({ buyerFeePercent: 12, sellerFeePercent: 8 })));
+  // The old listing L1 keeps 10 %: an order for it at 10 % works...
+  await openOrder();
+  // ...and an order can't pick other fees than its listing.
+  await assertFails(setDoc(doc(db('buyer'), 'orders/O9'), order({ buyerFeePercent: 0, sellerFeePercent: 0 })));
+  await assertSucceeds(setDoc(doc(db('buyer'), 'orders/O8'), order({ listingId: 'f3', buyerFeePercent: 12, sellerFeePercent: 8 })));
+  // The seller's payout uses the order's seller fee: 2 × 35 − 8 % = 64.40.
+  await assertSucceeds(writeBatch(db('buyer'))
+    .update(doc(db('buyer'), 'orders/O8'), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
+    .update(doc(db('buyer'), 'listings/f3'), { quantitySold: 2, status: 'active', lastOrderId: 'O8' })
+    .set(doc(db('buyer'), 'payouts/O8'), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: 6440, currency: 'BAM', status: 'pending', testMode: true })
+    .commit());
+});
+
+// ---- Support tickets ----------------------------------------------------------
+
+const ticket = (over = {}) => ({
+  number: 'SUP-ABC234', uid: 'eve', email: 'eve@test.ba', name: 'Eve', topic: 'order',
+  reference: 'SSW-TEST01', subject: 'Help', status: 'open', unreadForUser: false, unreadForStaff: true,
+  appVersion: '1.3.0 (8 · abc1234)', createdAt: serverTimestamp(), lastMessageAt: serverTimestamp(), ...over,
+});
+const message = (over = {}) => ({
+  authorId: 'eve', authorRole: 'user', authorName: 'Eve', text: 'Help please', images: [], createdAt: serverTimestamp(), ...over,
+});
+async function openTicket(id = 'T1') {
+  const fs = db('eve');
+  await assertSucceeds(writeBatch(fs)
+    .set(doc(fs, `supportTickets/${id}`), ticket())
+    .set(doc(fs, `supportTickets/${id}/messages/m1`), message())
+    .commit());
+}
+
+test('support: users open requests for themselves, with small pictures', async () => {
+  await openTicket();
+  const fs = db('eve');
+  const open = (id, t, m = message()) => writeBatch(fs)
+    .set(doc(fs, `supportTickets/${id}`), t).set(doc(fs, `supportTickets/${id}/messages/m1`), m).commit();
+  await assertFails(open('T2', ticket({ email: 'victim@test.ba' })));
+  await assertFails(open('T3', ticket({ uid: 'amra' })));
+  await assertFails(open('T4', ticket({ status: 'answered' })));
+  await assertFails(open('T5', ticket({ unreadForStaff: false })));
+  await assertFails(open('T6', ticket({ priority: 'urgent' })));
+  await assertFails(open('T7', ticket(), message({ text: 'x'.repeat(2001) })));
+  await assertFails(open('T8', ticket(), message({ images: ['x'.repeat(300001)] })));
+  await assertFails(open('T9', ticket(), message({ images: ['a'.repeat(200), 'b'.repeat(200), 'c'.repeat(200), 'd'.repeat(200)] })));
+  await assertFails(open('T10', ticket(), message({ authorRole: 'staff' })));
+  await assertSucceeds(open('T11', ticket(), message({ images: ['a'.repeat(200), 'b'.repeat(200)] })));
+  // Others can't read them; the team can.
+  await assertFails(getDoc(doc(db('amra'), 'supportTickets/T1')));
+  await assertFails(getDocs(collection(db('amra'), 'supportTickets/T1/messages')));
+  await assertFails(getDocs(collection(db('amra'), 'supportTickets')));
+  await assertSucceeds(getDocs(query(collection(fs, 'supportTickets'), where('uid', '==', 'eve'))));
+  await assertSucceeds(getDocs(collection(db('helper'), 'supportTickets')));
+  await assertSucceeds(getDocs(collection(db('boss'), 'supportTickets/T1/messages')));
+});
+
+test('support: the team answers, the user reads, replies and closes', async () => {
+  await openTicket();
+  const staff = db('helper');
+  const answer = writeBatch(staff)
+    .set(doc(staff, 'supportTickets/T1/messages/m2'), message({ authorId: 'helper', authorRole: 'staff', authorName: 'Support' }))
+    .update(doc(staff, 'supportTickets/T1'), { status: 'answered', unreadForUser: true, unreadForStaff: false, lastMessageAt: serverTimestamp() });
+  await assertSucceeds(answer.commit());
+  // Strangers can't answer or pose as the team.
+  const fake = db('amra');
+  await assertFails(setDoc(doc(fake, 'supportTickets/T1/messages/m3'), message({ authorId: 'amra', authorRole: 'staff' })));
+  await assertFails(updateDoc(doc(fake, 'supportTickets/T1'), { status: 'closed' }));
+  const fs = db('eve');
+  await assertFails(setDoc(doc(fs, 'supportTickets/T1/messages/m4'), message({ authorRole: 'staff' })));
+  // The user can't fake a team answer state or edit other fields.
+  await assertFails(updateDoc(doc(fs, 'supportTickets/T1'), { status: 'answered' }));
+  await assertFails(updateDoc(doc(fs, 'supportTickets/T1'), { email: 'x@test.ba' }));
+  await assertSucceeds(updateDoc(doc(fs, 'supportTickets/T1'), { unreadForUser: false }));
+  // Reply: reopens it for the team.
+  await assertSucceeds(writeBatch(fs)
+    .set(doc(fs, 'supportTickets/T1/messages/m5'), message())
+    .update(doc(fs, 'supportTickets/T1'), { status: 'open', unreadForUser: false, unreadForStaff: true, lastMessageAt: serverTimestamp() })
+    .commit());
+  // Messages can't be changed or deleted.
+  await assertFails(updateDoc(doc(fs, 'supportTickets/T1/messages/m5'), { text: 'edited' }));
+  await assertFails(deleteDoc(doc(fs, 'supportTickets/T1/messages/m5')));
+  // Close when satisfied; closed stays closed.
+  await assertSucceeds(updateDoc(doc(fs, 'supportTickets/T1'), { status: 'closed', closedBy: 'user', unreadForStaff: false, unreadForUser: false }));
+  await assertFails(writeBatch(fs)
+    .set(doc(fs, 'supportTickets/T1/messages/m6'), message())
+    .update(doc(fs, 'supportTickets/T1'), { status: 'open', unreadForUser: false, unreadForStaff: true, lastMessageAt: serverTimestamp() })
+    .commit());
+  await assertFails(setDoc(doc(staff, 'supportTickets/T1/messages/m7'), message({ authorId: 'helper', authorRole: 'staff' })));
+  await assertFails(deleteDoc(doc(fs, 'supportTickets/T1')));
 });
 
 test('unknown collections and anonymous writes are refused', async () => {

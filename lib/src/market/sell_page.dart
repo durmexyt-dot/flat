@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
@@ -7,7 +6,9 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
+import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../events/event_picker.dart';
 import '../admin/admin_repository.dart';
 import '../data/repositories.dart';
 import '../settings/settings_controller.dart';
@@ -32,27 +33,21 @@ class SellPage extends ConsumerStatefulWidget {
 
 class _SellPageState extends ConsumerState<SellPage> {
   final _formKey = GlobalKey<FormState>();
-  final _name = TextEditingController();
-  final _venue = TextEditingController();
-  final _city = TextEditingController();
   final _section = TextEditingController();
   final _row = TextEditingController();
   final _seats = TextEditingController();
   final _price = TextEditingController();
   final _note = TextEditingController();
-  DateTime? _date;
-  EventCategory _category = EventCategory.concerts;
+  Event? _event;
+  bool _preselected = false;
   TicketType _type = TicketType.eTicket;
   int _quantity = 1;
   bool _saving = false;
-  bool _dateError = false;
+  bool _eventError = false;
 
   @override
   void dispose() {
     for (final c in [
-      _name,
-      _venue,
-      _city,
       _section,
       _row,
       _seats,
@@ -64,32 +59,36 @@ class _SellPageState extends ConsumerState<SellPage> {
     super.dispose();
   }
 
-  Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final day = await showDatePicker(
-      context: context,
-      initialDate: _date ?? now.add(const Duration(days: 7)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 730)),
+  /// The event chosen before, if still on sale, else the preselected one
+  /// from the event page.
+  Event? _selected(List<Event> events) {
+    if (!_preselected) {
+      _preselected = true;
+      _event ??= events.where((e) => e.id == widget.eventId).firstOrNull;
+    }
+    final id = _event?.id;
+    return events.where((e) => e.id == id).firstOrNull;
+  }
+
+  Future<void> _chooseEvent(List<Event> events) async {
+    final event = await showEventPicker(
+      context,
+      events: events,
+      selectedId: _event?.id,
     );
-    if (day == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: _date != null
-          ? TimeOfDay.fromDateTime(_date!)
-          : const TimeOfDay(hour: 20, minute: 0),
-    );
-    if (time == null) return;
+    if (event == null || !mounted) return;
     setState(() {
-      _date = DateTime(day.year, day.month, day.day, time.hour, time.minute);
-      _dateError = false;
+      _event = event;
+      _eventError = false;
     });
   }
 
   Future<void> _publish() async {
-    final validDate = _date != null && _date!.isAfter(DateTime.now());
-    setState(() => _dateError = !validDate);
-    if (!_formKey.currentState!.validate() || !validDate || _saving) return;
+    final event = _selected(ref.read(upcomingEventsProvider).value ?? []);
+    setState(() => _eventError = event == null);
+    if (!_formKey.currentState!.validate() || event == null || _saving) {
+      return;
+    }
     final uid = ref.read(currentUidProvider);
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
@@ -116,13 +115,9 @@ class _SellPageState extends ConsumerState<SellPage> {
             Listing(
               id: '',
               sellerId: uid,
-              event: EventInfo(
-                name: _name.text.trim(),
-                venue: _venue.text.trim(),
-                city: _city.text.trim(),
-                date: _date!,
-                category: _category,
-              ),
+              eventId: event.id,
+              event: event.info,
+              fees: ref.read(feeConfigProvider).value ?? const FeeConfig(),
               ticketType: _type,
               quantity: _quantity,
               quantitySold: 0,
@@ -149,10 +144,8 @@ class _SellPageState extends ConsumerState<SellPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(authStateProvider).value;
-    final currency = ref.watch(settingsProvider).currency;
     final payoutMethod = ref.watch(payoutMethodProvider);
-    String? required(String? v) =>
-        (v == null || v.trim().isEmpty) ? l10n.required : null;
+    final upcoming = ref.watch(upcomingEventsProvider);
 
     return SiteScaffold(
       title: l10n.sellTitle,
@@ -164,7 +157,23 @@ class _SellPageState extends ConsumerState<SellPage> {
         loading: const SkeletonTicketList(count: 3),
         data: (method) => method == null
             ? const _PayoutRequired()
-            : _WithGuide(
+            : AsyncView<List<Event>>(
+                value: upcoming,
+                onRetry: () => ref.invalidate(eventsProvider),
+                loading: const SkeletonTicketList(count: 3),
+                data: (events) => events.isEmpty
+                    ? const _NoEvents()
+                    : _form(context, events, user),
+              ),
+      ),
+    );
+  }
+
+  Widget _form(BuildContext context, List<Event> events, AppUser? user) {
+    final l10n = AppLocalizations.of(context);
+    final currency = ref.watch(settingsProvider).currency;
+    final selected = _selected(events);
+    return _WithGuide(
                 form: Form(
                   key: _formKey,
                   // Not a ListView: it would drop off-screen fields, and the form
@@ -200,83 +209,12 @@ class _SellPageState extends ConsumerState<SellPage> {
                             ),
                           ),
                         SettingsSectionTitle(l10n.event),
-                        FTextFormField(
-                          control: FTextFieldControl.managed(controller: _name),
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(100),
-                          ],
-                          label: Text(l10n.eventName),
-                          prefixBuilder: (context, style, variants) =>
-                              fieldIcon(FLucideIcons.ticket),
-                          textCapitalization: TextCapitalization.words,
-                          textInputAction: TextInputAction.next,
-                          validator: required,
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: FTextFormField(
-                                control: FTextFieldControl.managed(
-                                  controller: _venue,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(100),
-                                ],
-                                label: Text(l10n.venue),
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.next,
-                                validator: required,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: FTextFormField(
-                                control: FTextFieldControl.managed(
-                                  controller: _city,
-                                ),
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(60),
-                                ],
-                                label: Text(l10n.city),
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.next,
-                                validator: required,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        _DateField(
-                          date: _date,
-                          error: _dateError
-                              ? (_date == null
-                                    ? l10n.required
-                                    : l10n.dateInPast)
+                        EventField(
+                          event: selected,
+                          error: _eventError && selected == null
+                              ? l10n.eventsPickRequired
                               : null,
-                          onTap: _pickDate,
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final c in EventCategory.values)
-                              FButton(
-                                size: FButtonSizeVariant.sm,
-                                mainAxisSize: MainAxisSize.min,
-                                variant: _category == c
-                                    ? FButtonVariant.primary
-                                    : FButtonVariant.outline,
-                                prefix: Icon(categoryIcon(c)),
-                                onPress: () => setState(() => _category = c),
-                                child: Text(
-                                  categoryName(l10n, c),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                          ],
+                          onTap: () => _chooseEvent(events),
                         ),
                         SettingsSectionTitle(l10n.tickets),
                         Segmented<TicketType>(
@@ -389,9 +327,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                     ),
                   ),
                 ),
-              ),
-      ),
-    );
+              );
   }
 }
 
@@ -528,83 +464,21 @@ class _PayoutRequired extends StatelessWidget {
   }
 }
 
-class _DateField extends StatefulWidget {
-  const _DateField({
-    required this.date,
-    required this.error,
-    required this.onTap,
-  });
-
-  final DateTime? date;
-  final String? error;
-  final VoidCallback onTap;
-
-  @override
-  State<_DateField> createState() => _DateFieldState();
-}
-
-class _DateFieldState extends State<_DateField> {
-  final _controller = TextEditingController();
-  bool _built = false;
-
-  String _text() =>
-      widget.date == null ? '' : formatDateTime(context, widget.date!);
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Also on a locale change. Before the first build nobody listens yet.
-    _sync();
-  }
-
-  @override
-  void didUpdateWidget(_DateField old) {
-    super.didUpdateWidget(old);
-    if (old.date != widget.date) _sync();
-  }
-
-  /// The field's form state listens to the controller, so changing it while
-  /// building would rebuild the form mid-build: update after the frame.
-  void _sync() {
-    final text = _text();
-    if (_controller.text == text) return;
-    if (!_built) {
-      _controller.text = text;
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _controller.text = _text();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+/// Events come from the Stubswap team; until there is one, nothing to sell.
+class _NoEvents extends StatelessWidget {
+  const _NoEvents();
 
   @override
   Widget build(BuildContext context) {
-    _built = true;
     final l10n = AppLocalizations.of(context);
-    // Read-only: tapping opens the date and time pickers.
-    return FTextFormField(
-      control: FTextFieldControl.managed(controller: _controller),
-      label: Text(l10n.dateTime),
-      prefixBuilder: (context, style, variants) =>
-          fieldIcon(FLucideIcons.calendar),
-      suffixBuilder: (context, style, variants) => Padding(
-        padding: const EdgeInsetsDirectional.only(end: 12),
-        child: Icon(
-          FLucideIcons.chevronDown,
-          size: 16,
-          color: context.theme.colors.mutedForeground,
+    return Center(
+      child: SingleChildScrollView(
+        child: EmptyState(
+          icon: FLucideIcons.calendarX,
+          title: l10n.eventsNoneToSell,
+          message: l10n.eventsNoneToSellInfo,
         ),
       ),
-      readOnly: true,
-      enableInteractiveSelection: false,
-      onTap: widget.onTap,
-      forceErrorText: widget.error,
     );
   }
 }

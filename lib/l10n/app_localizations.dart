@@ -100,6 +100,828 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @supportMyRequests.
+  ///
+  /// In bs, this message translates to:
+  /// **'Moji upiti'**
+  String get supportMyRequests;
+
+  /// No description provided for @supportNoRequests.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nemaš upita podršci.'**
+  String get supportNoRequests;
+
+  /// No description provided for @supportStatusOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvoren'**
+  String get supportStatusOpen;
+
+  /// No description provided for @supportStatusAnswered.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odgovoreno'**
+  String get supportStatusAnswered;
+
+  /// No description provided for @supportStatusClosed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvoren'**
+  String get supportStatusClosed;
+
+  /// No description provided for @supportNewAnswer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi odgovor'**
+  String get supportNewAnswer;
+
+  /// No description provided for @supportRequestSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upit poslan'**
+  String get supportRequestSent;
+
+  /// No description provided for @supportMessageTooShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napiši barem 10 znakova'**
+  String get supportMessageTooShort;
+
+  /// No description provided for @supportAnswerInApp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odgovaramo ovdje u aplikaciji, obično u roku od 24 sata. Dobit ćeš obavijest.'**
+  String get supportAnswerInApp;
+
+  /// No description provided for @supportImages.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slike'**
+  String get supportImages;
+
+  /// No description provided for @supportImagesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Snimci ekrana ili fotografije, najviše {count}'**
+  String supportImagesInfo(int count);
+
+  /// No description provided for @supportAddImage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj sliku'**
+  String get supportAddImage;
+
+  /// No description provided for @supportRemoveImage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni sliku'**
+  String get supportRemoveImage;
+
+  /// No description provided for @supportImageError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika se ne može učitati'**
+  String get supportImageError;
+
+  /// No description provided for @supportImage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika'**
+  String get supportImage;
+
+  /// No description provided for @supportTeamName.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podrška Stubswap'**
+  String get supportTeamName;
+
+  /// No description provided for @supportYou.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ti'**
+  String get supportYou;
+
+  /// No description provided for @supportTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upit'**
+  String get supportTicket;
+
+  /// No description provided for @supportCloseTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvori upit'**
+  String get supportCloseTicket;
+
+  /// No description provided for @supportResolveTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'Problem riješen – zatvori upit'**
+  String get supportResolveTicket;
+
+  /// No description provided for @supportCloseConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvoriti upit?'**
+  String get supportCloseConfirm;
+
+  /// No description provided for @supportCloseConfirmInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'U zatvoreni upit se više ne može pisati. Ako se problem ponovo pojavi, otvori novi upit.'**
+  String get supportCloseConfirmInfo;
+
+  /// No description provided for @supportCloseConfirmStaff.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik više neće moći pisati u ovaj upit.'**
+  String get supportCloseConfirmStaff;
+
+  /// No description provided for @supportClosed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upit je zatvoren'**
+  String get supportClosed;
+
+  /// No description provided for @supportClosedByUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvorio ga je korisnik.'**
+  String get supportClosedByUser;
+
+  /// No description provided for @supportClosedByYou.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvoren na tvoj zahtjev.'**
+  String get supportClosedByYou;
+
+  /// No description provided for @supportClosedByStaff.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvorila ga je podrška.'**
+  String get supportClosedByStaff;
+
+  /// No description provided for @supportNewRequest.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi upit'**
+  String get supportNewRequest;
+
+  /// No description provided for @supportWriteMessage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napiši poruku…'**
+  String get supportWriteMessage;
+
+  /// No description provided for @supportNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upit nije pronađen'**
+  String get supportNotFound;
+
+  /// No description provided for @supportNoAccess.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemaš pristup'**
+  String get supportNoAccess;
+
+  /// No description provided for @supportNoAccessInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova stranica je samo za tim podrške.'**
+  String get supportNoAccessInfo;
+
+  /// No description provided for @supportInbox.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upiti podrške'**
+  String get supportInbox;
+
+  /// No description provided for @supportFilterOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvoreni'**
+  String get supportFilterOpen;
+
+  /// No description provided for @supportFilterAnswered.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odgovoreni'**
+  String get supportFilterAnswered;
+
+  /// No description provided for @supportFilterClosed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zatvoreni'**
+  String get supportFilterClosed;
+
+  /// No description provided for @supportFilterAll.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi'**
+  String get supportFilterAll;
+
+  /// No description provided for @supportInboxEmpty.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema upita'**
+  String get supportInboxEmpty;
+
+  /// No description provided for @supportAppVersion.
+  ///
+  /// In bs, this message translates to:
+  /// **'Verzija aplikacije'**
+  String get supportAppVersion;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-mail'**
+  String get supportEmail;
+
+  /// No description provided for @supportAlertAnswered.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podrška je odgovorila'**
+  String get supportAlertAnswered;
+
+  /// No description provided for @supportAlertNew.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi upit za podršku'**
+  String get supportAlertNew;
+
+  /// No description provided for @supportAlertNewMessage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nova poruka u upitu {number}'**
+  String supportAlertNewMessage(String number);
+
+  /// No description provided for @supportAlertOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvori'**
+  String get supportAlertOpen;
+
+  /// No description provided for @supportAdministration.
+  ///
+  /// In bs, this message translates to:
+  /// **'Administracija'**
+  String get supportAdministration;
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Administracija'**
+  String get adminTitle;
+
+  /// No description provided for @adminTeamSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tim'**
+  String get adminTeamSection;
+
+  /// No description provided for @adminNoAccess.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemaš pristup'**
+  String get adminNoAccess;
+
+  /// No description provided for @adminNoAccessInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova stranica je samo za administratore.'**
+  String get adminNoAccessInfo;
+
+  /// No description provided for @adminEvents.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaji'**
+  String get adminEvents;
+
+  /// No description provided for @adminEventsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj i uredi događaje'**
+  String get adminEventsInfo;
+
+  /// No description provided for @adminFeesTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Servisna naknada'**
+  String get adminFeesTitle;
+
+  /// No description provided for @adminFeesSummary.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac {buyer} % · Prodavac {seller} %'**
+  String adminFeesSummary(int buyer, int seller);
+
+  /// No description provided for @adminTeamTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tim i podrška'**
+  String get adminTeamTitle;
+
+  /// No description provided for @adminTeamInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Računi podrške i administratori'**
+  String get adminTeamInfo;
+
+  /// No description provided for @adminSupportInbox.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upiti podrške'**
+  String get adminSupportInbox;
+
+  /// No description provided for @adminSupportInboxInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odgovori na upite korisnika'**
+  String get adminSupportInboxInfo;
+
+  /// No description provided for @adminBuyerFee.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada kupca'**
+  String get adminBuyerFee;
+
+  /// No description provided for @adminBuyerFeeInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac je plaća povrh cijene karte.'**
+  String get adminBuyerFeeInfo;
+
+  /// No description provided for @adminSellerFee.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada prodavca'**
+  String get adminSellerFee;
+
+  /// No description provided for @adminSellerFeeInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Oduzima se od cijene karte koju prodavac dobija.'**
+  String get adminSellerFeeInfo;
+
+  /// No description provided for @adminFeeRange.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesi cijeli broj od 0 do {max}'**
+  String adminFeeRange(int max);
+
+  /// No description provided for @adminFeeDecrease.
+  ///
+  /// In bs, this message translates to:
+  /// **'Smanji'**
+  String get adminFeeDecrease;
+
+  /// No description provided for @adminFeeIncrease.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povećaj'**
+  String get adminFeeIncrease;
+
+  /// No description provided for @adminFeesCurrent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Trenutno: {summary}'**
+  String adminFeesCurrent(String summary);
+
+  /// No description provided for @adminFeesExample.
+  ///
+  /// In bs, this message translates to:
+  /// **'Primjer za kartu od {price}'**
+  String adminFeesExample(String price);
+
+  /// No description provided for @adminTicketPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena karte'**
+  String get adminTicketPrice;
+
+  /// No description provided for @adminBuyerPays.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac plaća'**
+  String get adminBuyerPays;
+
+  /// No description provided for @adminSellerReceives.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac dobija'**
+  String get adminSellerReceives;
+
+  /// No description provided for @adminPlatformEarns.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stubswap zarađuje'**
+  String get adminPlatformEarns;
+
+  /// No description provided for @adminFeesNotice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nova naknada vrijedi samo za ponude objavljene od sada. Postojeće ponude i narudžbe zadržavaju svoju naknadu.'**
+  String get adminFeesNotice;
+
+  /// No description provided for @adminFeesConfirmTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeniti naknadu?'**
+  String get adminFeesConfirmTitle;
+
+  /// No description provided for @adminFeesSave.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sačuvaj naknadu'**
+  String get adminFeesSave;
+
+  /// No description provided for @adminFeesSaved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada je sačuvana'**
+  String get adminFeesSaved;
+
+  /// No description provided for @adminRoleAdmin.
+  ///
+  /// In bs, this message translates to:
+  /// **'Admin'**
+  String get adminRoleAdmin;
+
+  /// No description provided for @adminRoleSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podrška'**
+  String get adminRoleSupport;
+
+  /// No description provided for @adminTeamMembers.
+  ///
+  /// In bs, this message translates to:
+  /// **'Članovi tima'**
+  String get adminTeamMembers;
+
+  /// No description provided for @adminGrantedAt.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodano {date}'**
+  String adminGrantedAt(String date);
+
+  /// No description provided for @adminYou.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ti'**
+  String get adminYou;
+
+  /// No description provided for @adminNoName.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez imena'**
+  String get adminNoName;
+
+  /// No description provided for @adminRemoveSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni iz podrške'**
+  String get adminRemoveSupport;
+
+  /// No description provided for @adminRemoveSupportTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloniti iz podrške?'**
+  String get adminRemoveSupportTitle;
+
+  /// No description provided for @adminRemoveSupportBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{name} više neće vidjeti upite podrške. Korisnički račun ostaje.'**
+  String adminRemoveSupportBody(String name);
+
+  /// No description provided for @adminRemove.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni'**
+  String get adminRemove;
+
+  /// No description provided for @adminSupportRemoved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uklonjeno iz podrške'**
+  String get adminSupportRemoved;
+
+  /// No description provided for @adminAdminsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Admine dodaješ samo u Firebase konzoli (Firestore → roles → dokument s ID-em korisnika, polje role = admin).'**
+  String get adminAdminsInfo;
+
+  /// No description provided for @adminAddSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj račun podrške'**
+  String get adminAddSupport;
+
+  /// No description provided for @adminAddSupportInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Traži po tačnoj e-mail adresi ili korisničkom imenu. Korisnik se mora barem jednom prijaviti u Stubswap.'**
+  String get adminAddSupportInfo;
+
+  /// No description provided for @adminFindUserLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-mail ili korisničko ime'**
+  String get adminFindUserLabel;
+
+  /// No description provided for @adminFindUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Traži'**
+  String get adminFindUser;
+
+  /// No description provided for @adminUserNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik nije pronađen'**
+  String get adminUserNotFound;
+
+  /// No description provided for @adminUserNotFoundInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjeri adresu ili korisničko ime. Korisnik se mora barem jednom prijaviti.'**
+  String get adminUserNotFoundInfo;
+
+  /// No description provided for @adminMakeSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj kao podršku'**
+  String get adminMakeSupport;
+
+  /// No description provided for @adminSupportAdded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodano u podršku'**
+  String get adminSupportAdded;
+
+  /// No description provided for @adminAlreadyInTeam.
+  ///
+  /// In bs, this message translates to:
+  /// **'Već je u timu kao {role}'**
+  String adminAlreadyInTeam(String role);
+
+  /// No description provided for @adminThatsYou.
+  ///
+  /// In bs, this message translates to:
+  /// **'To si ti'**
+  String get adminThatsYou;
+
+  /// No description provided for @eventsOffer.
+  ///
+  /// In bs, this message translates to:
+  /// **'od {price} · {count, plural, one{{count} karta} few{{count} karte} other{{count} karata}}'**
+  String eventsOffer(String price, int count);
+
+  /// No description provided for @eventsNoOffers.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema ponuda'**
+  String get eventsNoOffers;
+
+  /// No description provided for @eventsNoOffersInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Budite prvi koji prodaje karte za ovaj događaj.'**
+  String get eventsNoOffersInfo;
+
+  /// No description provided for @eventsSellForEvent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaj karte za ovaj događaj'**
+  String get eventsSellForEvent;
+
+  /// No description provided for @eventsOffers.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponude'**
+  String get eventsOffers;
+
+  /// No description provided for @eventsNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj nije pronađen'**
+  String get eventsNotFound;
+
+  /// No description provided for @eventsNotFoundInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Možda je uklonjen ili više nije dostupan.'**
+  String get eventsNotFoundInfo;
+
+  /// No description provided for @eventsIsOver.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovaj događaj je prošao. Karte za njega se više ne prodaju.'**
+  String get eventsIsOver;
+
+  /// No description provided for @eventsPick.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi događaj'**
+  String get eventsPick;
+
+  /// No description provided for @eventsPickRequired.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberite događaj'**
+  String get eventsPickRequired;
+
+  /// No description provided for @eventsChange.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni'**
+  String get eventsChange;
+
+  /// No description provided for @eventsSearch.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pretraži događaje'**
+  String get eventsSearch;
+
+  /// No description provided for @eventsNoneToSell.
+  ///
+  /// In bs, this message translates to:
+  /// **'Trenutno nema događaja'**
+  String get eventsNoneToSell;
+
+  /// No description provided for @eventsNoneToSellInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaje dodaje Stubswap tim. Čim se pojavi novi događaj, ovdje možete prodati karte za njega.'**
+  String get eventsNoneToSellInfo;
+
+  /// No description provided for @eventsAllOffers.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sve ponude za ovaj događaj'**
+  String get eventsAllOffers;
+
+  /// No description provided for @eventsAdminTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaji'**
+  String get eventsAdminTitle;
+
+  /// No description provided for @eventsAdminNoAccess.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemate pristup'**
+  String get eventsAdminNoAccess;
+
+  /// No description provided for @eventsAdminNoAccessInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovu stranicu mogu otvoriti samo administratori.'**
+  String get eventsAdminNoAccessInfo;
+
+  /// No description provided for @eventsNew.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi događaj'**
+  String get eventsNew;
+
+  /// No description provided for @eventsEdit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uredi događaj'**
+  String get eventsEdit;
+
+  /// No description provided for @eventsHiddenBadge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Skriven'**
+  String get eventsHiddenBadge;
+
+  /// No description provided for @eventsPastBadge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prošao'**
+  String get eventsPastBadge;
+
+  /// No description provided for @eventsUpcomingSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nadolazeći'**
+  String get eventsUpcomingSection;
+
+  /// No description provided for @eventsPastSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prošli'**
+  String get eventsPastSection;
+
+  /// No description provided for @eventsHide.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sakrij događaj'**
+  String get eventsHide;
+
+  /// No description provided for @eventsShow.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prikaži događaj'**
+  String get eventsShow;
+
+  /// No description provided for @eventsHideConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj se više neće prikazivati i za njega se neće moći objavljivati nove ponude. Postojeće ponude ostaju.'**
+  String get eventsHideConfirm;
+
+  /// No description provided for @eventsShowConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj će ponovo biti vidljiv svima i za njega će se moći prodavati karte.'**
+  String get eventsShowConfirm;
+
+  /// No description provided for @eventsHiddenToast.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je sakriven'**
+  String get eventsHiddenToast;
+
+  /// No description provided for @eventsShownToast.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je ponovo vidljiv'**
+  String get eventsShownToast;
+
+  /// No description provided for @eventsPicture.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika'**
+  String get eventsPicture;
+
+  /// No description provided for @eventsPicturePick.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi sliku'**
+  String get eventsPicturePick;
+
+  /// No description provided for @eventsPictureReplace.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zamijeni'**
+  String get eventsPictureReplace;
+
+  /// No description provided for @eventsPictureRemove.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni'**
+  String get eventsPictureRemove;
+
+  /// No description provided for @eventsPictureHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika se izrezuje na format 16:9.'**
+  String get eventsPictureHint;
+
+  /// No description provided for @eventsPictureError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova slika se ne može učitati'**
+  String get eventsPictureError;
+
+  /// No description provided for @eventsCreated.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je kreiran'**
+  String get eventsCreated;
+
+  /// No description provided for @eventsListingsKeepData.
+  ///
+  /// In bs, this message translates to:
+  /// **'Postojeće ponude zadržavaju podatke o događaju iz trenutka kada su objavljene.'**
+  String get eventsListingsKeepData;
+
+  /// No description provided for @eventsNameTooShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najmanje 2 znaka'**
+  String get eventsNameTooShort;
+
+  /// No description provided for @eventsNoneYet.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema događaja'**
+  String get eventsNoneYet;
+
+  /// No description provided for @eventsNoneYetInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodajte prvi događaj da bi prodavci mogli objavljivati ponude.'**
+  String get eventsNoneYetInfo;
+
   /// No description provided for @appTitle.
   ///
   /// In bs, this message translates to:

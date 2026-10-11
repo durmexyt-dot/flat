@@ -10,6 +10,460 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get supportMyRequests => 'Moji upiti';
+
+  @override
+  String get supportNoRequests => 'Još nemaš upita podršci.';
+
+  @override
+  String get supportStatusOpen => 'Otvoren';
+
+  @override
+  String get supportStatusAnswered => 'Odgovoreno';
+
+  @override
+  String get supportStatusClosed => 'Zatvoren';
+
+  @override
+  String get supportNewAnswer => 'Novi odgovor';
+
+  @override
+  String get supportRequestSent => 'Upit poslan';
+
+  @override
+  String get supportMessageTooShort => 'Napiši barem 10 znakova';
+
+  @override
+  String get supportAnswerInApp =>
+      'Odgovaramo ovdje u aplikaciji, obično u roku od 24 sata. Dobit ćeš obavijest.';
+
+  @override
+  String get supportImages => 'Slike';
+
+  @override
+  String supportImagesInfo(int count) {
+    return 'Snimci ekrana ili fotografije, najviše $count';
+  }
+
+  @override
+  String get supportAddImage => 'Dodaj sliku';
+
+  @override
+  String get supportRemoveImage => 'Ukloni sliku';
+
+  @override
+  String get supportImageError => 'Slika se ne može učitati';
+
+  @override
+  String get supportImage => 'Slika';
+
+  @override
+  String get supportTeamName => 'Podrška Stubswap';
+
+  @override
+  String get supportYou => 'Ti';
+
+  @override
+  String get supportTicket => 'Upit';
+
+  @override
+  String get supportCloseTicket => 'Zatvori upit';
+
+  @override
+  String get supportResolveTicket => 'Problem riješen – zatvori upit';
+
+  @override
+  String get supportCloseConfirm => 'Zatvoriti upit?';
+
+  @override
+  String get supportCloseConfirmInfo =>
+      'U zatvoreni upit se više ne može pisati. Ako se problem ponovo pojavi, otvori novi upit.';
+
+  @override
+  String get supportCloseConfirmStaff =>
+      'Korisnik više neće moći pisati u ovaj upit.';
+
+  @override
+  String get supportClosed => 'Upit je zatvoren';
+
+  @override
+  String get supportClosedByUser => 'Zatvorio ga je korisnik.';
+
+  @override
+  String get supportClosedByYou => 'Zatvoren na tvoj zahtjev.';
+
+  @override
+  String get supportClosedByStaff => 'Zatvorila ga je podrška.';
+
+  @override
+  String get supportNewRequest => 'Novi upit';
+
+  @override
+  String get supportWriteMessage => 'Napiši poruku…';
+
+  @override
+  String get supportNotFound => 'Upit nije pronađen';
+
+  @override
+  String get supportNoAccess => 'Nemaš pristup';
+
+  @override
+  String get supportNoAccessInfo => 'Ova stranica je samo za tim podrške.';
+
+  @override
+  String get supportInbox => 'Upiti podrške';
+
+  @override
+  String get supportFilterOpen => 'Otvoreni';
+
+  @override
+  String get supportFilterAnswered => 'Odgovoreni';
+
+  @override
+  String get supportFilterClosed => 'Zatvoreni';
+
+  @override
+  String get supportFilterAll => 'Svi';
+
+  @override
+  String get supportInboxEmpty => 'Nema upita';
+
+  @override
+  String get supportAppVersion => 'Verzija aplikacije';
+
+  @override
+  String get supportEmail => 'E-mail';
+
+  @override
+  String get supportAlertAnswered => 'Podrška je odgovorila';
+
+  @override
+  String get supportAlertNew => 'Novi upit za podršku';
+
+  @override
+  String supportAlertNewMessage(String number) {
+    return 'Nova poruka u upitu $number';
+  }
+
+  @override
+  String get supportAlertOpen => 'Otvori';
+
+  @override
+  String get supportAdministration => 'Administracija';
+
+  @override
+  String get adminTitle => 'Administracija';
+
+  @override
+  String get adminTeamSection => 'Tim';
+
+  @override
+  String get adminNoAccess => 'Nemaš pristup';
+
+  @override
+  String get adminNoAccessInfo => 'Ova stranica je samo za administratore.';
+
+  @override
+  String get adminEvents => 'Događaji';
+
+  @override
+  String get adminEventsInfo => 'Dodaj i uredi događaje';
+
+  @override
+  String get adminFeesTitle => 'Servisna naknada';
+
+  @override
+  String adminFeesSummary(int buyer, int seller) {
+    return 'Kupac $buyer % · Prodavac $seller %';
+  }
+
+  @override
+  String get adminTeamTitle => 'Tim i podrška';
+
+  @override
+  String get adminTeamInfo => 'Računi podrške i administratori';
+
+  @override
+  String get adminSupportInbox => 'Upiti podrške';
+
+  @override
+  String get adminSupportInboxInfo => 'Odgovori na upite korisnika';
+
+  @override
+  String get adminBuyerFee => 'Naknada kupca';
+
+  @override
+  String get adminBuyerFeeInfo => 'Kupac je plaća povrh cijene karte.';
+
+  @override
+  String get adminSellerFee => 'Naknada prodavca';
+
+  @override
+  String get adminSellerFeeInfo =>
+      'Oduzima se od cijene karte koju prodavac dobija.';
+
+  @override
+  String adminFeeRange(int max) {
+    return 'Unesi cijeli broj od 0 do $max';
+  }
+
+  @override
+  String get adminFeeDecrease => 'Smanji';
+
+  @override
+  String get adminFeeIncrease => 'Povećaj';
+
+  @override
+  String adminFeesCurrent(String summary) {
+    return 'Trenutno: $summary';
+  }
+
+  @override
+  String adminFeesExample(String price) {
+    return 'Primjer za kartu od $price';
+  }
+
+  @override
+  String get adminTicketPrice => 'Cijena karte';
+
+  @override
+  String get adminBuyerPays => 'Kupac plaća';
+
+  @override
+  String get adminSellerReceives => 'Prodavac dobija';
+
+  @override
+  String get adminPlatformEarns => 'Stubswap zarađuje';
+
+  @override
+  String get adminFeesNotice =>
+      'Nova naknada vrijedi samo za ponude objavljene od sada. Postojeće ponude i narudžbe zadržavaju svoju naknadu.';
+
+  @override
+  String get adminFeesConfirmTitle => 'Promijeniti naknadu?';
+
+  @override
+  String get adminFeesSave => 'Sačuvaj naknadu';
+
+  @override
+  String get adminFeesSaved => 'Naknada je sačuvana';
+
+  @override
+  String get adminRoleAdmin => 'Admin';
+
+  @override
+  String get adminRoleSupport => 'Podrška';
+
+  @override
+  String get adminTeamMembers => 'Članovi tima';
+
+  @override
+  String adminGrantedAt(String date) {
+    return 'Dodano $date';
+  }
+
+  @override
+  String get adminYou => 'Ti';
+
+  @override
+  String get adminNoName => 'Bez imena';
+
+  @override
+  String get adminRemoveSupport => 'Ukloni iz podrške';
+
+  @override
+  String get adminRemoveSupportTitle => 'Ukloniti iz podrške?';
+
+  @override
+  String adminRemoveSupportBody(String name) {
+    return '$name više neće vidjeti upite podrške. Korisnički račun ostaje.';
+  }
+
+  @override
+  String get adminRemove => 'Ukloni';
+
+  @override
+  String get adminSupportRemoved => 'Uklonjeno iz podrške';
+
+  @override
+  String get adminAdminsInfo =>
+      'Admine dodaješ samo u Firebase konzoli (Firestore → roles → dokument s ID-em korisnika, polje role = admin).';
+
+  @override
+  String get adminAddSupport => 'Dodaj račun podrške';
+
+  @override
+  String get adminAddSupportInfo =>
+      'Traži po tačnoj e-mail adresi ili korisničkom imenu. Korisnik se mora barem jednom prijaviti u Stubswap.';
+
+  @override
+  String get adminFindUserLabel => 'E-mail ili korisničko ime';
+
+  @override
+  String get adminFindUser => 'Traži';
+
+  @override
+  String get adminUserNotFound => 'Korisnik nije pronađen';
+
+  @override
+  String get adminUserNotFoundInfo =>
+      'Provjeri adresu ili korisničko ime. Korisnik se mora barem jednom prijaviti.';
+
+  @override
+  String get adminMakeSupport => 'Dodaj kao podršku';
+
+  @override
+  String get adminSupportAdded => 'Dodano u podršku';
+
+  @override
+  String adminAlreadyInTeam(String role) {
+    return 'Već je u timu kao $role';
+  }
+
+  @override
+  String get adminThatsYou => 'To si ti';
+
+  @override
+  String eventsOffer(String price, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count karata',
+      few: '$count karte',
+      one: '$count karta',
+    );
+    return 'od $price · $_temp0';
+  }
+
+  @override
+  String get eventsNoOffers => 'Još nema ponuda';
+
+  @override
+  String get eventsNoOffersInfo =>
+      'Budite prvi koji prodaje karte za ovaj događaj.';
+
+  @override
+  String get eventsSellForEvent => 'Prodaj karte za ovaj događaj';
+
+  @override
+  String get eventsOffers => 'Ponude';
+
+  @override
+  String get eventsNotFound => 'Događaj nije pronađen';
+
+  @override
+  String get eventsNotFoundInfo => 'Možda je uklonjen ili više nije dostupan.';
+
+  @override
+  String get eventsIsOver =>
+      'Ovaj događaj je prošao. Karte za njega se više ne prodaju.';
+
+  @override
+  String get eventsPick => 'Odaberi događaj';
+
+  @override
+  String get eventsPickRequired => 'Odaberite događaj';
+
+  @override
+  String get eventsChange => 'Promijeni';
+
+  @override
+  String get eventsSearch => 'Pretraži događaje';
+
+  @override
+  String get eventsNoneToSell => 'Trenutno nema događaja';
+
+  @override
+  String get eventsNoneToSellInfo =>
+      'Događaje dodaje Stubswap tim. Čim se pojavi novi događaj, ovdje možete prodati karte za njega.';
+
+  @override
+  String get eventsAllOffers => 'Sve ponude za ovaj događaj';
+
+  @override
+  String get eventsAdminTitle => 'Događaji';
+
+  @override
+  String get eventsAdminNoAccess => 'Nemate pristup';
+
+  @override
+  String get eventsAdminNoAccessInfo =>
+      'Ovu stranicu mogu otvoriti samo administratori.';
+
+  @override
+  String get eventsNew => 'Novi događaj';
+
+  @override
+  String get eventsEdit => 'Uredi događaj';
+
+  @override
+  String get eventsHiddenBadge => 'Skriven';
+
+  @override
+  String get eventsPastBadge => 'Prošao';
+
+  @override
+  String get eventsUpcomingSection => 'Nadolazeći';
+
+  @override
+  String get eventsPastSection => 'Prošli';
+
+  @override
+  String get eventsHide => 'Sakrij događaj';
+
+  @override
+  String get eventsShow => 'Prikaži događaj';
+
+  @override
+  String get eventsHideConfirm =>
+      'Događaj se više neće prikazivati i za njega se neće moći objavljivati nove ponude. Postojeće ponude ostaju.';
+
+  @override
+  String get eventsShowConfirm =>
+      'Događaj će ponovo biti vidljiv svima i za njega će se moći prodavati karte.';
+
+  @override
+  String get eventsHiddenToast => 'Događaj je sakriven';
+
+  @override
+  String get eventsShownToast => 'Događaj je ponovo vidljiv';
+
+  @override
+  String get eventsPicture => 'Slika';
+
+  @override
+  String get eventsPicturePick => 'Odaberi sliku';
+
+  @override
+  String get eventsPictureReplace => 'Zamijeni';
+
+  @override
+  String get eventsPictureRemove => 'Ukloni';
+
+  @override
+  String get eventsPictureHint => 'Slika se izrezuje na format 16:9.';
+
+  @override
+  String get eventsPictureError => 'Ova slika se ne može učitati';
+
+  @override
+  String get eventsCreated => 'Događaj je kreiran';
+
+  @override
+  String get eventsListingsKeepData =>
+      'Postojeće ponude zadržavaju podatke o događaju iz trenutka kada su objavljene.';
+
+  @override
+  String get eventsNameTooShort => 'Najmanje 2 znaka';
+
+  @override
+  String get eventsNoneYet => 'Još nema događaja';
+
+  @override
+  String get eventsNoneYetInfo =>
+      'Dodajte prvi događaj da bi prodavci mogli objavljivati ponude.';
+
+  @override
   String get appTitle => 'Stubswap';
 
   @override

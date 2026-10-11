@@ -9,17 +9,18 @@ import '../support/support_badge.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../brand/brand.dart';
+import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../market/labels.dart';
-import '../market/listing_ticket.dart';
 import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import '../ui/snack.dart';
+import '../events/event_card.dart';
 
-/// Event discovery: listings from all sellers. Open to guests too.
+/// Event discovery: upcoming events with their offers. Open to guests too.
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -47,14 +48,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.dispose();
   }
 
-  bool _matches(Listing l) {
-    if (_category != null && l.event.category != _category) return false;
+  bool _matches(Event e) {
+    if (_category != null && e.info.category != _category) return false;
     final q = _search.text.trim().toLowerCase();
     if (q.isEmpty) return true;
     return [
-      l.event.name,
-      l.event.venue,
-      l.event.city,
+      e.info.name,
+      e.info.venue,
+      e.info.city,
     ].any((s) => s.toLowerCase().contains(q));
   }
 
@@ -88,7 +89,11 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
       ),
       body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(activeListingsProvider),
+        onRefresh: () async {
+          ref
+            ..invalidate(eventsProvider)
+            ..invalidate(activeListingsProvider);
+        },
         child: ListView(
           padding: wide
               ? const EdgeInsets.fromLTRB(16, 32, 16, 48)
@@ -114,7 +119,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
             ),
             const SizedBox(height: 12),
-            _listings(context),
+            _events(context),
           ],
         ),
       ),
@@ -301,14 +306,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  /// Listings in as many columns as fit (one on phones).
-  Widget _listings(BuildContext context) {
+  /// Upcoming events in as many columns as fit (one on phones).
+  Widget _events(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final listings = ref.watch(activeListingsProvider);
+    final events = ref.watch(upcomingEventsProvider);
     return LayoutBuilder(
       builder: (context, constraints) {
         const gap = 16.0;
-        final columns = (constraints.maxWidth / 380).floor().clamp(1, 3);
+        final columns = (constraints.maxWidth / 340).floor().clamp(1, 3);
         final itemWidth =
             (constraints.maxWidth - gap * (columns - 1)) / columns;
 
@@ -320,12 +325,12 @@ class _HomePageState extends ConsumerState<HomePage> {
           ],
         );
 
-        return AsyncView<List<Listing>>(
-          value: listings,
-          onRetry: () => ref.invalidate(activeListingsProvider),
+        return AsyncView<List<Event>>(
+          value: events,
+          onRetry: () => ref.invalidate(eventsProvider),
           loading: Shimmer(
             child: grid([
-              for (var i = 0; i < columns * 2; i++) const SkeletonTicketTile(),
+              for (var i = 0; i < columns * 2; i++) const SkeletonEventCard(),
             ]),
           ),
           data: (all) {
@@ -344,11 +349,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               );
             }
             return grid([
-              for (final l in shown)
-                ListingTicket(
-                  listing: l,
-                  own: l.sellerId == ref.watch(currentUidProvider),
-                  onTap: () => context.push('/listing/${l.id}', extra: l),
+              for (final e in shown)
+                EventCard(
+                  event: e,
+                  onTap: () => context.push('/event/${e.id}', extra: e),
                 ),
             ]);
           },
