@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.4.2] – 2026-10-11
+
+- Retry Firestore listeners on transient errors; show error codes
+- Showcase seed: read checks that work with the rules
+
 ## [1.4.1] – 2026-10-11
 
 ### Behoben
