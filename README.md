@@ -83,7 +83,7 @@ web/index.html              HTML splash shown while Flutter loads
    location such as `eur3`).
 4. Firestore Database → **Rules**: replace the rules with the content of
    [`firestore.rules`](firestore.rules) and publish. With the Firebase CLI:
-   `firebase deploy --only firestore:rules`.
+   `firebase deploy --only firestore:rules -P staging` (and `-P prod`).
 
 Test data: `tool/seed_test_data.py` signs in a test seller
 (`test.prodavac@stubswap.test`, password via `STUBSWAP_SELLER_PASSWORD`),
@@ -118,22 +118,48 @@ After editing an `.arb` file, `flutter gen-l10n` (or any build) regenerates
 Users sign up in the app, or are created in the Firebase console
 (Authentication → Users → Add user).
 
-## Deployment (web)
+## Environments
 
-GitHub Pages serves the `gh-pages` branch, which contains only the built web
-app. To publish the current state:
+| | Firebase project | Web address | Data |
+|---|---|---|---|
+| **staging** | `stubswap-eda59` (`lib/firebase_options.dart`) | `/flat/staging/` | test accounts and test data |
+| **prod** | own project (`lib/firebase_options_prod.dart`) | `/flat/` | real users |
+
+Both use the payment simulator until Stripe is added. Builds are staging
+unless built with `APP_ENV=prod` (the scripts do that); staging shows a
+"STAGING" banner. The same `firestore.rules` go to both projects
+(`firebase deploy --only firestore:rules -P staging` / `-P prod`).
+
+## Versions and releases
+
+Version: `MAJOR.MINOR.PATCH+BUILD` in `pubspec.yaml`, the single source.
+The build passes it to the app with build number and commit (about dialog,
+support requests); the web app compares its build number with the deployed
+`version.json` and offers a reload when a newer one is online.
+
+Changes go under `## [Unreleased]` in [CHANGELOG.md](CHANGELOG.md). A
+release:
 
 ```sh
-tool/deploy_web.sh
+tool/release.sh patch     # 1.1.0 → 1.1.1, bug fixes
+tool/release.sh minor     # 1.1.0 → 1.2.0, new features
+tool/release.sh major     # 1.1.0 → 2.0.0, incompatible changes
+tool/release.sh minor all # also deploy prod
 ```
 
-The script runs the tests, builds with the right base path and pushes the
-build to `gh-pages`.
+It checks that `main` is clean and pushed, runs analyze and tests, bumps
+version and build number, writes the changelog section, commits
+`Release vX.Y.Z`, tags `vX.Y.Z`, pushes and deploys (staging by default).
 
-One-time setup:
+Deploy without a release, or roll back:
 
-1. GitHub → Settings → Pages → Source: **Deploy from a branch**,
-   Branch: `gh-pages`, folder `/ (root)`.
+```sh
+tool/deploy_web.sh staging                 # current main to /flat/staging/
+tool/deploy_web.sh prod --ref v1.1.0       # an older version back to /flat/
+```
+
+GitHub Pages serves the `gh-pages` branch (Settings → Pages → Deploy from a
+branch → `gh-pages`, `/ (root)`).
 
 ## Android, iOS and macOS
 
