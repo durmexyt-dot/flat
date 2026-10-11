@@ -88,7 +88,10 @@ def plain(v):
 
 def get(token, path):
     status, res = call(f'{DOCS}/{path}', token=token)
-    if status == 404:
+    # The rules deny reading a document that doesn't exist yet when access
+    # depends on its data: treat it as missing (a real lack of rights shows
+    # up when writing).
+    if status in (403, 404):
         return None
     if status != 200:
         sys.exit(f'Reading {path} failed ({status}): {res.get("error", res)}')
@@ -226,10 +229,11 @@ def event_info(e):
     return {k: e[k] for k in ('name', 'venue', 'city', 'date', 'category')}
 
 
-def ensure_event(a, eid, e, *, status, image=None):
+def ensure_event(a, eid, e, *, status, reader, image=None):
     """Creates the event (and picture) as [a]: the team adds confirmed ones,
-    users pending ones."""
-    existing = get(a.token, f'events/{eid}')
+    users pending ones. [reader] (the team) checks whether it exists: users
+    may not read events that don't exist yet."""
+    existing = get(reader.token, f'events/{eid}')
     if existing is not None:
         print(f'  exists: event {e["name"]} ({existing.get("status")})')
         return existing
@@ -242,7 +246,7 @@ def ensure_event(a, eid, e, *, status, image=None):
     if status == 'hidden':
         commit(a.token, [update_op(f'events/{eid}', {'status': 'hidden'}, times=('updatedAt',))],
                f'event {e["name"]} hidden')
-    return get(a.token, f'events/{eid}')
+    return get(reader.token, f'events/{eid}')
 
 
 def ensure_listing(seller, lid, eid, e, fees, *, quantity, price, section='', row='', seats='', note=''):
@@ -433,11 +437,11 @@ def main():
             'city': 'Sarajevo', 'date': day(45, 19), 'category': 'festivals', 'genre': 'filmFestival'}
     hidden = {'name': 'Test: Skriveni događaj (duplikat)', 'venue': 'Skenderija', 'city': 'Sarajevo',
               'date': day(20, 20), 'category': 'other', 'genre': 'otherEvent'}
-    ensure_event(staff, 'showcase-concert', concert, status='confirmed', image=picture('Dubioza kolektiv', (124, 58, 237)))
-    ensure_event(staff, 'showcase-derby', derby, status='confirmed', image=picture('Sarajevo – Željezničar', (22, 101, 52)))
-    ensure_event(seller, 'showcase-jazz', jazz, status='pending', image=picture('Mostar Jazz Night', (30, 64, 175)))
-    ensure_event(staff, 'showcase-film', film, status='confirmed')
-    ensure_event(staff, 'showcase-hidden', hidden, status='hidden')
+    ensure_event(staff, 'showcase-concert', concert, status='confirmed', reader=staff, image=picture('Dubioza kolektiv', (124, 58, 237)))
+    ensure_event(staff, 'showcase-derby', derby, status='confirmed', reader=staff, image=picture('Sarajevo – Željezničar', (22, 101, 52)))
+    ensure_event(seller, 'showcase-jazz', jazz, status='pending', reader=staff, image=picture('Mostar Jazz Night', (30, 64, 175)))
+    ensure_event(staff, 'showcase-film', film, status='confirmed', reader=staff)
+    ensure_event(staff, 'showcase-hidden', hidden, status='hidden', reader=staff)
 
     print('Listings and orders')
     # Concert: one sold (tickets still to send), one open.
