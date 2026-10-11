@@ -25,11 +25,10 @@ class PrivacySecurityPage extends ConsumerWidget {
     final visibility = profile?.visibility ?? ProfileVisibility.public;
 
     Future<void> setVisibility(ProfileVisibility v) async {
-      final messenger = ScaffoldMessenger.of(context);
       try {
         await ref.read(profileRepositoryProvider).setVisibility(user.uid, v);
       } catch (_) {
-        showSnack(messenger, l10n.saveError);
+        showSnack(l10n.saveError);
       }
     }
 
@@ -206,15 +205,14 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
 
   Future<void> _send() async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     setState(() => _sending = true);
     try {
       await ref
           .read(authRepositoryProvider)
           .sendEmailVerification(Localizations.localeOf(context).languageCode);
-      showSnack(messenger, l10n.verificationSent(widget.user.email ?? ''));
+      showSnack(l10n.verificationSent(widget.user.email ?? ''));
     } on AuthException catch (e) {
-      showSnack(messenger, authErrorText(l10n, e.error));
+      showSnack(authErrorText(l10n, e.error));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -319,7 +317,6 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
   Future<void> _submit() async {
     if (_loading || !_formKey.currentState!.validate()) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     setState(() {
       _loading = true;
       _error = '';
@@ -331,7 +328,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
             currentPassword: _current.text,
             newPassword: _new.text,
           );
-      showSnack(messenger, l10n.passwordChanged);
+      showSnack(l10n.passwordChanged);
       if (mounted) Navigator.pop(context);
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = authErrorText(l10n, e.error));

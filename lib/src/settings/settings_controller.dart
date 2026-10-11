@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ui/forui_theme.dart';
+
 /// Overridden in main() with the loaded instance.
 final sharedPreferencesProvider = Provider<SharedPreferences>(
   (ref) => throw UnimplementedError(),
@@ -49,8 +51,9 @@ enum TextSize {
 
 /// Corner style of the UI.
 enum UiStyle {
-  rounded(cardRadius: 28, controlRadius: 28),
-  soft(cardRadius: 18, controlRadius: 12),
+  // Card and control radii match Forui's lg and md radii in each style.
+  rounded(cardRadius: 28, controlRadius: 20),
+  soft(cardRadius: 14, controlRadius: 10),
   crisp(cardRadius: 6, controlRadius: 4);
 
   const UiStyle({required this.cardRadius, required this.controlRadius});
@@ -176,12 +179,12 @@ class SettingsController extends Notifier<AppSettings> {
   Future<void> _saveSplashColors(BrandColor color) async {
     String hex(Color c) => '#${c.toARGB32().toRadixString(16).substring(2)}';
     Map<String, String> scheme(Brightness b) {
-      final s = colorSchemeFor(color, b);
+      final s = appColors(color, b);
       return {
-        'surface': hex(s.surface),
-        'onSurface': hex(s.onSurface),
+        'surface': hex(s.background),
+        'onSurface': hex(s.foreground),
         'primary': hex(s.primary),
-        'onPrimary': hex(s.onPrimary),
+        'onPrimary': hex(s.primaryForeground),
       };
     }
 

@@ -58,7 +58,6 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
     final user = ref.read(authStateProvider).value;
     if (user == null) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     setState(() => _sending = true);
     try {
       final number = await ref
@@ -72,7 +71,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
           );
       if (mounted) setState(() => _sentNumber = number);
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     } finally {
       if (mounted) setState(() => _sending = false);
     }

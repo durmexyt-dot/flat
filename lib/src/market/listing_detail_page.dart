@@ -132,7 +132,6 @@ class _SellerPanel extends ConsumerWidget {
 
   Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final minor = await showDialog<int>(
       context: context,
       builder: (_) => _PriceDialog(listing: listing),
@@ -142,15 +141,14 @@ class _SellerPanel extends ConsumerWidget {
       await ref
           .read(marketRepositoryProvider)
           .updateListingPrice(listing.id, minor);
-      showSnack(messenger, l10n.saved);
+      showSnack(l10n.saved);
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     }
   }
 
   Future<void> _withdraw(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -172,9 +170,9 @@ class _SellerPanel extends ConsumerWidget {
     try {
       await ref.read(marketRepositoryProvider).withdrawListing(listing.id);
       ref.invalidate(statsProvider);
-      showSnack(messenger, l10n.listingWithdrawn);
+      showSnack(l10n.listingWithdrawn);
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     }
   }
 
@@ -362,15 +360,12 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
     final l10n = AppLocalizations.of(context);
     if (ref.read(currentUidProvider) == null) {
       showSnack(
-        ScaffoldMessenger.of(context),
         l10n.guestSignInPrompt,
-        action: SnackBarAction(
-          label: l10n.loginButton,
-          onPressed: () {
-            ref.read(guestModeProvider.notifier).exit();
-            context.go('/login');
-          },
-        ),
+        actionLabel: l10n.loginButton,
+        onAction: () {
+          ref.read(guestModeProvider.notifier).exit();
+          context.go('/login');
+        },
       );
       return;
     }

@@ -42,7 +42,6 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
   if (action == null || !context.mounted) return;
 
   final repo = ref.read(profileRepositoryProvider);
-  final messenger = ScaffoldMessenger.of(context);
   try {
     if (action == 'remove') {
       await repo.setPhoto(uid, null);
@@ -51,6 +50,6 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
       if (photo != null) await repo.setPhoto(uid, photo);
     }
   } catch (_) {
-    showSnack(messenger, l10n.photoError);
+    showSnack(l10n.photoError);
   }
 }

@@ -120,13 +120,12 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
   bool _busy = false;
 
   Future<void> _run(Future<void> Function() action) async {
-    final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
     setState(() => _busy = true);
     try {
       await action();
     } catch (_) {
-      showSnack(messenger, l10n.errorUnknown);
+      showSnack(l10n.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -158,20 +157,14 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
                   if (buyerPays) {
                     final outcome = await payOrder(context, ref, order);
                     if (outcome is PaymentSucceeded && context.mounted) {
-                      showSnack(
-                        ScaffoldMessenger.of(context),
-                        l10n.paymentSucceeded,
-                      );
+                      showSnack(l10n.paymentSucceeded);
                     }
                   } else {
                     await ref
                         .read(checkoutRepositoryProvider)
                         .markTicketsSent(order);
                     if (context.mounted) {
-                      showSnack(
-                        ScaffoldMessenger.of(context),
-                        l10n.ticketsMarkedSent,
-                      );
+                      showSnack(l10n.ticketsMarkedSent);
                     }
                   }
                 }),
@@ -316,9 +309,8 @@ class _Invoice extends StatelessWidget {
                   tooltip: l10n.copy,
                   icon: const Icon(Icons.copy_outlined),
                   onPressed: () async {
-                    final messenger = ScaffoldMessenger.of(context);
                     await Clipboard.setData(ClipboardData(text: order.number));
-                    showSnack(messenger, l10n.copied);
+                    showSnack(l10n.copied);
                   },
                 ),
               ],

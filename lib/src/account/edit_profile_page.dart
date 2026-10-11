@@ -51,7 +51,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final uid = ref.read(currentUidProvider);
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final profile = ref.read(profileProvider).value;
     final repo = ref.read(profileRepositoryProvider);
     setState(() => _saving = true);
@@ -65,7 +64,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       if (username.isNotEmpty && username != profile?.username) {
         await repo.setUsername(uid, username);
       }
-      showSnack(messenger, l10n.saved);
+      showSnack(l10n.saved);
       if (mounted) popOrGo(context, '/settings');
     } on UsernameTakenException {
       if (mounted) {
@@ -73,7 +72,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         _formKey.currentState!.validate();
       }
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

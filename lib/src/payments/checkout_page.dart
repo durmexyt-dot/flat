@@ -49,7 +49,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final uid = ref.read(currentUidProvider);
     if (uid == null || _busy) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
     setState(() {
       _busy = true;
@@ -63,7 +62,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
       final outcome = await payOrder(context, ref, order);
       switch (outcome) {
         case PaymentSucceeded():
-          showSnack(messenger, l10n.paymentSucceeded);
+          showSnack(l10n.paymentSucceeded);
           router.pushReplacement('/order/${order.id}');
         case PaymentFailed(:final reason):
           // A failed payment cancels its order; a retry starts a new one.
@@ -73,7 +72,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           break;
       }
     } catch (_) {
-      showSnack(messenger, l10n.errorUnknown);
+      showSnack(l10n.errorUnknown);
     } finally {
       if (mounted) setState(() => _busy = false);
     }

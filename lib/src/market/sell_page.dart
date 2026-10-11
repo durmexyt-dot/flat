@@ -86,7 +86,6 @@ class _SellPageState extends ConsumerState<SellPage> {
     final uid = ref.read(currentUidProvider);
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final router = GoRouter.of(context);
     setState(() => _saving = true);
     try {
@@ -116,10 +115,10 @@ class _SellPageState extends ConsumerState<SellPage> {
             ),
           );
       ref.invalidate(statsProvider);
-      showSnack(messenger, l10n.listingPublished);
+      showSnack(l10n.listingPublished);
       router.pushReplacement('/listing/$id');
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

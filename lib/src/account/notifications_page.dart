@@ -33,7 +33,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     final uid = ref.read(currentUidProvider);
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     final previous = _prefs;
     final next = previous.copyWithKey(key, value);
     setState(() => _optimistic = next);
@@ -41,7 +40,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       await ref.read(profileRepositoryProvider).setNotifications(uid, next);
     } catch (_) {
       if (mounted) setState(() => _optimistic = previous);
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
     }
   }
 

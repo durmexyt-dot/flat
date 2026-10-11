@@ -53,12 +53,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       return;
     }
     showSnack(
-      ScaffoldMessenger.of(context),
       l10n.guestSignInPrompt,
-      action: SnackBarAction(
-        label: l10n.loginButton,
-        onPressed: () => ref.read(guestModeProvider.notifier).exit(),
-      ),
+      actionLabel: l10n.loginButton,
+      onAction: () => ref.read(guestModeProvider.notifier).exit(),
     );
   }
 

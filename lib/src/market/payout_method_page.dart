@@ -80,7 +80,6 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
     final uid = ref.read(currentUidProvider);
     if (uid == null) return;
     final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
     setState(() => _saving = true);
     try {
       await ref
@@ -93,11 +92,11 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
             ),
           );
     } catch (_) {
-      showSnack(messenger, l10n.saveError);
+      showSnack(l10n.saveError);
       if (mounted) setState(() => _saving = false);
       return;
     }
-    showSnack(messenger, l10n.payoutMethodSaved);
+    showSnack(l10n.payoutMethodSaved);
     if (!mounted) return;
     setState(() => _saving = false);
     popOrGo(context, '/account/payouts');

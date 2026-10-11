@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:forui/forui.dart';
 
 import '../l10n/app_localizations.dart';
 import 'data/repositories.dart';
 import 'router.dart';
 import 'settings/settings_controller.dart';
+import 'ui/forui_theme.dart';
+import 'ui/snack.dart';
 import 'ui/theme.dart';
 
 class FlatApp extends ConsumerWidget {
@@ -29,17 +32,32 @@ class FlatApp extends ConsumerWidget {
         // The user's text size on top of the system's.
         final media = MediaQuery.of(context);
         final system = media.textScaler.scale(1);
+        final brightness = switch (settings.themeMode) {
+          ThemeMode.light => Brightness.light,
+          ThemeMode.dark => Brightness.dark,
+          ThemeMode.system => media.platformBrightness,
+        };
+        // Larger touch targets on phones and tablets, compact on desktop.
+        final touch = media.size.width < 900;
         return MediaQuery(
           data: media.copyWith(
             textScaler: TextScaler.linear(system * settings.textSize.scale),
           ),
-          child: child!,
+          child: FTheme(
+            data: buildForuiTheme(settings, brightness, touch: touch),
+            motion: const FThemeMotion(duration: Duration(milliseconds: 300)),
+            child: FToaster(
+              key: toasterKey,
+              child: FTooltipGroup(child: child!),
+            ),
+          ),
         );
       },
       locale: settings.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
+        FLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
