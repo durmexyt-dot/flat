@@ -1273,4 +1273,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ibanHint => 'z. B. BA39 1290 0794 0102 8494';
+
+  @override
+  String get deleteAccountOpenOrders =>
+      'Du hast offene Verkäufe oder Käufe. Schließe sie ab oder storniere sie, bevor du dein Konto löschst.';
 }

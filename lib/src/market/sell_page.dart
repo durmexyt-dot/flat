@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
@@ -90,6 +91,20 @@ class _SellPageState extends ConsumerState<SellPage> {
     final l10n = AppLocalizations.of(context);
     final router = GoRouter.of(context);
     setState(() => _saving = true);
+    // Only confirmed email addresses sell (the rules check it too). The
+    // link may have been opened meanwhile: check again first.
+    if (ref.read(authStateProvider).value?.emailVerified != true) {
+      await ref.read(authRepositoryProvider).reloadUser();
+      final verified = ref
+          .read(authRepositoryProvider)
+          .currentUser
+          ?.emailVerified;
+      if (verified != true) {
+        showSnack(l10n.verifyBeforeSelling);
+        if (mounted) setState(() => _saving = false);
+        return;
+      }
+    }
     try {
       final id = await ref
           .read(marketRepositoryProvider)
@@ -183,6 +198,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                         SettingsSectionTitle(l10n.event),
                         FTextFormField(
                           control: FTextFieldControl.managed(controller: _name),
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(100),
+                          ],
                           label: Text(l10n.eventName),
                           prefixBuilder: (context, style, variants) =>
                               fieldIcon(FLucideIcons.ticket),
@@ -199,6 +217,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                                 control: FTextFieldControl.managed(
                                   controller: _venue,
                                 ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(100),
+                                ],
                                 label: Text(l10n.venue),
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
@@ -211,6 +232,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                                 control: FTextFieldControl.managed(
                                   controller: _city,
                                 ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(60),
+                                ],
                                 label: Text(l10n.city),
                                 textCapitalization: TextCapitalization.words,
                                 textInputAction: TextInputAction.next,
@@ -271,6 +295,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                                 control: FTextFieldControl.managed(
                                   controller: _section,
                                 ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(40),
+                                ],
                                 label: Text(l10n.section),
                                 description: Text(l10n.optional),
                                 textInputAction: TextInputAction.next,
@@ -282,6 +309,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                                 control: FTextFieldControl.managed(
                                   controller: _row,
                                 ),
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(40),
+                                ],
                                 label: Text(l10n.row),
                                 description: Text(l10n.optional),
                                 textInputAction: TextInputAction.next,
@@ -294,6 +324,9 @@ class _SellPageState extends ConsumerState<SellPage> {
                           control: FTextFieldControl.managed(
                             controller: _seats,
                           ),
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(60),
+                          ],
                           label: Text(l10n.seats),
                           description: Text(l10n.optional),
                           textInputAction: TextInputAction.next,

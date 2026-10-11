@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
@@ -136,6 +137,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               controller: _name,
                               onChange: (_) => setState(() {}),
                             ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(80),
+                            ],
                             label: Text(l10n.nameLabel),
                             prefixBuilder: (context, style, variants) =>
                                 fieldIcon(FLucideIcons.user),
@@ -151,6 +155,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             control: FTextFieldControl.managed(
                               controller: _username,
                             ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(20),
+                            ],
                             label: Text(l10n.usernameLabel),
                             description: Text(l10n.usernameHint),
                             prefixBuilder: (context, style, variants) =>

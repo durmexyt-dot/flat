@@ -2415,6 +2415,12 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'npr. BA39 1290 0794 0102 8494'**
   String get ibanHint;
+
+  /// No description provided for @deleteAccountOpenOrders.
+  ///
+  /// In bs, this message translates to:
+  /// **'Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa.'**
+  String get deleteAccountOpenOrders;
 }
 
 class _AppLocalizationsDelegate

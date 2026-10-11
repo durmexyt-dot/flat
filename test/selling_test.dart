@@ -168,6 +168,16 @@ void main() {
     // Seller fee 10 %: 45,00 per ticket, 2 tickets = 90,00.
     expect(find.textContaining('90,00'), findsOneWidget);
 
+    // Without a confirmed email address nothing is published.
+    await tapVisible(tester, find.text('Objavi ponudu'));
+    expect(find.text('Detalji ponude'), findsNothing);
+    expect(market.watchMyListings('1').first, completion(isEmpty));
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+
+    // Once confirmed, it goes through.
+    auth.verifyEmail();
+    await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Objavi ponudu'));
     expect(find.text('Detalji ponude'), findsOneWidget);
     expect(find.text('Tvoja ponuda'), findsOneWidget);

@@ -550,5 +550,6 @@
   "alertView": "Pogledaj",
   "changeIban": "Promijeni IBAN",
   "keepCurrentIban": "Zadrži sačuvani IBAN",
-  "ibanHint": "npr. BA39 1290 0794 0102 8494"
+  "ibanHint": "npr. BA39 1290 0794 0102 8494",
+  "deleteAccountOpenOrders": "Imaš otvorene prodaje ili kupovine. Završi ih ili otkaži prije brisanja računa."
 }

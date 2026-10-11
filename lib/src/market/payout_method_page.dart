@@ -153,6 +153,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                     children: [
                       FTextFormField(
                         control: FTextFieldControl.managed(controller: _holder),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(100),
+                        ],
                         label: Text(l10n.accountHolder),
                         prefixBuilder: (context, style, variants) =>
                             fieldIcon(FLucideIcons.user),

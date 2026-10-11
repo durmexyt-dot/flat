@@ -506,9 +506,19 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
       _error = '';
     });
     try {
+      final market = ref.read(marketRepositoryProvider);
+      // Not while money or tickets are on their way: buyers would be left
+      // without a seller, or the user without their tickets.
+      bool open(Order o) =>
+          o.status == OrderStatus.paid || o.status == OrderStatus.ticketsSent;
+      final sales = await market.watchSales(uid).first;
+      final purchases = await market.watchPurchases(uid).first;
+      if (sales.any(open) || purchases.any(open)) {
+        if (mounted) setState(() => _error = l10n.deleteAccountOpenOrders);
+        return;
+      }
       // Take down active listings and profile data first: afterwards the
       // user can no longer write.
-      final market = ref.read(marketRepositoryProvider);
       final listings = await market.watchMyListings(uid).first;
       for (final l in listings.where((l) => l.status == ListingStatus.active)) {
         await market.withdrawListing(l.id);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
@@ -137,6 +138,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                         control: FTextFieldControl.managed(
                           controller: _reference,
                         ),
+                        inputFormatters: [LengthLimitingTextInputFormatter(60)],
                         label: Text(l10n.reference),
                         description: Text(l10n.optional),
                         prefixBuilder: (context, style, variants) =>

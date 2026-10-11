@@ -385,5 +385,6 @@
   "alertView": "View",
   "changeIban": "Change IBAN",
   "keepCurrentIban": "Keep the saved IBAN",
-  "ibanHint": "e.g. BA39 1290 0794 0102 8494"
+  "ibanHint": "e.g. BA39 1290 0794 0102 8494",
+  "deleteAccountOpenOrders": "You have open sales or purchases. Complete or cancel them before deleting your account."
 }

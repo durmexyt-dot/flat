@@ -385,5 +385,6 @@
   "alertView": "Ansehen",
   "changeIban": "IBAN ändern",
   "keepCurrentIban": "Gespeicherte IBAN behalten",
-  "ibanHint": "z. B. BA39 1290 0794 0102 8494"
+  "ibanHint": "z. B. BA39 1290 0794 0102 8494",
+  "deleteAccountOpenOrders": "Du hast offene Verkäufe oder Käufe. Schließe sie ab oder storniere sie, bevor du dein Konto löschst."
 }

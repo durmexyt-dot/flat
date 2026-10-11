@@ -197,7 +197,12 @@ class FirebaseAuthRepository implements AuthRepository {
   });
 
   @override
-  Future<void> reloadUser() async => _auth.currentUser?.reload();
+  Future<void> reloadUser() async {
+    await _auth.currentUser?.reload();
+    // The security rules read "email verified" from the ID token, which keeps
+    // the old value for up to an hour: get a fresh one.
+    await _auth.currentUser?.getIdToken(true);
+  }
 
   Future<void> _reauthenticate({String? password}) async {
     final user = _auth.currentUser!;
