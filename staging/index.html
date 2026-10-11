@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <base href="/flat/staging/">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Stubswap – buy and sell tickets for events">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Stubswap">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Stubswap</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Security: scripts only from this site and Google/Firebase, no inline
+       scripts, data only to Firebase. GitHub Pages can't send headers, so the
+       policy is a meta tag (frame-ancestors needs a header: see
+       firebase.json; the frame guard below covers clickjacking meanwhile).
+       The sha256 hashes allow exactly the inline scripts FlutterFire injects
+       to load the Firebase SDK. After upgrading firebase_* packages, check
+       the browser console for "Refused to execute inline script" and put
+       the hash it names here (also in firebase.json). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-rfg7hv0pkrN9jeIyHIK7vibT9cn0Kq7ZRLaivuDuWks=' 'sha256-CUvLjkG73E0SHKSIhFgZD0F2EeVOnhhrNXG5sz99PX8=' 'sha256-pPjjoSpBd13bHnogATkOaA29BKZz9GGHosqgFMogFpk=' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com; font-src 'self' data: https://fonts.gstatic.com https://www.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://www.gstatic.com https://fonts.gstatic.com; frame-src https://stubswap-eda59.firebaseapp.com https://accounts.google.com https://apis.google.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Never shown inside another site's frame (clickjacking). -->
+  <script src="frame_guard.js"></script>
+  <!-- Match the theme the app will use, so the splash doesn't flash. -->
+  <script src="splash_theme.js"></script>
+  <style>
+    :root, [data-theme="light"] {
+      --surface: #ffffff; --on-surface: #0a0a0a; --primary: #5d2bff;
+      --on-primary: #ffffff;
+    }
+    [data-theme="dark"] {
+      --surface: #0a0a0a; --on-surface: #fafafa; --primary: #c9bfff;
+      --on-primary: #2f009c;
+    }
+    html, body { margin: 0; height: 100%; background: var(--surface); }
+    /* Same layout as the Flutter splash; Flutter draws over it and removes it. */
+    #splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    #splash .mark {
+      width: 96px; height: 96px; border-radius: 26.88px;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #splash .mark svg { width: 53.76px; height: 53.76px; fill: var(--on-primary); }
+    #splash .wordmark {
+      margin-top: 20px; height: 48px; font-size: 48px; line-height: 1;
+      font-weight: 800; letter-spacing: -0.96px; color: var(--on-surface);
+    }
+    #splash .wordmark span { color: var(--primary); }
+    #splash .tagline { height: 38px; }
+  </style>
+</head>
+<body>
+  <div id="splash" aria-hidden="true">
+    <div class="mark">
+      <svg viewBox="0 0 24 24"><path d="M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z"/></svg>
+    </div>
+    <div class="wordmark">Stub<span>swap</span></div>
+    <div class="tagline"></div>
+  </div>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
