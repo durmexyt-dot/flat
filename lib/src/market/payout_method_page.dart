@@ -25,10 +25,13 @@ class IbanFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     var raw = normalizeIban(newValue.text);
+    // No IBAN is longer; extra characters (e.g. a pasted line) are dropped.
+    if (raw.length > ibanMaxLength) raw = raw.substring(0, ibanMaxLength);
     final end = newValue.selection.end;
     var before = end < 0 || end > newValue.text.length
         ? raw.length
         : normalizeIban(newValue.text.substring(0, end)).length;
+    if (before > raw.length) before = raw.length;
     // Backspace on a group space deletes the character before it instead.
     final deleted = newValue.text.length < oldValue.text.length;
     if (deleted && before > 0 && raw == normalizeIban(oldValue.text)) {
@@ -171,8 +174,22 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                         inputFormatters: [IbanFormatter()],
                         onSubmit: (_) => _save(),
                         autovalidateMode: AutovalidateMode.disabled,
-                        validator: (v) =>
-                            isValidIban(v ?? '') ? null : l10n.ibanInvalid,
+                        // Says what is wrong, so a hidden leftover character
+                        // or a typo can be found.
+                        validator: (v) => switch (checkIban(v ?? '')) {
+                          null => null,
+                          IbanBadFormat() => l10n.ibanBadFormat,
+                          IbanWrongLength(
+                            :final country,
+                            :final expected,
+                            :final actual,
+                          ) =>
+                            l10n.ibanWrongLength(country, expected, actual),
+                          IbanBadChecksum() => l10n.ibanBadChecksum,
+                        },
+                        // Clears the whole IBAN in one tap; on phones deleting
+                        // from the middle easily leaves old characters behind.
+                        clearable: (value) => value.text.isNotEmpty,
                       ),
                     ],
                   ),

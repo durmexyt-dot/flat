@@ -363,5 +363,8 @@
   "sellStep1": "Angebot einstellen: Event, Plätze und Preis.",
   "sellStep2": "Ein Käufer bezahlt. Wir halten das Geld, bis die Tickets ankommen.",
   "sellStep3": "Übertrage die Tickets und markiere sie als übertragen.",
-  "sellStep4": "Nach dem Event kommt das Geld auf deine IBAN."
+  "sellStep4": "Nach dem Event kommt das Geld auf deine IBAN.",
+  "ibanBadFormat": "Eine IBAN beginnt mit Ländercode und zwei Ziffern, z. B. BA39 …",
+  "ibanWrongLength": "Eine IBAN für {country} hat {expected} Zeichen, eingegeben sind {actual}.",
+  "ibanBadChecksum": "Die Prüfziffer passt nicht. Bitte prüfe die Ziffern der IBAN."
 }

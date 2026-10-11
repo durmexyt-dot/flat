@@ -1180,4 +1180,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sellStep4 => 'After the event the money reaches your IBAN.';
+
+  @override
+  String get ibanBadFormat =>
+      'An IBAN starts with a country code and two digits, e.g. BA39 …';
+
+  @override
+  String ibanWrongLength(String country, int expected, int actual) {
+    return 'An IBAN for $country has $expected characters, you entered $actual.';
+  }
+
+  @override
+  String get ibanBadChecksum =>
+      'The check digits don\'t match. Please check the IBAN\'s digits.';
 }

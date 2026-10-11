@@ -2283,6 +2283,24 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Nakon događaja novac stiže na tvoj IBAN.'**
   String get sellStep4;
+
+  /// No description provided for @ibanBadFormat.
+  ///
+  /// In bs, this message translates to:
+  /// **'IBAN počinje oznakom zemlje i dvije cifre, npr. BA39 …'**
+  String get ibanBadFormat;
+
+  /// No description provided for @ibanWrongLength.
+  ///
+  /// In bs, this message translates to:
+  /// **'IBAN za {country} ima {expected} znakova, uneseno je {actual}.'**
+  String ibanWrongLength(String country, int expected, int actual);
+
+  /// No description provided for @ibanBadChecksum.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.'**
+  String get ibanBadChecksum;
 }
 
 class _AppLocalizationsDelegate

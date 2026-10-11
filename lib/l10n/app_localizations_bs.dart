@@ -1174,4 +1174,17 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get sellStep4 => 'Nakon događaja novac stiže na tvoj IBAN.';
+
+  @override
+  String get ibanBadFormat =>
+      'IBAN počinje oznakom zemlje i dvije cifre, npr. BA39 …';
+
+  @override
+  String ibanWrongLength(String country, int expected, int actual) {
+    return 'IBAN za $country ima $expected znakova, uneseno je $actual.';
+  }
+
+  @override
+  String get ibanBadChecksum =>
+      'Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.';
 }

@@ -484,5 +484,21 @@
   "sellStep1": "Objavi ponudu: događaj, sjedišta i cijenu.",
   "sellStep2": "Kupac plaća. Novac čuvamo dok karte ne stignu.",
   "sellStep3": "Pošalji karte kupcu i označi ih kao poslane.",
-  "sellStep4": "Nakon događaja novac stiže na tvoj IBAN."
+  "sellStep4": "Nakon događaja novac stiže na tvoj IBAN.",
+  "ibanBadFormat": "IBAN počinje oznakom zemlje i dvije cifre, npr. BA39 …",
+  "ibanWrongLength": "IBAN za {country} ima {expected} znakova, uneseno je {actual}.",
+  "@ibanWrongLength": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      },
+      "expected": {
+        "type": "int"
+      },
+      "actual": {
+        "type": "int"
+      }
+    }
+  },
+  "ibanBadChecksum": "Kontrolni broj ne odgovara. Provjeri cifre IBAN-a."
 }

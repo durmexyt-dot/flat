@@ -69,6 +69,19 @@ void main() {
     expect(prefs.copyWithKey('push', true).push, isTrue);
   });
 
+  test('IBAN problems say what is wrong', () {
+    // A leftover from the old IBAN after the new one: too long for BA.
+    expect(
+      checkIban('BA39 1290 0794 0102 8494 0532 0130 00'),
+      isA<IbanWrongLength>()
+          .having((p) => p.expected, 'expected', 20)
+          .having((p) => p.actual, 'actual', 30),
+    );
+    expect(checkIban('BA39 1290 0794 0102 8495'), isA<IbanBadChecksum>());
+    expect(checkIban('1290 0794'), isA<IbanBadFormat>());
+    expect(checkIban('BA39 1290 0794 0102 8494'), isNull);
+  });
+
   group('IBAN formatter', () {
     final f = IbanFormatter();
     TextEditingValue v(String t, [int? at]) => TextEditingValue(
@@ -90,6 +103,11 @@ void main() {
       final out = f.formatEditUpdate(v('BA39 1290', 6), v('BA39 17290', 7));
       expect(out.text, 'BA39 1729 0');
       expect(out.selection.end, 7);
+    });
+
+    test('stops at the longest IBAN', () {
+      final out = f.formatEditUpdate(TextEditingValue.empty, v('A' * 40));
+      expect(out.text.replaceAll(' ', '').length, ibanMaxLength);
     });
 
     test('backspace on a space deletes the digit before it', () {

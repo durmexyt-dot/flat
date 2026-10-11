@@ -95,7 +95,19 @@ void main() {
     await tester.enterText(iban, 'BA39 1290 0794 0102 8495');
     await tester.tap(find.text('Sačuvaj'));
     await tester.pumpAndSettle();
-    expect(find.text('Neispravan IBAN'), findsOneWidget);
+    expect(
+      find.text('Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.'),
+      findsOneWidget,
+    );
+
+    // A leftover from an old IBAN: the length is named.
+    await tester.enterText(iban, 'BA39 1290 0794 0102 8494 0532');
+    await tester.tap(find.text('Sačuvaj'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('IBAN za BA ima 20 znakova, uneseno je 24.'),
+      findsOneWidget,
+    );
 
     await tester.enterText(iban, 'de89370400440532013000');
     await tester.pumpAndSettle();

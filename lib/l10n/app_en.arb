@@ -363,5 +363,8 @@
   "sellStep1": "List your tickets: event, seats and price.",
   "sellStep2": "A buyer pays. We hold the money until the tickets arrive.",
   "sellStep3": "Send the tickets and mark them as sent.",
-  "sellStep4": "After the event the money reaches your IBAN."
+  "sellStep4": "After the event the money reaches your IBAN.",
+  "ibanBadFormat": "An IBAN starts with a country code and two digits, e.g. BA39 …",
+  "ibanWrongLength": "An IBAN for {country} has {expected} characters, you entered {actual}.",
+  "ibanBadChecksum": "The check digits don't match. Please check the IBAN's digits."
 }

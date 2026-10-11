@@ -531,10 +531,97 @@ class PayoutMethod {
 String normalizeIban(String input) =>
     input.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
 
-/// Validates an IBAN with the ISO 13616 mod-97 checksum.
-bool isValidIban(String input) {
+/// IBAN lengths per country (ISO 13616 registry; SEPA and neighbours).
+const ibanLengths = {
+  'AD': 24,
+  'AL': 28,
+  'AT': 20,
+  'BA': 20,
+  'BE': 16,
+  'BG': 22,
+  'CH': 21,
+  'CY': 28,
+  'CZ': 24,
+  'DE': 22,
+  'DK': 18,
+  'EE': 20,
+  'ES': 24,
+  'FI': 18,
+  'FR': 27,
+  'GB': 22,
+  'GI': 23,
+  'GR': 27,
+  'HR': 21,
+  'HU': 28,
+  'IE': 22,
+  'IS': 26,
+  'IT': 27,
+  'LI': 21,
+  'LT': 20,
+  'LU': 20,
+  'LV': 21,
+  'MC': 27,
+  'MD': 24,
+  'ME': 22,
+  'MK': 19,
+  'MT': 31,
+  'NL': 18,
+  'NO': 15,
+  'PL': 28,
+  'PT': 25,
+  'RO': 24,
+  'RS': 22,
+  'SE': 24,
+  'SI': 19,
+  'SK': 24,
+  'SM': 27,
+  'TR': 26,
+  'UA': 29,
+  'VA': 22,
+  'XK': 20,
+};
+
+/// Longest IBAN in the registry.
+const ibanMaxLength = 34;
+
+/// Why an IBAN is not valid.
+sealed class IbanProblem {
+  const IbanProblem();
+}
+
+/// Doesn't start with a country code and two check digits.
+class IbanBadFormat extends IbanProblem {
+  const IbanBadFormat();
+}
+
+/// Too short or too long for its country.
+class IbanWrongLength extends IbanProblem {
+  const IbanWrongLength(this.country, this.expected, this.actual);
+  final String country;
+  final int expected;
+  final int actual;
+}
+
+/// The check digits don't match: usually a typo.
+class IbanBadChecksum extends IbanProblem {
+  const IbanBadChecksum();
+}
+
+/// Null for a valid IBAN, otherwise what is wrong with it.
+IbanProblem? checkIban(String input) {
   final iban = normalizeIban(input);
-  if (!RegExp(r'^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$').hasMatch(iban)) return false;
+  if (!RegExp(r'^[A-Z]{2}\d{2}[A-Z0-9]+$').hasMatch(iban)) {
+    return const IbanBadFormat();
+  }
+  final country = iban.substring(0, 2);
+  final expected = ibanLengths[country];
+  if (expected != null && iban.length != expected) {
+    return IbanWrongLength(country, expected, iban.length);
+  }
+  if (iban.length < 15 || iban.length > ibanMaxLength) {
+    return const IbanBadFormat();
+  }
+  // ISO 13616 mod-97 checksum.
   final rearranged = iban.substring(4) + iban.substring(0, 4);
   var remainder = 0;
   for (final unit in rearranged.codeUnits) {
@@ -543,8 +630,11 @@ bool isValidIban(String input) {
       remainder = (remainder * 10 + d - 48) % 97;
     }
   }
-  return remainder == 1;
+  return remainder == 1 ? null : const IbanBadChecksum();
 }
+
+/// Validates an IBAN: format, length for its country and checksum.
+bool isValidIban(String input) => checkIban(input) == null;
 
 // ---------------------------------------------------------------------------
 // Support
