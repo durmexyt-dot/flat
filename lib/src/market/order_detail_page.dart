@@ -14,6 +14,7 @@ import '../payments/payment_gateway.dart';
 import '../payments/test_payment_gateway.dart';
 import '../settings/settings_widgets.dart';
 import '../support/contact_support_page.dart';
+import '../ui/app_dialog.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
 import '../ui/skeleton.dart';
@@ -69,6 +70,10 @@ class OrderDetailPage extends ConsumerWidget {
                             ),
                           ),
                         )
+                      : order.cancelledBySeller
+                      ? (role == OrderRole.seller
+                            ? l10n.sellerNextCancelledBySeller
+                            : l10n.buyerNextCancelledBySeller)
                       : orderNextStep(l10n, order.status, role),
                   tone: orderTone(order.status),
                 ),
@@ -157,11 +162,20 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
         order.testMode &&
         order.status == OrderStatus.paid;
 
+    // Only the seller can cancel a sale; buyers contact support.
+    final sellerCancels =
+        widget.role == OrderRole.seller &&
+        order.testMode &&
+        canSellerCancel(order.status);
+
     return AnimatedSize(
       duration: const Duration(milliseconds: 250),
-      child: !(buyerPays || sellerSends)
-          ? const SizedBox(width: double.infinity)
-          : Padding(
+      alignment: Alignment.topCenter,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (buyerPays || sellerSends)
+            Padding(
               padding: const EdgeInsets.only(top: 12),
               child: SubmitButton(
                 label: buyerPays ? l10n.payNow : l10n.markTicketsSent,
@@ -183,7 +197,51 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
                 }),
               ),
             ),
+          if (sellerCancels)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: FButton(
+                variant: FButtonVariant.outline,
+                onPress: _busy ? null : () => _confirmCancel(order),
+                prefix: Icon(
+                  FLucideIcons.circleX,
+                  color: context.theme.colors.destructive,
+                ),
+                child: Text(
+                  l10n.cancelSale,
+                  style: TextStyle(color: context.theme.colors.destructive),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
+  }
+
+  Future<void> _confirmCancel(Order order) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showAppDialog<bool>(
+      context: context,
+      title: l10n.cancelSaleTitle,
+      body: Text(l10n.cancelSaleInfo),
+      actions: (context) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(context, false),
+          child: Text(l10n.keepSale),
+        ),
+        FButton(
+          variant: FButtonVariant.destructive,
+          onPress: () => Navigator.pop(context, true),
+          child: Text(l10n.cancelSale),
+        ),
+      ],
+    );
+    if (confirmed != true || !mounted) return;
+    await _run(() async {
+      await ref.read(checkoutRepositoryProvider).cancelSale(order);
+      showSnack(l10n.saleCancelled);
+    });
   }
 }
 

@@ -366,5 +366,12 @@
   "sellStep4": "Nach dem Event kommt das Geld auf deine IBAN.",
   "ibanBadFormat": "Eine IBAN beginnt mit Ländercode und zwei Ziffern, z. B. BA39 …",
   "ibanWrongLength": "Eine IBAN für {country} hat {expected} Zeichen, eingegeben sind {actual}.",
-  "ibanBadChecksum": "Die Prüfziffer passt nicht. Bitte prüfe die Ziffern der IBAN."
+  "ibanBadChecksum": "Die Prüfziffer passt nicht. Bitte prüfe die Ziffern der IBAN.",
+  "cancelSale": "Verkauf stornieren",
+  "cancelSaleTitle": "Verkauf stornieren?",
+  "cancelSaleInfo": "Der Käufer bekommt das ganze Geld zurück, und die Tickets kommen zurück in dein Angebot. Für diesen Verkauf gibt es keine Auszahlung. Das lässt sich nicht rückgängig machen.",
+  "keepSale": "Nein, behalten",
+  "saleCancelled": "Verkauf storniert. Der Käufer hat sein Geld zurück.",
+  "buyerNextCancelledBySeller": "Der Verkäufer hat den Verkauf storniert. Du bekommst dein Geld vollständig zurück.",
+  "sellerNextCancelledBySeller": "Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf."
 }

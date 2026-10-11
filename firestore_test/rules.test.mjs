@@ -156,3 +156,58 @@ test('profiles are private', async () => {
   await assertSucceeds(setDoc(doc(db('buyer'), 'users/buyer'), { displayName: 'B' }));
   await assertFails(getDoc(doc(db('seller'), 'users/buyer')));
 });
+
+// The cancel transaction the app runs.
+function cancelBatch(fs, { quantitySold = 0, status = 'active', orderId = 'O1', dropPayout = true } = {}) {
+  const b = writeBatch(fs)
+    .update(doc(fs, `orders/${orderId}`), { status: 'refunded', cancelledBy: 'seller', history: arrayUnion({ status: 'refunded' }) })
+    .update(doc(fs, 'listings/L1'), { quantitySold, status, lastOrderId: orderId });
+  return dropPayout ? b.delete(doc(fs, `payouts/${orderId}`)) : b;
+}
+
+async function paidOrder({ quantitySold = 2, status = 'active' } = {}) {
+  await openOrder();
+  await assertSucceeds(payBatch(db('buyer'), { quantitySold, status }).commit());
+}
+
+test('the seller cancels a paid sale: refund, tickets back, payout gone', async () => {
+  await paidOrder();
+  await assertSucceeds(cancelBatch(db('seller')).commit());
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const l = (await getDoc(doc(ctx.firestore(), 'listings/L1'))).data();
+    if (l.quantitySold !== 0) throw new Error('tickets not returned');
+    if ((await getDoc(doc(ctx.firestore(), 'payouts/O1'))).exists()) throw new Error('payout kept');
+  });
+});
+
+test('cancelling a sold-out sale reopens the listing', async () => {
+  await openOrder('O1', { quantity: 4 });
+  await assertSucceeds(payBatch(db('buyer'), { quantitySold: 4, status: 'soldOut', amount: 12600 }).commit());
+  await assertFails(cancelBatch(db('seller'), { quantitySold: 0, status: 'soldOut' }).commit());
+  await assertSucceeds(cancelBatch(db('seller'), { quantitySold: 0, status: 'active' }).commit());
+});
+
+test('the seller can cancel after sending the tickets too', async () => {
+  await paidOrder();
+  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  await assertSucceeds(cancelBatch(db('seller')).commit());
+});
+
+test('buyers cannot cancel a paid order', async () => {
+  await paidOrder();
+  await assertFails(cancelBatch(db('buyer')).commit());
+  await assertFails(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'cancelled' }));
+});
+
+test('a cancel must return the tickets and drop the payout', async () => {
+  await paidOrder();
+  // Payout kept.
+  await assertFails(cancelBatch(db('seller'), { dropPayout: false }).commit());
+  // Tickets not (or wrongly) returned.
+  await assertFails(cancelBatch(db('seller'), { quantitySold: 2 }).commit());
+  await assertFails(cancelBatch(db('seller'), { quantitySold: 1 }).commit());
+  // Order alone.
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'refunded', cancelledBy: 'seller' }));
+  // Payout alone.
+  await assertFails(deleteDoc(doc(db('seller'), 'payouts/O1')));
+});

@@ -1193,4 +1193,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get ibanBadChecksum =>
       'The check digits don\'t match. Please check the IBAN\'s digits.';
+
+  @override
+  String get cancelSale => 'Cancel sale';
+
+  @override
+  String get cancelSaleTitle => 'Cancel this sale?';
+
+  @override
+  String get cancelSaleInfo =>
+      'The buyer gets all their money back and the tickets go back into your listing. There\'s no payout for this sale. This can\'t be undone.';
+
+  @override
+  String get keepSale => 'No, keep it';
+
+  @override
+  String get saleCancelled => 'Sale cancelled. The buyer has been refunded.';
+
+  @override
+  String get buyerNextCancelledBySeller =>
+      'The seller cancelled the sale. You\'ve been refunded in full.';
+
+  @override
+  String get sellerNextCancelledBySeller =>
+      'You cancelled this sale. The buyer has been refunded and the tickets are on sale again.';
 }

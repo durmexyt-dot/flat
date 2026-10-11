@@ -366,5 +366,12 @@
   "sellStep4": "After the event the money reaches your IBAN.",
   "ibanBadFormat": "An IBAN starts with a country code and two digits, e.g. BA39 …",
   "ibanWrongLength": "An IBAN for {country} has {expected} characters, you entered {actual}.",
-  "ibanBadChecksum": "The check digits don't match. Please check the IBAN's digits."
+  "ibanBadChecksum": "The check digits don't match. Please check the IBAN's digits.",
+  "cancelSale": "Cancel sale",
+  "cancelSaleTitle": "Cancel this sale?",
+  "cancelSaleInfo": "The buyer gets all their money back and the tickets go back into your listing. There's no payout for this sale. This can't be undone.",
+  "keepSale": "No, keep it",
+  "saleCancelled": "Sale cancelled. The buyer has been refunded.",
+  "buyerNextCancelledBySeller": "The seller cancelled the sale. You've been refunded in full.",
+  "sellerNextCancelledBySeller": "You cancelled this sale. The buyer has been refunded and the tickets are on sale again."
 }

@@ -202,4 +202,86 @@ void main() {
     expect(find.text('Karte poslane'), findsOneWidget);
     expect(find.text('Plaćeno'), findsNothing);
   });
+
+  testWidgets('seller cancels a sale: refund, tickets back, no payout', (
+    tester,
+  ) async {
+    final market = InMemoryMarketRepository(
+      listings: [
+        Listing.fromMap('jazz', {
+          ..._jazz().toMap(),
+          'sellerId': '1',
+          'quantity': 2,
+        }),
+      ],
+    );
+    final listing = (await market.watchListing('jazz').first)!;
+    final order = await market.createOrder(
+      listing: listing,
+      quantity: 2,
+      buyerId: 'buyer',
+    );
+    await market.completePayment(
+      order,
+      const PaymentSucceeded(paymentId: 'pi_1', methodLabel: 'Visa'),
+    );
+    expect(
+      (await market.watchListing('jazz').first)!.status,
+      ListingStatus.soldOut,
+    );
+
+    final auth = await pumpApp(tester, marketRepository: market);
+    await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
+    await tester.pumpAndSettle();
+    await tester.tap(byLabel('Postavke'));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('Prodaje'));
+    await tester.tap(find.text('Sarajevo Jazz Festival'));
+    await tester.pumpAndSettle();
+
+    await tapVisible(tester, find.text('Otkaži prodaju'));
+    expect(find.text('Otkazati prodaju?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FButton, 'Otkaži prodaju').last);
+    await tester.pumpAndSettle();
+
+    final sales = await tester.runAsync(() => market.watchSales('1').first);
+    expect(sales!.single.status, OrderStatus.refunded);
+    final back = await tester.runAsync(() => market.watchListing('jazz').first);
+    expect(back!.quantitySold, 0);
+    expect(back.status, ListingStatus.active);
+    final payouts = await tester.runAsync(() => market.watchPayouts('1').first);
+    expect(payouts, isEmpty);
+    expect(
+      find.text(
+        'Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.',
+        skipOffstage: false,
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Otkaži prodaju'), findsNothing);
+  });
+
+  testWidgets('buyers get no cancel button', (tester) async {
+    final market = InMemoryMarketRepository(listings: [_jazz()]);
+    final listing = (await market.watchListing('jazz').first)!;
+    final order = await market.createOrder(
+      listing: listing,
+      quantity: 1,
+      buyerId: '1',
+    );
+    await market.completePayment(
+      order,
+      const PaymentSucceeded(paymentId: 'pi_1', methodLabel: 'Visa'),
+    );
+    final auth = await pumpApp(tester, marketRepository: market);
+    await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
+    await tester.pumpAndSettle();
+    await tester.tap(byLabel('Postavke'));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('Kupovine i računi'));
+    await tester.tap(find.text('Sarajevo Jazz Festival'));
+    await tester.pumpAndSettle();
+    expect(find.text('Detalji narudžbe'), findsOneWidget);
+    expect(find.text('Otkaži prodaju'), findsNothing);
+  });
 }

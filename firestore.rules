@@ -32,6 +32,18 @@ service cloud.firestore {
         && after.buyerId == request.auth.uid;
     }
 
+    // True if the seller cancels order [id] in this very request: from paid
+    // or tickets sent to refunded.
+    function sellerCancelsNow(id) {
+      let before = get(orderPath(id)).data;
+      let after = getAfter(orderPath(id)).data;
+      return (before.status == 'paid' || before.status == 'ticketsSent')
+        && after.status == 'refunded'
+        && after.cancelledBy == 'seller'
+        && after.testMode == true
+        && after.sellerId == request.auth.uid;
+    }
+
     // Seller's share: ticket price minus the 10 % seller fee.
     function sellerEarnings(o) {
       return o.unitPriceMinor * o.quantity
@@ -85,6 +97,19 @@ service cloud.firestore {
               && request.resource.data.priceMinor > 0)
             || (onlyChanges(['status', 'updatedAt'])
               && request.resource.data.status == 'withdrawn')
+          ))
+        // Test mode: the seller cancels a sale, its tickets go back on sale
+        // and a sold-out listing reopens.
+        || (isUser(resource.data.sellerId)
+          && onlyChanges(['quantitySold', 'status', 'lastOrderId', 'updatedAt'])
+          && sellerCancelsNow(request.resource.data.lastOrderId)
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.listingId == id
+          && request.resource.data.quantitySold == resource.data.quantitySold
+            - getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity
+          && (
+            (resource.data.status == 'soldOut' && request.resource.data.status == 'active')
+            || (resource.data.status != 'soldOut'
+              && request.resource.data.status == resource.data.status)
           ))
         // Test mode: a buyer's payment takes the tickets off the listing.
         || (signedIn()
@@ -141,11 +166,28 @@ service cloud.firestore {
           && resource.data.status == 'paid'
           && request.resource.data.status == 'ticketsSent'
           && onlyChanges(['status', 'history', 'updatedAt']))
+        // Seller: cancels the sale; only together with returning the tickets
+        // and dropping the payout. Buyers can't cancel a paid order.
+        || (isUser(resource.data.sellerId)
+          && (resource.data.status == 'paid' || resource.data.status == 'ticketsSent')
+          && request.resource.data.status == 'refunded'
+          && request.resource.data.cancelledBy == 'seller'
+          && onlyChanges(['status', 'cancelledBy', 'history', 'updatedAt'])
+          && getAfter(listingPath(resource.data.listingId)).data.lastOrderId == id
+          // The listing really gets the tickets back (a no-op listing write
+          // would otherwise pass as a price change).
+          && getAfter(listingPath(resource.data.listingId)).data.quantitySold
+            == get(listingPath(resource.data.listingId)).data.quantitySold
+              - resource.data.quantity
+          && !existsAfter(payoutPath(id)))
       );
     }
 
     match /payouts/{id} {
       allow read: if isUser(resource.data.sellerId);
+
+      // Test mode: dropped when the seller cancels the sale [id].
+      allow delete: if isUser(resource.data.sellerId) && sellerCancelsNow(id);
 
       // Test mode: created with the payment of order [id], for its seller
       // and exactly the seller's share.

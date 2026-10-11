@@ -1203,4 +1203,29 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get ibanBadChecksum =>
       'Die Prüfziffer passt nicht. Bitte prüfe die Ziffern der IBAN.';
+
+  @override
+  String get cancelSale => 'Verkauf stornieren';
+
+  @override
+  String get cancelSaleTitle => 'Verkauf stornieren?';
+
+  @override
+  String get cancelSaleInfo =>
+      'Der Käufer bekommt das ganze Geld zurück, und die Tickets kommen zurück in dein Angebot. Für diesen Verkauf gibt es keine Auszahlung. Das lässt sich nicht rückgängig machen.';
+
+  @override
+  String get keepSale => 'Nein, behalten';
+
+  @override
+  String get saleCancelled =>
+      'Verkauf storniert. Der Käufer hat sein Geld zurück.';
+
+  @override
+  String get buyerNextCancelledBySeller =>
+      'Der Verkäufer hat den Verkauf storniert. Du bekommst dein Geld vollständig zurück.';
+
+  @override
+  String get sellerNextCancelledBySeller =>
+      'Du hast den Verkauf storniert. Der Käufer hat sein Geld zurück, die Tickets sind wieder im Verkauf.';
 }

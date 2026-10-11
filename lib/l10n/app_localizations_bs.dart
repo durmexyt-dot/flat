@@ -1187,4 +1187,28 @@ class AppLocalizationsBs extends AppLocalizations {
   @override
   String get ibanBadChecksum =>
       'Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.';
+
+  @override
+  String get cancelSale => 'Otkaži prodaju';
+
+  @override
+  String get cancelSaleTitle => 'Otkazati prodaju?';
+
+  @override
+  String get cancelSaleInfo =>
+      'Kupac dobija sav novac nazad, a karte se vraćaju u tvoju ponudu. Za ovu prodaju nema isplate. Ovo se ne može poništiti.';
+
+  @override
+  String get keepSale => 'Ne, zadrži';
+
+  @override
+  String get saleCancelled => 'Prodaja je otkazana. Kupcu je vraćen novac.';
+
+  @override
+  String get buyerNextCancelledBySeller =>
+      'Prodavac je otkazao prodaju. Novac ti je vraćen u cijelosti.';
+
+  @override
+  String get sellerNextCancelledBySeller =>
+      'Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.';
 }

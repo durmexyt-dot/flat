@@ -2301,6 +2301,48 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.'**
   String get ibanBadChecksum;
+
+  /// No description provided for @cancelSale.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkaži prodaju'**
+  String get cancelSale;
+
+  /// No description provided for @cancelSaleTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazati prodaju?'**
+  String get cancelSaleTitle;
+
+  /// No description provided for @cancelSaleInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac dobija sav novac nazad, a karte se vraćaju u tvoju ponudu. Za ovu prodaju nema isplate. Ovo se ne može poništiti.'**
+  String get cancelSaleInfo;
+
+  /// No description provided for @keepSale.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ne, zadrži'**
+  String get keepSale;
+
+  /// No description provided for @saleCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja je otkazana. Kupcu je vraćen novac.'**
+  String get saleCancelled;
+
+  /// No description provided for @buyerNextCancelledBySeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac je otkazao prodaju. Novac ti je vraćen u cijelosti.'**
+  String get buyerNextCancelledBySeller;
+
+  /// No description provided for @sellerNextCancelledBySeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji.'**
+  String get sellerNextCancelledBySeller;
 }
 
 class _AppLocalizationsDelegate

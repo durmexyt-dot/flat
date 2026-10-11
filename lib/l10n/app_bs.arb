@@ -500,5 +500,12 @@
       }
     }
   },
-  "ibanBadChecksum": "Kontrolni broj ne odgovara. Provjeri cifre IBAN-a."
+  "ibanBadChecksum": "Kontrolni broj ne odgovara. Provjeri cifre IBAN-a.",
+  "cancelSale": "Otkaži prodaju",
+  "cancelSaleTitle": "Otkazati prodaju?",
+  "cancelSaleInfo": "Kupac dobija sav novac nazad, a karte se vraćaju u tvoju ponudu. Za ovu prodaju nema isplate. Ovo se ne može poništiti.",
+  "keepSale": "Ne, zadrži",
+  "saleCancelled": "Prodaja je otkazana. Kupcu je vraćen novac.",
+  "buyerNextCancelledBySeller": "Prodavac je otkazao prodaju. Novac ti je vraćen u cijelosti.",
+  "sellerNextCancelledBySeller": "Otkazao/la si prodaju. Kupcu je vraćen novac, a karte su ponovo u prodaji."
 }

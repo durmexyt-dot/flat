@@ -28,7 +28,16 @@ abstract class CheckoutRepository {
   Future<void> completePayment(Order order, PaymentOutcome outcome);
 
   Future<void> markTicketsSent(Order order);
+
+  /// The seller cancels a sale before it is completed: the buyer gets the
+  /// money back, the tickets go back on sale and the payout is dropped.
+  /// Buyers can't cancel; they contact support.
+  Future<void> cancelSale(Order order);
 }
+
+/// Statuses in which the seller can still cancel the sale.
+bool canSellerCancel(OrderStatus s) =>
+    s == OrderStatus.paid || s == OrderStatus.ticketsSent;
 
 String newOrderNumber() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -155,6 +164,43 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
     'history': FieldValue.arrayUnion([_step(OrderStatus.ticketsSent)]),
     'updatedAt': FieldValue.serverTimestamp(),
   });
+
+  @override
+  Future<void> cancelSale(Order order) async {
+    // One transaction, so the rules can check that order, tickets and payout
+    // change together.
+    await _db.runTransaction((tx) async {
+      final orderSnap = await tx.get(_order(order.id));
+      final listingSnap = await tx.get(_listing(order.listingId));
+      final current = enumByName(
+        OrderStatus.values,
+        orderSnap.data()?['status'] as String?,
+        OrderStatus.pendingPayment,
+      );
+      final listing = listingSnap.data();
+      if (!canSellerCancel(current) || listing == null) {
+        throw StateError('Sale can no longer be cancelled');
+      }
+      final sold = (listing['quantitySold'] as num?)?.toInt() ?? 0;
+      tx
+        ..update(_order(order.id), {
+          'status': OrderStatus.refunded.name,
+          'cancelledBy': 'seller',
+          'history': FieldValue.arrayUnion([_step(OrderStatus.refunded)]),
+          'updatedAt': FieldValue.serverTimestamp(),
+        })
+        // The tickets are for sale again; a sold-out listing reopens.
+        ..update(_listing(order.listingId), {
+          'quantitySold': sold - order.quantity,
+          'status': listing['status'] == ListingStatus.soldOut.name
+              ? ListingStatus.active.name
+              : listing['status'],
+          'lastOrderId': order.id,
+          'updatedAt': FieldValue.serverTimestamp(),
+        })
+        ..delete(_db.collection('payouts').doc(order.id));
+    });
+  }
 }
 
 final checkoutRepositoryProvider = Provider<CheckoutRepository>((ref) {

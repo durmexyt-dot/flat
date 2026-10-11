@@ -356,6 +356,7 @@ class Order {
     this.paymentMethod = '',
     this.paymentId = '',
     this.failureReason = '',
+    this.cancelledBySeller = false,
     this.testMode = false,
     this.history = const [],
     this.createdAt,
@@ -386,6 +387,9 @@ class Order {
 
   /// Why the payment failed, a [PaymentFailure] name.
   final String failureReason;
+
+  /// The seller cancelled the sale and the buyer was refunded.
+  final bool cancelledBySeller;
 
   /// Paid with the payment simulator, not real money.
   final bool testMode;
@@ -427,6 +431,7 @@ class Order {
     paymentMethod: m['paymentMethod'] as String? ?? '',
     paymentId: m['paymentId'] as String? ?? '',
     failureReason: m['failureReason'] as String? ?? '',
+    cancelledBySeller: m['cancelledBy'] == 'seller',
     testMode: m['testMode'] == true,
     history: _history(m['history'], OrderStatus.values),
     createdAt: _date(m['createdAt']),

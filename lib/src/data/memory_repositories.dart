@@ -369,4 +369,26 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
     {'status': OrderStatus.ticketsSent.name},
     OrderStatus.ticketsSent,
   );
+
+  @override
+  Future<void> cancelSale(Order order) async {
+    final current = _current(order);
+    if (!canSellerCancel(current.status)) {
+      throw StateError('Sale can no longer be cancelled');
+    }
+    _replaceOrder(current, {
+      'status': OrderStatus.refunded.name,
+      'cancelledBy': 'seller',
+    }, OrderStatus.refunded);
+    final listing = _listings.value.firstWhere((l) => l.id == order.listingId);
+    _updateListing(listing.id, {
+      'quantitySold': listing.quantitySold - order.quantity,
+      if (listing.status == ListingStatus.soldOut)
+        'status': ListingStatus.active.name,
+    });
+    _payouts.value = [
+      for (final p in _payouts.value)
+        if (p.id != order.id) p,
+    ];
+  }
 }
