@@ -13,7 +13,11 @@ Future<FakeAuthRepository> _desktop(
   WidgetTester tester, {
   InMemoryMarketRepository? market,
 }) async {
-  final auth = await pumpApp(tester, marketRepository: market);
+  final auth = await pumpApp(
+    tester,
+    marketRepository: market,
+    eventRepository: market == null ? null : buildSampleEvents(),
+  );
   tester.view.physicalSize = const Size(1440, 900);
   tester.view.devicePixelRatio = 1;
   await tester.pumpAndSettle();
@@ -21,7 +25,7 @@ Future<FakeAuthRepository> _desktop(
 }
 
 void main() {
-  testWidgets('desktop: website header, listings side by side', (tester) async {
+  testWidgets('desktop: website header, events side by side', (tester) async {
     final auth = await _desktop(tester, market: buildSampleMarket('1'));
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
@@ -34,7 +38,7 @@ void main() {
 
     final derby = tester.getTopLeft(find.text('FK Sarajevo – FK Željezničar'));
     final tribute = tester.getTopLeft(find.text('Bijelo Dugme Tribute'));
-    expect(derby.dy, tribute.dy, reason: 'first two listings share a row');
+    expect(derby.dy, tribute.dy, reason: 'first two events share a row');
   });
 
   testWidgets('desktop: account drawer opens and navigates', (tester) async {

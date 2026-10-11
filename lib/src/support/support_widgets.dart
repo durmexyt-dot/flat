@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +12,11 @@ import '../ui/images.dart';
 import '../ui/snack.dart';
 import 'contact_support_page.dart';
 
-String supportStatusName(AppLocalizations l10n, SupportStatus s) =>
-    switch (s) {
-      SupportStatus.open => l10n.supportStatusOpen,
-      SupportStatus.answered => l10n.supportStatusAnswered,
-      SupportStatus.closed => l10n.supportStatusClosed,
-    };
+String supportStatusName(AppLocalizations l10n, SupportStatus s) => switch (s) {
+  SupportStatus.open => l10n.supportStatusOpen,
+  SupportStatus.answered => l10n.supportStatusAnswered,
+  SupportStatus.closed => l10n.supportStatusClosed,
+};
 
 /// Time of day for today, otherwise day and month (and the year when it is
 /// not this year).
@@ -26,9 +24,7 @@ String supportShortTime(BuildContext context, DateTime? date) {
   if (date == null) return '';
   final locale = Localizations.localeOf(context).toLanguageTag();
   final now = DateTime.now();
-  if (date.year == now.year &&
-      date.month == now.month &&
-      date.day == now.day) {
+  if (date.year == now.year && date.month == now.month && date.day == now.day) {
     return DateFormat.Hm(locale).format(date);
   }
   if (date.year == now.year) return DateFormat.MMMd(locale).format(date);

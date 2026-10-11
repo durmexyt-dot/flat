@@ -1,5 +1,6 @@
 {
   "@@locale": "de",
+  "supportUser": "Nutzer",
   "supportMyRequests": "Meine Anfragen",
   "supportNoRequests": "Du hast noch keine Anfragen an den Support.",
   "supportStatusOpen": "Offen",

@@ -1,5 +1,6 @@
 {
   "@@locale": "bs",
+  "supportUser": "Korisnik",
   "supportMyRequests": "Moji upiti",
   "supportNoRequests": "Još nemaš upita podršci.",
   "supportStatusOpen": "Otvoren",

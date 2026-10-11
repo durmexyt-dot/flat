@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @supportUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik'**
+  String get supportUser;
+
   /// No description provided for @supportMyRequests.
   ///
   /// In bs, this message translates to:

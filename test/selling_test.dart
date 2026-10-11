@@ -1,3 +1,4 @@
+import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/ui/hero_page.dart';
@@ -7,14 +8,34 @@ import 'package:forui/forui.dart';
 
 import 'helpers.dart';
 
+Event eventOf(
+  String id, {
+  String name = 'Dubioza kolektiv',
+  EventCategory category = EventCategory.concerts,
+  DateTime? date,
+  bool hidden = false,
+}) => Event(
+  id: id,
+  info: EventInfo(
+    name: name,
+    venue: 'Zetra',
+    city: 'Sarajevo',
+    date: date ?? DateTime(2030, 7, 14, 20),
+    category: category,
+  ),
+  hidden: hidden,
+);
+
 Listing listingOf(
   String id, {
+  String eventId = 'e-dubioza',
   String seller = 'other',
   String name = 'Dubioza kolektiv',
   EventCategory category = EventCategory.concerts,
   ListingStatus status = ListingStatus.active,
 }) => Listing.fromMap(id, {
   'sellerId': seller,
+  'eventId': eventId,
   'event': {
     'name': name,
     'venue': 'Zetra',
@@ -31,24 +52,27 @@ Listing listingOf(
 });
 
 void main() {
-  testWidgets('home lists active listings, filters by search and category', (
+  testWidgets('home lists upcoming events, filters by search and category', (
     tester,
   ) async {
     final auth = await pumpApp(
       tester,
-      marketRepository: InMemoryMarketRepository(
-        listings: [
-          listingOf('a'),
-          listingOf(
-            'b',
+      eventRepository: InMemoryEventRepository(
+        events: [
+          eventOf('e-dubioza'),
+          eventOf(
+            'e-derby',
             name: 'FK Sarajevo – FK Željezničar',
             category: EventCategory.sports,
           ),
-          listingOf(
-            'c',
-            name: 'Withdrawn show',
-            status: ListingStatus.withdrawn,
-          ),
+          eventOf('e-old', name: 'Past show', date: DateTime(2020)),
+          eventOf('e-hidden', name: 'Hidden show', hidden: true),
+        ],
+      ),
+      marketRepository: InMemoryMarketRepository(
+        listings: [
+          listingOf('a'),
+          listingOf('c', status: ListingStatus.withdrawn, eventId: 'e-derby'),
         ],
       ),
     );
@@ -57,8 +81,10 @@ void main() {
 
     expect(find.text('Dubioza kolektiv'), findsOneWidget);
     expect(find.text('FK Sarajevo – FK Željezničar'), findsOneWidget);
-    expect(find.text('Withdrawn show'), findsNothing);
-    expect(find.text('3 od 4 dostupno'), findsNWidgets(2));
+    expect(find.text('Past show'), findsNothing);
+    expect(find.text('Hidden show'), findsNothing);
+    expect(find.text('od 45,00 KM · 3 karte'), findsOneWidget);
+    expect(find.text('Još nema ponuda'), findsOneWidget);
 
     await tester.tap(find.text('Sport'));
     await tester.pumpAndSettle();
@@ -76,33 +102,51 @@ void main() {
     expect(find.text('Nema rezultata za „opera”'), findsOneWidget);
   });
 
-  testWidgets('listing ticket flies into the detail page', (tester) async {
+  testWidgets('event page lists offers; the ticket flies into the detail', (
+    tester,
+  ) async {
     final auth = await pumpApp(
       tester,
+      eventRepository: InMemoryEventRepository(events: [eventOf('e-dubioza')]),
       marketRepository: InMemoryMarketRepository(listings: [listingOf('a')]),
     );
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    // The newest copy: the home card, then the flying one, then the detail.
-    double titleTop() => tester
-        .getTopLeft(find.text('Dubioza kolektiv', skipOffstage: false).last)
-        .dy;
-    final before = titleTop();
     await tester.tap(find.text('Dubioza kolektiv'));
+    await tester.pumpAndSettle();
+    expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
+    expect(find.text('Ponude'), findsOneWidget);
+
+    // The newest copy: the event page ticket, then the flying one, then
+    // the detail.
+    final ticket = find.text('3 od 4 dostupno', skipOffstage: false);
+    double ticketTop() => tester.getTopLeft(ticket.last).dy;
+    await tester.ensureVisible(ticket.first);
+    await tester.pumpAndSettle();
+    final before = ticketTop();
+    await tester.tap(ticket.first);
     await tester.pump();
     await tester.pump(heroTransitionDuration ~/ 2);
-    final during = titleTop();
+    final during = ticketTop();
+    // ignore: avoid_print
+    print([for (final e in ticket.evaluate()) tester.getTopLeft(find.byWidget(e.widget, skipOffstage: false).first)]);
+    // ignore: avoid_print
+    print([for (final e in find.text('Dubioza kolektiv', skipOffstage: false).evaluate()) tester.getTopLeft(find.byWidget(e.widget, skipOffstage: false).first)]);
     await tester.pumpAndSettle();
-    final after = titleTop();
+    final after = ticketTop();
     expect(
       during,
-      inExclusiveRange(after, before),
+      inExclusiveRange(
+        after < before ? after : before,
+        after < before ? before : after,
+      ),
       reason: 'before $before during $during after $after',
     );
 
     // A buyer sees the total with the 10 % service fee.
     expect(find.text('Detalji ponude'), findsOneWidget);
+    expect(find.text('Sve ponude za ovaj događaj'), findsOneWidget);
     await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
     // 2 × 45,00 = 90,00 + 9,00 fee = 99,00
     expect(find.textContaining('99,00'), findsOneWidget);
@@ -111,7 +155,15 @@ void main() {
   testWidgets('seller publishes a listing, changes price and withdraws', (
     tester,
   ) async {
-    final auth = await pumpApp(tester);
+    final auth = await pumpApp(
+      tester,
+      eventRepository: InMemoryEventRepository(
+        events: [
+          eventOf('e-sff', name: 'Sarajevo Film Festival'),
+          eventOf('e-dubioza'),
+        ],
+      ),
+    );
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
@@ -119,7 +171,7 @@ void main() {
     await tester.pumpAndSettle();
     // Without a payout method the form is locked.
     expect(find.text('Prvo dodaj način isplate'), findsOneWidget);
-    expect(find.text('Naziv događaja'), findsNothing);
+    expect(find.text('Odaberi događaj'), findsNothing);
     await tester.tap(find.text('Dodaj način isplate'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText).first, 'Amra Test');
@@ -129,7 +181,7 @@ void main() {
     );
     await tester.tap(find.text('Sačuvaj'));
     await tester.pumpAndSettle();
-    expect(find.text('Naziv događaja'), findsOneWidget);
+    expect(find.text('Odaberi događaj'), findsOneWidget);
     // Let the "saved" snack bar go; it covers the bottom of the form.
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
@@ -138,19 +190,18 @@ void main() {
     await tapVisible(tester, find.text('Objavi ponudu'));
     await tester.drag(find.byType(Scrollable).first, const Offset(0, 3000));
     await tester.pumpAndSettle();
-    expect(find.text('Obavezno polje'), findsWidgets);
+    expect(find.text('Odaberite događaj'), findsOneWidget);
     expect(market.watchMyListings('1').first, completion(isEmpty));
 
-    final fields = find.byType(EditableText);
-    await tester.enterText(fields.at(0), 'Sarajevo Film Festival');
-    await tester.enterText(fields.at(1), 'Narodno pozorište');
-    await tester.enterText(fields.at(2), 'Sarajevo');
-    // Date: pick the preselected day and time.
-    await tapVisible(tester, find.byIcon(FLucideIcons.calendar));
-    await tester.tap(find.text('Uredu').last);
+    // The event comes from a searchable list.
+    await tapVisible(tester, find.text('Odaberi događaj'));
+    await tester.enterText(find.byType(EditableText).last, 'film');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Uredu').last);
+    expect(find.text('Dubioza kolektiv'), findsNothing);
+    await tester.tap(find.text('Sarajevo Film Festival'));
     await tester.pumpAndSettle();
+    expect(find.text('Odaberite događaj'), findsNothing);
+    expect(find.text('Sarajevo Film Festival'), findsOneWidget);
     await tapVisible(tester, find.byIcon(FLucideIcons.plus));
 
     await tester.ensureVisible(find.byIcon(FLucideIcons.tag));

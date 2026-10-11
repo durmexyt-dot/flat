@@ -10,6 +10,9 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get supportUser => 'Korisnik';
+
+  @override
   String get supportMyRequests => 'Moji upiti';
 
   @override

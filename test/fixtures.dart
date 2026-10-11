@@ -1,3 +1,4 @@
+import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 
@@ -7,62 +8,14 @@ InMemoryMarketRepository buildSampleMarket(String uid, {DateTime? now}) {
   final t = now ?? DateTime.now();
   DateTime days(int d, [int h = 20]) => DateTime(t.year, t.month, t.day + d, h);
 
-  Map<String, dynamic> event(
-    String name,
-    String venue,
-    String city,
-    DateTime date,
-    EventCategory category,
-  ) => {
-    'name': name,
-    'venue': venue,
-    'city': city,
-    'date': date,
-    'category': category.name,
-  };
-
-  final dubioza = event(
-    'Dubioza kolektiv',
-    'Zetra',
-    'Sarajevo',
-    days(24),
-    EventCategory.concerts,
-  );
-  final derby = event(
-    'FK Sarajevo – FK Željezničar',
-    'Koševo',
-    'Sarajevo',
-    days(10, 18),
-    EventCategory.sports,
-  );
-  final sff = event(
-    'Sarajevo Film Festival – Otvaranje',
-    'Narodno pozorište',
-    'Sarajevo',
-    days(40, 19),
-    EventCategory.festivals,
-  );
-  final hamlet = event(
-    'Hamlet',
-    'Kamerni teatar 55',
-    'Sarajevo',
-    days(-6),
-    EventCategory.theater,
-  );
-  final exit = event(
-    'EXIT Festival',
-    'Petrovaradin',
-    'Novi Sad',
-    days(-30, 22),
-    EventCategory.festivals,
-  );
-  final zdravko = event(
-    'Zdravko Čolić',
-    'Arena Zenica',
-    'Zenica',
-    days(-12),
-    EventCategory.concerts,
-  );
+  final events = _sampleEventMaps(t);
+  final dubioza = events['ev-dubioza']!;
+  final derby = events['ev-derby']!;
+  final sff = events['ev-sff']!;
+  final hamlet = events['ev-hamlet']!;
+  final exit = events['ev-exit']!;
+  final zdravko = events['ev-zdravko']!;
+  final tribute = events['ev-tribute']!;
 
   Listing listing(
     String id,
@@ -76,6 +29,7 @@ InMemoryMarketRepository buildSampleMarket(String uid, {DateTime? now}) {
     String row = '',
   }) => Listing.fromMap(id, {
     'sellerId': seller,
+    'eventId': events.entries.firstWhere((x) => x.value == e).key,
     'event': e,
     'quantity': qty,
     'quantitySold': sold,
@@ -352,19 +306,7 @@ InMemoryMarketRepository buildSampleMarket(String uid, {DateTime? now}) {
         row: '8',
       ),
       listing('demo-l5', other, sff, qty: 2, price: 8000, section: 'Balkon'),
-      listing(
-        'demo-l6',
-        other,
-        event(
-          'Bijelo Dugme Tribute',
-          'Skenderija',
-          'Sarajevo',
-          days(17),
-          EventCategory.concerts,
-        ),
-        qty: 3,
-        price: 3900,
-      ),
+      listing('demo-l6', other, tribute, qty: 3, price: 3900),
     ],
     orders: orders,
     payouts: payouts,
@@ -372,5 +314,89 @@ InMemoryMarketRepository buildSampleMarket(String uid, {DateTime? now}) {
       accountHolder: 'Demo',
       iban: 'BA391290079401028494',
     ),
+  );
+}
+
+/// The events of the sample market, keyed by id, as Firestore maps.
+Map<String, Map<String, dynamic>> _sampleEventMaps(DateTime t) {
+  DateTime days(int d, [int h = 20]) => DateTime(t.year, t.month, t.day + d, h);
+  Map<String, dynamic> event(
+    String name,
+    String venue,
+    String city,
+    DateTime date,
+    EventCategory category,
+  ) => {
+    'name': name,
+    'venue': venue,
+    'city': city,
+    'date': date,
+    'category': category.name,
+  };
+  return {
+    'ev-dubioza': event(
+      'Dubioza kolektiv',
+      'Zetra',
+      'Sarajevo',
+      days(24),
+      EventCategory.concerts,
+    ),
+    'ev-derby': event(
+      'FK Sarajevo – FK Željezničar',
+      'Koševo',
+      'Sarajevo',
+      days(10, 18),
+      EventCategory.sports,
+    ),
+    'ev-sff': event(
+      'Sarajevo Film Festival – Otvaranje',
+      'Narodno pozorište',
+      'Sarajevo',
+      days(40, 19),
+      EventCategory.festivals,
+    ),
+    'ev-hamlet': event(
+      'Hamlet',
+      'Kamerni teatar 55',
+      'Sarajevo',
+      days(-6),
+      EventCategory.theater,
+    ),
+    'ev-exit': event(
+      'EXIT Festival',
+      'Petrovaradin',
+      'Novi Sad',
+      days(-30, 22),
+      EventCategory.festivals,
+    ),
+    'ev-zdravko': event(
+      'Zdravko Čolić',
+      'Arena Zenica',
+      'Zenica',
+      days(-12),
+      EventCategory.concerts,
+    ),
+    'ev-tribute': event(
+      'Bijelo Dugme Tribute',
+      'Skenderija',
+      'Sarajevo',
+      days(17),
+      EventCategory.concerts,
+    ),
+  };
+}
+
+/// The events of [buildSampleMarket] (same [now]), past ones included.
+InMemoryEventRepository buildSampleEvents({DateTime? now}) {
+  final t = now ?? DateTime.now();
+  return InMemoryEventRepository(
+    events: [
+      for (final MapEntry(:key, :value) in _sampleEventMaps(t).entries)
+        Event(
+          id: key,
+          info: EventInfo.fromMap(value),
+          createdAt: DateTime(t.year, t.month, t.day - 30),
+        ),
+    ],
   );
 }

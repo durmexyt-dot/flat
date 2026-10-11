@@ -10,6 +10,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get supportUser => 'Nutzer';
+
+  @override
   String get supportMyRequests => 'Meine Anfragen';
 
   @override

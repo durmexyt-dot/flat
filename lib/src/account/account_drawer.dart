@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../data/repositories.dart';
 import 'account_sidebar.dart';
@@ -27,7 +28,7 @@ class AccountDrawer extends ConsumerWidget {
     }
 
     FSidebarItem item((IconData, String, String) entry) => FSidebarItem(
-      icon: Icon(entry.$1),
+      icon: AccountEntryIcon(icon: entry.$1, path: entry.$3),
       label: Text(entry.$2),
       onPress: () => open(entry.$3),
     );
@@ -38,7 +39,12 @@ class AccountDrawer extends ConsumerWidget {
       entries.sublist(0, 1),
       entries.sublist(1, 6),
       entries.sublist(6),
-    ];
+      staffEntries(
+        l10n,
+        isStaff: ref.watch(isStaffProvider),
+        isAdmin: ref.watch(isAdminProvider),
+      ),
+    ].where((g) => g.isNotEmpty);
 
     return Drawer(
       width: 340,

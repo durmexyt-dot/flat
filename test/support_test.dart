@@ -1,3 +1,4 @@
+import 'package:flat/src/data/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
@@ -21,10 +22,10 @@ void main() {
     await tapVisible(tester, find.text('Pomoć oko ove narudžbe'));
 
     expect(find.text('SSW-9ZC4TB'), findsOneWidget);
-    await tester.enterText(find.byType(EditableText).last, 'Too short');
+    await tester.enterText(find.byType(EditableText).last, 'Kratko');
     await tester.tap(find.text('Pošalji'));
     await tester.pumpAndSettle();
-    expect(find.text('Napiši barem 20 znakova'), findsOneWidget);
+    expect(find.text('Napiši barem 10 znakova'), findsOneWidget);
 
     await tester.enterText(
       find.byType(EditableText).last,
@@ -32,10 +33,22 @@ void main() {
     );
     await tester.tap(find.text('Pošalji'));
     await tester.pumpAndSettle();
-    expect(find.text('Zahtjev je poslan'), findsOneWidget);
-    expect(find.textContaining('SUP-100000'), findsOneWidget);
-    expect(market.supportRequests.single['reference'], 'SSW-9ZC4TB');
-    expect(market.supportRequests.single['topic'], 'order');
+
+    final ticket = support.tickets.single;
+    expect(ticket.reference, 'SSW-9ZC4TB');
+    expect(ticket.topic, SupportTopic.order);
+    expect(ticket.name, 'Amra Test');
+    expect(ticket.unreadForStaff, isTrue);
+    // The conversation opens right away, with the first message.
+    expect(find.text('Upit poslan'), findsOneWidget);
+    expect(find.text(ticket.number), findsWidgets);
+    expect(
+      find.text('The refund has not arrived on my card yet.'),
+      findsOneWidget,
+    );
+    expect(find.text('Otvoren'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('guests can read the help center', (tester) async {
@@ -49,5 +62,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('naknadu za uslugu od 10%'), findsOneWidget);
     expect(find.text('Kontaktiraj podršku'), findsNothing);
+    expect(find.text('Moji upiti'), findsNothing);
+    expect(find.text('Prijava ili registracija'), findsWidgets);
   });
 }

@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "supportUser": "User",
   "supportMyRequests": "My requests",
   "supportNoRequests": "You have no support requests yet.",
   "supportStatusOpen": "Open",

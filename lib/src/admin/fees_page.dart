@@ -143,55 +143,61 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
     final current = widget.current;
     final edited = _edited;
     final changed = edited != null && edited != current;
-    return ListView(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-      children: [
-        Text(
-          l10n.adminFeesCurrent(
-            l10n.adminFeesSummary(current.buyerPercent, current.sellerPercent),
-          ),
-          style: theme.typography.body.sm.copyWith(
-            color: theme.colors.mutedForeground,
-          ),
-        ),
-        const SizedBox(height: 16),
-        FCard(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _PercentField(
-                  key: const ValueKey('buyer-fee'),
-                  controller: _buyer,
-                  label: l10n.adminBuyerFee,
-                  description: l10n.adminBuyerFeeInfo,
-                  icon: FLucideIcons.shoppingCart,
-                  onChanged: () => setState(() {}),
-                ),
-                const SizedBox(height: 20),
-                _PercentField(
-                  key: const ValueKey('seller-fee'),
-                  controller: _seller,
-                  label: l10n.adminSellerFee,
-                  description: l10n.adminSellerFeeInfo,
-                  icon: FLucideIcons.store,
-                  onChanged: () => setState(() {}),
-                ),
-              ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.adminFeesCurrent(
+              l10n.adminFeesSummary(
+                current.buyerPercent,
+                current.sellerPercent,
+              ),
+            ),
+            style: theme.typography.body.sm.copyWith(
+              color: theme.colors.mutedForeground,
             ),
           ),
-        ),
-        _Example(fees: edited ?? current),
-        const SizedBox(height: 16),
-        AdminNotice(text: l10n.adminFeesNotice),
-        const SizedBox(height: 24),
-        FButton(
-          onPress: changed && !_saving ? _save : null,
-          prefix: _saving ? FCircularProgress.loader() : null,
-          child: Text(l10n.adminFeesSave),
-        ),
-      ],
+          const SizedBox(height: 16),
+          FCard(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _PercentField(
+                    key: const ValueKey('buyer-fee'),
+                    controller: _buyer,
+                    label: l10n.adminBuyerFee,
+                    description: l10n.adminBuyerFeeInfo,
+                    icon: FLucideIcons.shoppingCart,
+                    onChanged: () => setState(() {}),
+                  ),
+                  const SizedBox(height: 20),
+                  _PercentField(
+                    key: const ValueKey('seller-fee'),
+                    controller: _seller,
+                    label: l10n.adminSellerFee,
+                    description: l10n.adminSellerFeeInfo,
+                    icon: FLucideIcons.store,
+                    onChanged: () => setState(() {}),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _Example(fees: edited ?? current),
+          const SizedBox(height: 16),
+          AdminNotice(text: l10n.adminFeesNotice),
+          const SizedBox(height: 24),
+          FButton(
+            onPress: changed && !_saving ? _save : null,
+            prefix: _saving ? FCircularProgress.loader() : null,
+            child: Text(l10n.adminFeesSave),
+          ),
+        ],
+      ),
     );
   }
 }
