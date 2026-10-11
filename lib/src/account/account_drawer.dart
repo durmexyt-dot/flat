@@ -102,8 +102,10 @@ class AccountDrawer extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      const StatsRow(),
+                      if (marketplace) ...[
+                        const SizedBox(height: 16),
+                        const StatsRow(),
+                      ],
                     ],
                   ),
                 ),

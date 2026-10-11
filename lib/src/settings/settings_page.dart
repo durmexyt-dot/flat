@@ -57,6 +57,34 @@ class SettingsPage extends ConsumerWidget {
     // On wide screens the sidebar holds buying, selling and account links.
     final wide = isWideLayout(context);
     final sections = <Widget>[
+      // Team accounts: their work comes first.
+      if (isStaff) ...[
+        SettingsSectionTitle(l10n.adminTeamSection),
+        SettingsGroup(
+          children: [
+            SettingsLinkTile(
+              icon: FLucideIcons.inbox,
+              title: l10n.adminSupportInbox,
+              trailing: staffUnread > 0 ? CountPill(count: staffUnread) : null,
+              onTap: () => context.push('/admin/support'),
+            ),
+            SettingsLinkTile(
+              icon: FLucideIcons.calendarClock,
+              title: l10n.eventsReviewQueue,
+              trailing: pendingEvents > 0
+                  ? CountPill(count: pendingEvents)
+                  : null,
+              onTap: () => context.push('/admin/events'),
+            ),
+            if (isAdmin)
+              SettingsLinkTile(
+                icon: FLucideIcons.shieldCheck,
+                title: l10n.adminTitle,
+                onTap: () => context.push('/admin'),
+              ),
+          ],
+        ),
+      ],
       // Team accounts don't buy or sell.
       if (user != null && !wide && !isStaff) ...[
         SettingsSectionTitle(l10n.buying),
@@ -142,33 +170,6 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
-      if (isStaff) ...[
-        SettingsSectionTitle(l10n.adminTeamSection),
-        SettingsGroup(
-          children: [
-            SettingsLinkTile(
-              icon: FLucideIcons.inbox,
-              title: l10n.adminSupportInbox,
-              trailing: staffUnread > 0 ? CountPill(count: staffUnread) : null,
-              onTap: () => context.push('/admin/support'),
-            ),
-            SettingsLinkTile(
-              icon: FLucideIcons.calendarClock,
-              title: l10n.eventsReviewQueue,
-              trailing: pendingEvents > 0
-                  ? CountPill(count: pendingEvents)
-                  : null,
-              onTap: () => context.push('/admin/events'),
-            ),
-            if (isAdmin)
-              SettingsLinkTile(
-                icon: FLucideIcons.shieldCheck,
-                title: l10n.adminTitle,
-                onTap: () => context.push('/admin'),
-              ),
-          ],
-        ),
-      ],
       SettingsSectionTitle(l10n.support),
       SettingsGroup(
         children: [

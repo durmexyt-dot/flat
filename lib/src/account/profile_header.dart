@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
+import '../admin/admin_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../data/models.dart';
@@ -27,6 +28,7 @@ class ProfileHeader extends ConsumerWidget {
     final colors = theme.colors;
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider);
+    final staff = ref.watch(isStaffProvider);
 
     return AsyncView<UserProfile?>(
       // Without a profile document (e.g. Firestore not set up yet) the
@@ -117,8 +119,10 @@ class ProfileHeader extends ConsumerWidget {
                   children: details,
                 ),
               ),
-              const SizedBox(width: 24),
-              const SizedBox(width: 340, child: StatsRow()),
+              if (!staff) ...[
+                const SizedBox(width: 24),
+                const SizedBox(width: 340, child: StatsRow()),
+              ],
             ],
           );
         }
@@ -129,8 +133,8 @@ class ProfileHeader extends ConsumerWidget {
             ...details,
             const SizedBox(height: 12),
             _editButton(context, l10n),
-            const SizedBox(height: 16),
-            const StatsRow(),
+            // Team accounts don't buy or sell: no ticket counts.
+            if (!staff) ...[const SizedBox(height: 16), const StatsRow()],
           ],
         );
       },

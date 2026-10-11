@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert
+- Team-Konten: Abschnitt „Tim“ (Support-Anfragen, Events zur Prüfung,
+  Administration) steht in den Einstellungen ganz oben; keine Kauf-/
+  Verkaufsstatistik im Profil
+
 ## [1.5.0] – 2026-10-11
 
 ### Geändert
