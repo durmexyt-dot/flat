@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'account/edit_profile_page.dart';
+import 'admin/admin_page.dart';
+import 'admin/event_editor_page.dart';
+import 'admin/events_admin_page.dart';
+import 'admin/fees_page.dart';
+import 'admin/team_page.dart';
 import 'account/notifications_page.dart';
 import 'account/privacy_security_page.dart';
 import 'auth/auth_repository.dart';
@@ -10,6 +15,7 @@ import 'auth/forgot_password_page.dart';
 import 'auth/login_page.dart';
 import 'auth/signup_page.dart';
 import 'data/models.dart';
+import 'events/event_page.dart';
 import 'home/home_page.dart';
 import 'market/listing_detail_page.dart';
 import 'market/my_listings_page.dart';
@@ -25,6 +31,8 @@ import 'settings/settings_page.dart';
 import 'splash/splash_page.dart';
 import 'support/contact_support_page.dart';
 import 'support/help_center_page.dart';
+import 'support/support_inbox_page.dart';
+import 'support/support_ticket_page.dart';
 import 'ui/hero_page.dart';
 
 const _authRoutes = {'/login', '/signup', '/forgot-password'};
@@ -35,6 +43,8 @@ const _accountOnly = [
   '/order',
   '/payout',
   '/support/new',
+  '/support/ticket',
+  '/admin',
   '/settings/profile',
   '/settings/privacy',
   '/settings/notifications',
@@ -83,7 +93,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/settings/profile', (_) => const EditProfilePage()),
       _route('/settings/privacy', (_) => const PrivacySecurityPage()),
       _route('/settings/notifications', (_) => const NotificationsPage()),
-      _route('/sell', (_) => const SellPage()),
+      _route(
+        '/sell',
+        (state) => SellPage(eventId: state.uri.queryParameters['event']),
+      ),
+      _route(
+        '/event/:id',
+        (state) => EventPage(
+          id: state.pathParameters['id']!,
+          initial: state.extra as Event?,
+        ),
+      ),
       _route(
         '/listing/:id',
         (state) => ListingDetailPage(
@@ -108,6 +128,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         );
       }),
       _route('/support', (_) => const HelpCenterPage()),
+      _route(
+        '/support/ticket/:id',
+        (state) => SupportTicketPage(id: state.pathParameters['id']!),
+      ),
+      _route('/admin', (_) => const AdminPage()),
+      _route('/admin/support', (_) => const SupportInboxPage()),
+      _route('/admin/fees', (_) => const FeesPage()),
+      _route('/admin/team', (_) => const TeamPage()),
+      _route('/admin/events', (_) => const EventsAdminPage()),
+      _route('/admin/events/new', (_) => const EventEditorPage()),
+      _route(
+        '/admin/events/:id',
+        (state) => EventEditorPage(id: state.pathParameters['id']),
+      ),
       _route(
         '/support/new',
         (state) => ContactSupportPage(initial: state.extra as SupportContext?),

@@ -1,18 +1,58 @@
 import 'package:flutter/foundation.dart';
 
 /// Marketplace fees in percent of the ticket price.
-abstract final class Fees {
-  /// Paid by the buyer on top of the ticket price.
-  static const buyerPercent = 10;
+///
+/// An admin sets them (config/fees); every listing keeps the percentages in
+/// force when it was created, and its orders copy them, so a later change
+/// only applies to new listings.
+@immutable
+class FeeConfig {
+  const FeeConfig({
+    this.buyerPercent = defaultPercent,
+    this.sellerPercent = defaultPercent,
+  });
+
+  /// Before fees were configurable, and for documents without them.
+  static const defaultPercent = 10;
+
+  /// Highest fee an admin can set.
+  static const maxPercent = 30;
+
+  /// Paid by the buyer on top of the ticket price (service fee).
+  final int buyerPercent;
 
   /// Kept from the seller's ticket price.
-  static const sellerPercent = 10;
+  final int sellerPercent;
 
-  static int buyerFee(int subtotalMinor) =>
-      (subtotalMinor * buyerPercent / 100).round();
-  static int sellerFee(int subtotalMinor) =>
-      (subtotalMinor * sellerPercent / 100).round();
+  int buyerFee(int subtotalMinor) => percentOf(subtotalMinor, buyerPercent);
+  int sellerFee(int subtotalMinor) => percentOf(subtotalMinor, sellerPercent);
+
+  factory FeeConfig.fromMap(Map<String, dynamic>? m) => FeeConfig(
+    buyerPercent: _percent(m?['buyerPercent']),
+    sellerPercent: _percent(m?['sellerPercent']),
+  );
+
+  Map<String, dynamic> toMap() => {
+    'buyerPercent': buyerPercent,
+    'sellerPercent': sellerPercent,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is FeeConfig &&
+      other.buyerPercent == buyerPercent &&
+      other.sellerPercent == sellerPercent;
+
+  @override
+  int get hashCode => Object.hash(buyerPercent, sellerPercent);
 }
+
+int percentOf(int amountMinor, int percent) =>
+    (amountMinor * percent / 100).round();
+
+int _percent(Object? v) => v is num
+    ? v.toInt().clamp(0, FeeConfig.maxPercent)
+    : FeeConfig.defaultPercent;
 
 T enumByName<T extends Enum>(List<T> values, Object? name, T fallback) =>
     values.where((v) => v.name == name).firstOrNull ?? fallback;
@@ -197,6 +237,43 @@ class EventInfo {
   };
 }
 
+/// An event created by an admin. Sellers list tickets for it.
+@immutable
+class Event {
+  const Event({
+    required this.id,
+    required this.info,
+    this.hasImage = false,
+    this.imageVersion = 0,
+    this.hidden = false,
+    this.createdAt,
+  });
+
+  final String id;
+  final EventInfo info;
+
+  /// The picture lives in eventImages/{id}, so event lists stay small.
+  final bool hasImage;
+
+  /// Changes with every new picture, so caches know to reload it.
+  final int imageVersion;
+
+  /// Hidden by an admin: not shown and no new listings.
+  final bool hidden;
+  final DateTime? createdAt;
+
+  bool get isUpcoming => info.date.isAfter(DateTime.now());
+
+  factory Event.fromMap(String id, Map<String, dynamic> m) => Event(
+    id: id,
+    info: EventInfo.fromMap(m),
+    hasImage: m['hasImage'] == true,
+    imageVersion: (m['imageVersion'] as num?)?.toInt() ?? 0,
+    hidden: m['status'] == 'hidden',
+    createdAt: _date(m['createdAt']),
+  );
+}
+
 enum TicketType { eTicket, mobile, paper }
 
 enum ListingStatus {
@@ -228,6 +305,8 @@ class Listing {
     required this.priceMinor,
     required this.currency,
     required this.status,
+    this.eventId = '',
+    this.fees = const FeeConfig(),
     this.section = '',
     this.row = '',
     this.seats = '',
@@ -237,7 +316,15 @@ class Listing {
 
   final String id;
   final String sellerId;
+
+  /// The admin-created event; empty for listings from before events.
+  final String eventId;
+
+  /// A copy of the event as it was when the listing was created.
   final EventInfo event;
+
+  /// The fees in force when the listing was created.
+  final FeeConfig fees;
   final TicketType ticketType;
   final int quantity;
   final int quantitySold;
@@ -256,11 +343,16 @@ class Listing {
   int get available => quantity - quantitySold;
 
   /// What the seller receives per ticket after the seller fee.
-  int get payoutPerTicketMinor => priceMinor - Fees.sellerFee(priceMinor);
+  int get payoutPerTicketMinor => priceMinor - fees.sellerFee(priceMinor);
 
   factory Listing.fromMap(String id, Map<String, dynamic> m) => Listing(
     id: id,
     sellerId: m['sellerId'] as String? ?? '',
+    eventId: m['eventId'] as String? ?? '',
+    fees: FeeConfig(
+      buyerPercent: _percent(m['buyerFeePercent']),
+      sellerPercent: _percent(m['sellerFeePercent']),
+    ),
     event: EventInfo.fromMap((m['event'] as Map).cast<String, dynamic>()),
     ticketType: enumByName(
       TicketType.values,
@@ -281,7 +373,10 @@ class Listing {
 
   Map<String, dynamic> toMap() => {
     'sellerId': sellerId,
+    if (eventId.isNotEmpty) 'eventId': eventId,
     'event': event.toMap(),
+    'buyerFeePercent': fees.buyerPercent,
+    'sellerFeePercent': fees.sellerPercent,
     'ticketType': ticketType.name,
     'quantity': quantity,
     'quantitySold': quantitySold,
@@ -349,6 +444,7 @@ class Order {
     required this.unitPriceMinor,
     required this.currency,
     required this.status,
+    this.fees = const FeeConfig(),
     this.ticketType = TicketType.eTicket,
     this.section = '',
     this.row = '',
@@ -374,6 +470,9 @@ class Order {
   final int unitPriceMinor;
   final String currency;
   final OrderStatus status;
+
+  /// The listing's fees, fixed with the order.
+  final FeeConfig fees;
   final TicketType ticketType;
   final String section;
   final String row;
@@ -397,9 +496,9 @@ class Order {
   final DateTime? createdAt;
 
   int get subtotalMinor => unitPriceMinor * quantity;
-  int get buyerFeeMinor => Fees.buyerFee(subtotalMinor);
+  int get buyerFeeMinor => fees.buyerFee(subtotalMinor);
   int get totalMinor => subtotalMinor + buyerFeeMinor;
-  int get sellerFeeMinor => Fees.sellerFee(subtotalMinor);
+  int get sellerFeeMinor => fees.sellerFee(subtotalMinor);
   int get sellerEarningsMinor => subtotalMinor - sellerFeeMinor;
 
   DateTime? reachedAt(OrderStatus s) =>
@@ -419,6 +518,10 @@ class Order {
       OrderStatus.values,
       m['status'],
       OrderStatus.pendingPayment,
+    ),
+    fees: FeeConfig(
+      buyerPercent: _percent(m['buyerFeePercent']),
+      sellerPercent: _percent(m['sellerFeePercent']),
     ),
     ticketType: enumByName(
       TicketType.values,
@@ -646,3 +749,179 @@ bool isValidIban(String input) => checkIban(input) == null;
 // ---------------------------------------------------------------------------
 
 enum SupportTopic { order, sale, payout, account, other }
+
+enum SupportStatus {
+  /// Waiting for support.
+  open,
+
+  /// Support replied, waiting for the user.
+  answered,
+
+  /// Done: the user was satisfied or support closed it. Read-only.
+  closed,
+}
+
+/// A support request: a conversation between a user and the support team,
+/// held in the app (no email).
+@immutable
+class SupportTicket {
+  const SupportTicket({
+    required this.id,
+    required this.number,
+    required this.uid,
+    required this.topic,
+    required this.status,
+    this.email = '',
+    this.name = '',
+    this.reference = '',
+    this.subject = '',
+    this.unreadForUser = false,
+    this.unreadForStaff = false,
+    this.closedBy = '',
+    this.appVersion = '',
+    this.createdAt,
+    this.lastMessageAt,
+  });
+
+  final String id;
+
+  /// E.g. "SUP-4F7K2Q".
+  final String number;
+  final String uid;
+  final String email;
+  final String name;
+  final SupportTopic topic;
+  final SupportStatus status;
+
+  /// An order or payout number the request is about.
+  final String reference;
+
+  /// The start of the first message, for lists.
+  final String subject;
+
+  /// Support replied and the user hasn't opened it yet.
+  final bool unreadForUser;
+
+  /// The user wrote and nobody from support has opened it yet.
+  final bool unreadForStaff;
+
+  /// 'user' or 'staff'.
+  final String closedBy;
+  final String appVersion;
+  final DateTime? createdAt;
+  final DateTime? lastMessageAt;
+
+  bool get isClosed => status == SupportStatus.closed;
+
+  factory SupportTicket.fromMap(String id, Map<String, dynamic> m) =>
+      SupportTicket(
+        id: id,
+        number: m['number'] as String? ?? id,
+        uid: m['uid'] as String? ?? '',
+        email: m['email'] as String? ?? '',
+        name: m['name'] as String? ?? '',
+        topic: enumByName(SupportTopic.values, m['topic'], SupportTopic.other),
+        status: enumByName(
+          SupportStatus.values,
+          m['status'],
+          SupportStatus.open,
+        ),
+        reference: m['reference'] as String? ?? '',
+        subject: m['subject'] as String? ?? '',
+        unreadForUser: m['unreadForUser'] == true,
+        unreadForStaff: m['unreadForStaff'] == true,
+        closedBy: m['closedBy'] as String? ?? '',
+        appVersion: m['appVersion'] as String? ?? '',
+        createdAt: _date(m['createdAt']),
+        lastMessageAt: _date(m['lastMessageAt']),
+      );
+}
+
+@immutable
+class SupportMessage {
+  const SupportMessage({
+    required this.id,
+    required this.authorId,
+    required this.fromStaff,
+    required this.text,
+    this.authorName = '',
+    this.images = const [],
+    this.createdAt,
+  });
+
+  final String id;
+  final String authorId;
+
+  /// Written by support (admin or support account), not the user.
+  final bool fromStaff;
+  final String authorName;
+  final String text;
+
+  /// JPEGs in base64, at most [maxSupportImages].
+  final List<String> images;
+  final DateTime? createdAt;
+
+  factory SupportMessage.fromMap(String id, Map<String, dynamic> m) =>
+      SupportMessage(
+        id: id,
+        authorId: m['authorId'] as String? ?? '',
+        fromStaff: m['authorRole'] == 'staff',
+        authorName: m['authorName'] as String? ?? '',
+        text: m['text'] as String? ?? '',
+        images: [...?(m['images'] as List?)?.whereType<String>()],
+        createdAt: _date(m['createdAt']),
+      );
+}
+
+/// Pictures per support message.
+const maxSupportImages = 3;
+
+// ---------------------------------------------------------------------------
+// Roles
+// ---------------------------------------------------------------------------
+
+/// Team accounts. Admins are assigned in the Firebase console only; admins
+/// assign support accounts in the app.
+enum StaffRole { admin, support }
+
+@immutable
+class StaffMember {
+  const StaffMember({
+    required this.uid,
+    required this.role,
+    this.name = '',
+    this.email = '',
+    this.grantedAt,
+  });
+
+  final String uid;
+  final StaffRole role;
+  final String name;
+  final String email;
+  final DateTime? grantedAt;
+
+  factory StaffMember.fromMap(String uid, Map<String, dynamic> m) =>
+      StaffMember(
+        uid: uid,
+        role: enumByName(StaffRole.values, m['role'], StaffRole.support),
+        name: m['name'] as String? ?? '',
+        email: m['email'] as String? ?? '',
+        grantedAt: _date(m['grantedAt']),
+      );
+}
+
+/// A user found by an admin, to make them a support account.
+@immutable
+class UserLookup {
+  const UserLookup({
+    required this.uid,
+    this.name = '',
+    this.email = '',
+    this.username = '',
+  });
+
+  final String uid;
+  final String name;
+  final String email;
+  final String username;
+}

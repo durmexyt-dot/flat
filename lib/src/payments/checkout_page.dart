@@ -125,7 +125,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         listing.status == ListingStatus.active && listing.available > 0;
     final quantity = _quantity.clamp(1, listing.available.clamp(1, 99));
     final subtotal = listing.priceMinor * quantity;
-    final total = subtotal + Fees.buyerFee(subtotal);
+    final total = subtotal + listing.fees.buyerFee(subtotal);
     String money(int m) => formatMoney(context, m, listing.currency);
     const divider = FDivider(
       style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 12))),
@@ -211,8 +211,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       money(subtotal),
                     ),
                     _Line(
-                      '${l10n.serviceFee} (${Fees.buyerPercent} %)',
-                      money(Fees.buyerFee(subtotal)),
+                      '${l10n.serviceFee} (${listing.fees.buyerPercent} %)',
+                      money(listing.fees.buyerFee(subtotal)),
                     ),
                     divider,
                     _Line(l10n.total, money(total), strong: true),

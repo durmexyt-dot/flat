@@ -7,12 +7,12 @@ import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../data/models.dart';
-import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/snack.dart';
 import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
+import 'support_repository.dart';
 
 /// What a support request is about, passed from order or payout pages.
 class SupportContext {
@@ -63,13 +63,14 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
     setState(() => _sending = true);
     try {
       final number = await ref
-          .read(marketRepositoryProvider)
-          .createSupportRequest(
+          .read(supportRepositoryProvider)
+          .createTicket(
             uid: user.uid,
             email: user.email ?? '',
+            name: user.displayName ?? '',
             topic: _topic,
             reference: _reference.text.trim(),
-            message: _message.text.trim(),
+            text: _message.text.trim(),
           );
       if (mounted) setState(() => _sentNumber = number);
     } catch (_) {

@@ -80,6 +80,8 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
       'buyerId': buyerId,
       'sellerId': listing.sellerId,
       'event': listing.event.toMap(),
+      'buyerFeePercent': listing.fees.buyerPercent,
+      'sellerFeePercent': listing.fees.sellerPercent,
       'quantity': quantity,
       'unitPriceMinor': listing.priceMinor,
       'currency': listing.currency,

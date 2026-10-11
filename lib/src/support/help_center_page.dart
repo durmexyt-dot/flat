@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../admin/admin_repository.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
@@ -17,8 +18,9 @@ class HelpCenterPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final signedIn = ref.watch(currentUidProvider) != null;
-    final buyer = '${Fees.buyerPercent}';
-    final seller = '${Fees.sellerPercent}';
+    final fees = ref.watch(feeConfigProvider).value ?? const FeeConfig();
+    final buyer = '${fees.buyerPercent}';
+    final seller = '${fees.sellerPercent}';
 
     final sections = [
       (

@@ -384,7 +384,7 @@ class _Invoice extends StatelessWidget {
                 money(order.subtotalMinor),
               ),
               row(
-                '${l10n.serviceFee} (${Fees.buyerPercent} %)',
+                '${l10n.serviceFee} (${order.fees.buyerPercent} %)',
                 money(order.buyerFeeMinor),
               ),
               divider,
@@ -392,7 +392,7 @@ class _Invoice extends StatelessWidget {
             ] else ...[
               row(l10n.saleAmount, money(order.subtotalMinor)),
               row(
-                '${l10n.sellerFeeLabel} (${Fees.sellerPercent} %)',
+                '${l10n.sellerFeeLabel} (${order.fees.sellerPercent} %)',
                 '− ${money(order.sellerFeeMinor)}',
               ),
               divider,

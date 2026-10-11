@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import 'data/repositories.dart';
 import 'config/app_info.dart';
 import 'notifications/live_alerts.dart';
+import 'notifications/support_alerts.dart';
 import 'notifications/update_notifier.dart';
 import 'router.dart';
 import 'settings/settings_controller.dart';
@@ -53,7 +54,9 @@ class FlatApp extends ConsumerWidget {
               key: toasterKey,
               child: FTooltipGroup(
                 child: UpdateNotifier(
-                  child: LiveAlerts(child: _StagingBanner(child: child!)),
+                  child: LiveAlerts(
+                    child: SupportAlerts(child: _StagingBanner(child: child!)),
+                  ),
                 ),
               ),
             ),

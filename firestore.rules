@@ -20,6 +20,27 @@ service cloud.firestore {
     function orderPath(id) { return /databases/$(database)/documents/orders/$(id); }
     function listingPath(id) { return /databases/$(database)/documents/listings/$(id); }
     function payoutPath(id) { return /databases/$(database)/documents/payouts/$(id); }
+    function eventPath(id) { return /databases/$(database)/documents/events/$(id); }
+    function rolePath(uid) { return /databases/$(database)/documents/roles/$(uid); }
+    function feesPath() { return /databases/$(database)/documents/config/fees; }
+
+    // ---- Roles ------------------------------------------------------------
+    // Admins exist only through the Firebase console (roles/{uid} with
+    // role "admin"); no client can write that. Admins name support accounts.
+    function role() {
+      return signedIn() && exists(rolePath(request.auth.uid))
+        ? get(rolePath(request.auth.uid)).data.role : '';
+    }
+    function isAdmin() { return role() == 'admin'; }
+    function isStaff() { return role() in ['admin', 'support']; }
+
+    // Fees for new listings; 10 % each until an admin sets them.
+    function currentFees() {
+      return exists(feesPath())
+        ? get(feesPath()).data
+        : {'buyerPercent': 10, 'sellerPercent': 10};
+    }
+    function validPercent(v) { return v is int && v >= 0 && v <= 30; }
 
     // True if order [id] goes from awaiting payment to paid in this very
     // request (get() reads the state before, getAfter() after it).
@@ -93,10 +114,12 @@ service cloud.firestore {
       return p is int && p > 0 && p <= 1000000;
     }
 
-    // Seller's share: ticket price minus the 10 % seller fee.
+    // Seller's share: ticket price minus the order's seller fee (10 % for
+    // orders from before fees were configurable).
     function sellerEarnings(o) {
       return o.unitPriceMinor * o.quantity
-        - math.round(o.unitPriceMinor * o.quantity * 0.1);
+        - math.round(o.unitPriceMinor * o.quantity
+          * o.get('sellerFeePercent', 10) / 100);
     }
 
     // Private profile: settings, notification preferences.
@@ -117,7 +140,8 @@ service cloud.firestore {
           && ownsUsername(d);
       }
 
-      allow read: if isUser(uid);
+      // Admins find single users by email or username (support accounts).
+      allow read: if isUser(uid) || isAdmin();
       allow create: if isUser(uid) && validUser(request.resource.data);
       allow update: if isUser(uid) && validUser(request.resource.data)
         // A changed username frees the old reservation in the same write.
@@ -172,10 +196,25 @@ service cloud.firestore {
         && request.resource.data.sellerId == request.auth.uid
         // Sellers need a payout method before listing tickets.
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
-        && request.resource.data.keys().hasOnly(['sellerId', 'event', 'ticketType',
+        && request.resource.data.keys().hasOnly(['sellerId', 'eventId', 'event',
+            'buyerFeePercent', 'sellerFeePercent', 'ticketType',
             'quantity', 'quantitySold', 'priceMinor', 'currency', 'status',
             'section', 'row', 'seats', 'note', 'createdAt', 'updatedAt'])
         && validEvent(request.resource.data.event)
+        // Tickets only for a visible event an admin created; the copy of
+        // the event is exactly the event.
+        && request.resource.data.eventId is string
+        && get(eventPath(request.resource.data.eventId)).data.status == 'active'
+        && request.resource.data.event == {
+          'name': get(eventPath(request.resource.data.eventId)).data.name,
+          'venue': get(eventPath(request.resource.data.eventId)).data.venue,
+          'city': get(eventPath(request.resource.data.eventId)).data.city,
+          'date': get(eventPath(request.resource.data.eventId)).data.date,
+          'category': get(eventPath(request.resource.data.eventId)).data.category
+        }
+        // The fees in force now stay with the listing.
+        && request.resource.data.buyerFeePercent == currentFees().buyerPercent
+        && request.resource.data.sellerFeePercent == currentFees().sellerPercent
         && request.resource.data.ticketType in ['eTicket', 'mobile', 'paper']
         && request.resource.data.status == 'active'
         && request.resource.data.quantitySold == 0
@@ -238,8 +277,14 @@ service cloud.firestore {
         && request.resource.data.status == 'pendingPayment'
         && request.resource.data.keys().hasOnly(['number', 'listingId', 'buyerId',
             'sellerId', 'event', 'quantity', 'unitPriceMinor', 'currency',
+            'buyerFeePercent', 'sellerFeePercent',
             'ticketType', 'section', 'row', 'seats', 'status', 'history',
             'testMode', 'createdAt'])
+        // The listing's fees, 10 % for listings from before fees were set.
+        && request.resource.data.get('buyerFeePercent', 10)
+          == get(listingPath(request.resource.data.listingId)).data.get('buyerFeePercent', 10)
+        && request.resource.data.get('sellerFeePercent', 10)
+          == get(listingPath(request.resource.data.listingId)).data.get('sellerFeePercent', 10)
         && request.resource.data.number.matches('^SSW-[A-Z0-9]{6}$')
         && request.resource.data.history is list
         && request.resource.data.history.size() == 1
@@ -322,20 +367,172 @@ service cloud.firestore {
         && request.resource.data.amountMinor == sellerEarnings(getAfter(orderPath(id)).data);
     }
 
+    // Old requests (before in-app support): only readable by their author.
     match /supportRequests/{id} {
+      allow read: if isUser(resource.data.uid);
+    }
+
+    // ---- Team, fees, events ---------------------------------------------
+
+    match /roles/{uid} {
+      allow read: if isUser(uid) || isAdmin();
+      // Admins make and remove support accounts, never admins.
+      allow create: if isAdmin()
+        && uid != request.auth.uid
+        && request.resource.data.keys().hasOnly(['role', 'name', 'email',
+            'grantedBy', 'grantedAt'])
+        && request.resource.data.role == 'support'
+        && request.resource.data.grantedBy == request.auth.uid
+        && optStr(request.resource.data, 'name', 80)
+        && optStr(request.resource.data, 'email', 200)
+        && request.resource.data.grantedAt == request.time;
+      allow delete: if isAdmin() && resource.data.role == 'support';
+    }
+
+    match /config/fees {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['buyerPercent', 'sellerPercent',
+            'updatedBy', 'updatedAt'])
+        && validPercent(request.resource.data.buyerPercent)
+        && validPercent(request.resource.data.sellerPercent)
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /events/{id} {
+      function validEventDoc(d) {
+        return d.keys().hasOnly(['name', 'venue', 'city', 'date', 'category',
+            'status', 'hasImage', 'imageVersion', 'createdAt', 'updatedAt'])
+          && str(d.name, 2, 100)
+          && str(d.venue, 1, 100)
+          && str(d.city, 1, 60)
+          && d.date is timestamp
+          && d.category in ['concerts', 'sports', 'theater', 'festivals', 'other']
+          && d.status in ['active', 'hidden']
+          && d.hasImage is bool
+          && d.imageVersion is int
+          && d.updatedAt == request.time;
+      }
+      allow read: if resource.data.status == 'active' || isAdmin();
+      allow create: if isAdmin() && validEventDoc(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.date > request.time;
+      allow update: if isAdmin() && validEventDoc(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    // An event's picture: a JPEG in base64, kept apart so event lists stay
+    // small.
+    match /eventImages/{id} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['data', 'updatedAt'])
+        && str(request.resource.data.data, 100, 400000)
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
+    }
+
+    // ---- Support (in the app, no email) -----------------------------------
+
+    match /supportTickets/{id} {
+      function ticketKeys() {
+        return ['number', 'uid', 'email', 'name', 'topic', 'reference', 'subject',
+          'status', 'unreadForUser', 'unreadForStaff', 'closedBy', 'appVersion',
+          'createdAt', 'lastMessageAt'];
+      }
+      allow read: if isStaff() || isUser(resource.data.uid);
+
       allow create: if signedIn()
-        && request.resource.data.keys().hasOnly(['number', 'uid', 'email', 'topic',
-            'reference', 'message', 'appVersion', 'status', 'createdAt'])
-        && optStr(request.resource.data, 'appVersion', 60)
+        && request.resource.data.keys().hasOnly(ticketKeys())
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == request.auth.token.email
+        && optStr(request.resource.data, 'name', 80)
         && request.resource.data.number.matches('^SUP-[A-Z0-9]{6}$')
         && request.resource.data.topic in ['order', 'sale', 'payout', 'account', 'other']
         && str(request.resource.data.reference, 0, 60)
-        && str(request.resource.data.message, 1, 2000)
+        && str(request.resource.data.subject, 1, 100)
+        && optStr(request.resource.data, 'appVersion', 60)
         && request.resource.data.status == 'open'
-        && request.resource.data.createdAt == request.time;
-      allow read: if isUser(resource.data.uid);
+        && request.resource.data.unreadForUser == false
+        && request.resource.data.unreadForStaff == true
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.lastMessageAt == request.time;
+
+      allow update: if
+        // The user: read an answer, write again (reopens it for the team) or
+        // close it when satisfied. Closed requests stay closed.
+        (isUser(resource.data.uid)
+          && resource.data.status != 'closed'
+          && (
+            (onlyChanges(['unreadForUser'])
+              && request.resource.data.unreadForUser == false)
+            || (onlyChanges(['status', 'unreadForUser', 'unreadForStaff', 'lastMessageAt'])
+              && request.resource.data.status == 'open'
+              && request.resource.data.unreadForUser == false
+              && request.resource.data.unreadForStaff == true
+              && request.resource.data.lastMessageAt == request.time)
+            || (onlyChanges(['status', 'closedBy', 'unreadForUser', 'unreadForStaff'])
+              && request.resource.data.status == 'closed'
+              && request.resource.data.closedBy == 'user'
+              && request.resource.data.unreadForStaff == false)
+          ))
+        // The user opens a request the team closed.
+        || (isUser(resource.data.uid)
+          && resource.data.status == 'closed'
+          && onlyChanges(['unreadForUser'])
+          && request.resource.data.unreadForUser == false)
+        // The team: read, answer, close.
+        || (isStaff()
+          && onlyChanges(['status', 'closedBy', 'unreadForUser', 'unreadForStaff', 'lastMessageAt'])
+          && request.resource.data.status in ['open', 'answered', 'closed']
+          && request.resource.data.unreadForUser is bool
+          && request.resource.data.unreadForStaff is bool
+          && (!('closedBy' in request.resource.data)
+            || request.resource.data.closedBy in ['user', 'staff'])
+          && (request.resource.data.lastMessageAt == resource.data.lastMessageAt
+            || request.resource.data.lastMessageAt == request.time));
+
+      allow delete: if false;
+
+      match /messages/{mid} {
+        function ticket() {
+          return get(/databases/$(database)/documents/supportTickets/$(id)).data;
+        }
+        // Up to 3 pictures, each a JPEG in base64 under ~220 KB.
+        function validImages(d) {
+          return d.images is list && d.images.size() <= 3
+            && (d.images.size() < 1 || str(d.images[0], 100, 300000))
+            && (d.images.size() < 2 || str(d.images[1], 100, 300000))
+            && (d.images.size() < 3 || str(d.images[2], 100, 300000));
+        }
+        allow read: if isStaff()
+          || isUser(get(/databases/$(database)/documents/supportTickets/$(id)).data.uid);
+        allow create: if signedIn()
+          && request.resource.data.keys().hasOnly(['authorId', 'authorRole',
+              'authorName', 'text', 'images', 'createdAt'])
+          && request.resource.data.authorId == request.auth.uid
+          && optStr(request.resource.data, 'authorName', 80)
+          && str(request.resource.data.text, 0, 2000)
+          && validImages(request.resource.data)
+          && (request.resource.data.text.size() > 0
+            || request.resource.data.images.size() > 0)
+          && request.resource.data.createdAt == request.time
+          && (
+            // The user, in their own open request (or the one being opened).
+            (request.resource.data.authorRole == 'user'
+              && getAfter(/databases/$(database)/documents/supportTickets/$(id)).data.uid
+                == request.auth.uid
+              && getAfter(/databases/$(database)/documents/supportTickets/$(id)).data.status
+                == 'open')
+            // The team, while the request is not closed.
+            || (request.resource.data.authorRole == 'staff'
+              && isStaff()
+              && ticket().status != 'closed')
+          );
+        allow update, delete: if false;
+      }
     }
   }
 }

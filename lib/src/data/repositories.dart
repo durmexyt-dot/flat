@@ -33,6 +33,9 @@ abstract class MarketRepository {
   Stream<List<Listing>> watchActiveListings();
   Stream<List<Listing>> watchMyListings(String uid);
   Stream<Listing?> watchListing(String id);
+
+  /// Active listings for one event, cheapest first.
+  Stream<List<Listing>> watchEventListings(String eventId);
   Future<String> createListing(Listing listing);
   Future<void> updateListingPrice(String id, int priceMinor);
   Future<void> withdrawListing(String id);
@@ -48,14 +51,6 @@ abstract class MarketRepository {
 
   Stream<PayoutMethod?> watchPayoutMethod(String uid);
   Future<void> setPayoutMethod(String uid, PayoutMethod method);
-
-  Future<String> createSupportRequest({
-    required String uid,
-    required String email,
-    required SupportTopic topic,
-    required String reference,
-    required String message,
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -72,6 +67,11 @@ Object? _plain(Object? value) => switch (value) {
 
 Map<String, dynamic> _data(DocumentSnapshot<Map<String, dynamic>> doc) =>
     _plain(doc.data()) as Map<String, dynamic>;
+
+/// A document's data with Timestamps as DateTime.
+Map<String, dynamic> firestoreData(
+  DocumentSnapshot<Map<String, dynamic>> doc,
+) => _data(doc);
 
 int _byNewest(DateTime? a, DateTime? b) =>
     (b ?? DateTime(0)).compareTo(a ?? DateTime(0));
@@ -205,7 +205,7 @@ class FirestoreMarketRepository implements MarketRepository {
   @override
   Stream<List<Listing>> watchActiveListings() => _listings
       .where('status', isEqualTo: ListingStatus.active.name)
-      .limit(100)
+      .limit(300)
       .snapshots()
       .map(
         (q) =>
@@ -230,6 +230,18 @@ class FirestoreMarketRepository implements MarketRepository {
       .doc(id)
       .snapshots()
       .map((d) => d.exists ? Listing.fromMap(d.id, _data(d)) : null);
+
+  @override
+  Stream<List<Listing>> watchEventListings(String eventId) => _listings
+      // Two equality filters: Firestore merges the single-field indexes.
+      .where('eventId', isEqualTo: eventId)
+      .where('status', isEqualTo: ListingStatus.active.name)
+      .snapshots()
+      .map(
+        (q) =>
+            _listingList(q).where((l) => l.available > 0).toList()
+              ..sort((a, b) => a.priceMinor.compareTo(b.priceMinor)),
+      );
 
   @override
   Future<String> createListing(Listing listing) async {
@@ -322,30 +334,6 @@ class FirestoreMarketRepository implements MarketRepository {
       .collection('private')
       .doc('payoutMethod')
       .set({...method.toMap(), 'updatedAt': FieldValue.serverTimestamp()});
-
-  @override
-  Future<String> createSupportRequest({
-    required String uid,
-    required String email,
-    required SupportTopic topic,
-    required String reference,
-    required String message,
-  }) async {
-    final number = 'SUP-${_randomCode(6)}';
-    await _db.collection('supportRequests').add({
-      'number': number,
-      'uid': uid,
-      'email': email,
-      'topic': topic.name,
-      'reference': reference,
-      'message': message,
-      // Which app version the user had: helps to reproduce a problem.
-      'appVersion': AppInfo.label,
-      'status': 'open',
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-    return number;
-  }
 }
 
 /// Orders that count as a completed sale or purchase.
@@ -356,7 +344,8 @@ bool _countsAsSold(OrderStatus s) => const {
   OrderStatus.disputed,
 }.contains(s);
 
-String _randomCode(int length) {
+/// A short code of unambiguous letters and digits, e.g. for "SUP-4F7K2Q".
+String randomCode(int length) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   final r = Random.secure();
   return [for (var i = 0; i < length; i++) chars[r.nextInt(chars.length)]]

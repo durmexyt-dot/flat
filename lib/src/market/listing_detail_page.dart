@@ -205,7 +205,7 @@ class _SellerPanel extends ConsumerWidget {
                   formatMoney(context, listing.priceMinor, listing.currency),
                 ),
                 _MoneyRow(
-                  l10n.youReceive('${Fees.sellerPercent}'),
+                  l10n.youReceive('${listing.fees.sellerPercent}'),
                   formatMoney(
                     context,
                     listing.payoutPerTicketMinor,
@@ -414,7 +414,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
     final listing = widget.listing;
     final quantity = _quantity.clamp(1, listing.available.clamp(1, 99));
     final subtotal = listing.priceMinor * quantity;
-    final fee = Fees.buyerFee(subtotal);
+    final fee = listing.fees.buyerFee(subtotal);
     final available =
         listing.status == ListingStatus.active && listing.available > 0;
 
@@ -471,7 +471,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                   formatMoney(context, subtotal, listing.currency),
                 ),
                 _MoneyRow(
-                  '${l10n.serviceFee} (${Fees.buyerPercent} %)',
+                  '${l10n.serviceFee} (${listing.fees.buyerPercent} %)',
                   formatMoney(context, fee, listing.currency),
                 ),
                 const FDivider(

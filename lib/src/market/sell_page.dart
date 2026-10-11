@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../data/models.dart';
+import '../admin/admin_repository.dart';
 import '../data/repositories.dart';
 import '../settings/settings_controller.dart';
 import '../settings/settings_widgets.dart';
@@ -20,7 +21,10 @@ import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 
 class SellPage extends ConsumerStatefulWidget {
-  const SellPage({super.key});
+  const SellPage({super.key, this.eventId});
+
+  /// Preselected event, e.g. when coming from its page.
+  final String? eventId;
 
   @override
   ConsumerState<SellPage> createState() => _SellPageState();
@@ -426,11 +430,12 @@ class _WithGuide extends StatelessWidget {
   }
 }
 
-class _SellingGuide extends StatelessWidget {
+class _SellingGuide extends ConsumerWidget {
   const _SellingGuide();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fees = ref.watch(feeConfigProvider).value ?? const FeeConfig();
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final steps = [
@@ -486,7 +491,7 @@ class _SellingGuide extends StatelessWidget {
               style: .delta(padding: .value(EdgeInsets.only(bottom: 12))),
             ),
             Text(
-              l10n.faqFeesA('${Fees.buyerPercent}', '${Fees.sellerPercent}'),
+              l10n.faqFeesA('${fees.buyerPercent}', '${fees.sellerPercent}'),
               style: theme.typography.body.xs.copyWith(
                 color: theme.colors.mutedForeground,
               ),
@@ -659,7 +664,7 @@ class _QuantityStepper extends StatelessWidget {
   }
 }
 
-class _PriceBreakdown extends StatelessWidget {
+class _PriceBreakdown extends ConsumerWidget {
   const _PriceBreakdown({
     required this.priceMinor,
     required this.quantity,
@@ -671,10 +676,11 @@ class _PriceBreakdown extends StatelessWidget {
   final String currency;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fees = ref.watch(feeConfigProvider).value ?? const FeeConfig();
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final perTicket = priceMinor - Fees.sellerFee(priceMinor);
+    final perTicket = priceMinor - fees.sellerFee(priceMinor);
 
     Widget row(String label, int minor, {bool strong = false}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -715,10 +721,10 @@ class _PriceBreakdown extends StatelessWidget {
         child: Column(
           children: [
             row(
-              l10n.buyerPays('${Fees.buyerPercent}'),
-              priceMinor + Fees.buyerFee(priceMinor),
+              l10n.buyerPays('${fees.buyerPercent}'),
+              priceMinor + fees.buyerFee(priceMinor),
             ),
-            row(l10n.youReceive('${Fees.sellerPercent}'), perTicket),
+            row(l10n.youReceive('${fees.sellerPercent}'), perTicket),
             const FDivider(
               style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 8))),
             ),

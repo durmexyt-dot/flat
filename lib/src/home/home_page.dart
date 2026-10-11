@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../account/avatar.dart';
+import '../support/support_badge.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../brand/brand.dart';
@@ -138,10 +139,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             child: FTappable(
               semanticsLabel: l10n.settingsTitle,
               onPress: () => context.push('/settings'),
-              child: UserAvatar(
-                size: 34,
-                photoBase64: profile?.photoBase64,
-                name: profile?.displayName ?? user.displayName ?? user.email,
+              child: AccountBadge(
+                child: UserAvatar(
+                  size: 34,
+                  photoBase64: profile?.photoBase64,
+                  name: profile?.displayName ?? user.displayName ?? user.email,
+                ),
               ),
             ),
           ),

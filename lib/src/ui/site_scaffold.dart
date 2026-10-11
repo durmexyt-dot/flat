@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../account/account_drawer.dart';
 import '../account/account_sidebar.dart';
 import '../account/avatar.dart';
+import '../support/support_badge.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
@@ -281,15 +282,17 @@ class SiteHeader extends ConsumerWidget {
                             padding: const EdgeInsets.all(4),
                             child: Row(
                               children: [
-                                UserAvatar(
-                                  size: 36,
-                                  photoBase64: profile?.photoBase64,
-                                  name:
-                                      profile?.displayName ??
-                                      user.displayName ??
-                                      user.email,
-                                  // The account page shows the flying one.
-                                  hero: false,
+                                AccountBadge(
+                                  child: UserAvatar(
+                                    size: 36,
+                                    photoBase64: profile?.photoBase64,
+                                    name:
+                                        profile?.displayName ??
+                                        user.displayName ??
+                                        user.email,
+                                    // The account page shows the flying one.
+                                    hero: false,
+                                  ),
                                 ),
                                 const SizedBox(width: 4),
                                 Icon(

@@ -125,7 +125,6 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   final _Store<List<Order>> _orders;
   final _Store<List<Payout>> _payouts;
   final _Store<PayoutMethod?> _payoutMethod;
-  final supportRequests = <Map<String, Object>>[];
   var _nextId = 1;
 
   Stream<R> _map<T, R>(_Store<T> s, R Function(T v) f) => s.watch().map(f);
@@ -145,6 +144,21 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   @override
   Stream<Listing?> watchListing(String id) =>
       _map(_listings, (all) => all.where((l) => l.id == id).firstOrNull);
+
+  @override
+  Stream<List<Listing>> watchEventListings(String eventId) => _map(
+    _listings,
+    (all) =>
+        all
+            .where(
+              (l) =>
+                  l.eventId == eventId &&
+                  l.status == ListingStatus.active &&
+                  l.available > 0,
+            )
+            .toList()
+          ..sort((a, b) => a.priceMinor.compareTo(b.priceMinor)),
+  );
 
   @override
   Future<String> createListing(Listing listing) async {
@@ -230,24 +244,6 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   Future<void> setPayoutMethod(String uid, PayoutMethod method) async =>
       _payoutMethod.value = method;
 
-  @override
-  Future<String> createSupportRequest({
-    required String uid,
-    required String email,
-    required SupportTopic topic,
-    required String reference,
-    required String message,
-  }) async {
-    final number = 'SUP-${100000 + supportRequests.length}';
-    supportRequests.add({
-      'number': number,
-      'topic': topic.name,
-      'reference': reference,
-      'message': message,
-    });
-    return number;
-  }
-
   // Checkout -----------------------------------------------------------------
 
   Map<String, Object?> _orderMap(Order o) => {
@@ -256,6 +252,8 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
     'buyerId': o.buyerId,
     'sellerId': o.sellerId,
     'event': o.event.toMap(),
+    'buyerFeePercent': o.fees.buyerPercent,
+    'sellerFeePercent': o.fees.sellerPercent,
     'quantity': o.quantity,
     'unitPriceMinor': o.unitPriceMinor,
     'currency': o.currency,
@@ -302,6 +300,8 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
       'buyerId': buyerId,
       'sellerId': listing.sellerId,
       'event': listing.event.toMap(),
+      'buyerFeePercent': listing.fees.buyerPercent,
+      'sellerFeePercent': listing.fees.sellerPercent,
       'quantity': quantity,
       'unitPriceMinor': listing.priceMinor,
       'currency': listing.currency,
