@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert
+- Admin- und Support-Konten kaufen und verkaufen nicht mehr: keine
+  Verkaufen-/Kaufen-Knöpfe und Menüpunkte, Hinweis bei Angeboten, Seiten zum
+  Kaufen/Verkaufen leiten zur Startseite; die Firestore-Regeln verbieten es
+
 ## [1.4.2] – 2026-10-11
 
 - Retry Firestore listeners on transient errors; show error codes

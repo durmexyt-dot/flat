@@ -100,6 +100,18 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @staffNoMarketTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Timski računi ne kupuju i ne prodaju'**
+  String get staffNoMarketTitle;
+
+  /// No description provided for @staffNoMarketInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Admin i podrška rade samo na zadacima tima. Za kupovinu i prodaju koristi običan račun.'**
+  String get staffNoMarketInfo;
+
   /// No description provided for @eventsUserDateTooFar.
   ///
   /// In bs, this message translates to:

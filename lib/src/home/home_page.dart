@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
+import '../admin/admin_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../account/avatar.dart';
 import '../support/support_badge.dart';
@@ -113,12 +114,15 @@ class _HomePageState extends ConsumerState<HomePage> {
       showTitle: false,
       maxWidth: SiteWidth.wide,
       narrowHeader: _narrowHeader(context),
-      floatingActionButton: FButton(
-        mainAxisSize: MainAxisSize.min,
-        onPress: () => _signedInOnly('/sell'),
-        prefix: const Icon(FLucideIcons.tag),
-        child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
-      ),
+      // Team accounts don't buy or sell.
+      floatingActionButton: ref.watch(isStaffProvider)
+          ? null
+          : FButton(
+              mainAxisSize: MainAxisSize.min,
+              onPress: () => _signedInOnly('/sell'),
+              prefix: const Icon(FLucideIcons.tag),
+              child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
+            ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref

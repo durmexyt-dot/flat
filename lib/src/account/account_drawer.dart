@@ -33,12 +33,15 @@ class AccountDrawer extends ConsumerWidget {
       onPress: () => open(entry.$3),
     );
 
-    final entries = accountEntries(l10n);
-    // Profile; buying and selling; preferences and help.
+    final marketplace = !ref.watch(isStaffProvider);
+    final entries = accountEntries(l10n, marketplace: marketplace);
+    // Profile; buying and selling (not for team accounts); preferences and
+    // help.
+    final market = marketplace ? 5 : 0;
     final groups = [
       entries.sublist(0, 1),
-      entries.sublist(1, 6),
-      entries.sublist(6),
+      entries.sublist(1, 1 + market),
+      entries.sublist(1 + market),
       staffEntries(
         l10n,
         isStaff: ref.watch(isStaffProvider),

@@ -10,6 +10,13 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get staffNoMarketTitle => 'Timski računi ne kupuju i ne prodaju';
+
+  @override
+  String get staffNoMarketInfo =>
+      'Admin i podrška rade samo na zadacima tima. Za kupovinu i prodaju koristi običan račun.';
+
+  @override
   String get eventsUserDateTooFar =>
       'Datum može biti najviše dvije godine unaprijed';
 

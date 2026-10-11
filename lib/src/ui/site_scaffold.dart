@@ -8,6 +8,7 @@ import '../account/account_drawer.dart';
 import '../account/account_sidebar.dart';
 import '../account/avatar.dart';
 import '../support/support_badge.dart';
+import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
@@ -194,6 +195,7 @@ class SiteHeader extends ConsumerWidget {
     final user = ref.watch(authStateProvider).value;
     final profile = ref.watch(profileProvider).value;
     final location = GoRouterState.of(context).uri.path;
+    final staff = user != null && ref.watch(isStaffProvider);
 
     Widget link(String label, String path) {
       final active = location == path;
@@ -246,9 +248,12 @@ class SiteHeader extends ConsumerWidget {
                   ),
                   const SizedBox(width: 20),
                   link(l10n.navEvents, '/'),
-                  link(l10n.sellTickets, '/sell'),
-                  if (user != null)
-                    link(l10n.navMyTickets, '/account/purchases'),
+                  // Team accounts don't buy or sell.
+                  if (!staff) ...[
+                    link(l10n.sellTickets, '/sell'),
+                    if (user != null)
+                      link(l10n.navMyTickets, '/account/purchases'),
+                  ],
                   const Spacer(),
                   if (user == null) ...[
                     FButton.icon(

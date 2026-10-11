@@ -1,5 +1,7 @@
 {
   "@@locale": "bs",
+  "staffNoMarketTitle": "Timski računi ne kupuju i ne prodaju",
+  "staffNoMarketInfo": "Admin i podrška rade samo na zadacima tima. Za kupovinu i prodaju koristi običan račun.",
   "eventsUserDateTooFar": "Datum može biti najviše dvije godine unaprijed",
   "homeCityPick": "Odaberi grad",
   "homeCitySearch": "Pretraži gradove",

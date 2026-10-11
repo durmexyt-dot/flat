@@ -10,6 +10,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get staffNoMarketTitle => 'Team accounts don\'t buy or sell';
+
+  @override
+  String get staffNoMarketInfo =>
+      'Admin and support accounts are for team work only. Use a regular account to buy and sell.';
+
+  @override
   String get eventsUserDateTooFar => 'The date can be at most two years ahead';
 
   @override

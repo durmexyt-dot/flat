@@ -1,5 +1,7 @@
 {
   "@@locale": "de",
+  "staffNoMarketTitle": "Team-Konten kaufen und verkaufen nicht",
+  "staffNoMarketInfo": "Admin- und Support-Konten sind nur für Team-Aufgaben. Zum Kaufen und Verkaufen nutze ein normales Konto.",
   "eventsUserDateTooFar": "Das Datum darf höchstens zwei Jahre in der Zukunft liegen",
   "homeCityPick": "Stadt wählen",
   "homeCitySearch": "Städte suchen",

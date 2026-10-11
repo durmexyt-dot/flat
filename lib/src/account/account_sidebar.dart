@@ -9,14 +9,27 @@ import '../auth/auth_repository.dart';
 import '../support/support_repository.dart';
 import '../ui/count_badge.dart';
 
-/// Account entries, shared by the sidebar and the drawer.
-List<(IconData, String, String)> accountEntries(AppLocalizations l10n) => [
+/// Pages for buying and selling. Team accounts (admins, support) don't buy
+/// or sell, so they don't get these.
+const marketplacePaths = ['/sell', '/checkout', '/account/'];
+
+bool isMarketplacePath(String path) => marketplacePaths.any(path.startsWith);
+
+/// Account entries, shared by the sidebar and the drawer. Without
+/// [marketplace] (team accounts) the buying and selling entries are left
+/// out.
+List<(IconData, String, String)> accountEntries(
+  AppLocalizations l10n, {
+  bool marketplace = true,
+}) => [
   (FLucideIcons.user, l10n.profileTitle, '/settings'),
-  (FLucideIcons.receipt, l10n.purchases, '/account/purchases'),
-  (FLucideIcons.tag, l10n.myListings, '/account/listings'),
-  (FLucideIcons.store, l10n.sales, '/account/sales'),
-  (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
-  (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
+  if (marketplace) ...[
+    (FLucideIcons.receipt, l10n.purchases, '/account/purchases'),
+    (FLucideIcons.tag, l10n.myListings, '/account/listings'),
+    (FLucideIcons.store, l10n.sales, '/account/sales'),
+    (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
+    (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
+  ],
   (FLucideIcons.palette, l10n.appearance, '/settings/appearance'),
   (FLucideIcons.bell, l10n.notifications, '/settings/notifications'),
   (FLucideIcons.shield, l10n.privacySecurity, '/settings/privacy'),
@@ -65,7 +78,7 @@ class AccountSidebar extends ConsumerWidget {
     final location = GoRouterState.of(context).uri.path;
     final signedIn = ref.watch(authStateProvider).value != null;
     final entries = signedIn
-        ? accountEntries(l10n)
+        ? accountEntries(l10n, marketplace: !ref.watch(isStaffProvider))
         : accountEntries(l10n)
               .where((e) => e.$3 == '/settings' || e.$3 == '/support');
     final team = signedIn

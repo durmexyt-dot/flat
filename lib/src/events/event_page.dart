@@ -201,7 +201,8 @@ class _Details extends ConsumerWidget {
         AnimatedSize(
           duration: const Duration(milliseconds: 250),
           alignment: Alignment.topCenter,
-          child: event.hidden
+          // Team accounts don't sell: they get the team actions below.
+          child: event.hidden || ref.watch(isStaffProvider)
               ? const SizedBox(width: double.infinity)
               : upcoming
               ? FButton(

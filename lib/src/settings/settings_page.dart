@@ -57,7 +57,8 @@ class SettingsPage extends ConsumerWidget {
     // On wide screens the sidebar holds buying, selling and account links.
     final wide = isWideLayout(context);
     final sections = <Widget>[
-      if (user != null && !wide) ...[
+      // Team accounts don't buy or sell.
+      if (user != null && !wide && !isStaff) ...[
         SettingsSectionTitle(l10n.buying),
         SettingsGroup(
           children: [

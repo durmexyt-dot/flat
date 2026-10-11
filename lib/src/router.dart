@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'account/edit_profile_page.dart';
+import 'account/account_sidebar.dart';
 import 'admin/admin_page.dart';
+import 'admin/admin_repository.dart';
 import 'admin/event_editor_page.dart';
 import 'admin/events_admin_page.dart';
 import 'admin/fees_page.dart';
@@ -57,6 +59,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final refresh = _RefreshNotifier();
   final sub = auth.authStateChanges().listen((_) => refresh.notify());
   ref.listen(guestModeProvider, (_, _) => refresh.notify());
+  ref.listen(isStaffProvider, (_, _) => refresh.notify());
   ref.onDispose(() {
     sub.cancel();
     refresh.dispose();
@@ -76,6 +79,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       final signedIn = auth.currentUser != null;
       // Selling and the account need an account; browsing doesn't.
       if (!signedIn && _accountOnly.any(location.startsWith)) return '/login';
+      // Team accounts (admins, support) don't buy or sell.
+      if (signedIn &&
+          ref.read(isStaffProvider) &&
+          isMarketplacePath(location)) {
+        return '/';
+      }
       final canBrowse = signedIn || ref.read(guestModeProvider);
       if (canBrowse) return _authRoutes.contains(location) ? '/' : null;
       return location == '/' ? '/login' : null;

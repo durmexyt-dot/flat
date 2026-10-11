@@ -10,6 +10,13 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get staffNoMarketTitle => 'Team-Konten kaufen und verkaufen nicht';
+
+  @override
+  String get staffNoMarketInfo =>
+      'Admin- und Support-Konten sind nur für Team-Aufgaben. Zum Kaufen und Verkaufen nutze ein normales Konto.';
+
+  @override
   String get eventsUserDateTooFar =>
       'Das Datum darf höchstens zwei Jahre in der Zukunft liegen';
 

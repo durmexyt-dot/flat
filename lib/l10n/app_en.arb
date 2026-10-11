@@ -1,5 +1,7 @@
 {
   "@@locale": "en",
+  "staffNoMarketTitle": "Team accounts don't buy or sell",
+  "staffNoMarketInfo": "Admin and support accounts are for team work only. Use a regular account to buy and sell.",
   "eventsUserDateTooFar": "The date can be at most two years ahead",
   "homeCityPick": "Choose a city",
   "homeCitySearch": "Search cities",

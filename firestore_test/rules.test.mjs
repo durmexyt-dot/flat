@@ -387,6 +387,21 @@ test('event pictures: the team, or a user with their new event', async () => {
   await assertFails(deleteDoc(doc(fs, 'eventImages/U1')));
 });
 
+test('team accounts neither buy nor sell', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    for (const uid of ['boss', 'helper']) {
+      await setDoc(doc(ctx.firestore(), `users/${uid}/private/payoutMethod`), { accountHolder: 'Team', iban: IBAN });
+    }
+  });
+  for (const uid of ['boss', 'helper']) {
+    await assertFails(setDoc(doc(db(uid), `listings/team-${uid}`), listing({ sellerId: uid })));
+    await assertFails(setDoc(doc(db(uid), `orders/team-${uid}`), order({ buyerId: uid })));
+  }
+  // The same listing and order work for normal users.
+  await assertSucceeds(setDoc(doc(db('seller'), 'listings/team-ok'), listing()));
+  await openOrder('team-ok');
+});
+
 test('tickets can be listed for unconfirmed events', async () => {
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), 'events/P1'), eventDoc({ status: 'pending', createdBy: 'seller' }));

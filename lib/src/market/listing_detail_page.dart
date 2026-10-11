@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
+import '../admin/admin_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
@@ -567,14 +568,22 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
           ),
         ),
         const SizedBox(height: 16),
-        FButton(
-          size: FButtonSizeVariant.lg,
-          onPress: available ? _buy : null,
-          prefix: const Icon(FLucideIcons.shoppingBag),
-          child: Flexible(
-            child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
+        if (ref.watch(isStaffProvider))
+          // Team accounts don't buy.
+          FAlert(
+            icon: const Icon(FLucideIcons.shieldUser),
+            title: Text(l10n.staffNoMarketTitle),
+            subtitle: Text(l10n.staffNoMarketInfo),
+          )
+        else
+          FButton(
+            size: FButtonSizeVariant.lg,
+            onPress: available ? _buy : null,
+            prefix: const Icon(FLucideIcons.shoppingBag),
+            child: Flexible(
+              child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
+            ),
           ),
-        ),
         const SizedBox(height: 12),
         Row(
           children: [

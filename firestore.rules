@@ -193,6 +193,8 @@ service cloud.firestore {
       allow create: if signedIn()
         // Only sellers with a confirmed email address list tickets.
         && verifiedEmail()
+        // Team accounts (admins, support) don't sell.
+        && !isStaff()
         && request.resource.data.sellerId == request.auth.uid
         // Sellers need a payout method before listing tickets.
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
@@ -273,6 +275,8 @@ service cloud.firestore {
 
       // Test mode: the buyer opens an order at the listing's current price.
       allow create: if signedIn()
+        // Team accounts (admins, support) don't buy.
+        && !isStaff()
         && request.resource.data.testMode == true
         && request.resource.data.buyerId == request.auth.uid
         && request.resource.data.status == 'pendingPayment'
