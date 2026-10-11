@@ -177,20 +177,23 @@ class _EventRowSectionState extends State<EventRowSection> {
                 controller: _scroll,
                 padding: EdgeInsets.symmetric(horizontal: widget.gutter),
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: _gap,
-                  children: [
-                    for (final e in widget.events)
-                      SizedBox(
-                        key: ValueKey(e.id),
-                        width: width,
-                        child: EventCard(
-                          event: e,
-                          onTap: () => widget.onOpen(e),
+                // Cards in a row share their height.
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: _gap,
+                    children: [
+                      for (final e in widget.events)
+                        SizedBox(
+                          key: ValueKey(e.id),
+                          width: width,
+                          child: EventCard(
+                            event: e,
+                            onTap: () => widget.onOpen(e),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
