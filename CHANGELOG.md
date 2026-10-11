@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.2.2] – 2026-10-11
+
 ### Behoben
 - Google-Anmeldung: Das Anmeldefenster wird sofort beim Tippen geöffnet, damit
   der Browser es nicht als unerwünschtes Pop-up blockiert
