@@ -547,5 +547,8 @@
       }
     }
   },
-  "alertView": "Pogledaj"
+  "alertView": "Pogledaj",
+  "changeIban": "Promijeni IBAN",
+  "keepCurrentIban": "Zadrži sačuvani IBAN",
+  "ibanHint": "npr. BA39 1290 0794 0102 8494"
 }

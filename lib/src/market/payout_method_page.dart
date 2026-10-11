@@ -65,11 +65,14 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
         ref.read(profileProvider).value?.displayName ??
         '',
   );
-  late final _iban = TextEditingController(
-    text: IbanFormatter.group(
-      normalizeIban(ref.read(payoutMethodProvider).value?.iban ?? ''),
-    ),
-  );
+
+  /// Always empty: a saved IBAN is shown masked and replaced as a whole,
+  /// never edited in place (on phones the cursor easily lands mid-number and
+  /// old digits stay behind).
+  final _iban = TextEditingController();
+
+  /// Entering a new IBAN although one is saved.
+  bool _replacingIban = false;
   bool _saving = false;
 
   @override
@@ -78,6 +81,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
     _iban.dispose();
     super.dispose();
   }
+
+  bool get _enteringIban =>
+      _replacingIban || ref.read(payoutMethodProvider).value == null;
 
   Future<void> _save() async {
     if (_saving || !_formKey.currentState!.validate()) return;
@@ -92,7 +98,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
             uid,
             PayoutMethod(
               accountHolder: _holder.text.trim(),
-              iban: normalizeIban(_iban.text),
+              iban: _enteringIban
+                  ? normalizeIban(_iban.text)
+                  : ref.read(payoutMethodProvider).value!.iban,
             ),
           );
     } catch (_) {
@@ -115,11 +123,10 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
     ref.listen(payoutMethodProvider, (_, next) {
       final method = next.value;
       if (method == null) return;
-      if (_iban.text.isEmpty) {
-        _iban.text = IbanFormatter.group(normalizeIban(method.iban));
-      }
       if (_holder.text.isEmpty) _holder.text = method.accountHolder;
     });
+    final saved = ref.watch(payoutMethodProvider).value;
+    final entering = _replacingIban || saved == null;
     return SiteScaffold(
       title: l10n.payoutMethod,
       maxWidth: SiteWidth.form,
@@ -157,40 +164,30 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                             : null,
                       ),
                       const SizedBox(height: 16),
-                      FTextFormField(
-                        control: FTextFieldControl.managed(controller: _iban),
-                        label: Text(l10n.iban),
-                        hint: 'BA39 1290 0794 0102 8494',
-                        prefixBuilder: (context, style, variants) =>
-                            fieldIcon(FLucideIcons.landmark),
-                        // No autocorrect, suggestions or smart punctuation: iOS would
-                        // otherwise change letters and digits of the IBAN.
-                        autocorrect: false,
-                        enableSuggestions: false,
-                        smartDashesType: SmartDashesType.disabled,
-                        smartQuotesType: SmartQuotesType.disabled,
-                        textCapitalization: TextCapitalization.characters,
-                        autofillHints: const [],
-                        inputFormatters: [IbanFormatter()],
-                        onSubmit: (_) => _save(),
-                        autovalidateMode: AutovalidateMode.disabled,
-                        // Says what is wrong, so a hidden leftover character
-                        // or a typo can be found.
-                        validator: (v) => switch (checkIban(v ?? '')) {
-                          null => null,
-                          IbanBadFormat() => l10n.ibanBadFormat,
-                          IbanWrongLength(
-                            :final country,
-                            :final expected,
-                            :final actual,
-                          ) =>
-                            l10n.ibanWrongLength(country, expected, actual),
-                          IbanBadChecksum() => l10n.ibanBadChecksum,
-                        },
-                        // Clears the whole IBAN in one tap; on phones deleting
-                        // from the middle easily leaves old characters behind.
-                        clearable: (value) => value.text.isNotEmpty,
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: entering
+                            ? _ibanField(l10n, autofocus: _replacingIban)
+                            : _SavedIban(
+                                masked: saved.masked,
+                                onChange: () =>
+                                    setState(() => _replacingIban = true),
+                              ),
                       ),
+                      if (_replacingIban && saved != null)
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: FButton(
+                            variant: FButtonVariant.ghost,
+                            size: FButtonSizeVariant.sm,
+                            mainAxisSize: MainAxisSize.min,
+                            onPress: () => setState(() {
+                              _replacingIban = false;
+                              _iban.clear();
+                            }),
+                            child: Text(l10n.keepCurrentIban),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -205,6 +202,93 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _ibanField(AppLocalizations l10n, {required bool autofocus}) =>
+      FTextFormField(
+        key: const ValueKey('iban-field'),
+        autofocus: autofocus,
+        control: FTextFieldControl.managed(controller: _iban),
+        label: Text(l10n.iban),
+        hint: l10n.ibanHint,
+        prefixBuilder: (context, style, variants) =>
+            fieldIcon(FLucideIcons.landmark),
+        // No autocorrect, suggestions or smart punctuation: iOS would
+        // otherwise change letters and digits of the IBAN.
+        autocorrect: false,
+        enableSuggestions: false,
+        smartDashesType: SmartDashesType.disabled,
+        smartQuotesType: SmartQuotesType.disabled,
+        textCapitalization: TextCapitalization.characters,
+        autofillHints: const [],
+        inputFormatters: [IbanFormatter()],
+        onSubmit: (_) => _save(),
+        autovalidateMode: AutovalidateMode.disabled,
+        // Says what is wrong, so a hidden leftover character
+        // or a typo can be found.
+        validator: (v) => switch (checkIban(v ?? '')) {
+          null => null,
+          IbanBadFormat() => l10n.ibanBadFormat,
+          IbanWrongLength(:final country, :final expected, :final actual) =>
+            l10n.ibanWrongLength(country, expected, actual),
+          IbanBadChecksum() => l10n.ibanBadChecksum,
+        },
+        // Clears the whole IBAN in one tap; on phones deleting
+        // from the middle easily leaves old characters behind.
+        clearable: (value) => value.text.isNotEmpty,
+      );
+}
+
+/// The saved IBAN, masked, with a button to enter a new one.
+class _SavedIban extends StatelessWidget {
+  const _SavedIban({required this.masked, required this.onChange});
+
+  final String masked;
+  final VoidCallback onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    return Column(
+      key: const ValueKey('saved-iban'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.iban,
+          style: theme.typography.body.sm.copyWith(
+            fontWeight: FontWeight.w500,
+            color: theme.colors.foreground,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              FLucideIcons.landmark,
+              size: 18,
+              color: theme.colors.mutedForeground,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                masked,
+                style: theme.typography.body.md.copyWith(
+                  color: theme.colors.foreground,
+                ),
+              ),
+            ),
+            FButton(
+              variant: FButtonVariant.outline,
+              size: FButtonSizeVariant.sm,
+              mainAxisSize: MainAxisSize.min,
+              onPress: onChange,
+              child: Text(l10n.changeIban),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

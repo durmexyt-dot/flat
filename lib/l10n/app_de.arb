@@ -382,5 +382,8 @@
   "alertTicketsSentBody": "{event}: Der Verkäufer hat deine Tickets geschickt.",
   "alertRefundTitle": "Verkauf storniert",
   "alertRefundBody": "{event}: Der Verkäufer hat storniert, du bekommst dein Geld zurück.",
-  "alertView": "Ansehen"
+  "alertView": "Ansehen",
+  "changeIban": "IBAN ändern",
+  "keepCurrentIban": "Gespeicherte IBAN behalten",
+  "ibanHint": "z. B. BA39 1290 0794 0102 8494"
 }

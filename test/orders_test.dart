@@ -91,7 +91,14 @@ void main() {
 
   testWidgets('payout method validates the IBAN', (tester) async {
     await _openAccountEntry(tester, 'Način isplate');
+    // The saved IBAN is shown masked, not as an editable field.
+    expect(find.textContaining('IBAN ••••'), findsOneWidget);
+    expect(find.byType(EditableText), findsOneWidget);
+    await tester.tap(find.text('Promijeni IBAN'));
+    await tester.pumpAndSettle();
     final iban = find.byType(EditableText).last;
+    // A new IBAN starts from an empty field.
+    expect(tester.widget<EditableText>(iban).controller.text, isEmpty);
     await tester.enterText(iban, 'BA39 1290 0794 0102 8495');
     await tester.tap(find.text('Sačuvaj'));
     await tester.pumpAndSettle();

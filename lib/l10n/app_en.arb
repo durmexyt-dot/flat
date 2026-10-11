@@ -382,5 +382,8 @@
   "alertTicketsSentBody": "{event}: the seller sent your tickets.",
   "alertRefundTitle": "Sale cancelled",
   "alertRefundBody": "{event}: the seller cancelled, you've been refunded.",
-  "alertView": "View"
+  "alertView": "View",
+  "changeIban": "Change IBAN",
+  "keepCurrentIban": "Keep the saved IBAN",
+  "ibanHint": "e.g. BA39 1290 0794 0102 8494"
 }

@@ -1253,4 +1253,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alertView => 'View';
+
+  @override
+  String get changeIban => 'Change IBAN';
+
+  @override
+  String get keepCurrentIban => 'Keep the saved IBAN';
+
+  @override
+  String get ibanHint => 'e.g. BA39 1290 0794 0102 8494';
 }

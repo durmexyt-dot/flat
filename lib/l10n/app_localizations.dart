@@ -2397,6 +2397,24 @@ abstract class AppLocalizations {
   /// In bs, this message translates to:
   /// **'Pogledaj'**
   String get alertView;
+
+  /// No description provided for @changeIban.
+  ///
+  /// In bs, this message translates to:
+  /// **'Promijeni IBAN'**
+  String get changeIban;
+
+  /// No description provided for @keepCurrentIban.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zadrži sačuvani IBAN'**
+  String get keepCurrentIban;
+
+  /// No description provided for @ibanHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'npr. BA39 1290 0794 0102 8494'**
+  String get ibanHint;
 }
 
 class _AppLocalizationsDelegate
