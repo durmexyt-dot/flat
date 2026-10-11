@@ -1,9 +1,11 @@
 import 'package:flat/src/auth/auth_widgets.dart';
+import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
+import 'package:flat/src/ui/ticket.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 
@@ -11,6 +13,7 @@ import 'helpers.dart';
 
 Listing _jazz({int quantity = 4}) => Listing.fromMap('jazz', {
   'sellerId': 'seller',
+  'eventId': 'jazz-event',
   'event': {
     'name': 'Sarajevo Jazz Festival',
     'venue': 'Dom mladih',
@@ -32,11 +35,22 @@ Future<void> _toCheckout(WidgetTester tester, {int quantity = 4}) async {
     marketRepository: InMemoryMarketRepository(
       listings: [_jazz(quantity: quantity)],
     ),
+    eventRepository: InMemoryEventRepository(
+      events: [Event(id: 'jazz-event', info: _jazz().event)],
+    ),
   );
   await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
   await tester.pumpAndSettle();
+  // Home shows the event; its page lists the offer.
   await tester.tap(find.text('Sarajevo Jazz Festival'));
   await tester.pumpAndSettle();
+  await tapVisible(
+    tester,
+    find.descendant(
+      of: find.byType(TicketCard),
+      matching: find.text('Sarajevo Jazz Festival'),
+    ),
+  );
   await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
   await tapVisible(tester, find.text('Kupi karte').last);
   expect(find.text('Plaćanje'), findsOneWidget);
