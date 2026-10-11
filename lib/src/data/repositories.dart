@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth_repository.dart';
+import '../../firebase_options_prod.dart';
 import '../config/app_info.dart';
 import 'models.dart';
 
@@ -365,8 +367,14 @@ String _randomCode(int length) {
 // Providers
 // ---------------------------------------------------------------------------
 
+/// Staging uses the default database, prod its named one.
 final firestoreProvider = Provider<FirebaseFirestore>(
-  (ref) => FirebaseFirestore.instance,
+  (ref) => AppInfo.isProd
+      ? FirebaseFirestore.instanceFor(
+          app: Firebase.app(),
+          databaseId: ProdFirebaseOptions.databaseId,
+        )
+      : FirebaseFirestore.instance,
 );
 
 final profileRepositoryProvider = Provider<ProfileRepository>(

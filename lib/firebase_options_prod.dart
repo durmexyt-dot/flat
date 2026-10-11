@@ -4,6 +4,10 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 
 abstract final class ProdFirebaseOptions {
+  /// The Firestore database of the prod project. It has its own name, not
+  /// "(default)" like staging's.
+  static const databaseId = 'stubswap-prod';
+
   // No measurementId: Analytics would need a consent banner first.
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA_at4eS7IW2OZ4izDOBm7HD6O4J8k2Bjc',

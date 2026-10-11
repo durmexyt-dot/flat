@@ -123,7 +123,7 @@ Users sign up in the app, or are created in the Firebase console
 | | Firebase project | Web address | Data |
 |---|---|---|---|
 | **staging** | `stubswap-eda59` (`lib/firebase_options.dart`) | `/flat/staging/` | test accounts and test data |
-| **prod** | own project (`lib/firebase_options_prod.dart`) | `/flat/` | real users |
+| **prod** | `stubswap-prod`, database `stubswap-prod` (`lib/firebase_options_prod.dart`) | `/flat/` | real users |
 
 Both use the payment simulator until Stripe is added. Builds are staging
 unless built with `APP_ENV=prod` (the scripts do that); staging shows a
