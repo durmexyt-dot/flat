@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.4.0] – 2026-10-11
+
 ### Neu
 - Nutzer können Events anlegen; sie sind „nicht bestätigt“, bis Admin oder
   Support sie prüfen, anpassen und bestätigen. Karten können trotzdem sofort
