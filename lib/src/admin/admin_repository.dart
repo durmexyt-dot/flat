@@ -66,14 +66,36 @@ class FirestoreAdminRepository implements AdminRepository {
   });
 
   @override
-  Stream<List<StaffMember>> watchTeam() => _roles.snapshots().map(
-    (q) =>
-        [for (final d in q.docs) StaffMember.fromMap(d.id, firestoreData(d))]
-          ..sort((a, b) {
-            final byRole = a.role.index.compareTo(b.role.index);
-            return byRole != 0 ? byRole : a.name.compareTo(b.name);
-          }),
-  );
+  Stream<List<StaffMember>> watchTeam() =>
+      _roles.snapshots().asyncMap((q) async {
+        final members = [
+          for (final d in q.docs) StaffMember.fromMap(d.id, firestoreData(d)),
+        ];
+        // Name and email from the profiles, so they are current (and known for
+        // admins added by hand in the console).
+        final current = await Future.wait(members.map(_withProfile));
+        return current..sort((a, b) {
+          final byRole = a.role.index.compareTo(b.role.index);
+          return byRole != 0 ? byRole : a.name.compareTo(b.name);
+        });
+      });
+
+  Future<StaffMember> _withProfile(StaffMember m) async {
+    try {
+      final d = await _db.collection('users').doc(m.uid).get();
+      if (!d.exists) return m;
+      final p = UserProfile.fromMap(m.uid, firestoreData(d));
+      return StaffMember(
+        uid: m.uid,
+        role: m.role,
+        name: (p.displayName ?? '').isNotEmpty ? p.displayName! : m.name,
+        email: (p.email ?? '').isNotEmpty ? p.email! : m.email,
+        grantedAt: m.grantedAt,
+      );
+    } catch (_) {
+      return m;
+    }
+  }
 
   @override
   Future<UserLookup?> findUser(String emailOrUsername) async {
@@ -218,6 +240,7 @@ final feeConfigProvider = StreamProvider<FeeConfig>(
   (ref) => ref.watch(adminRepositoryProvider).watchFees(),
 );
 
-final teamProvider = StreamProvider<List<StaffMember>>(
+/// Read anew each time the team page opens, so profile changes show.
+final teamProvider = StreamProvider.autoDispose<List<StaffMember>>(
   (ref) => ref.watch(adminRepositoryProvider).watchTeam(),
 );

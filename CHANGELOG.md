@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Behoben
+- Team-Liste zeigt Name und E-Mail aus dem aktuellen Profil (auch für in der
+  Konsole angelegte Admins) statt „Ohne Namen“
+
 ## [1.4.0] – 2026-10-11
 
 ### Neu
