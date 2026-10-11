@@ -64,7 +64,8 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
     // Like a real provider round trip.
     await Future<void>.delayed(const Duration(milliseconds: 1400));
     if (!mounted) return;
-    final id = 'pi_test_${Random().nextInt(1 << 32).toRadixString(16)}';
+    // Not `1 << 32`: on the web that is 0 (JavaScript shifts in 32 bits).
+    final id = 'pi_test_${Random().nextInt(0x7fffffff).toRadixString(16)}';
     Navigator.pop(
       context,
       _succeed
