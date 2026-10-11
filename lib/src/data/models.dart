@@ -526,9 +526,14 @@ class PayoutMethod {
   };
 }
 
+/// Letters and digits only, upper case: drops spaces of any kind (pasted
+/// IBANs often carry non-breaking ones), dashes, dots and invisible marks.
+String normalizeIban(String input) =>
+    input.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+
 /// Validates an IBAN with the ISO 13616 mod-97 checksum.
 bool isValidIban(String input) {
-  final iban = input.replaceAll(' ', '').toUpperCase();
+  final iban = normalizeIban(input);
   if (!RegExp(r'^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$').hasMatch(iban)) return false;
   final rearranged = iban.substring(4) + iban.substring(0, 4);
   var remainder = 0;

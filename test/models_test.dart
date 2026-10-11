@@ -1,4 +1,6 @@
 import 'package:flat/src/data/models.dart';
+import 'package:flat/src/market/payout_method_page.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -47,6 +49,10 @@ void main() {
     expect(isValidIban('BA39 1290 0794 0102 8494'), isTrue);
     expect(isValidIban('DE89 3704 0044 0532 0130 01'), isFalse);
     expect(isValidIban('hello'), isFalse);
+    // Pasted from banking apps: non-breaking spaces, dashes, lower case.
+    expect(isValidIban('BA39\u00a01290\u00a00794\u00a00102\u00a08494'), isTrue);
+    expect(isValidIban('de89-3704-0044-0532-0130-00'), isTrue);
+    expect(isValidIban('\u200bAT61 1904 3002 3457 3201\t'), isTrue);
     expect(
       const PayoutMethod(
         accountHolder: 'A',
@@ -61,5 +67,35 @@ void main() {
     expect(prefs.newsletter, isTrue);
     expect(prefs.orderUpdates, isTrue);
     expect(prefs.copyWithKey('push', true).push, isTrue);
+  });
+
+  group('IBAN formatter', () {
+    final f = IbanFormatter();
+    TextEditingValue v(String t, [int? at]) => TextEditingValue(
+      text: t,
+      selection: TextSelection.collapsed(offset: at ?? t.length),
+    );
+
+    test('groups pasted text in blocks of four', () {
+      final out = f.formatEditUpdate(
+        TextEditingValue.empty,
+        v('ba39\u00a01290-0794 0102 8494'),
+      );
+      expect(out.text, 'BA39 1290 0794 0102 8494');
+      expect(out.selection.end, out.text.length);
+    });
+
+    test('keeps the cursor when fixing a digit in the middle', () {
+      // "BA39 1|290" -> typed 7 after the 1.
+      final out = f.formatEditUpdate(v('BA39 1290', 6), v('BA39 17290', 7));
+      expect(out.text, 'BA39 1729 0');
+      expect(out.selection.end, 7);
+    });
+
+    test('backspace on a space deletes the digit before it', () {
+      final out = f.formatEditUpdate(v('BA39 1290', 5), v('BA391290', 4));
+      expect(out.text, 'BA31 290');
+      expect(out.selection.end, 3);
+    });
   });
 }

@@ -10,21 +10,38 @@ import '../data/repositories.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 
-/// Groups an IBAN in blocks of four while typing.
-class _IbanFormatter extends TextInputFormatter {
+/// Groups an IBAN in blocks of four while typing. Keeps the cursor where
+/// it was, so a digit can be fixed in the middle.
+class IbanFormatter extends TextInputFormatter {
+  static String group(String raw) => [
+    for (var i = 0; i < raw.length; i += 4)
+      raw.substring(i, i + 4 > raw.length ? raw.length : i + 4),
+  ].join(' ');
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final raw = newValue.text.replaceAll(' ', '').toUpperCase();
-    final grouped = [
-      for (var i = 0; i < raw.length; i += 4)
-        raw.substring(i, i + 4 > raw.length ? raw.length : i + 4),
-    ].join(' ');
+    var raw = normalizeIban(newValue.text);
+    final end = newValue.selection.end;
+    var before = end < 0 || end > newValue.text.length
+        ? raw.length
+        : normalizeIban(newValue.text.substring(0, end)).length;
+    // Backspace on a group space deletes the character before it instead.
+    final deleted = newValue.text.length < oldValue.text.length;
+    if (deleted && before > 0 && raw == normalizeIban(oldValue.text)) {
+      raw = raw.substring(0, before - 1) + raw.substring(before);
+      before--;
+    }
+    final grouped = group(raw);
+    // Each full block before the cursor adds one space.
+    final offset = before == 0 ? 0 : before + (before - 1) ~/ 4;
     return TextEditingValue(
       text: grouped,
-      selection: TextSelection.collapsed(offset: grouped.length),
+      selection: TextSelection.collapsed(
+        offset: offset.clamp(0, grouped.length),
+      ),
     );
   }
 }
@@ -45,14 +62,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
         '',
   );
   late final _iban = TextEditingController(
-    text: _IbanFormatter()
-        .formatEditUpdate(
-          TextEditingValue.empty,
-          TextEditingValue(
-            text: ref.read(payoutMethodProvider).value?.iban ?? '',
-          ),
-        )
-        .text,
+    text: IbanFormatter.group(
+      normalizeIban(ref.read(payoutMethodProvider).value?.iban ?? ''),
+    ),
   );
   bool _saving = false;
 
@@ -78,15 +90,21 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
             uid,
             PayoutMethod(
               accountHolder: _holder.text.trim(),
-              iban: _iban.text.replaceAll(' ', ''),
+              iban: normalizeIban(_iban.text),
             ),
           );
-      showSnack(messenger, l10n.payoutMethodSaved);
-      router.pop();
     } catch (_) {
       showSnack(messenger, l10n.saveError);
-    } finally {
       if (mounted) setState(() => _saving = false);
+      return;
+    }
+    showSnack(messenger, l10n.payoutMethodSaved);
+    if (mounted) setState(() => _saving = false);
+    // Opened from the sidebar or a link there is nothing to go back to.
+    if (router.canPop()) {
+      router.pop();
+    } else {
+      router.go('/account/payouts');
     }
   }
 
@@ -94,6 +112,16 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    // The saved method may arrive after the page opened: fill it in then,
+    // unless the user already started typing.
+    ref.listen(payoutMethodProvider, (_, next) {
+      final method = next.value;
+      if (method == null) return;
+      if (_iban.text.isEmpty) {
+        _iban.text = IbanFormatter.group(normalizeIban(method.iban));
+      }
+      if (_holder.text.isEmpty) _holder.text = method.accountHolder;
+    });
     return SiteScaffold(
       title: l10n.payoutMethod,
       maxWidth: SiteWidth.form,
@@ -130,8 +158,15 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                   hintText: 'BA39 1290 0794 0102 8494',
                   prefixIcon: const Icon(Icons.account_balance_outlined),
                 ),
+                // No autocorrect, suggestions or smart punctuation: iOS would
+                // otherwise change letters and digits of the IBAN.
                 autocorrect: false,
-                inputFormatters: [_IbanFormatter()],
+                enableSuggestions: false,
+                smartDashesType: SmartDashesType.disabled,
+                smartQuotesType: SmartQuotesType.disabled,
+                textCapitalization: TextCapitalization.characters,
+                autofillHints: const [],
+                inputFormatters: [IbanFormatter()],
                 onFieldSubmitted: (_) => _save(),
                 validator: (v) =>
                     isValidIban(v ?? '') ? null : l10n.ibanInvalid,
