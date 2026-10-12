@@ -249,6 +249,9 @@ enum EventStatus {
 
   /// Taken down by the team: not shown and no new listings.
   hidden,
+
+  /// Called off: every buyer was refunded, nothing is sold anymore.
+  cancelled,
 }
 
 /// An event. Sellers list tickets for it.
@@ -260,6 +263,8 @@ class Event {
     this.status = EventStatus.confirmed,
     this.genre = '',
     this.createdBy = '',
+    this.postponedFrom,
+    this.cancelReason = '',
     this.hasImage = false,
     this.imageVersion = 0,
     this.createdAt,
@@ -276,6 +281,12 @@ class Event {
   /// Who added the event.
   final String createdBy;
 
+  /// The original date when the event was moved; tickets stay valid.
+  final DateTime? postponedFrom;
+
+  /// Why the event was called off.
+  final String cancelReason;
+
   /// The picture lives in eventImages/{id}, so event lists stay small.
   final bool hasImage;
 
@@ -284,6 +295,8 @@ class Event {
   final DateTime? createdAt;
 
   bool get hidden => status == EventStatus.hidden;
+  bool get cancelled => status == EventStatus.cancelled;
+  bool get postponed => postponedFrom != null;
   bool get confirmed => status == EventStatus.confirmed;
   bool get pending => status == EventStatus.pending;
   bool get isUpcoming => info.date.isAfter(DateTime.now());
@@ -296,6 +309,8 @@ class Event {
         ? EventStatus.confirmed
         : enumByName(EventStatus.values, m['status'], EventStatus.pending),
     genre: m['genre'] as String? ?? '',
+    postponedFrom: _date(m['postponedFrom']),
+    cancelReason: m['cancelReason'] as String? ?? '',
     createdBy: m['createdBy'] as String? ?? '',
     hasImage: m['hasImage'] == true,
     imageVersion: (m['imageVersion'] as num?)?.toInt() ?? 0,
@@ -314,6 +329,8 @@ class Event {
     status: status ?? this.status,
     genre: genre ?? this.genre,
     createdBy: createdBy,
+    postponedFrom: postponedFrom,
+    cancelReason: cancelReason,
     hasImage: hasImage ?? this.hasImage,
     imageVersion: imageVersion ?? this.imageVersion,
     createdAt: createdAt,
@@ -348,6 +365,7 @@ class Listing {
     required this.ticketType,
     required this.quantity,
     required this.quantitySold,
+    this.quantityReserved = 0,
     required this.priceMinor,
     required this.currency,
     required this.status,
@@ -379,6 +397,9 @@ class Listing {
   final int quantity;
   final int quantitySold;
 
+  /// Tickets held for buyers who are paying right now.
+  final int quantityReserved;
+
   /// Price per ticket in minor units (cents), as the buyer sees it before
   /// the service fee.
   final int priceMinor;
@@ -390,7 +411,7 @@ class Listing {
   final String note;
   final DateTime? createdAt;
 
-  int get available => quantity - quantitySold;
+  int get available => quantity - quantitySold - quantityReserved;
 
   /// What the seller receives per ticket after the seller fee.
   int get payoutPerTicketMinor => priceMinor - fees.sellerFee(priceMinor);
@@ -412,6 +433,7 @@ class Listing {
     ),
     quantity: (m['quantity'] as num?)?.toInt() ?? 0,
     quantitySold: (m['quantitySold'] as num?)?.toInt() ?? 0,
+    quantityReserved: (m['quantityReserved'] as num?)?.toInt() ?? 0,
     priceMinor: (m['priceMinor'] as num?)?.toInt() ?? 0,
     currency: m['currency'] as String? ?? 'BAM',
     status: enumByName(ListingStatus.values, m['status'], ListingStatus.active),
@@ -432,6 +454,7 @@ class Listing {
     'ticketType': ticketType.name,
     'quantity': quantity,
     'quantitySold': quantitySold,
+    'quantityReserved': quantityReserved,
     'priceMinor': priceMinor,
     'currency': currency,
     'status': status.name,
@@ -504,8 +527,12 @@ class Order {
     this.paymentMethod = '',
     this.paymentId = '',
     this.failureReason = '',
-    this.cancelledBySeller = false,
+    this.cancelledBy = '',
     this.testMode = false,
+    this.reserved = false,
+    this.ticketsDelivered = 0,
+    this.deliveredAt,
+    this.dispute,
     this.history = const [],
     this.createdAt,
   });
@@ -540,7 +567,22 @@ class Order {
   final String failureReason;
 
   /// The seller cancelled the sale and the buyer was refunded.
-  final bool cancelledBySeller;
+  final String cancelledBy;
+
+  /// Who ended the order: 'seller', 'expired' (not paid in time),
+  /// 'deadline' (tickets not delivered in time), 'event' (event called off)
+  /// or 'support' (reported problem).
+  bool get cancelledBySeller => cancelledBy == 'seller';
+
+  /// The tickets were held while paying (see [reservedUntil]).
+  final bool reserved;
+
+  /// How many tickets the buyer has received as files.
+  final int ticketsDelivered;
+  final DateTime? deliveredAt;
+
+  /// A problem the buyer reported, or null.
+  final OrderDispute? dispute;
 
   /// Paid with the payment simulator, not real money.
   final bool testMode;
@@ -548,6 +590,20 @@ class Order {
   final DateTime? createdAt;
 
   int get subtotalMinor => unitPriceMinor * quantity;
+
+  /// Until when a buyer can pay while the tickets are held for them.
+  DateTime? get reservedUntil =>
+      reserved ? createdAt?.add(reservationDuration) : null;
+
+  /// E-tickets still to be uploaded by the seller for this order.
+  int get ticketsMissing =>
+      ticketType == TicketType.eTicket &&
+          (status == OrderStatus.paid || status == OrderStatus.disputed)
+      ? (quantity - ticketsDelivered).clamp(0, quantity)
+      : 0;
+
+  /// By when the seller must have uploaded the tickets.
+  DateTime get deliveryDeadline => event.date.subtract(deliveryDeadlineBefore);
   int get buyerFeeMinor => fees.buyerFee(subtotalMinor);
   int get totalMinor => subtotalMinor + buyerFeeMinor;
   int get sellerFeeMinor => fees.sellerFee(subtotalMinor);
@@ -586,12 +642,132 @@ class Order {
     paymentMethod: m['paymentMethod'] as String? ?? '',
     paymentId: m['paymentId'] as String? ?? '',
     failureReason: m['failureReason'] as String? ?? '',
-    cancelledBySeller: m['cancelledBy'] == 'seller',
+    cancelledBy: m['cancelledBy'] as String? ?? '',
+    reserved: m['reserved'] == true,
+    ticketsDelivered: (m['ticketsDelivered'] as num?)?.toInt() ?? 0,
+    deliveredAt: _date(m['deliveredAt']),
+    dispute: m['dispute'] is Map
+        ? OrderDispute.fromMap((m['dispute'] as Map).cast<String, dynamic>())
+        : null,
     testMode: m['testMode'] == true,
     history: _history(m['history'], OrderStatus.values),
     createdAt: _date(m['createdAt']),
   );
 }
+
+/// The buyer has this long to pay while the tickets are held (Cloud
+/// Function and rules use the same 15 minutes).
+const reservationDuration = Duration(minutes: 15);
+
+/// E-tickets must be uploaded this long before the event, or the buyer is
+/// refunded automatically.
+const deliveryDeadlineBefore = Duration(hours: 24);
+
+/// Orders complete (and payouts are released) this long after the event.
+const completeAfterEvent = Duration(days: 3);
+
+/// Buyers can report a problem until this long after the event.
+const disputeWindowAfterEvent = Duration(days: 7);
+
+enum DisputeReason { notReceived, invalid, wrongTickets, eventChanged, other }
+
+/// A problem the buyer reported with an order.
+@immutable
+class OrderDispute {
+  const OrderDispute({
+    required this.reason,
+    required this.text,
+    this.previousStatus,
+    this.decision = '',
+    this.note = '',
+    this.supportTicketId = '',
+    this.openedAt,
+    this.resolvedAt,
+  });
+
+  final DisputeReason reason;
+  final String text;
+  final OrderStatus? previousStatus;
+
+  /// 'refund' or 'reject' once the team decided; empty while open.
+  final String decision;
+  final String note;
+  final String supportTicketId;
+  final DateTime? openedAt;
+  final DateTime? resolvedAt;
+
+  bool get open => decision.isEmpty;
+
+  factory OrderDispute.fromMap(Map<String, dynamic> m) => OrderDispute(
+    reason: enumByName(DisputeReason.values, m['reason'], DisputeReason.other),
+    text: m['text'] as String? ?? '',
+    previousStatus: m['previousStatus'] == null
+        ? null
+        : enumByName(OrderStatus.values, m['previousStatus'], OrderStatus.paid),
+    decision: m['decision'] as String? ?? '',
+    note: m['note'] as String? ?? '',
+    supportTicketId: m['supportTicketId'] as String? ?? '',
+    openedAt: _date(m['openedAt']),
+    resolvedAt: _date(m['resolvedAt']),
+  );
+}
+
+/// A ticket file: uploaded by the seller for a listing, or delivered to an
+/// order (the buyer's copy).
+@immutable
+class TicketFile {
+  const TicketFile({
+    required this.id,
+    required this.name,
+    required this.contentType,
+    required this.size,
+    required this.storagePath,
+    this.tickets = 1,
+    this.orderId,
+    this.at,
+  });
+
+  final String id;
+  final String name;
+  final String contentType;
+  final int size;
+  final String storagePath;
+
+  /// How many tickets the file holds (one PDF can hold several).
+  final int tickets;
+
+  /// For an uploaded file: the order it went to, null while waiting.
+  final String? orderId;
+
+  /// Uploaded or delivered.
+  final DateTime? at;
+
+  bool get isPdf => contentType == 'application/pdf';
+  bool get assigned => orderId != null;
+
+  factory TicketFile.fromMap(String id, Map<String, dynamic> m) => TicketFile(
+    id: id,
+    name: m['name'] as String? ?? id,
+    contentType: m['contentType'] as String? ?? '',
+    size: (m['size'] as num?)?.toInt() ?? 0,
+    storagePath: m['storagePath'] as String? ?? '',
+    tickets: (m['tickets'] as num?)?.toInt() ?? 1,
+    orderId: m['orderId'] as String?,
+    at: _date(m['uploadedAt'] ?? m['deliveredAt']),
+  );
+}
+
+/// File types a seller can upload as tickets.
+const ticketFileTypes = {
+  'pdf': 'application/pdf',
+  'png': 'image/png',
+  'jpg': 'image/jpeg',
+  'jpeg': 'image/jpeg',
+  'webp': 'image/webp',
+};
+
+/// Largest ticket file (Storage rules allow just under 10 MB).
+const maxTicketFileBytes = 10 * 1024 * 1024 - 1;
 
 // ---------------------------------------------------------------------------
 // Payouts (money sent to a seller for completed orders)

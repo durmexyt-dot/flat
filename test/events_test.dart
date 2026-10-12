@@ -38,8 +38,9 @@ void main() {
     expect(find.text('Dubioza kolektiv'), findsWidgets);
     // Past events are not offered.
     expect(find.text('Hamlet'), findsNothing);
-    // Derby: 6 − 2 tickets from 35,00; Dubioza: 1 of the own listing.
-    expect(find.textContaining('od 35,00'), findsWidgets);
+    // Derby: 6 − 2 tickets from 35,00 (38,50 with the 10 % service fee);
+    // Dubioza: 1 of the own listing.
+    expect(find.textContaining('od 38,50'), findsWidgets);
     expect(find.textContaining('· 4 karte'), findsWidgets);
     expect(find.textContaining('· 1 karta'), findsWidgets);
   });
@@ -80,6 +81,17 @@ void main() {
     expect(find.text('Bijelo Dugme Tribute'), findsOneWidget);
     expect(find.text('Promijeni'), findsOneWidget);
 
+    await tester.ensureVisible(find.byIcon(FLucideIcons.receiptText));
+    await tester.enterText(
+      find.descendant(
+        of: find.ancestor(
+          of: find.byIcon(FLucideIcons.receiptText),
+          matching: find.byType(FTextFormField),
+        ),
+        matching: find.byType(EditableText),
+      ),
+      '35',
+    );
     await tester.ensureVisible(find.byIcon(FLucideIcons.tag));
     await tester.enterText(
       find.descendant(

@@ -21,6 +21,7 @@ import 'events/event_page.dart';
 import 'home/home_page.dart';
 import 'info/info_page.dart';
 import 'market/listing_detail_page.dart';
+import 'market/listing_tickets_page.dart';
 import 'market/my_listings_page.dart';
 import 'market/order_detail_page.dart';
 import 'market/order_labels.dart';
@@ -121,6 +122,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           id: state.pathParameters['id']!,
           initial: state.extra as Listing?,
         ),
+      ),
+      _route(
+        '/listing/:id/tickets',
+        (state) => ListingTicketsPage(listingId: state.pathParameters['id']!),
       ),
       _route('/account/listings', (_) => const MyListingsPage()),
       _route(

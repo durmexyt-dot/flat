@@ -106,6 +106,13 @@ class InMemoryProfileRepository implements ProfileRepository {
 
   /// Reserves a username for another user, to test conflicts.
   void reserveUsername(String name, String uid) => _usernames[name] = uid;
+
+  /// Per user: the version of the terms they accepted, for tests.
+  final acceptedTerms = <String, String>{};
+
+  @override
+  Future<void> acceptTerms(String uid, String version) async =>
+      acceptedTerms[uid] = version;
 }
 
 /// Marketplace data held in memory, for tests.
@@ -266,6 +273,9 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
     'paymentId': o.paymentId,
     'failureReason': o.failureReason,
     'testMode': o.testMode,
+    'reserved': o.reserved,
+    'cancelledBy': o.cancelledBy,
+    'ticketsDelivered': o.ticketsDelivered,
     'history': [
       for (final h in o.history) {'status': h.status.name, 'at': h.at},
     ],
@@ -311,12 +321,20 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
       'seats': listing.seats,
       'status': OrderStatus.pendingPayment.name,
       'testMode': true,
+      'reserved': true,
       'history': [
         {'status': OrderStatus.pendingPayment.name, 'at': DateTime.now()},
       ],
       'createdAt': DateTime.now(),
     });
     _orders.value = [order, ..._orders.value];
+    _updateListing(listing.id, {
+      'quantityReserved':
+          _listings.value
+              .firstWhere((l) => l.id == listing.id)
+              .quantityReserved +
+          quantity,
+    });
     return order;
   }
 
@@ -331,7 +349,10 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
           'status': OrderStatus.cancelled.name,
           'failureReason': reason.name,
         }, OrderStatus.cancelled);
+        _release(order);
       case PaymentSucceeded(:final paymentId, :final methodLabel):
+        if (reservationExpired(current)) throw ReservationExpiredException();
+        _release(order);
         final listing = _listings.value.firstWhere(
           (l) => l.id == order.listingId,
         );
@@ -362,6 +383,18 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
           ..._payouts.value,
         ];
     }
+  }
+
+  /// The tickets held for [order] are free again.
+  void _release(Order order) {
+    if (!order.reserved) return;
+    final listing = _listings.value.firstWhere((l) => l.id == order.listingId);
+    _updateListing(listing.id, {
+      'quantityReserved': (listing.quantityReserved - order.quantity).clamp(
+        0,
+        listing.quantity,
+      ),
+    });
   }
 
   @override

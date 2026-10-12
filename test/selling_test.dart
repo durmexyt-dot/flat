@@ -86,7 +86,8 @@ void main() {
     expect(find.text('Past show'), findsNothing);
     expect(find.text('Hidden show'), findsNothing);
     expect(find.textContaining('· 3 karte'), findsWidgets);
-    expect(find.textContaining('od 45,00'), findsWidgets);
+    // Final prices: 45,00 + 10 % service fee.
+    expect(find.textContaining('od 49,50'), findsWidgets);
     expect(find.text('Još nema ponuda'), findsWidgets);
 
     Finder type(String name) =>
@@ -208,6 +209,17 @@ void main() {
     expect(find.text('Sarajevo Film Festival'), findsOneWidget);
     await tapVisible(tester, find.byIcon(FLucideIcons.plus));
 
+    await tester.ensureVisible(find.byIcon(FLucideIcons.receiptText));
+    await tester.enterText(
+      find.descendant(
+        of: find.ancestor(
+          of: find.byIcon(FLucideIcons.receiptText),
+          matching: find.byType(FTextFormField),
+        ),
+        matching: find.byType(EditableText),
+      ),
+      '40',
+    );
     await tester.ensureVisible(find.byIcon(FLucideIcons.tag));
     await tester.enterText(
       find.descendant(

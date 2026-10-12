@@ -6,6 +6,8 @@ import 'package:flat/src/auth/auth_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/repositories.dart';
+import 'package:flat/src/data/server_actions.dart';
+import 'package:flat/src/data/tickets_repository.dart';
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/support/support_repository.dart';
@@ -131,6 +133,8 @@ late InMemoryMarketRepository market;
 late InMemoryEventRepository events;
 late InMemorySupportRepository support;
 late InMemoryAdminRepository admin;
+late InMemoryTicketFileRepository ticketFiles;
+late FakeServerActions serverActions;
 
 Future<FakeAuthRepository> pumpApp(
   WidgetTester tester, {
@@ -139,12 +143,15 @@ Future<FakeAuthRepository> pumpApp(
   InMemoryEventRepository? eventRepository,
   InMemorySupportRepository? supportRepository,
   InMemoryAdminRepository? adminRepository,
+  InMemoryTicketFileRepository? ticketFileRepository,
 }) async {
   profiles = InMemoryProfileRepository();
   market = marketRepository ?? InMemoryMarketRepository();
   events = eventRepository ?? InMemoryEventRepository();
   support = supportRepository ?? InMemorySupportRepository();
   admin = adminRepository ?? InMemoryAdminRepository();
+  ticketFiles = ticketFileRepository ?? InMemoryTicketFileRepository();
+  serverActions = FakeServerActions();
   tester.view.physicalSize = const Size(390, 844) * 3;
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -163,6 +170,8 @@ Future<FakeAuthRepository> pumpApp(
         eventRepositoryProvider.overrideWithValue(events),
         supportRepositoryProvider.overrideWithValue(support),
         adminRepositoryProvider.overrideWithValue(admin),
+        ticketFileRepositoryProvider.overrideWithValue(ticketFiles),
+        serverActionsProvider.overrideWithValue(serverActions),
       ],
       child: const FlatApp(),
     ),

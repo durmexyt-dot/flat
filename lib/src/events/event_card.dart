@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../data/repositories.dart';
 import '../ui/app_style.dart';
 import '../ui/format.dart';
 import '../ui/hero_tags.dart';
@@ -28,6 +29,7 @@ class EventCard extends ConsumerWidget {
     final type = theme.typography;
     final radius = AppStyle.of(context).cardRadius;
     final offer = ref.watch(eventOffersProvider)[event.id];
+    final from = ref.watch(eventFromPriceProvider)[event.id];
     final info = event.info;
 
     return FTappable(
@@ -86,22 +88,16 @@ class EventCard extends ConsumerWidget {
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
                     child: Text(
-                      offer == null
+                      offer == null || from == null
                           ? l10n.eventsNoOffers
                           : l10n.eventsOffer(
-                              formatMoney(
-                                context,
-                                offer.minPriceMinor,
-                                offer.currency,
-                              ),
+                              formatMoney(context, from.minor, from.currency),
                               offer.tickets,
                             ),
-                      key: ValueKey(
-                        '${offer?.minPriceMinor}-${offer?.tickets}',
-                      ),
+                      key: ValueKey('${from?.minor}-${offer?.tickets}'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: offer == null
+                      style: offer == null || from == null
                           ? type.body.sm.copyWith(color: colors.mutedForeground)
                           : type.body.sm.copyWith(
                               fontWeight: FontWeight.w600,
@@ -118,6 +114,24 @@ class EventCard extends ConsumerWidget {
     );
   }
 }
+
+/// Per event: the cheapest ticket on sale as buyers pay it, service fee
+/// included (prices shown to buyers are final prices). Events without
+/// tickets have no entry.
+final eventFromPriceProvider =
+    Provider<Map<String, ({int minor, String currency})>>((ref) {
+      final listings = ref.watch(activeListingsProvider).value ?? const [];
+      final prices = <String, ({int minor, String currency})>{};
+      for (final l in listings) {
+        if (l.eventId.isEmpty || l.available <= 0) continue;
+        final minor = l.priceMinor + l.fees.buyerFee(l.priceMinor);
+        final current = prices[l.eventId];
+        if (current == null || minor < current.minor) {
+          prices[l.eventId] = (minor: minor, currency: l.currency);
+        }
+      }
+      return prices;
+    });
 
 /// "Venue · City".
 String placeText(EventInfo info) =>

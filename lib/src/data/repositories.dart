@@ -28,6 +28,9 @@ abstract class ProfileRepository {
 
   /// Removes all of the user's own documents (before the account goes).
   Future<void> deleteUserData(String uid);
+
+  /// Records that the user accepted the terms of use in [version].
+  Future<void> acceptTerms(String uid, String version);
 }
 
 abstract class MarketRepository {
@@ -129,6 +132,12 @@ class FirestoreProfileRepository implements ProfileRepository {
   @override
   Future<void> updateDisplayName(String uid, String name) =>
       _update(uid, {'displayName': name}, public: {'displayName': name});
+
+  @override
+  Future<void> acceptTerms(String uid, String version) => _update(uid, {
+    'termsAcceptedAt': FieldValue.serverTimestamp(),
+    'termsVersion': version,
+  });
 
   @override
   Future<void> setUsername(String uid, String username) async {

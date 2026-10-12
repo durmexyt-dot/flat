@@ -38,6 +38,7 @@ class _SellPageState extends ConsumerState<SellPage> {
   final _row = TextEditingController();
   final _seats = TextEditingController();
   final _price = TextEditingController();
+  final _faceValue = TextEditingController();
   final _note = TextEditingController();
   Event? _event;
   bool _preselected = false;
@@ -48,7 +49,7 @@ class _SellPageState extends ConsumerState<SellPage> {
 
   @override
   void dispose() {
-    for (final c in [_section, _row, _seats, _price, _note]) {
+    for (final c in [_section, _row, _seats, _price, _faceValue, _note]) {
       c.dispose();
     }
     super.dispose();
@@ -123,6 +124,7 @@ class _SellPageState extends ConsumerState<SellPage> {
               quantity: _quantity,
               quantitySold: 0,
               priceMinor: parseMoney(_price.text)!,
+              faceValueMinor: parseMoney(_faceValue.text),
               currency: ref.read(settingsProvider).currency.code,
               status: ListingStatus.active,
               section: _section.text.trim(),
@@ -264,6 +266,37 @@ class _SellPageState extends ConsumerState<SellPage> {
               SettingsSectionTitle(l10n.price),
               FTextFormField(
                 control: FTextFieldControl.managed(
+                  controller: _faceValue,
+                  onChange: (_) => setState(() {}),
+                ),
+                label: Text(l10n.priceFaceValue),
+                description: Text(l10n.priceFaceValueInfo),
+                prefixBuilder: (context, style, variants) =>
+                    fieldIcon(FLucideIcons.receiptText),
+                suffixBuilder: (context, style, variants) => Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 12),
+                  child: Text(
+                    currency.symbol,
+                    style: context.theme.typography.body.sm.copyWith(
+                      color: context.theme.colors.mutedForeground,
+                    ),
+                  ),
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  final minor = parseMoney(v ?? '');
+                  // The rules accept up to 10 000 per ticket.
+                  return (minor == null || minor <= 0 || minor > 1000000)
+                      ? l10n.priceFaceValueInvalid
+                      : null;
+                },
+              ),
+              const SizedBox(height: 12),
+              FTextFormField(
+                control: FTextFieldControl.managed(
                   controller: _price,
                   onChange: (_) => setState(() {}),
                 ),
@@ -292,6 +325,7 @@ class _SellPageState extends ConsumerState<SellPage> {
               const SizedBox(height: 12),
               _PriceBreakdown(
                 priceMinor: parseMoney(_price.text) ?? 0,
+                faceValueMinor: parseMoney(_faceValue.text),
                 quantity: _quantity,
                 currency: currency.code,
               ),
@@ -533,14 +567,19 @@ class _QuantityStepper extends StatelessWidget {
   }
 }
 
+/// Live, for the seller: what buyers pay, what the seller receives per
+/// ticket after the seller fee, the profit over the face value, and the
+/// totals for the chosen quantity.
 class _PriceBreakdown extends ConsumerWidget {
   const _PriceBreakdown({
     required this.priceMinor,
+    required this.faceValueMinor,
     required this.quantity,
     required this.currency,
   });
 
   final int priceMinor;
+  final int? faceValueMinor;
   final int quantity;
   final String currency;
 
@@ -549,9 +588,21 @@ class _PriceBreakdown extends ConsumerWidget {
     final fees = ref.watch(feeConfigProvider).value ?? const FeeConfig();
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final perTicket = priceMinor - fees.sellerFee(priceMinor);
+    final colors = theme.colors;
+    final sellerFee = fees.sellerFee(priceMinor);
+    final perTicket = priceMinor - sellerFee;
+    final face = faceValueMinor;
+    final profit = face == null ? null : perTicket - face;
+    final loss = profit != null && profit < 0 && priceMinor > 0;
 
-    Widget row(String label, int minor, {bool strong = false}) => Padding(
+    String money(int minor) => formatMoney(context, minor, currency);
+
+    Widget row(
+      String label,
+      String value, {
+      bool strong = false,
+      Color? color,
+    }) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
@@ -559,24 +610,22 @@ class _PriceBreakdown extends ConsumerWidget {
             child: Text(
               label,
               style: theme.typography.body.sm.copyWith(
-                color: strong
-                    ? theme.colors.foreground
-                    : theme.colors.mutedForeground,
+                color: strong ? colors.foreground : colors.mutedForeground,
               ),
             ),
           ),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: Text(
-              formatMoney(context, minor, currency),
-              key: ValueKey(minor),
+              value,
+              key: ValueKey(value),
               style: strong
                   ? theme.typography.body.lg.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: theme.colors.foreground,
+                      color: color ?? colors.foreground,
                     )
                   : theme.typography.body.sm.copyWith(
-                      color: theme.colors.foreground,
+                      color: color ?? colors.foreground,
                     ),
             ),
           ),
@@ -584,21 +633,68 @@ class _PriceBreakdown extends ConsumerWidget {
       ),
     );
 
+    const divider = FDivider(
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 8))),
+    );
+    final profitColor = loss ? colors.destructive : null;
+
     return FCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            row(
-              l10n.buyerPays('${fees.buyerPercent}'),
-              priceMinor + fees.buyerFee(priceMinor),
-            ),
-            row(l10n.youReceive('${fees.sellerPercent}'), perTicket),
-            const FDivider(
-              style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 8))),
-            ),
-            row(l10n.totalPayout, perTicket * quantity, strong: true),
-          ],
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          alignment: Alignment.topCenter,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              row(
+                l10n.buyerPays('${fees.buyerPercent}'),
+                money(priceMinor + fees.buyerFee(priceMinor)),
+              ),
+              divider,
+              row(l10n.priceSalePrice, money(priceMinor)),
+              row(
+                l10n.priceSellerFee('${fees.sellerPercent}'),
+                '− ${money(sellerFee)}',
+              ),
+              row(l10n.priceYouReceive, money(perTicket), strong: true),
+              if (face != null && profit != null) ...[
+                row(l10n.priceFaceValueShort, '− ${money(face)}'),
+                row(
+                  l10n.priceProfit,
+                  money(profit),
+                  strong: true,
+                  color: profitColor,
+                ),
+                if (loss)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      l10n.priceBelowFaceValue,
+                      style: theme.typography.body.xs.copyWith(
+                        color: colors.destructive,
+                      ),
+                    ),
+                  ),
+              ],
+              divider,
+              Text(
+                l10n.priceForQuantity(quantity),
+                style: theme.typography.body.xs.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colors.mutedForeground,
+                ),
+              ),
+              const SizedBox(height: 2),
+              row(l10n.totalPayout, money(perTicket * quantity), strong: true),
+              if (profit != null)
+                row(
+                  l10n.priceTotalProfit,
+                  money(profit * quantity),
+                  color: profitColor,
+                ),
+            ],
+          ),
         ),
       ),
     );

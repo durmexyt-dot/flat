@@ -151,8 +151,9 @@ class FirestoreEventRepository implements EventRepository {
       });
 }
 
-/// Statuses everybody may read. "active" is how v1.3.0 stored events.
-const visibleEventStatuses = ['pending', 'confirmed', 'active'];
+/// Statuses everybody may read. "active" is how v1.3.0 stored events;
+/// cancelled events stay visible so buyers learn about it.
+const visibleEventStatuses = ['pending', 'confirmed', 'active', 'cancelled'];
 
 /// Events held in memory, for tests.
 class InMemoryEventRepository implements EventRepository {
@@ -262,8 +263,9 @@ final upcomingEventsProvider = Provider<AsyncValue<List<Event>>>(
       .watch(eventsProvider)
       .whenData(
         (all) => [
+          // Cancelled events are no longer offered (their page stays).
           for (final e in all)
-            if (e.isUpcoming) e,
+            if (e.isUpcoming && !e.cancelled) e,
         ],
       ),
 );

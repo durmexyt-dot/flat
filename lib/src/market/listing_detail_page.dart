@@ -183,6 +183,13 @@ class _Facts extends StatelessWidget {
           l10n.quantity,
           l10n.ticketsLeft('${listing.available}', '${listing.quantity}'),
         ),
+        // Transparency for buyers: what the ticket originally cost.
+        if (listing.faceValueMinor case final face?)
+          _fact(
+            FLucideIcons.receiptText,
+            l10n.priceFaceValueShort,
+            formatMoney(context, face, listing.currency),
+          ),
         if (listing.note.isNotEmpty)
           _fact(FLucideIcons.notebookText, l10n.noteLabel, listing.note),
       ],

@@ -10,6 +10,97 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get eventStatusCancelled => 'Cancelled';
+
+  @override
+  String get eventStatusPostponed => 'Postponed';
+
+  @override
+  String get legalImprintTitle => 'Imprint';
+
+  @override
+  String get legalTermsTitle => 'Terms of use';
+
+  @override
+  String get legalPrivacyTitle => 'Privacy policy';
+
+  @override
+  String get legalCookiesTitle => 'Cookies';
+
+  @override
+  String get legalFooterTitle => 'Legal';
+
+  @override
+  String get legalTermsLink => 'terms of use';
+
+  @override
+  String get legalPrivacyLink => 'privacy policy';
+
+  @override
+  String legalAcceptTerms(String terms, String privacy) {
+    return 'I accept the $terms and the $privacy';
+  }
+
+  @override
+  String get legalAcceptRequired =>
+      'To sign up, accept the terms of use and the privacy policy.';
+
+  @override
+  String legalContinueAccept(String terms, String privacy) {
+    return 'By continuing you accept the $terms and the $privacy.';
+  }
+
+  @override
+  String priceInclFee(String percent) {
+    return 'incl. $percent% service fee';
+  }
+
+  @override
+  String get priceFaceValue => 'Face value per ticket';
+
+  @override
+  String get priceFaceValueInfo =>
+      'The price printed on the ticket, without fees';
+
+  @override
+  String get priceFaceValueShort => 'Face value';
+
+  @override
+  String get priceFaceValueInvalid => 'Enter the ticket\'s face value';
+
+  @override
+  String get priceSalePrice => 'Sale price';
+
+  @override
+  String priceSellerFee(String percent) {
+    return 'Seller fee ($percent%)';
+  }
+
+  @override
+  String get priceYouReceive => 'You receive per ticket';
+
+  @override
+  String get priceProfit => 'Profit per ticket';
+
+  @override
+  String get priceTotalProfit => 'Total profit';
+
+  @override
+  String priceForQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tickets',
+      one: '1 ticket',
+    );
+    return 'For $_temp0';
+  }
+
+  @override
+  String get priceBelowFaceValue =>
+      'After the fee you receive less than the face value.';
+
+  @override
   String get staffNoMarketTitle => 'Team accounts don\'t buy or sell';
 
   @override

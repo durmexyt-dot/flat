@@ -10,7 +10,8 @@ import '../data/repositories.dart';
 import 'app_style.dart';
 import 'site_scaffold.dart';
 
-/// The website footer: brand, company pages, help and the version. Columns
+/// The website footer: brand, company pages, help, legal pages and the
+/// version. Columns
 /// side by side on wide screens, stacked on phones.
 class SiteFooter extends ConsumerWidget {
   const SiteFooter({super.key, this.bottomInset = 0});
@@ -60,6 +61,15 @@ class SiteFooter extends ConsumerWidget {
         (l10n.contactSupport, signedIn ? '/support/new' : '/support'),
       ],
     );
+    final legal = _FooterColumn(
+      title: l10n.legalFooterTitle,
+      links: [
+        (l10n.legalImprintTitle, '/info/imprint'),
+        (l10n.legalTermsTitle, '/info/terms'),
+        (l10n.legalPrivacyTitle, '/info/privacy'),
+        (l10n.legalCookiesTitle, '/info/cookies'),
+      ],
+    );
 
     return Container(
       padding: wide
@@ -83,6 +93,8 @@ class SiteFooter extends ConsumerWidget {
                 Expanded(child: company),
                 const SizedBox(width: 32),
                 Expanded(child: help),
+                const SizedBox(width: 32),
+                Expanded(child: legal),
               ],
             )
           else ...[
@@ -91,6 +103,8 @@ class SiteFooter extends ConsumerWidget {
             company,
             const SizedBox(height: 20),
             help,
+            const SizedBox(height: 20),
+            legal,
           ],
           const SizedBox(height: 24),
           const FDivider(),

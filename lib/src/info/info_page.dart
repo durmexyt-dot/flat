@@ -6,9 +6,11 @@ import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../ui/async_view.dart';
 import '../ui/site_scaffold.dart';
+import 'legal_texts.dart';
 
-/// The footer's pages: about, press, how it works and buying safely.
-const infoTopics = ['about', 'press', 'how', 'safety'];
+/// The footer's pages: about, press, how it works and buying safely, and
+/// the legal pages ([legalTopics]).
+const infoTopics = ['about', 'press', 'how', 'safety', ...legalTopics];
 
 /// A block of an info page: an optional heading with a paragraph or steps.
 typedef _Block = ({String? title, String? text, List<String> steps});
@@ -29,6 +31,7 @@ class InfoPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final legal = legalDoc(topic, Localizations.localeOf(context));
     final (String title, IconData icon, List<_Block> blocks)? page =
         switch (topic) {
           'about' => (
@@ -80,6 +83,24 @@ class InfoPage extends ConsumerWidget {
               _text(l10n.infoSafetySupportTitle, l10n.infoSafetySupportText),
             ],
           ),
+          'imprint' || 'terms' || 'privacy' || 'cookies' when legal != null => (
+            switch (topic) {
+              'imprint' => l10n.legalImprintTitle,
+              'terms' => l10n.legalTermsTitle,
+              'privacy' => l10n.legalPrivacyTitle,
+              _ => l10n.legalCookiesTitle,
+            },
+            switch (topic) {
+              'imprint' => FLucideIcons.building2,
+              'terms' => FLucideIcons.scrollText,
+              'privacy' => FLucideIcons.lock,
+              _ => FLucideIcons.cookie,
+            },
+            [
+              _text(null, legal.intro),
+              for (final s in legal.sections) _text(s.title, s.text),
+            ],
+          ),
           _ => null,
         };
 
@@ -117,6 +138,15 @@ class InfoPage extends ConsumerWidget {
               child: Icon(icon, size: 24, color: colors.foreground),
             ),
           ),
+          if (legal != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              legalValidFrom(Localizations.localeOf(context)),
+              style: theme.typography.body.xs.copyWith(
+                color: colors.mutedForeground,
+              ),
+            ),
+          ],
           for (final b in blocks) ...[
             const SizedBox(height: 20),
             if (b.title != null) ...[
@@ -194,6 +224,65 @@ class InfoPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// "I accept the terms of use and the privacy policy" with both names as
+/// links to their pages. [template] gets the two link texts.
+class LegalLinksText extends StatelessWidget {
+  const LegalLinksText({
+    super.key,
+    required this.template,
+    this.textAlign = TextAlign.start,
+  });
+
+  final String Function(String terms, String privacy) template;
+  final TextAlign textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    final style = theme.typography.body.sm.copyWith(
+      color: theme.colors.mutedForeground,
+    );
+    const terms = '\u0001', privacy = '\u0002';
+    final raw = template(terms, privacy);
+
+    InlineSpan link(String text, String path) => WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+      child: FTappable(
+        onPress: () => context.push(path),
+        child: Text(
+          text,
+          style: style.copyWith(
+            color: theme.colors.foreground,
+            fontWeight: FontWeight.w500,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ),
+    );
+
+    final spans = <InlineSpan>[];
+    var start = 0;
+    for (final m in RegExp('[$terms$privacy]').allMatches(raw)) {
+      if (m.start > start) {
+        spans.add(TextSpan(text: raw.substring(start, m.start)));
+      }
+      spans.add(
+        m[0] == terms
+            ? link(l10n.legalTermsLink, '/info/terms')
+            : link(l10n.legalPrivacyLink, '/info/privacy'),
+      );
+      start = m.end;
+    }
+    if (start < raw.length) spans.add(TextSpan(text: raw.substring(start)));
+    return Text.rich(
+      TextSpan(style: style, children: spans),
+      textAlign: textAlign,
     );
   }
 }

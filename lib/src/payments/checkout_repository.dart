@@ -13,6 +13,15 @@ class SoldOutException implements Exception {}
 /// Thrown when someone tries to buy their own listing.
 class OwnListingException implements Exception {}
 
+/// Thrown when the 15 minutes to pay are over: the tickets were released.
+class ReservationExpiredException implements Exception {}
+
+/// Whether the time to pay for [order] is over.
+bool reservationExpired(Order order, [DateTime? now]) {
+  final until = order.reservedUntil;
+  return until != null && (now ?? DateTime.now()).isAfter(until);
+}
+
 /// Creates orders and records their payment.
 ///
 /// In test mode the app does this itself, guarded by the Firestore rules.
@@ -92,9 +101,20 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
       'status': OrderStatus.pendingPayment.name,
       'history': [_step(OrderStatus.pendingPayment)],
       'testMode': true,
-      'createdAt': Timestamp.now(),
+      // Held for the buyer for 15 minutes, counted from the server's time.
+      'reserved': true,
+      'createdAt': FieldValue.serverTimestamp(),
     };
-    await ref.set(data);
+    // The order and the hold on its tickets in one write: the rules check
+    // that they go together.
+    await (_db.batch()
+          ..set(ref, data)
+          ..update(_listing(listing.id), {
+            'quantityReserved': FieldValue.increment(quantity),
+            'lastOrderId': ref.id,
+            'updatedAt': FieldValue.serverTimestamp(),
+          }))
+        .commit();
     return Order.fromMap(ref.id, {
       ...data,
       'createdAt': DateTime.now(),
@@ -110,13 +130,29 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
       case PaymentCancelled():
         return;
       case PaymentFailed(:final reason):
-        await _order(order.id).update({
-          'status': OrderStatus.cancelled.name,
-          'failureReason': reason.name,
-          'history': FieldValue.arrayUnion([_step(OrderStatus.cancelled)]),
-          'updatedAt': FieldValue.serverTimestamp(),
+        // The order ends and its held tickets are free again, together.
+        await _db.runTransaction((tx) async {
+          final listingSnap = await tx.get(_listing(order.listingId));
+          final held =
+              (listingSnap.data()?['quantityReserved'] as num?)?.toInt() ?? 0;
+          tx.update(_order(order.id), {
+            'status': OrderStatus.cancelled.name,
+            'failureReason': reason.name,
+            'history': FieldValue.arrayUnion([_step(OrderStatus.cancelled)]),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+          if (order.reserved) {
+            tx.update(_listing(order.listingId), {
+              'quantityReserved': held >= order.quantity
+                  ? held - order.quantity
+                  : 0,
+              'lastOrderId': order.id,
+              'updatedAt': FieldValue.serverTimestamp(),
+            });
+          }
         });
       case PaymentSucceeded(:final paymentId, :final methodLabel):
+        if (reservationExpired(order)) throw ReservationExpiredException();
         // One transaction, so the rules can check that tickets, order and
         // payout change together.
         await _db.runTransaction((tx) async {
@@ -124,6 +160,7 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
           final listing = listingSnap.data();
           final sold = (listing?['quantitySold'] as num?)?.toInt() ?? 0;
           final total = (listing?['quantity'] as num?)?.toInt() ?? 0;
+          final held = (listing?['quantityReserved'] as num?)?.toInt() ?? 0;
           if (listing == null || sold + order.quantity > total) {
             throw SoldOutException();
           }
@@ -138,6 +175,12 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
             })
             ..update(_listing(order.listingId), {
               'quantitySold': nowSold,
+              // The tickets were held for this order; now they are sold.
+              'quantityReserved': !order.reserved
+                  ? held
+                  : held >= order.quantity
+                  ? held - order.quantity
+                  : 0,
               'status': nowSold == total
                   ? ListingStatus.soldOut.name
                   : listing['status'],

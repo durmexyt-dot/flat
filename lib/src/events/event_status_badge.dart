@@ -11,12 +11,14 @@ String eventStatusName(AppLocalizations l10n, EventStatus s) => switch (s) {
   EventStatus.confirmed => l10n.eventStatusConfirmed,
   EventStatus.pending => l10n.eventStatusPending,
   EventStatus.hidden => l10n.eventStatusHidden,
+  EventStatus.cancelled => l10n.eventStatusCancelled,
 };
 
 IconData eventStatusIcon(EventStatus s) => switch (s) {
   EventStatus.confirmed => FLucideIcons.badgeCheck,
   EventStatus.pending => FLucideIcons.clock,
   EventStatus.hidden => FLucideIcons.eyeOff,
+  EventStatus.cancelled => FLucideIcons.ban,
 };
 
 /// Whether the team checked an event: "Potvrđen" (subtle), "Nije potvrđen"

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
+import '../data/repositories.dart';
 import '../ui/format.dart';
 import '../ui/hero_tags.dart';
 import '../ui/ticket.dart';
@@ -122,8 +124,16 @@ String seatText(
   if (seats.isNotEmpty) seats,
 ].join(' · ');
 
-/// [EventTicket] for a listing, as buyers or the seller see it.
-class ListingTicket extends StatelessWidget {
+/// Prices as buyers see them: the final price, service fee included.
+extension BuyerPrice on Listing {
+  /// What a buyer pays for one ticket, service fee included.
+  int get buyerPriceMinor => priceMinor + fees.buyerFee(priceMinor);
+}
+
+/// [EventTicket] for a listing, as buyers or the seller see it. Buyers see
+/// the final price per ticket, service fee included; the seller sees the
+/// price they listed.
+class ListingTicket extends ConsumerWidget {
   const ListingTicket({
     super.key,
     required this.listing,
@@ -140,11 +150,12 @@ class ListingTicket extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final colors = context.theme.colors;
     final type = context.theme.typography;
     final seats = seatText(l10n, listing.section, listing.row, listing.seats);
+    final seller = own || listing.sellerId == ref.watch(currentUidProvider);
 
     return EventTicket(
       heroTag: HeroTags.listing(listing.id),
@@ -169,7 +180,11 @@ class ListingTicket extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
-              formatMoney(context, listing.priceMinor, listing.currency),
+              formatMoney(
+                context,
+                seller ? listing.priceMinor : listing.buyerPriceMinor,
+                listing.currency,
+              ),
               style: type.body.lg.copyWith(
                 color: colors.foreground,
                 fontWeight: FontWeight.w700,
@@ -181,6 +196,13 @@ class ListingTicket extends StatelessWidget {
             ),
           ],
         ),
+        if (!seller && listing.fees.buyerPercent > 0)
+          Text(
+            l10n.priceInclFee('${listing.fees.buyerPercent}'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: type.body.xs.copyWith(color: colors.mutedForeground),
+          ),
         if (seats.isNotEmpty)
           Text(
             seats,

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../info/info_page.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
 
@@ -144,6 +145,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
         const OrDivider(),
         GoogleButton(onPressed: _loading ? null : _signInWithGoogle),
+        // Google sign-in creates an account on first use.
+        const SizedBox(height: 8),
+        LegalLinksText(
+          template: l10n.legalContinueAccept,
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 20),
         Wrap(
           alignment: WrapAlignment.center,

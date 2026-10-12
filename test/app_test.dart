@@ -77,6 +77,12 @@ void main() {
     await tester.enterText(fields.at(1), 'emir@test.ba');
     await tester.enterText(fields.at(2), 'secret123');
     await tester.enterText(fields.at(3), 'secret123');
+    // The terms must be accepted (see legal_and_price_test.dart).
+    final terms = find.byType(FCheckbox);
+    await tester.ensureVisible(terms);
+    await tester.pumpAndSettle();
+    await tester.tapAt(tester.getTopLeft(terms) + const Offset(8, 8));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FButton, 'Kreiraj račun'));
     await tester.pumpAndSettle();
     expect(find.text('Zdravo, Emir'), findsOneWidget);

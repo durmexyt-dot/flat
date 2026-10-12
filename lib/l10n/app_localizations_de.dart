@@ -10,6 +10,97 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get eventStatusCancelled => 'Abgesagt';
+
+  @override
+  String get eventStatusPostponed => 'Verschoben';
+
+  @override
+  String get legalImprintTitle => 'Impressum';
+
+  @override
+  String get legalTermsTitle => 'AGB';
+
+  @override
+  String get legalPrivacyTitle => 'Datenschutz';
+
+  @override
+  String get legalCookiesTitle => 'Cookies';
+
+  @override
+  String get legalFooterTitle => 'Rechtliches';
+
+  @override
+  String get legalTermsLink => 'AGB';
+
+  @override
+  String get legalPrivacyLink => 'Datenschutzerklärung';
+
+  @override
+  String legalAcceptTerms(String terms, String privacy) {
+    return 'Ich akzeptiere die $terms und die $privacy';
+  }
+
+  @override
+  String get legalAcceptRequired =>
+      'Bitte akzeptiere die AGB und die Datenschutzerklärung, um dich zu registrieren.';
+
+  @override
+  String legalContinueAccept(String terms, String privacy) {
+    return 'Mit dem Fortfahren akzeptierst du die $terms und die $privacy.';
+  }
+
+  @override
+  String priceInclFee(String percent) {
+    return 'inkl. $percent % Servicegebühr';
+  }
+
+  @override
+  String get priceFaceValue => 'Originalpreis pro Ticket';
+
+  @override
+  String get priceFaceValueInfo =>
+      'Der auf dem Ticket gedruckte Preis, ohne Gebühren';
+
+  @override
+  String get priceFaceValueShort => 'Originalpreis';
+
+  @override
+  String get priceFaceValueInvalid => 'Gib den Originalpreis des Tickets ein';
+
+  @override
+  String get priceSalePrice => 'Verkaufspreis';
+
+  @override
+  String priceSellerFee(String percent) {
+    return 'Verkäufergebühr ($percent %)';
+  }
+
+  @override
+  String get priceYouReceive => 'Du erhältst pro Ticket';
+
+  @override
+  String get priceProfit => 'Gewinn pro Ticket';
+
+  @override
+  String get priceTotalProfit => 'Gewinn gesamt';
+
+  @override
+  String priceForQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tickets',
+      one: '1 Ticket',
+    );
+    return 'Für $_temp0';
+  }
+
+  @override
+  String get priceBelowFaceValue =>
+      'Nach der Gebühr erhältst du weniger als den Originalpreis.';
+
+  @override
   String get staffNoMarketTitle => 'Team-Konten kaufen und verkaufen nicht';
 
   @override

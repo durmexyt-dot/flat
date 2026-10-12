@@ -100,6 +100,150 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @eventStatusCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazan'**
+  String get eventStatusCancelled;
+
+  /// No description provided for @eventStatusPostponed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomjeren'**
+  String get eventStatusPostponed;
+
+  /// No description provided for @legalImprintTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Impresum'**
+  String get legalImprintTitle;
+
+  /// No description provided for @legalTermsTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uslovi korištenja'**
+  String get legalTermsTitle;
+
+  /// No description provided for @legalPrivacyTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Politika privatnosti'**
+  String get legalPrivacyTitle;
+
+  /// No description provided for @legalCookiesTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kolačići'**
+  String get legalCookiesTitle;
+
+  /// No description provided for @legalFooterTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pravne informacije'**
+  String get legalFooterTitle;
+
+  /// No description provided for @legalTermsLink.
+  ///
+  /// In bs, this message translates to:
+  /// **'uslove korištenja'**
+  String get legalTermsLink;
+
+  /// No description provided for @legalPrivacyLink.
+  ///
+  /// In bs, this message translates to:
+  /// **'politiku privatnosti'**
+  String get legalPrivacyLink;
+
+  /// No description provided for @legalAcceptTerms.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prihvatam {terms} i {privacy}'**
+  String legalAcceptTerms(String terms, String privacy);
+
+  /// No description provided for @legalAcceptRequired.
+  ///
+  /// In bs, this message translates to:
+  /// **'Za registraciju prihvati uslove korištenja i politiku privatnosti.'**
+  String get legalAcceptRequired;
+
+  /// No description provided for @legalContinueAccept.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nastavkom prihvataš {terms} i {privacy}.'**
+  String legalContinueAccept(String terms, String privacy);
+
+  /// No description provided for @priceInclFee.
+  ///
+  /// In bs, this message translates to:
+  /// **'uključena naknada za uslugu {percent}%'**
+  String priceInclFee(String percent);
+
+  /// No description provided for @priceFaceValue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Originalna cijena po karti'**
+  String get priceFaceValue;
+
+  /// No description provided for @priceFaceValueInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena odštampana na karti, bez naknada'**
+  String get priceFaceValueInfo;
+
+  /// No description provided for @priceFaceValueShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Originalna cijena'**
+  String get priceFaceValueShort;
+
+  /// No description provided for @priceFaceValueInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesi originalnu cijenu karte'**
+  String get priceFaceValueInvalid;
+
+  /// No description provided for @priceSalePrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena prodaje'**
+  String get priceSalePrice;
+
+  /// No description provided for @priceSellerFee.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada prodavca ({percent}%)'**
+  String priceSellerFee(String percent);
+
+  /// No description provided for @priceYouReceive.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dobijaš po karti'**
+  String get priceYouReceive;
+
+  /// No description provided for @priceProfit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Zarada po karti'**
+  String get priceProfit;
+
+  /// No description provided for @priceTotalProfit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukupna zarada'**
+  String get priceTotalProfit;
+
+  /// No description provided for @priceForQuantity.
+  ///
+  /// In bs, this message translates to:
+  /// **'Za {count, plural, one{{count} kartu} few{{count} karte} other{{count} karata}}'**
+  String priceForQuantity(int count);
+
+  /// No description provided for @priceBelowFaceValue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nakon naknade dobijaš manje od originalne cijene karte.'**
+  String get priceBelowFaceValue;
+
   /// No description provided for @staffNoMarketTitle.
   ///
   /// In bs, this message translates to:

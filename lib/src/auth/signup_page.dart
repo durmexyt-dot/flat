@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../data/repositories.dart';
+import '../info/info_page.dart';
+import '../info/legal_texts.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
 
@@ -24,6 +27,12 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   bool _loading = false;
   AuthException? _error;
 
+  /// The terms of use and privacy policy are accepted.
+  bool _accepted = false;
+
+  /// Sign up was tried without accepting them.
+  bool _acceptMissing = false;
+
   @override
   void dispose() {
     _name.dispose();
@@ -34,25 +43,47 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   }
 
   Future<void> _submit() async {
-    if (_loading || !_formKey.currentState!.validate()) return;
+    if (_loading) return;
+    final valid = _formKey.currentState!.validate();
+    setState(() => _acceptMissing = !_accepted);
+    if (!valid || !_accepted) return;
     setState(() {
       _loading = true;
       _error = null;
     });
+    // Read before signing up: the page goes once signed in.
+    final auth = ref.read(authRepositoryProvider);
+    final profiles = ref.read(profileRepositoryProvider);
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .signUp(
-            name: _name.text.trim(),
-            email: _email.text.trim(),
-            password: _password.text,
-          );
+      await auth.signUp(
+        name: _name.text.trim(),
+        email: _email.text.trim(),
+        password: _password.text,
+      );
+      final uid = auth.currentUser?.uid;
+      if (uid != null) _recordAcceptance(profiles, uid);
       // The router moves on to the home screen once signed in.
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  /// Records the accepted terms version on the new profile. Waits until
+  /// the profile exists, so its creation doesn't see a document with only
+  /// these fields and skip the rest. Failures don't stop the sign-up.
+  static Future<void> _recordAcceptance(
+    ProfileRepository profiles,
+    String uid,
+  ) async {
+    try {
+      await profiles
+          .watchProfile(uid)
+          .firstWhere((p) => p != null)
+          .timeout(const Duration(seconds: 20));
+      await profiles.acceptTerms(uid, termsVersion);
+    } catch (_) {}
   }
 
   @override
@@ -110,6 +141,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               ],
             ),
           ),
+        ),
+        const SizedBox(height: 16),
+        FCheckbox(
+          semanticsLabel: l10n.legalAcceptTerms(
+            l10n.legalTermsLink,
+            l10n.legalPrivacyLink,
+          ),
+          label: LegalLinksText(template: l10n.legalAcceptTerms),
+          error: _acceptMissing && !_accepted
+              ? Text(l10n.legalAcceptRequired)
+              : null,
+          value: _accepted,
+          enabled: !_loading,
+          onChange: (v) => setState(() => _accepted = v),
         ),
         AnimatedErrorText(error),
         const SizedBox(height: 20),

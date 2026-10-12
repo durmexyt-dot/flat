@@ -10,6 +10,97 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get eventStatusCancelled => 'Otkazan';
+
+  @override
+  String get eventStatusPostponed => 'Pomjeren';
+
+  @override
+  String get legalImprintTitle => 'Impresum';
+
+  @override
+  String get legalTermsTitle => 'Uslovi korištenja';
+
+  @override
+  String get legalPrivacyTitle => 'Politika privatnosti';
+
+  @override
+  String get legalCookiesTitle => 'Kolačići';
+
+  @override
+  String get legalFooterTitle => 'Pravne informacije';
+
+  @override
+  String get legalTermsLink => 'uslove korištenja';
+
+  @override
+  String get legalPrivacyLink => 'politiku privatnosti';
+
+  @override
+  String legalAcceptTerms(String terms, String privacy) {
+    return 'Prihvatam $terms i $privacy';
+  }
+
+  @override
+  String get legalAcceptRequired =>
+      'Za registraciju prihvati uslove korištenja i politiku privatnosti.';
+
+  @override
+  String legalContinueAccept(String terms, String privacy) {
+    return 'Nastavkom prihvataš $terms i $privacy.';
+  }
+
+  @override
+  String priceInclFee(String percent) {
+    return 'uključena naknada za uslugu $percent%';
+  }
+
+  @override
+  String get priceFaceValue => 'Originalna cijena po karti';
+
+  @override
+  String get priceFaceValueInfo => 'Cijena odštampana na karti, bez naknada';
+
+  @override
+  String get priceFaceValueShort => 'Originalna cijena';
+
+  @override
+  String get priceFaceValueInvalid => 'Unesi originalnu cijenu karte';
+
+  @override
+  String get priceSalePrice => 'Cijena prodaje';
+
+  @override
+  String priceSellerFee(String percent) {
+    return 'Naknada prodavca ($percent%)';
+  }
+
+  @override
+  String get priceYouReceive => 'Dobijaš po karti';
+
+  @override
+  String get priceProfit => 'Zarada po karti';
+
+  @override
+  String get priceTotalProfit => 'Ukupna zarada';
+
+  @override
+  String priceForQuantity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count karata',
+      few: '$count karte',
+      one: '$count kartu',
+    );
+    return 'Za $_temp0';
+  }
+
+  @override
+  String get priceBelowFaceValue =>
+      'Nakon naknade dobijaš manje od originalne cijene karte.';
+
+  @override
   String get staffNoMarketTitle => 'Timski računi ne kupuju i ne prodaju';
 
   @override
