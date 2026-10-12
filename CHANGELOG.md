@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.7.0] – 2026-10-12
+
 ### Neu
 - Wiederverkaufsregeln: Admins legen fest, wie weit über dem Originalpreis
   Tickets verkauft werden dürfen (allgemein und je Event); Verkaufen und
