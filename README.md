@@ -104,6 +104,10 @@ the fees in force when it was created), `orders` and `payouts`
 Profile photos, event pictures and support pictures are stored as small
 JPEGs in Firestore, so no Storage bucket (Blaze plan) is needed.
 
+## Backend
+
+Cloud Functions and Storage: see [docs/BACKEND.md](docs/BACKEND.md).
+
 ## Run locally
 
 ```sh

@@ -9,6 +9,26 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Tickets hochladen (PDF/Bild): beim Einstellen oder später; Käufer bekommen
+  sie automatisch nach der Zahlung und können sie herunterladen; Warnung für
+  Verkäufer, solange Karten fehlen
+- Reservierung: Tickets sind beim Bezahlen 15 Minuten für den Käufer gehalten
+- Fristen: unbezahlte Bestellungen verfallen; nicht gelieferte E-Tickets
+  24 h vor dem Event werden erstattet; Abschluss 3 Tage nach dem Event,
+  Auszahlung wird freigegeben; Angebote vergangener Events laufen ab
+- Problem melden: Käufer meldet ein Problem, Auszahlung wird angehalten, das
+  Team entscheidet (Erstattung oder weiter)
+- Events absagen (alle Käufer bekommen ihr Geld zurück) oder verschieben
+  (Karten bleiben gültig)
+- Rechtliches: Impressum, AGB, Datenschutz, Cookies (mit Platzhaltern),
+  Zustimmung bei der Registrierung
+- Preise überall als Endpreis inkl. Servicegebühr; beim Einstellen
+  Originalpreis pro Karte und sofortige Gewinnanzeige
+
+### Technik
+- Cloud Functions (`functions/`) und Firebase Storage, siehe docs/BACKEND.md
+
 ## [1.5.1] – 2026-10-11
 
 ### Geändert
