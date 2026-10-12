@@ -1,6 +1,7 @@
 // The server side of Stubswap: everything that has to happen even when no
 // buyer or seller has the app open. Written against plain Firestore and
 // Storage handles, so the emulator tests can call it directly.
+import { randomUUID } from 'node:crypto';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 
 /** A buyer has this long to pay; the tickets are held meanwhile. */
@@ -97,7 +98,12 @@ export async function deliverTickets(db, bucket, listingId, now = Date.now()) {
       await bucket.file(dest).setMetadata({
         contentType: f.contentType,
         contentDisposition: `attachment; filename="${f.name.replace(/"/g, '')}"`,
-        metadata: { buyerId: order.buyerId, sellerId: order.sellerId },
+        metadata: {
+          buyerId: order.buyerId,
+          sellerId: order.sellerId,
+          // A download link of its own: the copy would keep the seller's.
+          firebaseStorageDownloadTokens: randomUUID(),
+        },
       });
       await orderDoc.ref.collection('files').doc(f.id).set({
         name: f.name,

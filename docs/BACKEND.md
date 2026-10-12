@@ -54,5 +54,5 @@ Cloud Build, Artifact Registry, Cloud Scheduler, Eventarc) — answer yes.
 cd firestore_test && npm install && npm test
 # functions (Firestore + Storage emulators)
 cd functions && npm install && cd ..
-firebase emulators:exec --only firestore,storage "node --test functions/test/"
+firebase emulators:exec --only firestore,storage "node --test functions/test/*.test.js"
 ```

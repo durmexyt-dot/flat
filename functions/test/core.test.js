@@ -49,7 +49,10 @@ async function order(id, { listingId = 'L1', status = 'paid', quantity = 2, inDa
 
 async function upload(listingId, fileId, { tickets = 1, at = NOW } = {}) {
   const path = `tickets/seller/${listingId}/${fileId}`;
-  await bucket.file(path).save(Buffer.from(`%PDF ticket ${fileId}`), { contentType: 'application/pdf' });
+  await bucket.file(path).save(Buffer.from(`%PDF ticket ${fileId}`), {
+    contentType: 'application/pdf',
+    metadata: { metadata: { firebaseStorageDownloadTokens: `seller-${fileId}` } },
+  });
   await db.doc(`listings/${listingId}/files/${fileId}`).set({
     name: `${fileId}.pdf`, contentType: 'application/pdf', size: 20, storagePath: path, tickets, orderId: null, uploadedAt: ts(at),
   });
@@ -71,6 +74,9 @@ test('uploaded tickets go to the oldest paid order; it is then sent', async () =
   const [meta] = await bucket.file('deliveries/o1/f1').getMetadata();
   assert.equal(meta.metadata.buyerId, 'buyer');
   assert.equal(meta.metadata.sellerId, 'seller');
+  // Its own download link, not the seller's.
+  assert.ok(meta.metadata.firebaseStorageDownloadTokens);
+  assert.notEqual(meta.metadata.firebaseStorageDownloadTokens, 'seller-f1');
   assert.ok((await get('orders/o1/files/f2')).storagePath.startsWith('deliveries/o1/'));
   assert.equal((await get('listings/L1/files/f1')).orderId, 'o1');
   // A later upload goes to the next order.
