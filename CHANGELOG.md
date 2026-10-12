@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.6.3] – 2026-10-12
+
+- Event editor: account sidebar on wide screens for the team
+
 ## [1.6.2] – 2026-10-12
 
 - Web: let the app reach the Cloud Functions (CSP connect-src)
