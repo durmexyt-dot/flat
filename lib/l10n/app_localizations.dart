@@ -100,6 +100,198 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @invoicesTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Računi'**
+  String get invoicesTitle;
+
+  /// No description provided for @invoicesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Računi Stubswapa za servisnu naknadu tvojih kupovina i prodaja.'**
+  String get invoicesInfo;
+
+  /// No description provided for @invoicesEmpty.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema računa'**
+  String get invoicesEmpty;
+
+  /// No description provided for @invoicesPlatform.
+  ///
+  /// In bs, this message translates to:
+  /// **'Računi Stubswapa'**
+  String get invoicesPlatform;
+
+  /// No description provided for @invoiceTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Račun'**
+  String get invoiceTitle;
+
+  /// No description provided for @invoiceCreditNote.
+  ///
+  /// In bs, this message translates to:
+  /// **'Storno račun'**
+  String get invoiceCreditNote;
+
+  /// No description provided for @invoiceNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Račun nije pronađen'**
+  String get invoiceNotFound;
+
+  /// No description provided for @invoiceRecipient.
+  ///
+  /// In bs, this message translates to:
+  /// **'Primalac'**
+  String get invoiceRecipient;
+
+  /// No description provided for @invoiceTaxId.
+  ///
+  /// In bs, this message translates to:
+  /// **'JIB'**
+  String get invoiceTaxId;
+
+  /// No description provided for @invoiceVatNumber.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDV broj'**
+  String get invoiceVatNumber;
+
+  /// No description provided for @invoiceFeeBuyer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Servisna naknada za kupovinu karata'**
+  String get invoiceFeeBuyer;
+
+  /// No description provided for @invoiceFeeSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naknada za prodaju karata'**
+  String get invoiceFeeSeller;
+
+  /// No description provided for @invoiceOrder.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžba'**
+  String get invoiceOrder;
+
+  /// No description provided for @invoiceBase.
+  ///
+  /// In bs, this message translates to:
+  /// **'{percent} % od cijene karata {amount}'**
+  String invoiceBase(int percent, String amount);
+
+  /// No description provided for @invoiceNet.
+  ///
+  /// In bs, this message translates to:
+  /// **'Iznos bez PDV-a'**
+  String get invoiceNet;
+
+  /// No description provided for @invoiceVat.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDV {percent} %'**
+  String invoiceVat(int percent);
+
+  /// No description provided for @invoiceVatTotal.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDV'**
+  String get invoiceVatTotal;
+
+  /// No description provided for @invoiceNoVat.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez PDV-a'**
+  String get invoiceNoVat;
+
+  /// No description provided for @invoiceGross.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukupno'**
+  String get invoiceGross;
+
+  /// No description provided for @invoiceCreditFor.
+  ///
+  /// In bs, this message translates to:
+  /// **'Stornira račun {number}.'**
+  String invoiceCreditFor(String number);
+
+  /// No description provided for @invoicePaidBuyer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćeno uz kupovinu karata.'**
+  String get invoicePaidBuyer;
+
+  /// No description provided for @invoicePaidSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odbijeno od isplate za prodaju.'**
+  String get invoicePaidSeller;
+
+  /// No description provided for @invoiceFooter.
+  ///
+  /// In bs, this message translates to:
+  /// **'Račun je izdat elektronski i važi bez potpisa i pečata.'**
+  String get invoiceFooter;
+
+  /// No description provided for @invoiceDownload.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preuzmi PDF'**
+  String get invoiceDownload;
+
+  /// No description provided for @invoiceDownloadUnavailable.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preuzimanje ovdje još nije moguće.'**
+  String get invoiceDownloadUnavailable;
+
+  /// No description provided for @adminInvoicesTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Računi platforme'**
+  String get adminInvoicesTitle;
+
+  /// No description provided for @adminInvoicesInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi računi po mjesecima, ukupni iznosi i izvoz za knjigovodstvo'**
+  String get adminInvoicesInfo;
+
+  /// No description provided for @invoicesPrevMonth.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prethodni mjesec'**
+  String get invoicesPrevMonth;
+
+  /// No description provided for @invoicesNextMonth.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sljedeći mjesec'**
+  String get invoicesNextMonth;
+
+  /// No description provided for @invoicesCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count} računa'**
+  String invoicesCount(int count);
+
+  /// No description provided for @invoicesExport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Izvoz CSV (Excel)'**
+  String get invoicesExport;
+
+  /// No description provided for @invoicesNoneInMonth.
+  ///
+  /// In bs, this message translates to:
+  /// **'U ovom mjesecu nema računa.'**
+  String get invoicesNoneInMonth;
+
   /// No description provided for @moderationTitle.
   ///
   /// In bs, this message translates to:

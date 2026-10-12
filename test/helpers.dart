@@ -190,12 +190,27 @@ Future<FakeAuthRepository> pumpApp(
   return auth;
 }
 
-/// The vertical list of the screen on top (not e.g. a row of chips).
-Finder get mainScrollable => find
-    .byWidgetPredicate(
-      (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
-    )
-    .last;
+/// The vertical list of the screen on top (not e.g. a row of chips or a
+/// select menu's list): the tallest vertical scrollable on screen.
+Finder get mainScrollable {
+  Element? best;
+  var height = -1.0;
+  for (final e
+      in find
+          .byWidgetPredicate(
+            (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+          )
+          .evaluate()) {
+    final box = e.renderObject;
+    final h = box is RenderBox && box.hasSize ? box.size.height : 0.0;
+    // Later (on top) wins ties, like `.last` before.
+    if (h >= height) {
+      best = e;
+      height = h;
+    }
+  }
+  return find.byElementPredicate((e) => identical(e, best));
+}
 
 /// Scrolls the first scrollable until [finder] is built and visible, then
 /// taps it.

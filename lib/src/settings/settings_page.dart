@@ -9,6 +9,7 @@ import '../admin/admin_page.dart';
 import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
+import '../data/platform_repository.dart';
 import '../data/events_repository.dart';
 import '../data/repositories.dart';
 import '../market/ticket_files_widgets.dart';
@@ -41,6 +42,9 @@ class SettingsPage extends ConsumerWidget {
     final isAdmin = user != null && ref.watch(isAdminProvider);
     final staffUnread = isStaff ? ref.watch(unreadForStaffProvider) : 0;
     final pendingEvents = isStaff ? ref.watch(pendingEventsProvider).length : 0;
+    final openReports = isStaff
+        ? ref.watch(openReportsProvider).value?.length ?? 0
+        : 0;
     final supportAnswers = user == null
         ? 0
         : ref.watch(unreadSupportAnswersProvider);
@@ -79,6 +83,17 @@ class SettingsPage extends ConsumerWidget {
                   ? CountPill(count: pendingEvents)
                   : null,
               onTap: () => context.push('/admin/events'),
+            ),
+            SettingsLinkTile(
+              icon: FLucideIcons.shieldAlert,
+              title: l10n.moderationTitle,
+              trailing: openReports > 0 ? CountPill(count: openReports) : null,
+              onTap: () => context.push('/admin/moderation'),
+            ),
+            SettingsLinkTile(
+              icon: FLucideIcons.gauge,
+              title: l10n.limitsTitle,
+              onTap: () => context.push('/admin/limits'),
             ),
             if (isAdmin)
               SettingsLinkTile(
@@ -124,6 +139,11 @@ class SettingsPage extends ConsumerWidget {
               title: l10n.payoutMethod,
               subtitle: payoutMethod?.masked ?? l10n.payoutMethodMissing,
               onTap: () => context.push('/account/payout-method'),
+            ),
+            SettingsLinkTile(
+              icon: FLucideIcons.receiptText,
+              title: l10n.invoicesTitle,
+              onTap: () => context.push('/account/invoices'),
             ),
           ],
         ),

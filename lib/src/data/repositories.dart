@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_repository.dart';
 import '../../firebase_options_prod.dart';
 import '../config/app_info.dart';
+import '../settings/settings_controller.dart';
 import 'models.dart';
 import 'live_snapshots.dart';
 
@@ -31,6 +32,9 @@ abstract class ProfileRepository {
 
   /// Records that the user accepted the terms of use in [version].
   Future<void> acceptTerms(String uid, String version);
+
+  /// The app's language (bs, de, en), so emails come in it.
+  Future<void> setLanguage(String uid, String code);
 }
 
 abstract class MarketRepository {
@@ -138,6 +142,10 @@ class FirestoreProfileRepository implements ProfileRepository {
     'termsAcceptedAt': FieldValue.serverTimestamp(),
     'termsVersion': version,
   });
+
+  @override
+  Future<void> setLanguage(String uid, String code) =>
+      _update(uid, {'language': code});
 
   @override
   Future<void> setUsername(String uid, String username) async {
@@ -474,13 +482,31 @@ final payoutProvider = StreamProvider.family<Payout?, String>(
 
 /// Creates the profile document when a user signs in. Watched by the app.
 final profileBootstrapProvider = Provider<void>((ref) {
+  // The language last saved to the profile, per user (once per session).
+  String? saved;
+  void saveLanguage() {
+    final uid = ref.read(authStateProvider).value?.uid;
+    final code = ref.read(settingsProvider).locale.languageCode;
+    if (uid == null || saved == '$uid:$code') return;
+    saved = '$uid:$code';
+    ref
+        .read(profileRepositoryProvider)
+        .setLanguage(uid, code)
+        .catchError((Object _) {});
+  }
+
   ref.listen(authStateProvider, (_, next) {
     final user = next.value;
     if (user == null) return;
     ref
         .read(profileRepositoryProvider)
         .ensureProfile(user)
+        .then((_) => saveLanguage())
         // Without Firestore the app still works from the auth data.
         .catchError((Object _) {});
   }, fireImmediately: true);
+  ref.listen(
+    settingsProvider.select((s) => s.locale),
+    (_, _) => saveLanguage(),
+  );
 });

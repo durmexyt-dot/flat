@@ -15,6 +15,7 @@ import '../payments/payment_gateway.dart';
 import '../payments/test_payment_gateway.dart';
 import '../settings/settings_widgets.dart';
 import '../support/contact_support_page.dart';
+import '../invoices/invoice_pages.dart' show OrderInvoices;
 import '../ui/app_dialog.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
@@ -137,6 +138,7 @@ class OrderDetailPage extends ConsumerWidget {
                 StatusTimeline(steps: orderTimeline(context, order)),
                 SettingsSectionTitle(l10n.invoice),
                 _Invoice(order: order, role: role),
+                OrderInvoices(orderId: order.id),
                 if (buyer && canReportProblem(order)) ...[
                   const SizedBox(height: 12),
                   FButton(

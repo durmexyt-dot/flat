@@ -38,6 +38,9 @@ import 'support/help_center_page.dart';
 import 'support/support_inbox_page.dart';
 import 'support/support_ticket_page.dart';
 import 'ui/hero_page.dart';
+import 'admin/moderation_pages.dart';
+import 'admin/platform_settings_pages.dart';
+import 'invoices/invoice_pages.dart';
 
 const _authRoutes = {'/login', '/signup', '/forgot-password'};
 const _accountOnly = [
@@ -49,6 +52,7 @@ const _accountOnly = [
   '/support/new',
   '/support/ticket',
   '/admin',
+  '/invoice',
   '/events/new',
   '/settings/profile',
   '/settings/privacy',
@@ -152,6 +156,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/admin/support', (_) => const SupportInboxPage()),
       _route('/admin/fees', (_) => const FeesPage()),
       _route('/admin/team', (_) => const TeamPage()),
+      _route('/admin/resale', (_) => const ResaleRulesPage()),
+      _route('/admin/limits', (_) => const SellerLimitsPage()),
+      _route('/admin/company', (_) => const CompanyPage()),
+      _route('/admin/invoices', (_) => const AdminInvoicesPage()),
+      _route('/admin/moderation', (_) => const ModerationPage()),
+      _route(
+        '/admin/users/:uid',
+        (state) => UserModerationPage(uid: state.pathParameters['uid']!),
+      ),
+      _route('/account/invoices', (_) => const MyInvoicesPage()),
+      _route(
+        '/invoice/:id',
+        (state) => InvoicePage(id: state.pathParameters['id']!),
+      ),
       _route('/admin/events', (_) => const EventsAdminPage()),
       _route('/admin/events/new', (_) => const EventEditorPage()),
       // Users add events too (unconfirmed until the team checks them).

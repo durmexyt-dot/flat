@@ -113,6 +113,13 @@ class InMemoryProfileRepository implements ProfileRepository {
   @override
   Future<void> acceptTerms(String uid, String version) async =>
       acceptedTerms[uid] = version;
+
+  /// Per user: the app language saved for emails, for tests.
+  final languages = <String, String>{};
+
+  @override
+  Future<void> setLanguage(String uid, String code) async =>
+      languages[uid] = code;
 }
 
 /// Marketplace data held in memory, for tests.

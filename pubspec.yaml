@@ -49,6 +49,7 @@ dependencies:
   forui: ^0.27.5
   firebase_storage: ^13.6.0
   cloud_functions: ^6.5.0
+  pdf: ^3.13.1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +68,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   generate: true
+  # Fonts for invoice PDFs (Roboto, Apache 2.0): Latin letters incl. č ć đ š ž.
+  assets:
+    - assets/fonts/Roboto-Regular.ttf
+    - assets/fonts/Roboto-Bold.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

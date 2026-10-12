@@ -10,6 +10,114 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get invoicesTitle => 'Invoices';
+
+  @override
+  String get invoicesInfo =>
+      'Stubswap’s invoices for the service fee of your purchases and sales.';
+
+  @override
+  String get invoicesEmpty => 'No invoices yet';
+
+  @override
+  String get invoicesPlatform => 'Stubswap invoices';
+
+  @override
+  String get invoiceTitle => 'Invoice';
+
+  @override
+  String get invoiceCreditNote => 'Credit note';
+
+  @override
+  String get invoiceNotFound => 'Invoice not found';
+
+  @override
+  String get invoiceRecipient => 'Bill to';
+
+  @override
+  String get invoiceTaxId => 'Tax no. (JIB)';
+
+  @override
+  String get invoiceVatNumber => 'VAT no.';
+
+  @override
+  String get invoiceFeeBuyer => 'Service fee for buying tickets';
+
+  @override
+  String get invoiceFeeSeller => 'Fee for selling tickets';
+
+  @override
+  String get invoiceOrder => 'Order';
+
+  @override
+  String invoiceBase(int percent, String amount) {
+    return '$percent % of the ticket price $amount';
+  }
+
+  @override
+  String get invoiceNet => 'Net amount';
+
+  @override
+  String invoiceVat(int percent) {
+    return 'VAT $percent %';
+  }
+
+  @override
+  String get invoiceVatTotal => 'VAT';
+
+  @override
+  String get invoiceNoVat => 'No VAT';
+
+  @override
+  String get invoiceGross => 'Total';
+
+  @override
+  String invoiceCreditFor(String number) {
+    return 'Cancels invoice $number.';
+  }
+
+  @override
+  String get invoicePaidBuyer => 'Paid with the ticket purchase.';
+
+  @override
+  String get invoicePaidSeller => 'Deducted from the sale’s payout.';
+
+  @override
+  String get invoiceFooter =>
+      'This invoice was issued electronically and is valid without a signature.';
+
+  @override
+  String get invoiceDownload => 'Download PDF';
+
+  @override
+  String get invoiceDownloadUnavailable =>
+      'Downloading isn’t available here yet.';
+
+  @override
+  String get adminInvoicesTitle => 'Platform invoices';
+
+  @override
+  String get adminInvoicesInfo =>
+      'All invoices per month, totals and export for accounting';
+
+  @override
+  String get invoicesPrevMonth => 'Previous month';
+
+  @override
+  String get invoicesNextMonth => 'Next month';
+
+  @override
+  String invoicesCount(int count) {
+    return '$count invoices';
+  }
+
+  @override
+  String get invoicesExport => 'Export CSV (Excel)';
+
+  @override
+  String get invoicesNoneInMonth => 'No invoices in this month.';
+
+  @override
   String get moderationTitle => 'Moderation';
 
   @override

@@ -10,6 +10,113 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get invoicesTitle => 'Računi';
+
+  @override
+  String get invoicesInfo =>
+      'Računi Stubswapa za servisnu naknadu tvojih kupovina i prodaja.';
+
+  @override
+  String get invoicesEmpty => 'Još nema računa';
+
+  @override
+  String get invoicesPlatform => 'Računi Stubswapa';
+
+  @override
+  String get invoiceTitle => 'Račun';
+
+  @override
+  String get invoiceCreditNote => 'Storno račun';
+
+  @override
+  String get invoiceNotFound => 'Račun nije pronađen';
+
+  @override
+  String get invoiceRecipient => 'Primalac';
+
+  @override
+  String get invoiceTaxId => 'JIB';
+
+  @override
+  String get invoiceVatNumber => 'PDV broj';
+
+  @override
+  String get invoiceFeeBuyer => 'Servisna naknada za kupovinu karata';
+
+  @override
+  String get invoiceFeeSeller => 'Naknada za prodaju karata';
+
+  @override
+  String get invoiceOrder => 'Narudžba';
+
+  @override
+  String invoiceBase(int percent, String amount) {
+    return '$percent % od cijene karata $amount';
+  }
+
+  @override
+  String get invoiceNet => 'Iznos bez PDV-a';
+
+  @override
+  String invoiceVat(int percent) {
+    return 'PDV $percent %';
+  }
+
+  @override
+  String get invoiceVatTotal => 'PDV';
+
+  @override
+  String get invoiceNoVat => 'Bez PDV-a';
+
+  @override
+  String get invoiceGross => 'Ukupno';
+
+  @override
+  String invoiceCreditFor(String number) {
+    return 'Stornira račun $number.';
+  }
+
+  @override
+  String get invoicePaidBuyer => 'Plaćeno uz kupovinu karata.';
+
+  @override
+  String get invoicePaidSeller => 'Odbijeno od isplate za prodaju.';
+
+  @override
+  String get invoiceFooter =>
+      'Račun je izdat elektronski i važi bez potpisa i pečata.';
+
+  @override
+  String get invoiceDownload => 'Preuzmi PDF';
+
+  @override
+  String get invoiceDownloadUnavailable => 'Preuzimanje ovdje još nije moguće.';
+
+  @override
+  String get adminInvoicesTitle => 'Računi platforme';
+
+  @override
+  String get adminInvoicesInfo =>
+      'Svi računi po mjesecima, ukupni iznosi i izvoz za knjigovodstvo';
+
+  @override
+  String get invoicesPrevMonth => 'Prethodni mjesec';
+
+  @override
+  String get invoicesNextMonth => 'Sljedeći mjesec';
+
+  @override
+  String invoicesCount(int count) {
+    return '$count računa';
+  }
+
+  @override
+  String get invoicesExport => 'Izvoz CSV (Excel)';
+
+  @override
+  String get invoicesNoneInMonth => 'U ovom mjesecu nema računa.';
+
+  @override
   String get moderationTitle => 'Moderacija';
 
   @override

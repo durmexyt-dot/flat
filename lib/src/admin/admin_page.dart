@@ -53,6 +53,34 @@ class AdminPage extends ConsumerWidget {
                     onTap: () => context.push('/admin/fees'),
                   ),
                   SettingsLinkTile(
+                    icon: FLucideIcons.chartNoAxesColumnIncreasing,
+                    title: l10n.resaleTitle,
+                    subtitle: l10n.resaleIntro,
+                    onTap: () => context.push('/admin/resale'),
+                  ),
+                  SettingsLinkTile(
+                    icon: FLucideIcons.gauge,
+                    title: l10n.limitsTitle,
+                    onTap: () => context.push('/admin/limits'),
+                  ),
+                  SettingsLinkTile(
+                    icon: FLucideIcons.shieldAlert,
+                    title: l10n.moderationTitle,
+                    subtitle: l10n.moderationInfo,
+                    onTap: () => context.push('/admin/moderation'),
+                  ),
+                  SettingsLinkTile(
+                    icon: FLucideIcons.receiptText,
+                    title: l10n.adminInvoicesTitle,
+                    subtitle: l10n.adminInvoicesInfo,
+                    onTap: () => context.push('/admin/invoices'),
+                  ),
+                  SettingsLinkTile(
+                    icon: FLucideIcons.building2,
+                    title: l10n.companyTitle,
+                    onTap: () => context.push('/admin/company'),
+                  ),
+                  SettingsLinkTile(
                     icon: FLucideIcons.users,
                     title: l10n.adminTeamTitle,
                     subtitle: l10n.adminTeamInfo,

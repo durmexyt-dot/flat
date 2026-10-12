@@ -9,6 +9,24 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Wiederverkaufsregeln: Admins legen fest, wie weit über dem Originalpreis
+  Tickets verkauft werden dürfen (allgemein und je Event); Verkaufen und
+  Preisänderungen zeigen und prüfen den Höchstpreis.
+- Transaktionsmails (Bosnisch, Deutsch, Englisch): Kauf, Verkauf, Tickets
+  da, Erstattung, Problem gemeldet, Auszahlung, Verschiebung, Erinnerung zum
+  Hochladen, Support-Antwort, entferntes Angebot. Versand über die
+  Firebase-Erweiterung „Trigger Email“.
+- Betrugsschutz: dieselbe Ticketdatei kann nicht zweimal verkauft werden
+  (Kopie gesperrt, Team informiert); Limits für neue Verkäufer; Angebote
+  melden.
+- Moderation für Admins und Support: Meldungen, kopierte Tickets, Nutzer
+  suchen, sperren/entsperren, Limits aufheben, Angebote entfernen,
+  Bestellungen erstatten, Protokoll.
+- Rechnungen der Plattform über die Servicegebühr (mit PDV) an Käufer und
+  Verkäufer, Stornorechnungen, PDF-Download, Monatsübersicht mit CSV-Export
+  und Firmendaten für Admins.
+
 ## [1.6.4] – 2026-10-12
 
 - Account pages fill the page beside the sidebar, like the profile

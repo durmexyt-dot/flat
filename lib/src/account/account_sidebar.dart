@@ -29,6 +29,7 @@ List<(IconData, String, String)> accountEntries(
     (FLucideIcons.store, l10n.sales, '/account/sales'),
     (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
     (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
+    (FLucideIcons.receiptText, l10n.invoicesTitle, '/account/invoices'),
   ],
   (FLucideIcons.palette, l10n.appearance, '/settings/appearance'),
   (FLucideIcons.bell, l10n.notifications, '/settings/notifications'),
@@ -43,6 +44,8 @@ List<(IconData, String, String)> staffEntries(
   required bool isAdmin,
 }) => [
   if (isStaff) (FLucideIcons.inbox, l10n.supportInbox, '/admin/support'),
+  if (isStaff)
+    (FLucideIcons.shieldAlert, l10n.moderationTitle, '/admin/moderation'),
   if (isAdmin) (FLucideIcons.shieldUser, l10n.supportAdministration, '/admin'),
 ];
 

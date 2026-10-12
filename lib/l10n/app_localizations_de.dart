@@ -10,6 +10,114 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get invoicesTitle => 'Rechnungen';
+
+  @override
+  String get invoicesInfo =>
+      'Rechnungen von Stubswap über die Servicegebühr deiner Käufe und Verkäufe.';
+
+  @override
+  String get invoicesEmpty => 'Noch keine Rechnungen';
+
+  @override
+  String get invoicesPlatform => 'Rechnungen von Stubswap';
+
+  @override
+  String get invoiceTitle => 'Rechnung';
+
+  @override
+  String get invoiceCreditNote => 'Stornorechnung';
+
+  @override
+  String get invoiceNotFound => 'Rechnung nicht gefunden';
+
+  @override
+  String get invoiceRecipient => 'Empfänger';
+
+  @override
+  String get invoiceTaxId => 'Steuernr. (JIB)';
+
+  @override
+  String get invoiceVatNumber => 'USt-IdNr.';
+
+  @override
+  String get invoiceFeeBuyer => 'Servicegebühr für den Ticketkauf';
+
+  @override
+  String get invoiceFeeSeller => 'Gebühr für den Ticketverkauf';
+
+  @override
+  String get invoiceOrder => 'Bestellung';
+
+  @override
+  String invoiceBase(int percent, String amount) {
+    return '$percent % vom Ticketpreis $amount';
+  }
+
+  @override
+  String get invoiceNet => 'Nettobetrag';
+
+  @override
+  String invoiceVat(int percent) {
+    return 'USt. $percent %';
+  }
+
+  @override
+  String get invoiceVatTotal => 'USt.';
+
+  @override
+  String get invoiceNoVat => 'Ohne USt.';
+
+  @override
+  String get invoiceGross => 'Gesamt';
+
+  @override
+  String invoiceCreditFor(String number) {
+    return 'Storniert die Rechnung $number.';
+  }
+
+  @override
+  String get invoicePaidBuyer => 'Mit dem Ticketkauf bezahlt.';
+
+  @override
+  String get invoicePaidSeller => 'Von der Auszahlung des Verkaufs abgezogen.';
+
+  @override
+  String get invoiceFooter =>
+      'Die Rechnung wurde elektronisch erstellt und ist ohne Unterschrift gültig.';
+
+  @override
+  String get invoiceDownload => 'PDF herunterladen';
+
+  @override
+  String get invoiceDownloadUnavailable =>
+      'Herunterladen ist hier noch nicht möglich.';
+
+  @override
+  String get adminInvoicesTitle => 'Rechnungen der Plattform';
+
+  @override
+  String get adminInvoicesInfo =>
+      'Alle Rechnungen je Monat, Summen und Export für die Buchhaltung';
+
+  @override
+  String get invoicesPrevMonth => 'Vorheriger Monat';
+
+  @override
+  String get invoicesNextMonth => 'Nächster Monat';
+
+  @override
+  String invoicesCount(int count) {
+    return '$count Rechnungen';
+  }
+
+  @override
+  String get invoicesExport => 'CSV-Export (Excel)';
+
+  @override
+  String get invoicesNoneInMonth => 'In diesem Monat gibt es keine Rechnungen.';
+
+  @override
   String get moderationTitle => 'Moderation';
 
   @override
