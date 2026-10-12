@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.6.2] – 2026-10-12
+
+- Web: let the app reach the Cloud Functions (CSP connect-src)
+- Web: let the app reach the Cloud Functions (CSP connect-src)
+
 ## [1.6.1] – 2026-10-12
 
 - Web: allow the Storage and Functions SDK loaders in the CSP
