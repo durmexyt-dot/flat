@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.6.0] – 2026-10-12
+
 ### Neu
 - Tickets hochladen (PDF/Bild): beim Einstellen oder später; Käufer bekommen
   sie automatisch nach der Zahlung und können sie herunterladen; Warnung für
