@@ -104,7 +104,14 @@ class EventEditorPage extends ConsumerWidget {
               ),
       );
     }
-    return SiteScaffold(title: title, maxWidth: SiteWidth.form, body: body);
+    return SiteScaffold(
+      title: title,
+      maxWidth: SiteWidth.form,
+      // The team edits events in the account area, like the event list;
+      // users adding an event while selling stay in the marketplace.
+      accountNav: teamRoute,
+      body: body,
+    );
   }
 }
 
