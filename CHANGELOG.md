@@ -9,6 +9,13 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.7.1] – 2026-10-12
+
+- Moderation: open reports again
+- Prod emails from the Gmail account for now; note prod is integration until go-live
+- Emails: no upload reminder in the sale email when tickets are already there
+- Staging emails: send from the Gmail test account
+
 ## [1.7.0] – 2026-10-12
 
 ### Neu
