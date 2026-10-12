@@ -73,6 +73,9 @@ export async function deliverTickets(db, bucket, listingId, now = Date.now()) {
       if (order.get('status') !== 'paid') return [];
       let need = order.get('quantity') - (order.get('ticketsDelivered') ?? 0);
       const files = (await tx.get(listingRef.collection('files').where('orderId', '==', null))).docs
+        // Not yet checked for copies (new uploads start unchecked) or a
+        // blocked copy: not handed out.
+        .filter((f) => f.get('checked') !== false && f.get('blocked') !== true)
         .sort((a, b) => millis(a.get('uploadedAt')) - millis(b.get('uploadedAt')));
       const picked = [];
       for (const f of files) {
@@ -144,7 +147,7 @@ export async function deliverTickets(db, bucket, listingId, now = Date.now()) {
  * Refunds a paid order in [tx]: the order is refunded, the seller's payout
  * dropped, and with [returnTickets] the tickets go back on sale.
  */
-function refundInTx(tx, db, orderSnap, listingSnap, { by, now, returnTickets }) {
+export function refundOrderInTx(tx, db, orderSnap, listingSnap, { by, now, returnTickets }) {
   const order = orderSnap.data();
   tx.update(orderSnap.ref, {
     status: 'refunded',
@@ -209,7 +212,7 @@ export async function refundUndelivered(db, now = Date.now()) {
       const order = await tx.get(d.ref);
       if (order.get('status') !== 'paid') return;
       const listing = await tx.get(db.doc(`listings/${order.get('listingId')}`));
-      refundInTx(tx, db, order, listing, { by: 'deadline', now, returnTickets: false });
+      refundOrderInTx(tx, db, order, listing, { by: 'deadline', now, returnTickets: false });
     });
   }
   return late.length;
@@ -356,7 +359,7 @@ export async function resolveDispute(db, uid, { orderId, decision, note }, now =
       'dispute.resolvedAt': Timestamp.fromMillis(now),
     };
     if (decision === 'refund') {
-      refundInTx(tx, db, order, listing, { by: 'support', now, returnTickets: false });
+      refundOrderInTx(tx, db, order, listing, { by: 'support', now, returnTickets: false });
       tx.update(ref, resolution);
     } else {
       const previous = order.get('dispute.previousStatus') ?? 'ticketsSent';

@@ -23,24 +23,76 @@ service cloud.firestore {
     function eventPath(id) { return /databases/$(database)/documents/events/$(id); }
     function rolePath(uid) { return /databases/$(database)/documents/roles/$(uid); }
     function feesPath() { return /databases/$(database)/documents/config/fees; }
+    function resalePath() { return /databases/$(database)/documents/config/resale; }
+    function limitsPath() { return /databases/$(database)/documents/config/limits; }
+    function statsPath(uid) { return /databases/$(database)/documents/sellerStats/$(uid); }
+    function banPath(uid) { return /databases/$(database)/documents/bans/$(uid); }
 
     // ---- Roles ------------------------------------------------------------
     // Admins exist only through the Firebase console (roles/{uid} with
     // role "admin"); no client can write that. Admins name support accounts.
+    // One get() per document (an extra exists() would count against the
+    // rules' limit of 10 document reads per request).
+    function docData(path) {
+      let d = get(path);
+      return d == null ? {} : d.data;
+    }
     function role() {
-      return signedIn() && exists(rolePath(request.auth.uid))
-        ? get(rolePath(request.auth.uid)).data.role : '';
+      return signedIn() ? docData(rolePath(request.auth.uid)).get('role', '') : '';
     }
     function isAdmin() { return role() == 'admin'; }
     function isStaff() { return role() in ['admin', 'support']; }
 
     // Fees for new listings; 10 % each until an admin sets them.
     function currentFees() {
-      return exists(feesPath())
-        ? get(feesPath()).data
-        : {'buyerPercent': 10, 'sellerPercent': 10};
+      let fees = docData(feesPath());
+      return {'buyerPercent': fees.get('buyerPercent', 10),
+        'sellerPercent': fees.get('sellerPercent', 10)};
     }
     function validPercent(v) { return v is int && v >= 0 && v <= 30; }
+
+    // ---- Moderation, resale rules, seller limits ------------------------------
+    // The team (admins and support) blocks accounts: blocked users can't sell,
+    // buy or add events (Cloud Function writes bans/{uid}).
+    function banned() { return exists(banPath(request.auth.uid)); }
+
+    // Resale rules (admins): the highest price as percent above the face
+    // value, for all events or one event; null means no limit. With a limit
+    // (or when required) the face value must be given.
+    function resaleConfig() {
+      return docData(resalePath());
+    }
+    function markupLimit(eventId) {
+      let e = docData(eventPath(eventId));
+      return e.get('maxMarkupPercent', null) != null
+        ? e.maxMarkupPercent
+        : resaleConfig().get('maxMarkupPercent', null);
+    }
+    function withinResaleRules(d) {
+      let limit = markupLimit(d.get('eventId', ''));
+      let needsFace = limit != null || resaleConfig().get('requireFaceValue', false) == true;
+      return (!needsFace || d.get('faceValueMinor', null) != null)
+        && (limit == null || d.priceMinor * 100 <= d.faceValueMinor * (100 + limit));
+    }
+    function validMarkup(v) { return v == null || (v is int && v >= 0 && v <= 1000); }
+
+    // New sellers list a few tickets at first; after some completed sales
+    // (or when the team trusts them) there is no limit. Counts come from the
+    // Cloud Function (sellerStats/{uid}).
+    function limitsConfig() {
+      return docData(limitsPath());
+    }
+    function sellerStats() {
+      return docData(statsPath(request.auth.uid));
+    }
+    function withinSellerLimits(d) {
+      let s = sellerStats();
+      let c = limitsConfig();
+      return s.get('trusted', false) == true
+        || s.get('completedSales', 0) >= c.get('trustedAfterSales', 3)
+        || (d.quantity <= c.get('newSellerMaxTickets', 6)
+          && s.get('activeListings', 0) < c.get('newSellerMaxListings', 5));
+    }
 
     // ---- Reservations -------------------------------------------------------
     // Opening an order holds its tickets for 15 minutes (quantityReserved on
@@ -135,7 +187,9 @@ service cloud.firestore {
       function validUser(d) {
         return d.keys().hasOnly(['displayName', 'email', 'username', 'photo',
             'visibility', 'notifications', 'createdAt', 'updatedAt',
-            'termsAcceptedAt', 'termsVersion'])
+            'termsAcceptedAt', 'termsVersion', 'language'])
+          // The app's language, for emails.
+          && (!('language' in d) || d.language in ['bs', 'de', 'en'])
           // When the user accepted the terms (signup), and which version.
           && (!('termsAcceptedAt' in d) || d.termsAcceptedAt is timestamp)
           && optStr(d, 'termsVersion', 20)
@@ -152,8 +206,9 @@ service cloud.firestore {
           && ownsUsername(d);
       }
 
-      // Admins find single users by email or username (support accounts).
-      allow read: if isUser(uid) || isAdmin();
+      // The team finds single users by email or username (support accounts,
+      // moderation).
+      allow read: if isUser(uid) || isStaff();
       allow create: if isUser(uid) && validUser(request.resource.data);
       allow update: if isUser(uid) && validUser(request.resource.data)
         // A changed username frees the old reservation in the same write.
@@ -201,12 +256,15 @@ service cloud.firestore {
 
     match /listings/{id} {
       allow read: if resource.data.status == 'active'
-        || isUser(resource.data.sellerId);
+        || isUser(resource.data.sellerId) || isStaff();
       allow create: if signedIn()
         // Only sellers with a confirmed email address list tickets.
         && verifiedEmail()
-        // Team accounts (admins, support) don't sell.
+        // Team accounts (admins, support) don't sell; blocked users neither.
         && !isStaff()
+        && !banned()
+        && withinSellerLimits(request.resource.data)
+        && withinResaleRules(request.resource.data)
         && request.resource.data.sellerId == request.auth.uid
         // Sellers need a payout method before listing tickets.
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
@@ -253,8 +311,11 @@ service cloud.firestore {
         (isUser(resource.data.sellerId)
           && resource.data.status == 'active'
           && (
-            (onlyChanges(['priceMinor', 'updatedAt'])
-              && validPrice(request.resource.data.priceMinor))
+            (onlyChanges(['priceMinor', 'faceValueMinor', 'updatedAt'])
+              && validPrice(request.resource.data.priceMinor)
+              && (request.resource.data.get('faceValueMinor', null) == null
+                || validPrice(request.resource.data.faceValueMinor))
+              && withinResaleRules(request.resource.data))
             || (onlyChanges(['status', 'updatedAt'])
               && request.resource.data.status == 'withdrawn')
           ))
@@ -322,7 +383,9 @@ service cloud.firestore {
       allow create: if signedIn()
         && get(listingPath(id)).data.sellerId == request.auth.uid
         && request.resource.data.keys().hasOnly(['name', 'contentType', 'size',
-            'storagePath', 'tickets', 'orderId', 'uploadedAt'])
+            'storagePath', 'tickets', 'orderId', 'checked', 'uploadedAt'])
+        // The Cloud Function checks every file for copies before delivery.
+        && request.resource.data.checked == false
         && str(request.resource.data.name, 1, 120)
         && request.resource.data.contentType
           in ['application/pdf', 'image/png', 'image/jpeg', 'image/webp']
@@ -357,8 +420,9 @@ service cloud.firestore {
 
       // Test mode: the buyer opens an order at the listing's current price.
       allow create: if signedIn()
-        // Team accounts (admins, support) don't buy.
+        // Team accounts (admins, support) don't buy; blocked users neither.
         && !isStaff()
+        && !banned()
         && request.resource.data.testMode == true
         && request.resource.data.buyerId == request.auth.uid
         && request.resource.data.status == 'pendingPayment'
@@ -502,6 +566,96 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time;
     }
 
+    // Resale rules: admins only.
+    match /config/resale {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['maxMarkupPercent', 'requireFaceValue',
+            'updatedBy', 'updatedAt'])
+        && validMarkup(request.resource.data.get('maxMarkupPercent', null))
+        && request.resource.data.requireFaceValue is bool
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Limits for new sellers: the whole team.
+    match /config/limits {
+      allow read: if true;
+      allow write: if isStaff()
+        && request.resource.data.keys().hasOnly(['newSellerMaxListings',
+            'newSellerMaxTickets', 'trustedAfterSales', 'updatedBy', 'updatedAt'])
+        && request.resource.data.newSellerMaxListings is int
+        && request.resource.data.newSellerMaxListings >= 1
+        && request.resource.data.newSellerMaxListings <= 100
+        && request.resource.data.newSellerMaxTickets is int
+        && request.resource.data.newSellerMaxTickets >= 1
+        && request.resource.data.newSellerMaxTickets <= 50
+        && request.resource.data.trustedAfterSales is int
+        && request.resource.data.trustedAfterSales >= 0
+        && request.resource.data.trustedAfterSales <= 100
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // The platform's company details on invoices: admins only.
+    match /config/company {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.keys().hasOnly(['name', 'address', 'taxId',
+            'vatNumber', 'vatPercent', 'email', 'invoicePrefix', 'updatedBy', 'updatedAt'])
+        && str(request.resource.data.name, 1, 120)
+        && str(request.resource.data.address, 0, 300)
+        && str(request.resource.data.taxId, 0, 40)
+        && str(request.resource.data.vatNumber, 0, 40)
+        && request.resource.data.vatPercent is int
+        && request.resource.data.vatPercent >= 0
+        && request.resource.data.vatPercent <= 30
+        && str(request.resource.data.email, 0, 120)
+        && request.resource.data.invoicePrefix.matches('^[A-Z]{2,6}$')
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Seller counts (Cloud Function), blocks and the team's log.
+    match /sellerStats/{uid} {
+      allow read: if isUser(uid) || isStaff();
+    }
+    match /bans/{uid} {
+      allow read: if isUser(uid) || isStaff();
+    }
+    match /moderationLog/{id} {
+      allow read: if isStaff();
+    }
+
+    // Reports: users report a listing once; the Cloud Function reports
+    // ticket files that were uploaded before. The team handles them.
+    match /reports/{id} {
+      allow read: if isStaff() || isUser(resource.data.reporterId);
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['type', 'listingId', 'reason', 'text',
+            'reporterId', 'status', 'createdAt'])
+        && request.resource.data.type == 'listing'
+        && id == request.resource.data.listingId + '_' + request.auth.uid
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.reason in ['fake', 'price', 'wrongEvent', 'spam', 'other']
+        && optStr(request.resource.data, 'text', 500)
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time
+        && exists(listingPath(request.resource.data.listingId))
+        && get(listingPath(request.resource.data.listingId)).data.sellerId != request.auth.uid;
+      allow update: if isStaff()
+        && onlyChanges(['status', 'handledBy', 'handledAt', 'note'])
+        && request.resource.data.status in ['open', 'resolved', 'dismissed']
+        && request.resource.data.handledBy == request.auth.uid
+        && request.resource.data.handledAt == request.time
+        && optStr(request.resource.data, 'note', 500);
+    }
+
+    // The platform's invoices for its service fee (Cloud Function).
+    match /invoices/{id} {
+      allow read: if isUser(resource.data.recipientUid) || isAdmin();
+    }
+
     // Users add events unconfirmed ("pending"); the team (admins and
     // support accounts) checks, corrects, confirms or hides them. Tickets can
     // be listed for pending and confirmed events.
@@ -509,7 +663,8 @@ service cloud.firestore {
       function validEventDoc(d) {
         return d.keys().hasOnly(['name', 'venue', 'city', 'date', 'category',
             'genre', 'status', 'createdBy', 'hasImage', 'imageVersion',
-            'postponedFrom', 'cancelReason', 'createdAt', 'updatedAt'])
+            'postponedFrom', 'cancelReason', 'maxMarkupPercent', 'createdAt', 'updatedAt'])
+          && validMarkup(d.get('maxMarkupPercent', null))
           && str(d.name, 2, 100)
           && str(d.venue, 1, 100)
           && str(d.city, 1, 60)
@@ -535,13 +690,17 @@ service cloud.firestore {
           // The team adds confirmed events.
           (isStaff() && request.resource.data.status == 'confirmed')
           // Users with a confirmed email add them for the team to check.
-          || (verifiedEmail() && request.resource.data.status == 'pending')
+          || (verifiedEmail() && !banned() && request.resource.data.status == 'pending'
+            && !('maxMarkupPercent' in request.resource.data))
         );
       allow update: if isStaff() && validEventDoc(request.resource.data)
         // Cancelling refunds everybody: only the Cloud Function does it.
         && (request.resource.data.status != 'cancelled' || resource.data.status == 'cancelled')
         && request.resource.data.get('postponedFrom', null) == resource.data.get('postponedFrom', null)
         && request.resource.data.createdAt == resource.data.createdAt
+        // An event's own resale limit is the admins' decision.
+        && (isAdmin() || request.resource.data.get('maxMarkupPercent', null)
+          == resource.data.get('maxMarkupPercent', null))
         && request.resource.data.get('createdBy', null)
           == resource.data.get('createdBy', null);
       allow delete: if false;

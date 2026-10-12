@@ -400,10 +400,11 @@ test('roles: admins only from the console; admins name support accounts', async 
   await assertFails(deleteDoc(doc(db('eve'), 'roles/eve')));
   await assertSucceeds(deleteDoc(doc(db('boss'), 'roles/eve')));
   await assertFails(deleteDoc(doc(db('boss'), 'roles/boss')));
-  // Admins find single users; others don't read profiles.
+  // The team finds single users; others don't read profiles.
   await assertSucceeds(setDoc(doc(db('amra'), 'users/amra'), { displayName: 'Amra', email: 'amra@test.ba' }));
   await assertSucceeds(getDocs(query(collection(db('boss'), 'users'), where('email', '==', 'amra@test.ba'))));
-  await assertFails(getDocs(query(collection(db('helper'), 'users'), where('email', '==', 'amra@test.ba'))));
+  await assertSucceeds(getDocs(query(collection(db('helper'), 'users'), where('email', '==', 'amra@test.ba'))));
+  await assertFails(getDocs(query(collection(db('eve'), 'users'), where('email', '==', 'amra@test.ba'))));
 });
 
 test('events: users add unconfirmed ones, the team checks and confirms', async () => {
@@ -540,7 +541,7 @@ test('paying after the reservation ran out is refused', async () => {
 test('ticket files: only the seller uploads and sees them; buyers get their copies', async () => {
   const file = (over = {}) => ({
     name: 'ticket.pdf', contentType: 'application/pdf', size: 120000,
-    storagePath: 'tickets/seller/L1/F1', tickets: 1, orderId: null, uploadedAt: serverTimestamp(), ...over,
+    storagePath: 'tickets/seller/L1/F1', tickets: 1, orderId: null, checked: false, uploadedAt: serverTimestamp(), ...over,
   });
   const fs = db('seller');
   await assertSucceeds(setDoc(doc(fs, 'listings/L1/files/F1'), file()));
@@ -674,4 +675,113 @@ test('unknown collections and anonymous writes are refused', async () => {
   await assertFails(getDocs(collection(db('eve'), 'orders')));
   await assertFails(getDocs(collection(db('eve'), 'payouts')));
   await assertFails(getDocs(collection(db('eve'), 'users')));
+});
+
+test('resale rules: admins set a price limit; listings need the face value and stay below it', async () => {
+  const sellerFs = db('newbie');
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/newbie/private/payoutMethod'), { accountHolder: 'New', iban: IBAN });
+  });
+  const config = (over = {}) => ({ maxMarkupPercent: 20, requireFaceValue: false, updatedBy: 'boss', updatedAt: serverTimestamp(), ...over });
+  await assertFails(setDoc(doc(db('helper'), 'config/resale'), config({ updatedBy: 'helper' })));
+  await assertFails(setDoc(doc(db('boss'), 'config/resale'), config({ maxMarkupPercent: -1 })));
+  await assertSucceeds(setDoc(doc(db('boss'), 'config/resale'), config()));
+  const mine = (over) => listing({ sellerId: 'newbie', ...over });
+  // No face value, or more than 20 % above it: refused.
+  await assertFails(setDoc(doc(sellerFs, 'listings/N1'), mine({ priceMinor: 3000 })));
+  await assertFails(setDoc(doc(sellerFs, 'listings/N1'), mine({ priceMinor: 3700, faceValueMinor: 3000 })));
+  await assertSucceeds(setDoc(doc(sellerFs, 'listings/N1'), mine({ priceMinor: 3600, faceValueMinor: 3000 })));
+  // Price changes keep to it too.
+  await assertFails(updateDoc(doc(sellerFs, 'listings/N1'), { priceMinor: 3700, updatedAt: serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(sellerFs, 'listings/N1'), { priceMinor: 3300, updatedAt: serverTimestamp() }));
+  // An event's own limit wins; only admins set it.
+  await assertFails(updateDoc(doc(db('helper'), 'events/E1'), { maxMarkupPercent: 50, updatedAt: serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(db('boss'), 'events/E1'), { maxMarkupPercent: 50, updatedAt: serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(sellerFs, 'listings/N1'), { priceMinor: 4500, updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(sellerFs, 'listings/N1'), { priceMinor: 4600, updatedAt: serverTimestamp() }));
+  // No limit, but the face value required.
+  await assertSucceeds(updateDoc(doc(db('boss'), 'events/E1'), { maxMarkupPercent: null, updatedAt: serverTimestamp() }));
+  await assertSucceeds(setDoc(doc(db('boss'), 'config/resale'), config({ maxMarkupPercent: null, requireFaceValue: true })));
+  await assertFails(setDoc(doc(sellerFs, 'listings/N2'), mine({ priceMinor: 9000 })));
+  await assertSucceeds(setDoc(doc(sellerFs, 'listings/N2'), mine({ priceMinor: 9000, faceValueMinor: 3000 })));
+});
+
+test('new sellers have limits until they are trusted; blocked users can do nothing', async () => {
+  const fs = db('seller');
+  await assertSucceeds(setDoc(doc(db('helper'), 'config/limits'), {
+    newSellerMaxListings: 2, newSellerMaxTickets: 3, trustedAfterSales: 2, updatedBy: 'helper', updatedAt: serverTimestamp(),
+  }));
+  await assertFails(setDoc(doc(db('buyer'), 'config/limits'), {
+    newSellerMaxListings: 99, newSellerMaxTickets: 50, trustedAfterSales: 0, updatedBy: 'buyer', updatedAt: serverTimestamp(),
+  }));
+  await assertFails(setDoc(doc(fs, 'listings/S1'), listing({ quantity: 4 })));
+  await assertSucceeds(setDoc(doc(fs, 'listings/S1'), listing({ quantity: 3 })));
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'sellerStats/seller'), { activeListings: 2 });
+  });
+  await assertFails(setDoc(doc(fs, 'listings/S2'), listing({ quantity: 1 })));
+  // Enough completed sales: no limits.
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'sellerStats/seller'), { activeListings: 9, completedSales: 2 });
+  });
+  await assertSucceeds(setDoc(doc(fs, 'listings/S2'), listing({ quantity: 10 })));
+  // Stats and blocks are written by the Cloud Function only.
+  await assertFails(setDoc(doc(fs, 'sellerStats/seller'), { trusted: true }));
+  await assertFails(setDoc(doc(db('helper'), 'bans/seller'), { reason: 'x' }));
+  await assertSucceeds(getDoc(doc(fs, 'sellerStats/seller')));
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'bans/seller'), { reason: 'Fake' });
+    await setDoc(doc(ctx.firestore(), 'bans/buyer'), { reason: 'Fake' });
+  });
+  await assertSucceeds(getDoc(doc(fs, 'bans/seller')));
+  await assertFails(getDoc(doc(db('buyer'), 'bans/seller')));
+  await assertFails(setDoc(doc(fs, 'listings/S3'), listing({ quantity: 1 })));
+  await assertFails(orderBatch(db('buyer'), 'O9').commit());
+  await assertFails(setDoc(doc(db('buyer'), 'events/E9'), eventDoc({ status: 'pending', createdBy: 'buyer' })));
+});
+
+test('reports: once per user and listing; the team handles them', async () => {
+  const report = (over = {}) => ({
+    type: 'listing', listingId: 'L1', reason: 'fake', text: 'QR kod izgleda lažno', reporterId: 'buyer',
+    status: 'open', createdAt: serverTimestamp(), ...over,
+  });
+  await assertFails(setDoc(doc(db('buyer'), 'reports/L1_other'), report()));
+  await assertFails(setDoc(doc(db('seller'), 'reports/L1_seller'), report({ reporterId: 'seller' })));
+  await assertFails(setDoc(doc(db('buyer'), 'reports/L1_buyer'), report({ reason: 'boring' })));
+  await assertSucceeds(setDoc(doc(db('buyer'), 'reports/L1_buyer'), report()));
+  await assertFails(updateDoc(doc(db('buyer'), 'reports/L1_buyer'), { status: 'dismissed' }));
+  await assertFails(getDoc(doc(db('eve'), 'reports/L1_buyer')));
+  await assertSucceeds(getDocs(collection(db('helper'), 'reports')));
+  await assertSucceeds(updateDoc(doc(db('helper'), 'reports/L1_buyer'), {
+    status: 'resolved', handledBy: 'helper', handledAt: serverTimestamp(), note: 'Ponuda uklonjena',
+  }));
+});
+
+test('the team reads users and all listings; invoices only for their recipient and admins', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/buyer'), { displayName: 'Kupac', email: 'buyer@test.ba' });
+    await setDoc(doc(ctx.firestore(), 'listings/W1'), listing({ status: 'withdrawn' }));
+    await setDoc(doc(ctx.firestore(), 'invoices/o1-buyer'), { recipientUid: 'buyer', grossMinor: 100 });
+    await setDoc(doc(ctx.firestore(), 'moderationLog/m1'), { action: 'ban' });
+  });
+  await assertSucceeds(getDoc(doc(db('helper'), 'users/buyer')));
+  await assertSucceeds(getDoc(doc(db('helper'), 'listings/W1')));
+  await assertFails(getDoc(doc(db('buyer'), 'listings/W1')));
+  await assertSucceeds(getDoc(doc(db('buyer'), 'invoices/o1-buyer')));
+  await assertSucceeds(getDoc(doc(db('boss'), 'invoices/o1-buyer')));
+  await assertFails(getDoc(doc(db('helper'), 'invoices/o1-buyer')));
+  await assertFails(getDoc(doc(db('seller'), 'invoices/o1-buyer')));
+  await assertFails(setDoc(doc(db('boss'), 'invoices/x'), { recipientUid: 'boss' }));
+  await assertSucceeds(getDoc(doc(db('helper'), 'moderationLog/m1')));
+  await assertFails(getDoc(doc(db('buyer'), 'moderationLog/m1')));
+  await assertFails(getDocs(collection(db('boss'), 'mail')));
+  // Company details for invoices: admins only.
+  const company = { name: 'Stubswap d.o.o.', address: 'Sarajevo', taxId: '4200000000000', vatNumber: '200000000000',
+    vatPercent: 17, email: 'info@stubswap.ba', invoicePrefix: 'SSW', updatedBy: 'boss', updatedAt: serverTimestamp() };
+  await assertFails(setDoc(doc(db('helper'), 'config/company'), { ...company, updatedBy: 'helper' }));
+  await assertFails(setDoc(doc(db('boss'), 'config/company'), { ...company, invoicePrefix: 'ssw-1' }));
+  await assertSucceeds(setDoc(doc(db('boss'), 'config/company'), company));
+  // The app's language for emails.
+  await assertSucceeds(setDoc(doc(db('buyer'), 'users/buyer'), { language: 'de' }, { merge: true }));
+  await assertFails(setDoc(doc(db('buyer'), 'users/buyer'), { language: 'fr' }, { merge: true }));
 });
