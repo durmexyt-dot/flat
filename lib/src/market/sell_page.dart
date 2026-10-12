@@ -134,8 +134,17 @@ class _SellPageState extends ConsumerState<SellPage> {
             ),
           );
       ref.invalidate(statsProvider);
-      showSnack(l10n.listingPublished);
       router.pushReplacement('/listing/$id');
+      // E-tickets: offer uploading them right away (it can also wait).
+      if (_type == TicketType.eTicket) {
+        showSnack(
+          l10n.sellerUploadNowHint,
+          actionLabel: l10n.sellerUploadNow,
+          onAction: () => router.push('/listing/$id/tickets'),
+        );
+      } else {
+        showSnack(l10n.listingPublished);
+      }
     } catch (_) {
       showSnack(l10n.saveError);
     } finally {

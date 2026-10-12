@@ -13,6 +13,7 @@ import '../events/event_image.dart';
 import '../events/event_status_badge.dart';
 import '../ui/app_style.dart';
 import '../data/repositories.dart';
+import '../data/tickets_repository.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
@@ -276,10 +277,57 @@ class _SellerPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final active = listing.status == ListingStatus.active;
+    // E-tickets not yet uploaded: a warning until every ticket is there.
+    final uploaded = listing.ticketType == TicketType.eTicket
+        ? (ref.watch(listingFilesProvider(listing.id)).value ?? const [])
+              .fold<int>(0, (n, f) => n + f.tickets)
+        : listing.quantity;
+    final live = const {
+      ListingStatus.active,
+      ListingStatus.reserved,
+      ListingStatus.soldOut,
+    }.contains(listing.status);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          child: live && uploaded < listing.quantity
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: FAlert(
+                    variant: FAlertVariant.destructive,
+                    icon: const Icon(FLucideIcons.fileWarning),
+                    title: Text(l10n.sellerTicketsMissing),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.sellerTicketsMissingInfo(
+                            uploaded,
+                            listing.quantity,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        FButton(
+                          variant: FButtonVariant.outline,
+                          size: FButtonSizeVariant.sm,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: () =>
+                              context.push('/listing/${listing.id}/tickets'),
+                          prefix: const Icon(FLucideIcons.fileUp),
+                          child: Text(
+                            l10n.sellerUploadNow,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox(width: double.infinity),
+        ),
         SettingsSectionTitle(l10n.yourListing),
         FCard(
           child: Padding(
@@ -325,6 +373,18 @@ class _SellerPanel extends ConsumerWidget {
                     spacing: 12,
                     runSpacing: 8,
                     children: [
+                      // E-tickets are uploaded and sent automatically.
+                      if (listing.ticketType == TicketType.eTicket)
+                        FButton(
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: () =>
+                              context.push('/listing/${listing.id}/tickets'),
+                          prefix: const Icon(FLucideIcons.fileUp),
+                          child: Text(
+                            l10n.sellerTicketsButton,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       FButton(
                         variant: FButtonVariant.secondary,
                         mainAxisSize: MainAxisSize.min,

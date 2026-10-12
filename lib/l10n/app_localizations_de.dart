@@ -10,6 +10,446 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get deliveryPageTitle => 'Tickets zum Angebot';
+
+  @override
+  String get deliveryFilesSection => 'Hochgeladene Tickets';
+
+  @override
+  String deliveryProgress(int done, int total) {
+    return '$done von $total Tickets hochgeladen';
+  }
+
+  @override
+  String get deliveryAddFile => 'Tickets hinzufügen';
+
+  @override
+  String get deliveryAllUploaded => 'Alle Tickets sind hochgeladen.';
+
+  @override
+  String get deliveryInfoTitle => 'So funktioniert\'s';
+
+  @override
+  String get deliveryInfo =>
+      'Die Tickets gehen direkt nach der Zahlung automatisch an den Käufer. Lade sie spätestens 24 Stunden vor der Veranstaltung hoch – sonst bekommen die Käufer automatisch ihr Geld zurück.';
+
+  @override
+  String get deliveryFileTypes =>
+      'PDF, PNG, JPG oder WebP, höchstens 10 MB pro Datei.';
+
+  @override
+  String get deliveryManualTitle => 'Mobile und Papiertickets';
+
+  @override
+  String get deliveryManualInfo =>
+      'Diese Tickets übergibst du dem Käufer direkt (z. B. per Übertragung in der App des Veranstalters oder persönlich). Bestätige danach den Versand im Verkauf.';
+
+  @override
+  String get deliveryNoFiles => 'Noch keine Tickets hochgeladen.';
+
+  @override
+  String get deliveryWaiting => 'Wartet auf Käufer';
+
+  @override
+  String deliverySentTo(String order) {
+    return 'An Käufer gesendet $order';
+  }
+
+  @override
+  String deliveryFileTickets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tickets',
+      one: '$count Ticket',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deliveryHowManyTitle => 'Wie viele Tickets enthält die Datei?';
+
+  @override
+  String get deliveryHowManyInfo =>
+      'Ein PDF kann mehrere Tickets enthalten. Der Käufer bekommt die ganze Datei.';
+
+  @override
+  String get deliveryUpload => 'Hochladen';
+
+  @override
+  String get deliveryUploaded => 'Tickets hochgeladen';
+
+  @override
+  String get deliveryUploading => 'Wird hochgeladen…';
+
+  @override
+  String get deliveryWrongType =>
+      'Dieser Dateityp wird nicht unterstützt. Nutze PDF, PNG, JPG oder WebP.';
+
+  @override
+  String get deliveryTooBig => 'Die Datei ist größer als 10 MB.';
+
+  @override
+  String get deliveryUploadError =>
+      'Hochladen fehlgeschlagen. Versuche es erneut.';
+
+  @override
+  String get deliveryPickUnsupported =>
+      'Dateien hochladen geht vorerst nur im Webbrowser.';
+
+  @override
+  String get deliveryDeleteTitle => 'Datei löschen?';
+
+  @override
+  String get deliveryDeleteInfo =>
+      'Die Datei wurde noch keinem Käufer gesendet und wird entfernt.';
+
+  @override
+  String get deliveryDelete => 'Löschen';
+
+  @override
+  String get deliveryDeleted => 'Datei gelöscht';
+
+  @override
+  String get deliveryNoAccessTitle => 'Kein Zugriff';
+
+  @override
+  String get deliveryNoAccess =>
+      'Nur der Verkäufer kann Tickets für dieses Angebot hochladen.';
+
+  @override
+  String get deliveryMissingBadge => 'Tickets nicht hochgeladen';
+
+  @override
+  String get deliveryUploadAction => 'Tickets hochladen';
+
+  @override
+  String deliverySalesWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Du hast $count verkaufte Tickets, die noch nicht hochgeladen sind',
+      one: 'Du hast $count verkauftes Ticket, das noch nicht hochgeladen ist',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deliveryDeadline(String date) {
+    return 'Frist: $date';
+  }
+
+  @override
+  String get deliverySellerMissingTitle => 'Tickets noch nicht hochgeladen';
+
+  @override
+  String deliverySellerMissingInfo(String date) {
+    return 'Lade sie bis $date hoch. Kommen sie nicht rechtzeitig, bekommt der Käufer automatisch sein Geld zurück.';
+  }
+
+  @override
+  String get deliveryBuyerSection => 'Deine Tickets';
+
+  @override
+  String get deliveryDownload => 'Herunterladen';
+
+  @override
+  String deliveryBuyerWaiting(String date) {
+    return 'Der Verkäufer hat die Tickets noch nicht gesendet. Frist: $date. Sendet er sie nicht, bekommst du automatisch dein Geld zurück.';
+  }
+
+  @override
+  String get deliveryDownloadError => 'Download fehlgeschlagen.';
+
+  @override
+  String get deliveryCancelSeller => 'Vom Verkäufer storniert';
+
+  @override
+  String get deliveryCancelExpired =>
+      'Zahlung nicht innerhalb von 15 Minuten abgeschlossen';
+
+  @override
+  String get deliveryCancelDeadline =>
+      'Tickets nicht rechtzeitig gesendet – Geld erstattet';
+
+  @override
+  String get deliveryCancelEvent => 'Veranstaltung abgesagt – Geld erstattet';
+
+  @override
+  String get deliveryCancelSupport =>
+      'Über den Support gelöst – Geld erstattet';
+
+  @override
+  String get deliveryAlertArrivedTitle => 'Deine Tickets sind da';
+
+  @override
+  String deliveryAlertArrivedBody(String event) {
+    return '$event: lade die Tickets in der Bestellung herunter.';
+  }
+
+  @override
+  String get deliveryAlertRefundTitle => 'Rückerstattung';
+
+  @override
+  String deliveryAlertRefundBody(String event, String reason) {
+    return '$event: $reason';
+  }
+
+  @override
+  String get deliveryAlertDeadlineTitle =>
+      'Verkauf storniert – Tickets nicht hochgeladen';
+
+  @override
+  String deliveryAlertDeadlineBody(String event) {
+    return '$event: der Käufer hat sein Geld zurückbekommen.';
+  }
+
+  @override
+  String reservationHeld(String time) {
+    return 'Die Tickets sind noch $time für dich reserviert';
+  }
+
+  @override
+  String get reservationHint =>
+      'Sobald du die Zahlung startest, sind die Tickets 15 Minuten nur für dich reserviert.';
+
+  @override
+  String get reservationExpiredTitle => 'Reservierung abgelaufen';
+
+  @override
+  String get reservationExpiredInfo =>
+      'Die Zahlung wurde nicht innerhalb von 15 Minuten abgeschlossen, die Tickets sind wieder im Verkauf. Es wurde nichts abgebucht.';
+
+  @override
+  String get reservationBackToListing => 'Zurück zum Angebot';
+
+  @override
+  String get disputeReport => 'Problem melden';
+
+  @override
+  String get disputeSheetTitle => 'Problem mit der Bestellung melden';
+
+  @override
+  String get disputeSheetInfo =>
+      'Unser Team prüft die Meldung. Bis zur Entscheidung wird die Bestellung angehalten und der Verkäufer nicht ausgezahlt.';
+
+  @override
+  String get disputeReasonLabel => 'Was ist das Problem?';
+
+  @override
+  String get disputeReasonNotReceived => 'Tickets nicht erhalten';
+
+  @override
+  String get disputeReasonInvalid => 'Ticket ungültig';
+
+  @override
+  String get disputeReasonWrongTickets => 'Falsche Tickets';
+
+  @override
+  String get disputeReasonEventChanged => 'Veranstaltung geändert';
+
+  @override
+  String get disputeReasonOther => 'Sonstiges';
+
+  @override
+  String get disputeTextLabel => 'Beschreibe das Problem';
+
+  @override
+  String get disputeTextHint =>
+      'Was ist passiert? Z. B. wurde das Ticket am Eingang abgelehnt.';
+
+  @override
+  String get disputeTextTooShort => 'Schreibe mindestens 10 Zeichen.';
+
+  @override
+  String get disputeSubmit => 'Meldung senden';
+
+  @override
+  String get disputeSent => 'Meldung gesendet. Wir melden uns.';
+
+  @override
+  String get disputeBoxTitle => 'Gemeldetes Problem';
+
+  @override
+  String get disputeStatusLine =>
+      'Problem gemeldet – wartet auf Entscheidung des Supports';
+
+  @override
+  String get disputeStatusOpen => 'Wartet auf Entscheidung';
+
+  @override
+  String get disputeStatusRefund => 'Entscheidung: Geld an Käufer erstattet';
+
+  @override
+  String get disputeStatusReject => 'Entscheidung: Meldung abgelehnt';
+
+  @override
+  String disputeNote(String note) {
+    return 'Hinweis des Teams: $note';
+  }
+
+  @override
+  String get disputeOpenRequest => 'Supportanfrage öffnen';
+
+  @override
+  String get disputeErrorTooLate =>
+      'Diese Bestellung kann nicht mehr gemeldet werden.';
+
+  @override
+  String get disputeErrorPermission => 'Dazu bist du nicht berechtigt.';
+
+  @override
+  String get disputeErrorInvalid =>
+      'Prüfe deine Eingaben und versuche es erneut.';
+
+  @override
+  String get disputeErrorNotFound => 'Nicht gefunden.';
+
+  @override
+  String get disputeStaffTitle => 'Entscheidung des Teams';
+
+  @override
+  String get disputeStaffBuyer => 'Käufer (ID)';
+
+  @override
+  String get disputeStaffSeller => 'Verkäufer (ID)';
+
+  @override
+  String get disputeRefund => 'Käufer erstatten';
+
+  @override
+  String get disputeReject => 'Meldung ablehnen';
+
+  @override
+  String get disputeRefundConfirm =>
+      'Der Käufer bekommt den vollen Betrag zurück, der Verkäufer keine Auszahlung.';
+
+  @override
+  String get disputeRejectConfirm =>
+      'Die Bestellung läuft weiter wie vor der Meldung.';
+
+  @override
+  String get disputeNoteLabel => 'Hinweis (sieht der Käufer)';
+
+  @override
+  String get disputeDecided => 'Entscheidung gespeichert';
+
+  @override
+  String disputeStaffHint(String order) {
+    return 'Das ist eine Problemmeldung zur Bestellung $order. Die Entscheidung triffst du in den Bestelldetails.';
+  }
+
+  @override
+  String get disputeAlertOpenedTitle => 'Der Käufer hat ein Problem gemeldet';
+
+  @override
+  String disputeAlertOpenedBody(String event) {
+    return '$event: die Auszahlung wartet auf die Entscheidung des Supports.';
+  }
+
+  @override
+  String get disputeAlertRejectedTitle => 'Entscheidung zu deiner Meldung';
+
+  @override
+  String disputeAlertRejectedBody(String event) {
+    return '$event: die Meldung wurde abgelehnt, die Bestellung läuft weiter.';
+  }
+
+  @override
+  String get eventChangeSection => 'Absage und Verschiebung';
+
+  @override
+  String get eventChangeCancel => 'Veranstaltung absagen';
+
+  @override
+  String get eventChangeCancelInfo =>
+      'Alle Käufer bekommen automatisch ihr Geld zurück und alle Angebote werden zurückgezogen. Das lässt sich nicht rückgängig machen.';
+
+  @override
+  String get eventChangeReason => 'Grund der Absage';
+
+  @override
+  String get eventChangeReasonHint => 'Z. B. der Künstler hat abgesagt.';
+
+  @override
+  String eventChangeCancelled(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Veranstaltung abgesagt, $count Käufer bekommen das Geld zurück',
+      one: 'Veranstaltung abgesagt, $count Käufer bekommt das Geld zurück',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventChangePostpone => 'Veranstaltung verschieben';
+
+  @override
+  String get eventChangePostponeInfo =>
+      'Gekaufte Tickets bleiben für den neuen Termin gültig. Käufer sehen einen Hinweis auf der Veranstaltungsseite.';
+
+  @override
+  String get eventChangeNewDate => 'Neuer Termin';
+
+  @override
+  String get eventChangePickDate => 'Neuen Termin wählen';
+
+  @override
+  String get eventChangePostponed => 'Veranstaltung verschoben';
+
+  @override
+  String get eventChangeCancelledBanner =>
+      'Diese Veranstaltung ist abgesagt und kann nicht mehr geändert werden.';
+
+  @override
+  String eventChangeCancelReason(String reason) {
+    return 'Grund: $reason';
+  }
+
+  @override
+  String eventChangePostponedFrom(String date) {
+    return 'Verschoben, ursprünglicher Termin: $date';
+  }
+
+  @override
+  String get eventChangeFilterCancelled => 'Abgesagt';
+
+  @override
+  String get sellerUploadNow => 'Hochladen';
+
+  @override
+  String get sellerTicketsMissing => 'Tickets noch nicht hochgeladen';
+
+  @override
+  String sellerTicketsMissingInfo(int done, int total) {
+    return '$done von $total Tickets hochgeladen. Lade sie jetzt hoch – Käufer bekommen sie direkt nach der Zahlung. Frist: 24 Stunden vor der Veranstaltung, sonst bekommen Käufer ihr Geld zurück.';
+  }
+
+  @override
+  String get sellerTicketsButton => 'Tickets (Upload)';
+
+  @override
+  String get sellerUploadNowHint =>
+      'Angebot veröffentlicht. Lade die Tickets jetzt hoch – Käufer bekommen sie direkt nach der Zahlung. Das geht auch später.';
+
+  @override
+  String get eventPageCancelled => 'Veranstaltung abgesagt';
+
+  @override
+  String get eventPageCancelledInfo =>
+      'Alle Käufer bekommen ihr Geld automatisch zurück. Es werden keine Tickets mehr verkauft.';
+
+  @override
+  String get eventPagePostponed => 'Veranstaltung verschoben';
+
+  @override
+  String eventPagePostponedInfo(String date) {
+    return 'Ursprünglicher Termin: $date. Gekaufte Tickets bleiben für den neuen Termin gültig.';
+  }
+
+  @override
   String get eventStatusCancelled => 'Abgesagt';
 
   @override

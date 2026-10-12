@@ -10,6 +10,442 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get deliveryPageTitle => 'Karte za ponudu';
+
+  @override
+  String get deliveryFilesSection => 'Uploadovane karte';
+
+  @override
+  String deliveryProgress(int done, int total) {
+    return '$done od $total karata uploadovano';
+  }
+
+  @override
+  String get deliveryAddFile => 'Dodaj karte';
+
+  @override
+  String get deliveryAllUploaded => 'Sve karte su uploadovane.';
+
+  @override
+  String get deliveryInfoTitle => 'Kako funkcioniše';
+
+  @override
+  String get deliveryInfo =>
+      'Karte se automatski šalju kupcu odmah nakon plaćanja. Uploaduj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.';
+
+  @override
+  String get deliveryFileTypes =>
+      'PDF, PNG, JPG ili WebP, najviše 10 MB po fajlu.';
+
+  @override
+  String get deliveryManualTitle => 'Mobilne i papirne karte';
+
+  @override
+  String get deliveryManualInfo =>
+      'Ove karte predaješ kupcu direktno (npr. prenosom u aplikaciji organizatora ili lično). Nakon predaje potvrdi slanje u prodaji.';
+
+  @override
+  String get deliveryNoFiles => 'Još nema uploadovanih karata.';
+
+  @override
+  String get deliveryWaiting => 'Čeka kupca';
+
+  @override
+  String deliverySentTo(String order) {
+    return 'Poslano kupcu $order';
+  }
+
+  @override
+  String deliveryFileTickets(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count karata',
+      few: '$count karte',
+      one: '$count karta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deliveryHowManyTitle => 'Koliko karata je u fajlu?';
+
+  @override
+  String get deliveryHowManyInfo =>
+      'Jedan PDF može sadržavati više karata. Kupac dobija cijeli fajl.';
+
+  @override
+  String get deliveryUpload => 'Uploaduj';
+
+  @override
+  String get deliveryUploaded => 'Karte uploadovane';
+
+  @override
+  String get deliveryUploading => 'Uploadujem…';
+
+  @override
+  String get deliveryWrongType =>
+      'Ova vrsta fajla nije podržana. Koristi PDF, PNG, JPG ili WebP.';
+
+  @override
+  String get deliveryTooBig => 'Fajl je veći od 10 MB.';
+
+  @override
+  String get deliveryUploadError => 'Upload nije uspio. Pokušaj ponovo.';
+
+  @override
+  String get deliveryPickUnsupported =>
+      'Upload fajlova je za sada moguć samo u web pregledniku.';
+
+  @override
+  String get deliveryDeleteTitle => 'Obrisati fajl?';
+
+  @override
+  String get deliveryDeleteInfo =>
+      'Fajl još nije poslan kupcu i bit će uklonjen.';
+
+  @override
+  String get deliveryDelete => 'Obriši';
+
+  @override
+  String get deliveryDeleted => 'Fajl obrisan';
+
+  @override
+  String get deliveryNoAccessTitle => 'Nemaš pristup';
+
+  @override
+  String get deliveryNoAccess =>
+      'Samo prodavac može uploadovati karte za ovu ponudu.';
+
+  @override
+  String get deliveryMissingBadge => 'Karte nisu uploadovane';
+
+  @override
+  String get deliveryUploadAction => 'Uploaduj karte';
+
+  @override
+  String deliverySalesWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Imaš $count prodanih karata koje još nisu uploadovane',
+      few: 'Imaš $count prodane karte koje još nisu uploadovane',
+      one: 'Imaš $count prodanu kartu koja još nije uploadovana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deliveryDeadline(String date) {
+    return 'Rok: $date';
+  }
+
+  @override
+  String get deliverySellerMissingTitle => 'Karte još nisu uploadovane';
+
+  @override
+  String deliverySellerMissingInfo(String date) {
+    return 'Uploaduj ih do $date. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.';
+  }
+
+  @override
+  String get deliveryBuyerSection => 'Tvoje karte';
+
+  @override
+  String get deliveryDownload => 'Preuzmi';
+
+  @override
+  String deliveryBuyerWaiting(String date) {
+    return 'Prodavac još nije poslao karte. Rok: $date. Ako ih ne pošalje, automatski dobijaš povrat novca.';
+  }
+
+  @override
+  String get deliveryDownloadError => 'Preuzimanje nije uspjelo.';
+
+  @override
+  String get deliveryCancelSeller => 'Prodavac je otkazao';
+
+  @override
+  String get deliveryCancelExpired =>
+      'Plaćanje nije završeno u roku od 15 minuta';
+
+  @override
+  String get deliveryCancelDeadline =>
+      'Karte nisu poslane na vrijeme – novac vraćen';
+
+  @override
+  String get deliveryCancelEvent => 'Događaj je otkazan – novac vraćen';
+
+  @override
+  String get deliveryCancelSupport => 'Riješeno preko podrške – novac vraćen';
+
+  @override
+  String get deliveryAlertArrivedTitle => 'Karte su stigle';
+
+  @override
+  String deliveryAlertArrivedBody(String event) {
+    return '$event: preuzmi karte u narudžbi.';
+  }
+
+  @override
+  String get deliveryAlertRefundTitle => 'Povrat novca';
+
+  @override
+  String deliveryAlertRefundBody(String event, String reason) {
+    return '$event: $reason';
+  }
+
+  @override
+  String get deliveryAlertDeadlineTitle =>
+      'Prodaja otkazana – karte nisu uploadovane';
+
+  @override
+  String deliveryAlertDeadlineBody(String event) {
+    return '$event: kupcu je vraćen novac.';
+  }
+
+  @override
+  String reservationHeld(String time) {
+    return 'Karte su rezervisane za tebe još $time';
+  }
+
+  @override
+  String get reservationHint =>
+      'Kada pokreneš plaćanje, karte su 15 minuta rezervisane samo za tebe.';
+
+  @override
+  String get reservationExpiredTitle => 'Rezervacija je istekla';
+
+  @override
+  String get reservationExpiredInfo =>
+      'Plaćanje nije završeno u roku od 15 minuta, pa su karte ponovo u prodaji. Ništa nije naplaćeno.';
+
+  @override
+  String get reservationBackToListing => 'Nazad na ponudu';
+
+  @override
+  String get disputeReport => 'Prijavi problem';
+
+  @override
+  String get disputeSheetTitle => 'Prijavi problem s narudžbom';
+
+  @override
+  String get disputeSheetInfo =>
+      'Naš tim provjerava prijavu. Do odluke je narudžba zadržana i prodavac ne dobija isplatu.';
+
+  @override
+  String get disputeReasonLabel => 'Šta nije u redu?';
+
+  @override
+  String get disputeReasonNotReceived => 'Karte nisu stigle';
+
+  @override
+  String get disputeReasonInvalid => 'Karta ne važi';
+
+  @override
+  String get disputeReasonWrongTickets => 'Pogrešne karte';
+
+  @override
+  String get disputeReasonEventChanged => 'Događaj promijenjen';
+
+  @override
+  String get disputeReasonOther => 'Drugo';
+
+  @override
+  String get disputeTextLabel => 'Opiši problem';
+
+  @override
+  String get disputeTextHint =>
+      'Šta se desilo? Npr. karta je odbijena na ulazu.';
+
+  @override
+  String get disputeTextTooShort => 'Napiši barem 10 znakova.';
+
+  @override
+  String get disputeSubmit => 'Pošalji prijavu';
+
+  @override
+  String get disputeSent => 'Prijava poslana. Javit ćemo ti se.';
+
+  @override
+  String get disputeBoxTitle => 'Prijavljeni problem';
+
+  @override
+  String get disputeStatusLine => 'Problem prijavljen – čeka odluku podrške';
+
+  @override
+  String get disputeStatusOpen => 'Čeka odluku';
+
+  @override
+  String get disputeStatusRefund => 'Odluka: novac vraćen kupcu';
+
+  @override
+  String get disputeStatusReject => 'Odluka: prijava odbijena';
+
+  @override
+  String disputeNote(String note) {
+    return 'Napomena tima: $note';
+  }
+
+  @override
+  String get disputeOpenRequest => 'Otvori zahtjev za podršku';
+
+  @override
+  String get disputeErrorTooLate => 'Ova narudžba se više ne može prijaviti.';
+
+  @override
+  String get disputeErrorPermission => 'Nemaš pravo na ovu radnju.';
+
+  @override
+  String get disputeErrorInvalid => 'Provjeri unos i pokušaj ponovo.';
+
+  @override
+  String get disputeErrorNotFound => 'Nije pronađeno.';
+
+  @override
+  String get disputeStaffTitle => 'Odluka tima';
+
+  @override
+  String get disputeStaffBuyer => 'Kupac (ID)';
+
+  @override
+  String get disputeStaffSeller => 'Prodavac (ID)';
+
+  @override
+  String get disputeRefund => 'Vrati novac kupcu';
+
+  @override
+  String get disputeReject => 'Odbij prijavu';
+
+  @override
+  String get disputeRefundConfirm =>
+      'Kupac dobija puni povrat novca, a prodavac ne dobija isplatu.';
+
+  @override
+  String get disputeRejectConfirm => 'Narudžba se nastavlja kao prije prijave.';
+
+  @override
+  String get disputeNoteLabel => 'Napomena (vidi je kupac)';
+
+  @override
+  String get disputeDecided => 'Odluka sačuvana';
+
+  @override
+  String disputeStaffHint(String order) {
+    return 'Ovo je prijava problema s narudžbom $order. Odluku donosiš u detaljima narudžbe.';
+  }
+
+  @override
+  String get disputeAlertOpenedTitle => 'Kupac je prijavio problem';
+
+  @override
+  String disputeAlertOpenedBody(String event) {
+    return '$event: isplata čeka odluku podrške.';
+  }
+
+  @override
+  String get disputeAlertRejectedTitle => 'Odluka o prijavljenom problemu';
+
+  @override
+  String disputeAlertRejectedBody(String event) {
+    return '$event: prijava je odbijena, narudžba se nastavlja.';
+  }
+
+  @override
+  String get eventChangeSection => 'Otkazivanje i pomjeranje';
+
+  @override
+  String get eventChangeCancel => 'Otkaži događaj';
+
+  @override
+  String get eventChangeCancelInfo =>
+      'Svi kupci automatski dobijaju povrat novca, a sve ponude se povlače. Ovo se ne može poništiti.';
+
+  @override
+  String get eventChangeReason => 'Razlog otkazivanja';
+
+  @override
+  String get eventChangeReasonHint => 'Npr. izvođač je otkazao nastup.';
+
+  @override
+  String eventChangeCancelled(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Događaj otkazan, $count kupaca dobija povrat novca',
+      few: 'Događaj otkazan, $count kupca dobijaju povrat novca',
+      one: 'Događaj otkazan, $count kupac dobija povrat novca',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventChangePostpone => 'Pomjeri događaj';
+
+  @override
+  String get eventChangePostponeInfo =>
+      'Kupljene karte ostaju važeće za novi termin. Kupci vide obavijest na stranici događaja.';
+
+  @override
+  String get eventChangeNewDate => 'Novi termin';
+
+  @override
+  String get eventChangePickDate => 'Odaberi novi termin';
+
+  @override
+  String get eventChangePostponed => 'Događaj pomjeren';
+
+  @override
+  String get eventChangeCancelledBanner =>
+      'Ovaj događaj je otkazan i više se ne može mijenjati.';
+
+  @override
+  String eventChangeCancelReason(String reason) {
+    return 'Razlog: $reason';
+  }
+
+  @override
+  String eventChangePostponedFrom(String date) {
+    return 'Pomjeren, prvobitni termin: $date';
+  }
+
+  @override
+  String get eventChangeFilterCancelled => 'Otkazani';
+
+  @override
+  String get sellerUploadNow => 'Uploaduj';
+
+  @override
+  String get sellerTicketsMissing => 'Karte još nisu uploadovane';
+
+  @override
+  String sellerTicketsMissingInfo(int done, int total) {
+    return '$done od $total karata uploadovano. Uploaduj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.';
+  }
+
+  @override
+  String get sellerTicketsButton => 'Karte (upload)';
+
+  @override
+  String get sellerUploadNowHint =>
+      'Ponuda je objavljena. Uploaduj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.';
+
+  @override
+  String get eventPageCancelled => 'Događaj je otkazan';
+
+  @override
+  String get eventPageCancelledInfo =>
+      'Svi kupci automatski dobijaju povrat novca. Karte se više ne prodaju.';
+
+  @override
+  String get eventPagePostponed => 'Događaj je pomjeren';
+
+  @override
+  String eventPagePostponedInfo(String date) {
+    return 'Prvobitni termin: $date. Kupljene karte ostaju važeće za novi termin.';
+  }
+
+  @override
   String get eventStatusCancelled => 'Otkazan';
 
   @override

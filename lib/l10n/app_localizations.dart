@@ -100,6 +100,714 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @deliveryPageTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte za ponudu'**
+  String get deliveryPageTitle;
+
+  /// No description provided for @deliveryFilesSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploadovane karte'**
+  String get deliveryFilesSection;
+
+  /// No description provided for @deliveryProgress.
+  ///
+  /// In bs, this message translates to:
+  /// **'{done} od {total} karata uploadovano'**
+  String deliveryProgress(int done, int total);
+
+  /// No description provided for @deliveryAddFile.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodaj karte'**
+  String get deliveryAddFile;
+
+  /// No description provided for @deliveryAllUploaded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sve karte su uploadovane.'**
+  String get deliveryAllUploaded;
+
+  /// No description provided for @deliveryInfoTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kako funkcioniše'**
+  String get deliveryInfoTitle;
+
+  /// No description provided for @deliveryInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte se automatski šalju kupcu odmah nakon plaćanja. Uploaduj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.'**
+  String get deliveryInfo;
+
+  /// No description provided for @deliveryFileTypes.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDF, PNG, JPG ili WebP, najviše 10 MB po fajlu.'**
+  String get deliveryFileTypes;
+
+  /// No description provided for @deliveryManualTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mobilne i papirne karte'**
+  String get deliveryManualTitle;
+
+  /// No description provided for @deliveryManualInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ove karte predaješ kupcu direktno (npr. prenosom u aplikaciji organizatora ili lično). Nakon predaje potvrdi slanje u prodaji.'**
+  String get deliveryManualInfo;
+
+  /// No description provided for @deliveryNoFiles.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema uploadovanih karata.'**
+  String get deliveryNoFiles;
+
+  /// No description provided for @deliveryWaiting.
+  ///
+  /// In bs, this message translates to:
+  /// **'Čeka kupca'**
+  String get deliveryWaiting;
+
+  /// No description provided for @deliverySentTo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Poslano kupcu {order}'**
+  String deliverySentTo(String order);
+
+  /// No description provided for @deliveryFileTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, one{{count} karta} few{{count} karte} other{{count} karata}}'**
+  String deliveryFileTickets(int count);
+
+  /// No description provided for @deliveryHowManyTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koliko karata je u fajlu?'**
+  String get deliveryHowManyTitle;
+
+  /// No description provided for @deliveryHowManyInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Jedan PDF može sadržavati više karata. Kupac dobija cijeli fajl.'**
+  String get deliveryHowManyInfo;
+
+  /// No description provided for @deliveryUpload.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploaduj'**
+  String get deliveryUpload;
+
+  /// No description provided for @deliveryUploaded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte uploadovane'**
+  String get deliveryUploaded;
+
+  /// No description provided for @deliveryUploading.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploadujem…'**
+  String get deliveryUploading;
+
+  /// No description provided for @deliveryWrongType.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova vrsta fajla nije podržana. Koristi PDF, PNG, JPG ili WebP.'**
+  String get deliveryWrongType;
+
+  /// No description provided for @deliveryTooBig.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fajl je veći od 10 MB.'**
+  String get deliveryTooBig;
+
+  /// No description provided for @deliveryUploadError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upload nije uspio. Pokušaj ponovo.'**
+  String get deliveryUploadError;
+
+  /// No description provided for @deliveryPickUnsupported.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upload fajlova je za sada moguć samo u web pregledniku.'**
+  String get deliveryPickUnsupported;
+
+  /// No description provided for @deliveryDeleteTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obrisati fajl?'**
+  String get deliveryDeleteTitle;
+
+  /// No description provided for @deliveryDeleteInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fajl još nije poslan kupcu i bit će uklonjen.'**
+  String get deliveryDeleteInfo;
+
+  /// No description provided for @deliveryDelete.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obriši'**
+  String get deliveryDelete;
+
+  /// No description provided for @deliveryDeleted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Fajl obrisan'**
+  String get deliveryDeleted;
+
+  /// No description provided for @deliveryNoAccessTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemaš pristup'**
+  String get deliveryNoAccessTitle;
+
+  /// No description provided for @deliveryNoAccess.
+  ///
+  /// In bs, this message translates to:
+  /// **'Samo prodavac može uploadovati karte za ovu ponudu.'**
+  String get deliveryNoAccess;
+
+  /// No description provided for @deliveryMissingBadge.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte nisu uploadovane'**
+  String get deliveryMissingBadge;
+
+  /// No description provided for @deliveryUploadAction.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploaduj karte'**
+  String get deliveryUploadAction;
+
+  /// No description provided for @deliverySalesWarning.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, one{Imaš {count} prodanu kartu koja još nije uploadovana} few{Imaš {count} prodane karte koje još nisu uploadovane} other{Imaš {count} prodanih karata koje još nisu uploadovane}}'**
+  String deliverySalesWarning(int count);
+
+  /// No description provided for @deliveryDeadline.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rok: {date}'**
+  String deliveryDeadline(String date);
+
+  /// No description provided for @deliverySellerMissingTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte još nisu uploadovane'**
+  String get deliverySellerMissingTitle;
+
+  /// No description provided for @deliverySellerMissingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploaduj ih do {date}. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.'**
+  String deliverySellerMissingInfo(String date);
+
+  /// No description provided for @deliveryBuyerSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoje karte'**
+  String get deliveryBuyerSection;
+
+  /// No description provided for @deliveryDownload.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preuzmi'**
+  String get deliveryDownload;
+
+  /// No description provided for @deliveryBuyerWaiting.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac još nije poslao karte. Rok: {date}. Ako ih ne pošalje, automatski dobijaš povrat novca.'**
+  String deliveryBuyerWaiting(String date);
+
+  /// No description provided for @deliveryDownloadError.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preuzimanje nije uspjelo.'**
+  String get deliveryDownloadError;
+
+  /// No description provided for @deliveryCancelSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac je otkazao'**
+  String get deliveryCancelSeller;
+
+  /// No description provided for @deliveryCancelExpired.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje nije završeno u roku od 15 minuta'**
+  String get deliveryCancelExpired;
+
+  /// No description provided for @deliveryCancelDeadline.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte nisu poslane na vrijeme – novac vraćen'**
+  String get deliveryCancelDeadline;
+
+  /// No description provided for @deliveryCancelEvent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je otkazan – novac vraćen'**
+  String get deliveryCancelEvent;
+
+  /// No description provided for @deliveryCancelSupport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Riješeno preko podrške – novac vraćen'**
+  String get deliveryCancelSupport;
+
+  /// No description provided for @deliveryAlertArrivedTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte su stigle'**
+  String get deliveryAlertArrivedTitle;
+
+  /// No description provided for @deliveryAlertArrivedBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: preuzmi karte u narudžbi.'**
+  String deliveryAlertArrivedBody(String event);
+
+  /// No description provided for @deliveryAlertRefundTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povrat novca'**
+  String get deliveryAlertRefundTitle;
+
+  /// No description provided for @deliveryAlertRefundBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: {reason}'**
+  String deliveryAlertRefundBody(String event, String reason);
+
+  /// No description provided for @deliveryAlertDeadlineTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaja otkazana – karte nisu uploadovane'**
+  String get deliveryAlertDeadlineTitle;
+
+  /// No description provided for @deliveryAlertDeadlineBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: kupcu je vraćen novac.'**
+  String deliveryAlertDeadlineBody(String event);
+
+  /// No description provided for @reservationHeld.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte su rezervisane za tebe još {time}'**
+  String reservationHeld(String time);
+
+  /// No description provided for @reservationHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kada pokreneš plaćanje, karte su 15 minuta rezervisane samo za tebe.'**
+  String get reservationHint;
+
+  /// No description provided for @reservationExpiredTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Rezervacija je istekla'**
+  String get reservationExpiredTitle;
+
+  /// No description provided for @reservationExpiredInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plaćanje nije završeno u roku od 15 minuta, pa su karte ponovo u prodaji. Ništa nije naplaćeno.'**
+  String get reservationExpiredInfo;
+
+  /// No description provided for @reservationBackToListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nazad na ponudu'**
+  String get reservationBackToListing;
+
+  /// No description provided for @disputeReport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavi problem'**
+  String get disputeReport;
+
+  /// No description provided for @disputeSheetTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavi problem s narudžbom'**
+  String get disputeSheetTitle;
+
+  /// No description provided for @disputeSheetInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naš tim provjerava prijavu. Do odluke je narudžba zadržana i prodavac ne dobija isplatu.'**
+  String get disputeSheetInfo;
+
+  /// No description provided for @disputeReasonLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Šta nije u redu?'**
+  String get disputeReasonLabel;
+
+  /// No description provided for @disputeReasonNotReceived.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte nisu stigle'**
+  String get disputeReasonNotReceived;
+
+  /// No description provided for @disputeReasonInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karta ne važi'**
+  String get disputeReasonInvalid;
+
+  /// No description provided for @disputeReasonWrongTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pogrešne karte'**
+  String get disputeReasonWrongTickets;
+
+  /// No description provided for @disputeReasonEventChanged.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj promijenjen'**
+  String get disputeReasonEventChanged;
+
+  /// No description provided for @disputeReasonOther.
+  ///
+  /// In bs, this message translates to:
+  /// **'Drugo'**
+  String get disputeReasonOther;
+
+  /// No description provided for @disputeTextLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Opiši problem'**
+  String get disputeTextLabel;
+
+  /// No description provided for @disputeTextHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Šta se desilo? Npr. karta je odbijena na ulazu.'**
+  String get disputeTextHint;
+
+  /// No description provided for @disputeTextTooShort.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napiši barem 10 znakova.'**
+  String get disputeTextTooShort;
+
+  /// No description provided for @disputeSubmit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji prijavu'**
+  String get disputeSubmit;
+
+  /// No description provided for @disputeSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijava poslana. Javit ćemo ti se.'**
+  String get disputeSent;
+
+  /// No description provided for @disputeBoxTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavljeni problem'**
+  String get disputeBoxTitle;
+
+  /// No description provided for @disputeStatusLine.
+  ///
+  /// In bs, this message translates to:
+  /// **'Problem prijavljen – čeka odluku podrške'**
+  String get disputeStatusLine;
+
+  /// No description provided for @disputeStatusOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Čeka odluku'**
+  String get disputeStatusOpen;
+
+  /// No description provided for @disputeStatusRefund.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odluka: novac vraćen kupcu'**
+  String get disputeStatusRefund;
+
+  /// No description provided for @disputeStatusReject.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odluka: prijava odbijena'**
+  String get disputeStatusReject;
+
+  /// No description provided for @disputeNote.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napomena tima: {note}'**
+  String disputeNote(String note);
+
+  /// No description provided for @disputeOpenRequest.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvori zahtjev za podršku'**
+  String get disputeOpenRequest;
+
+  /// No description provided for @disputeErrorTooLate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova narudžba se više ne može prijaviti.'**
+  String get disputeErrorTooLate;
+
+  /// No description provided for @disputeErrorPermission.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nemaš pravo na ovu radnju.'**
+  String get disputeErrorPermission;
+
+  /// No description provided for @disputeErrorInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'Provjeri unos i pokušaj ponovo.'**
+  String get disputeErrorInvalid;
+
+  /// No description provided for @disputeErrorNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nije pronađeno.'**
+  String get disputeErrorNotFound;
+
+  /// No description provided for @disputeStaffTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odluka tima'**
+  String get disputeStaffTitle;
+
+  /// No description provided for @disputeStaffBuyer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac (ID)'**
+  String get disputeStaffBuyer;
+
+  /// No description provided for @disputeStaffSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac (ID)'**
+  String get disputeStaffSeller;
+
+  /// No description provided for @disputeRefund.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrati novac kupcu'**
+  String get disputeRefund;
+
+  /// No description provided for @disputeReject.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odbij prijavu'**
+  String get disputeReject;
+
+  /// No description provided for @disputeRefundConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac dobija puni povrat novca, a prodavac ne dobija isplatu.'**
+  String get disputeRefundConfirm;
+
+  /// No description provided for @disputeRejectConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžba se nastavlja kao prije prijave.'**
+  String get disputeRejectConfirm;
+
+  /// No description provided for @disputeNoteLabel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napomena (vidi je kupac)'**
+  String get disputeNoteLabel;
+
+  /// No description provided for @disputeDecided.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odluka sačuvana'**
+  String get disputeDecided;
+
+  /// No description provided for @disputeStaffHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovo je prijava problema s narudžbom {order}. Odluku donosiš u detaljima narudžbe.'**
+  String disputeStaffHint(String order);
+
+  /// No description provided for @disputeAlertOpenedTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac je prijavio problem'**
+  String get disputeAlertOpenedTitle;
+
+  /// No description provided for @disputeAlertOpenedBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: isplata čeka odluku podrške.'**
+  String disputeAlertOpenedBody(String event);
+
+  /// No description provided for @disputeAlertRejectedTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odluka o prijavljenom problemu'**
+  String get disputeAlertRejectedTitle;
+
+  /// No description provided for @disputeAlertRejectedBody.
+  ///
+  /// In bs, this message translates to:
+  /// **'{event}: prijava je odbijena, narudžba se nastavlja.'**
+  String disputeAlertRejectedBody(String event);
+
+  /// No description provided for @eventChangeSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazivanje i pomjeranje'**
+  String get eventChangeSection;
+
+  /// No description provided for @eventChangeCancel.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkaži događaj'**
+  String get eventChangeCancel;
+
+  /// No description provided for @eventChangeCancelInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi kupci automatski dobijaju povrat novca, a sve ponude se povlače. Ovo se ne može poništiti.'**
+  String get eventChangeCancelInfo;
+
+  /// No description provided for @eventChangeReason.
+  ///
+  /// In bs, this message translates to:
+  /// **'Razlog otkazivanja'**
+  String get eventChangeReason;
+
+  /// No description provided for @eventChangeReasonHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Npr. izvođač je otkazao nastup.'**
+  String get eventChangeReasonHint;
+
+  /// No description provided for @eventChangeCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, one{Događaj otkazan, {count} kupac dobija povrat novca} few{Događaj otkazan, {count} kupca dobijaju povrat novca} other{Događaj otkazan, {count} kupaca dobija povrat novca}}'**
+  String eventChangeCancelled(int count);
+
+  /// No description provided for @eventChangePostpone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomjeri događaj'**
+  String get eventChangePostpone;
+
+  /// No description provided for @eventChangePostponeInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupljene karte ostaju važeće za novi termin. Kupci vide obavijest na stranici događaja.'**
+  String get eventChangePostponeInfo;
+
+  /// No description provided for @eventChangeNewDate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi termin'**
+  String get eventChangeNewDate;
+
+  /// No description provided for @eventChangePickDate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi novi termin'**
+  String get eventChangePickDate;
+
+  /// No description provided for @eventChangePostponed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj pomjeren'**
+  String get eventChangePostponed;
+
+  /// No description provided for @eventChangeCancelledBanner.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovaj događaj je otkazan i više se ne može mijenjati.'**
+  String get eventChangeCancelledBanner;
+
+  /// No description provided for @eventChangeCancelReason.
+  ///
+  /// In bs, this message translates to:
+  /// **'Razlog: {reason}'**
+  String eventChangeCancelReason(String reason);
+
+  /// No description provided for @eventChangePostponedFrom.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomjeren, prvobitni termin: {date}'**
+  String eventChangePostponedFrom(String date);
+
+  /// No description provided for @eventChangeFilterCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otkazani'**
+  String get eventChangeFilterCancelled;
+
+  /// No description provided for @sellerUploadNow.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uploaduj'**
+  String get sellerUploadNow;
+
+  /// No description provided for @sellerTicketsMissing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte još nisu uploadovane'**
+  String get sellerTicketsMissing;
+
+  /// No description provided for @sellerTicketsMissingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'{done} od {total} karata uploadovano. Uploaduj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.'**
+  String sellerTicketsMissingInfo(int done, int total);
+
+  /// No description provided for @sellerTicketsButton.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte (upload)'**
+  String get sellerTicketsButton;
+
+  /// No description provided for @sellerUploadNowHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda je objavljena. Uploaduj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.'**
+  String get sellerUploadNowHint;
+
+  /// No description provided for @eventPageCancelled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je otkazan'**
+  String get eventPageCancelled;
+
+  /// No description provided for @eventPageCancelledInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Svi kupci automatski dobijaju povrat novca. Karte se više ne prodaju.'**
+  String get eventPageCancelledInfo;
+
+  /// No description provided for @eventPagePostponed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Događaj je pomjeren'**
+  String get eventPagePostponed;
+
+  /// No description provided for @eventPagePostponedInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prvobitni termin: {date}. Kupljene karte ostaju važeće za novi termin.'**
+  String eventPagePostponedInfo(String date);
+
   /// No description provided for @eventStatusCancelled.
   ///
   /// In bs, this message translates to:

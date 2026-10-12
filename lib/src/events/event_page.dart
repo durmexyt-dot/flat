@@ -190,6 +190,31 @@ class _Details extends ConsumerWidget {
                 )
               : const SizedBox(width: double.infinity),
         ),
+        if (event.cancelled) ...[
+          const SizedBox(height: 12),
+          FAlert(
+            variant: FAlertVariant.destructive,
+            icon: const Icon(FLucideIcons.ban),
+            title: Text(l10n.eventPageCancelled),
+            subtitle: Text(
+              [
+                if (event.cancelReason.isNotEmpty) event.cancelReason,
+                l10n.eventPageCancelledInfo,
+              ].join('\n'),
+            ),
+          ),
+        ] else if (event.postponed) ...[
+          const SizedBox(height: 12),
+          FAlert(
+            icon: const Icon(FLucideIcons.calendarClock),
+            title: Text(l10n.eventPagePostponed),
+            subtitle: Text(
+              l10n.eventPagePostponedInfo(
+                formatDateTime(context, event.postponedFrom!),
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
         _Fact(
           icon: FLucideIcons.calendar,
@@ -202,7 +227,7 @@ class _Details extends ConsumerWidget {
           duration: const Duration(milliseconds: 250),
           alignment: Alignment.topCenter,
           // Team accounts don't sell: they get the team actions below.
-          child: event.hidden || ref.watch(isStaffProvider)
+          child: event.hidden || event.cancelled || ref.watch(isStaffProvider)
               ? const SizedBox(width: double.infinity)
               : upcoming
               ? FButton(
