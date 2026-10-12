@@ -225,7 +225,17 @@ class _Reports extends ConsumerWidget {
 Future<void> showReport(BuildContext context, WidgetRef ref, Report r) async {
   final l10n = AppLocalizations.of(context);
   final router = GoRouter.of(context);
-  final listing = await ref.read(listingProvider(r.listingId).future);
+  // The listing as it is now; the report opens also when it can't be read.
+  Listing? listing;
+  try {
+    listing = await ref
+        .read(marketRepositoryProvider)
+        .watchListing(r.listingId)
+        .first
+        .timeout(const Duration(seconds: 8));
+  } catch (_) {
+    listing = null;
+  }
   if (!context.mounted) return;
   final sellerId = r.sellerId.isNotEmpty ? r.sellerId : listing?.sellerId ?? '';
   final note = TextEditingController(text: r.note);
