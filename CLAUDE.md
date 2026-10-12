@@ -9,6 +9,9 @@
   then the exact version tested on staging: `tool/deploy_web.sh prod --ref vX.Y.Z`.
   Exception: **bug fixes** may go to staging and prod together
   (`tool/release.sh patch all`) once checked in the browser.
+- Until go-live, "prod" (`/flat/`, `stubswap-prod`) is an integration
+  environment without real users: no real payments, company details and
+  sender domain come later. Staging stays the dev/test environment.
 - Changed `firestore.rules` must be published by the owner in the Firebase
   console (staging `stubswap-eda59`, prod `stubswap-prod` / database
   `stubswap-prod`) before an app that needs them reaches that environment.
