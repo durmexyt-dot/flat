@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.6.1] – 2026-10-12
+
+- Web: allow the Storage and Functions SDK loaders in the CSP
+- Functions: delivered ticket copies get their own download token
+
 ## [1.6.0] – 2026-10-12
 
 ### Neu
