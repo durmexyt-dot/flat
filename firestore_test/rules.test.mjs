@@ -1,4 +1,5 @@
 import { test, before, after, beforeEach } from 'node:test';
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, writeBatch, runTransaction, collection, query, where, getDocs, Timestamp, arrayUnion, serverTimestamp } from 'firebase/firestore';
@@ -45,7 +46,7 @@ const order = (over = {}) => ({
   event: EVENT, quantity: 2, unitPriceMinor: 3500, currency: 'BAM', ticketType: 'eTicket',
   section: '', row: '', seats: '',
   status: 'pendingPayment', history: [{ status: 'pendingPayment' }], testMode: true,
-  createdAt: Timestamp.now(), ...over,
+  reserved: true, createdAt: serverTimestamp(), ...over,
 });
 // Signed in with a confirmed email address unless [verified] is false.
 const db = (uid, { verified = true } = {}) => (uid
@@ -53,16 +54,75 @@ const db = (uid, { verified = true } = {}) => (uid
   : env.unauthenticatedContext()).firestore();
 const IBAN = 'BA391290079401028494';
 
-// The payment transaction the app runs.
-function payBatch(fs, { quantitySold = 2, status = 'active', amount = 6300, orderId = 'O1' } = {}) {
-  return writeBatch(fs)
-    .update(doc(fs, `orders/${orderId}`), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
-    .update(doc(fs, 'listings/L1'), { quantitySold, status, lastOrderId: orderId })
-    .set(doc(fs, `payouts/${orderId}`), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: amount, currency: 'BAM', status: 'pending', testMode: true });
+// A document as stored, read past the rules.
+async function raw(path) {
+  let data;
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    data = (await getDoc(doc(ctx.firestore(), path))).data();
+  });
+  return data;
 }
 
-async function openOrder(id = 'O1', over = {}) {
-  await assertSucceeds(setDoc(doc(db('buyer'), `orders/${id}`), order(over)));
+// Opening an order as the app does: the order plus holding its tickets.
+function orderBatch(fs, id, over = {}, { hold } = {}) {
+  return {
+    async commit() {
+      const o = order(over);
+      const l = (await raw(`listings/${o.listingId}`)) ?? {};
+      return writeBatch(fs)
+        .set(doc(fs, `orders/${id}`), o)
+        .update(doc(fs, `listings/${o.listingId}`), {
+          quantityReserved: (l.quantityReserved ?? 0) + (hold ?? o.quantity),
+          lastOrderId: id,
+        })
+        .commit();
+    },
+  };
+}
+
+async function openOrder(id = 'O1', over = {}, fs = db('buyer')) {
+  await assertSucceeds(orderBatch(fs, id, over).commit());
+}
+
+// The payment transaction the app runs: order paid, tickets sold (and no
+// longer held), payout created.
+function payBatch(fs, { quantitySold = 2, status = 'active', amount = 6300, orderId = 'O1', listingId = 'L1', reservedAfter } = {}) {
+  return {
+    async commit() {
+      const o = (await raw(`orders/${orderId}`)) ?? {};
+      const l = (await raw(`listings/${listingId}`)) ?? {};
+      const reserved = reservedAfter ?? Math.max((l.quantityReserved ?? 0) - (o.quantity ?? 0), 0);
+      return writeBatch(fs)
+        .update(doc(fs, `orders/${orderId}`), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
+        .update(doc(fs, `listings/${listingId}`), { quantitySold, quantityReserved: reserved, status, lastOrderId: orderId })
+        .set(doc(fs, `payouts/${orderId}`), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: amount, currency: 'BAM', status: 'pending', testMode: true })
+        .commit();
+    },
+  };
+}
+
+// A failed payment: the order is cancelled and its tickets released.
+function failBatch(fs, { orderId = 'O1', listingId = 'L1', reservedAfter } = {}) {
+  return {
+    async commit() {
+      const o = (await raw(`orders/${orderId}`)) ?? {};
+      const l = (await raw(`listings/${listingId}`)) ?? {};
+      return writeBatch(fs)
+        .update(doc(fs, `orders/${orderId}`), { status: 'cancelled', failureReason: 'cardDeclined', history: arrayUnion({ status: 'cancelled' }) })
+        .update(doc(fs, `listings/${listingId}`), {
+          quantityReserved: reservedAfter ?? Math.max((l.quantityReserved ?? 0) - (o.quantity ?? 0), 0),
+          lastOrderId: orderId,
+        })
+        .commit();
+    },
+  };
+}
+
+// Mobile tickets are handed over outside the app (e-tickets are uploaded).
+async function useMobileTickets(listingId = 'L1') {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await updateDoc(doc(ctx.firestore(), `listings/${listingId}`), { ticketType: 'mobile' });
+  });
 }
 
 test('anyone can read and query active listings', async () => {
@@ -121,12 +181,12 @@ test('sellers create listings only for themselves and unsold', async () => {
 
 test('order creation must match the listing', async () => {
   await openOrder();
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O2'), order({ unitPriceMinor: 100 })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O3'), order({ quantity: 5 })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O4'), order({ testMode: false })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O5'), order({ status: 'paid' })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O6'), order({ buyerId: 'someone' })));
-  await assertFails(setDoc(doc(db('seller'), 'orders/O7'), order({ buyerId: 'seller' })));
+  await assertFails(orderBatch(db('buyer'), 'O2', { unitPriceMinor: 100 }).commit());
+  await assertFails(orderBatch(db('buyer'), 'O3', { quantity: 5 }).commit());
+  await assertFails(orderBatch(db('buyer'), 'O4', { testMode: false }).commit());
+  await assertFails(orderBatch(db('buyer'), 'O5', { status: 'paid' }).commit());
+  await assertFails(orderBatch(db('buyer'), 'O6', { buyerId: 'someone' }).commit());
+  await assertFails(orderBatch(db('seller'), 'O7', { buyerId: 'seller' }).commit());
 });
 
 test('payment: order, listing and payout together succeed', async () => {
@@ -162,16 +222,21 @@ test('tickets cannot be counted without a payment in the same batch', async () =
 
 test('a failed payment cancels the order', async () => {
   await openOrder();
-  await assertSucceeds(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'cancelled', failureReason: 'cardDeclined', history: arrayUnion({ status: 'cancelled' }) }));
+  await assertSucceeds(failBatch(db('buyer')).commit());
   await assertFails(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'pendingPayment' }));
 });
 
-test('only the seller marks tickets sent, after payment', async () => {
+test('e-tickets go out by upload; the seller marks mobile tickets sent after payment', async () => {
   await openOrder();
-  await assertFails(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent' }));
   await assertSucceeds(payBatch(db('buyer')).commit());
-  await assertFails(updateDoc(doc(db('buyer'), 'orders/O1'), { status: 'ticketsSent' }));
-  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  // E-tickets: only the Cloud Function marks them sent, after the upload.
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  await useMobileTickets();
+  await openOrder('O2', { ticketType: 'mobile' });
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent' }));
+  await assertSucceeds(payBatch(db('buyer'), { orderId: 'O2', quantitySold: 4, status: 'soldOut' }).commit());
+  await assertFails(updateDoc(doc(db('buyer'), 'orders/O2'), { status: 'ticketsSent' }));
+  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
 });
 
 test('profiles are private', async () => {
@@ -210,7 +275,9 @@ test('cancelling a sold-out sale reopens the listing', async () => {
 });
 
 test('the seller can cancel after sending the tickets too', async () => {
-  await paidOrder();
+  await useMobileTickets();
+  await openOrder('O1', { ticketType: 'mobile' });
+  await assertSucceeds(payBatch(db('buyer')).commit());
   await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
   await assertSucceeds(cancelBatch(db('seller')).commit());
 });
@@ -262,12 +329,12 @@ test('listings: no extra fields, sane numbers, future events, verified sellers',
 });
 
 test('orders: ticket details come from the listing', async () => {
-  await assertFails(setDoc(doc(db('buyer'), 'orders/F1'), order({ event: { ...EVENT, name: 'Fake' } })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/F2'), order({ seats: 'VIP 1' })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/F3'), order({ number: '<script>' })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/F4'), order({ paymentId: 'pi_fake' })));
-  await assertFails(setDoc(doc(db('buyer'), 'orders/F5'), order({ history: [{ status: 'paid' }, { status: 'completed' }] })));
-  await assertFails(setDoc(doc(db(null), 'orders/F6'), order()));
+  await assertFails(orderBatch(db('buyer'), 'F1', { event: { ...EVENT, name: 'Fake' } }).commit());
+  await assertFails(orderBatch(db('buyer'), 'F2', { seats: 'VIP 1' }).commit());
+  await assertFails(orderBatch(db('buyer'), 'F3', { number: '<script>' }).commit());
+  await assertFails(orderBatch(db('buyer'), 'F4', { paymentId: 'pi_fake' }).commit());
+  await assertFails(orderBatch(db('buyer'), 'F5', { history: [{ status: 'paid' }, { status: 'completed' }] }).commit());
+  await assertFails(orderBatch(db(null), 'F6').commit());
   // Orders can't be deleted, not even by their own buyer.
   await openOrder();
   await assertFails(deleteDoc(doc(db('buyer'), 'orders/O1')));
@@ -395,7 +462,7 @@ test('team accounts neither buy nor sell', async () => {
   });
   for (const uid of ['boss', 'helper']) {
     await assertFails(setDoc(doc(db(uid), `listings/team-${uid}`), listing({ sellerId: uid })));
-    await assertFails(setDoc(doc(db(uid), `orders/team-${uid}`), order({ buyerId: uid })));
+    await assertFails(orderBatch(db(uid), `team-${uid}`, { buyerId: uid }).commit());
   }
   // The same listing and order work for normal users.
   await assertSucceeds(setDoc(doc(db('seller'), 'listings/team-ok'), listing()));
@@ -436,15 +503,92 @@ test('fees: admins set them; new listings and their orders keep them', async () 
   // The old listing L1 keeps 10 %: an order for it at 10 % works...
   await openOrder();
   // ...and an order can't pick other fees than its listing.
-  await assertFails(setDoc(doc(db('buyer'), 'orders/O9'), order({ buyerFeePercent: 0, sellerFeePercent: 0 })));
-  await assertSucceeds(setDoc(doc(db('buyer'), 'orders/O8'), order({ listingId: 'f3', buyerFeePercent: 12, sellerFeePercent: 8 })));
+  await assertFails(orderBatch(db('buyer'), 'O9', { buyerFeePercent: 0, sellerFeePercent: 0 }).commit());
+  await openOrder('O8', { listingId: 'f3', buyerFeePercent: 12, sellerFeePercent: 8 });
   // The seller's payout uses the order's seller fee: 2 × 35 − 8 % = 64.40.
-  const b = db('buyer');
-  await assertSucceeds(writeBatch(b)
-    .update(doc(b, 'orders/O8'), { status: 'paid', paymentId: 'pi_1', paymentMethod: 'Visa', history: arrayUnion({ status: 'paid' }) })
-    .update(doc(b, 'listings/f3'), { quantitySold: 2, status: 'active', lastOrderId: 'O8' })
-    .set(doc(b, 'payouts/O8'), { sellerId: 'seller', orderNumbers: ['SSW-TEST01'], amountMinor: 6440, currency: 'BAM', status: 'pending', testMode: true })
-    .commit());
+  await assertSucceeds(payBatch(db('buyer'), { orderId: 'O8', listingId: 'f3', amount: 6440 }).commit());
+});
+
+// ---- Reservations, ticket files, team access ---------------------------------
+
+test('opening an order holds its tickets; a failed payment frees them', async () => {
+  // L1 has 4 tickets. Buyer holds 3: another buyer can only get 1.
+  await openOrder('R1', { quantity: 3 });
+  assert.equal((await raw('listings/L1')).quantityReserved, 3);
+  await assertFails(orderBatch(db('other'), 'R2', { buyerId: 'other', quantity: 2 }).commit());
+  // Holding fewer tickets than ordered, or more than are free, is refused.
+  await assertFails(orderBatch(db('other'), 'R3', { buyerId: 'other', quantity: 1 }, { hold: 0 }).commit());
+  // Changing the hold without an order is refused.
+  await assertFails(updateDoc(doc(db('other'), 'listings/L1'), { quantityReserved: 0 }));
+  // An order without holding its tickets is refused.
+  await assertFails(setDoc(doc(db('other'), 'orders/R4'), order({ buyerId: 'other', quantity: 1 })));
+  // The payment fails: the tickets are free again.
+  await assertFails(updateDoc(doc(db('buyer'), 'orders/R1'), { status: 'cancelled', failureReason: 'cardDeclined' }));
+  await assertSucceeds(failBatch(db('buyer'), { orderId: 'R1' }).commit());
+  assert.equal((await raw('listings/L1')).quantityReserved, 0);
+  await openOrder('R2', { buyerId: 'other', quantity: 2 }, db('other'));
+});
+
+test('paying after the reservation ran out is refused', async () => {
+  await openOrder();
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await updateDoc(doc(ctx.firestore(), 'orders/O1'), { createdAt: Timestamp.fromMillis(Date.now() - 16 * 60 * 1000) });
+  });
+  await assertFails(payBatch(db('buyer')).commit());
+});
+
+test('ticket files: only the seller uploads and sees them; buyers get their copies', async () => {
+  const file = (over = {}) => ({
+    name: 'ticket.pdf', contentType: 'application/pdf', size: 120000,
+    storagePath: 'tickets/seller/L1/F1', tickets: 1, orderId: null, uploadedAt: serverTimestamp(), ...over,
+  });
+  const fs = db('seller');
+  await assertSucceeds(setDoc(doc(fs, 'listings/L1/files/F1'), file()));
+  await assertFails(setDoc(doc(fs, 'listings/L1/files/F2'), file({ storagePath: 'tickets/seller/L1/F1' })));
+  await assertFails(setDoc(doc(fs, 'listings/L1/files/F3'), file({ storagePath: 'tickets/seller/L1/F3', contentType: 'text/html' })));
+  await assertFails(setDoc(doc(fs, 'listings/L1/files/F4'), file({ storagePath: 'tickets/seller/L1/F4', orderId: 'O1' })));
+  await assertFails(setDoc(doc(fs, 'listings/L1/files/F5'), file({ storagePath: 'tickets/seller/L1/F5', size: 20000000 })));
+  await assertFails(setDoc(doc(db('other'), 'listings/L1/files/F6'), file({ storagePath: 'tickets/other/L1/F6' })));
+  await assertFails(getDoc(doc(db('buyer'), 'listings/L1/files/F1')));
+  await assertSucceeds(getDoc(doc(fs, 'listings/L1/files/F1')));
+  // Handed out files stay.
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await updateDoc(doc(ctx.firestore(), 'listings/L1/files/F1'), { orderId: 'O1' });
+  });
+  await assertFails(deleteDoc(doc(fs, 'listings/L1/files/F1')));
+  await assertFails(updateDoc(doc(fs, 'listings/L1/files/F1'), { orderId: null }));
+  // The buyer's copy: buyer, seller and the team read it, nobody writes it.
+  await openOrder();
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'orders/O1/files/F1'), { name: 'ticket.pdf', storagePath: 'deliveries/O1/F1' });
+  });
+  await assertSucceeds(getDoc(doc(db('buyer'), 'orders/O1/files/F1')));
+  await assertSucceeds(getDoc(doc(db('seller'), 'orders/O1/files/F1')));
+  await assertSucceeds(getDoc(doc(db('helper'), 'orders/O1/files/F1')));
+  await assertFails(getDoc(doc(db('other'), 'orders/O1/files/F1')));
+  await assertFails(setDoc(doc(db('buyer'), 'orders/O1/files/F9'), { name: 'x' }));
+});
+
+test('the team reads orders and payouts for reported problems', async () => {
+  await openOrder();
+  await assertSucceeds(payBatch(db('buyer')).commit());
+  await assertSucceeds(getDoc(doc(db('helper'), 'orders/O1')));
+  await assertSucceeds(getDoc(doc(db('boss'), 'payouts/O1')));
+  await assertFails(getDoc(doc(db('other'), 'orders/O1')));
+  // ...but doesn't change them directly (the Cloud Function does).
+  await assertFails(updateDoc(doc(db('helper'), 'orders/O1'), { status: 'refunded' }));
+});
+
+test('events are cancelled only by the Cloud Function, and stay visible', async () => {
+  await assertFails(updateDoc(doc(db('boss'), 'events/E1'), { status: 'cancelled', updatedAt: serverTimestamp() }));
+  await assertFails(updateDoc(doc(db('boss'), 'events/E1'), { postponedFrom: Timestamp.now(), updatedAt: serverTimestamp() }));
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await updateDoc(doc(ctx.firestore(), 'events/E1'), { status: 'cancelled', cancelReason: 'Weather' });
+  });
+  await assertSucceeds(getDoc(doc(db(null), 'events/E1')));
+  await assertSucceeds(getDocs(query(collection(db(null), 'events'), where('status', 'in', ['pending', 'confirmed', 'active', 'cancelled']))));
+  // No new listings for a cancelled event.
+  await assertFails(setDoc(doc(db('seller'), 'listings/C1'), listing()));
 });
 
 // ---- Support tickets ----------------------------------------------------------

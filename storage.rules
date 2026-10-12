@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Ticket files. Sellers upload to tickets/{their uid}/…; the Cloud Function
+// copies a file to deliveries/{orderId}/… for the buyer once the order is
+// paid, with the buyer and seller in its metadata. Nobody else reads them.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /tickets/{sellerId}/{listingId}/{fileId} {
+      allow read, delete: if request.auth != null && request.auth.uid == sellerId;
+      allow create: if request.auth != null && request.auth.uid == sellerId
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('application/pdf|image/(png|jpeg|webp)');
+    }
+    match /deliveries/{orderId}/{fileId} {
+      allow read: if request.auth != null
+        && (resource.metadata.buyerId == request.auth.uid
+          || resource.metadata.sellerId == request.auth.uid);
+      // Written by the Cloud Function only.
+    }
+  }
+}

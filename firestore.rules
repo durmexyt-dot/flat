@@ -42,6 +42,14 @@ service cloud.firestore {
     }
     function validPercent(v) { return v is int && v >= 0 && v <= 30; }
 
+    // ---- Reservations -------------------------------------------------------
+    // Opening an order holds its tickets for 15 minutes (quantityReserved on
+    // the listing). Paying or a failed payment releases them; the Cloud
+    // Function releases expired holds.
+    function reserved(d) { return d.get('quantityReserved', 0); }
+    function released(before, q) { return before >= q ? before - q : 0; }
+    function isReserved(o) { return o.get('reserved', false) == true; }
+
     // True if order [id] goes from awaiting payment to paid in this very
     // request (get() reads the state before, getAfter() after it).
     function paidNow(id) {
@@ -204,7 +212,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/users/$(request.auth.uid)/private/payoutMethod)
         && request.resource.data.keys().hasOnly(['sellerId', 'eventId', 'event',
             'buyerFeePercent', 'sellerFeePercent', 'faceValueMinor', 'ticketType',
-            'quantity', 'quantitySold', 'priceMinor', 'currency', 'status',
+            'quantity', 'quantitySold', 'quantityReserved', 'priceMinor', 'currency', 'status',
             'section', 'row', 'seats', 'note', 'createdAt', 'updatedAt'])
         && validEvent(request.resource.data.event)
         // Tickets only for a visible event an admin created; the copy of
@@ -225,6 +233,7 @@ service cloud.firestore {
         && request.resource.data.ticketType in ['eTicket', 'mobile', 'paper']
         && request.resource.data.status == 'active'
         && request.resource.data.quantitySold == 0
+        && reserved(request.resource.data) == 0
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0
         && request.resource.data.quantity <= 50
@@ -262,10 +271,16 @@ service cloud.firestore {
             || (resource.data.status != 'soldOut'
               && request.resource.data.status == resource.data.status)
           ))
-        // Test mode: a buyer's payment takes the tickets off the listing.
+        // Test mode: a buyer's payment takes the tickets off the listing and
+        // ends their reservation.
         || (signedIn()
-          && onlyChanges(['quantitySold', 'status', 'lastOrderId', 'updatedAt'])
+          && onlyChanges(['quantitySold', 'quantityReserved', 'status', 'lastOrderId', 'updatedAt'])
           && paidNow(request.resource.data.lastOrderId)
+          && reserved(request.resource.data)
+            == (isReserved(getAfter(orderPath(request.resource.data.lastOrderId)).data)
+              ? released(reserved(resource.data),
+                  getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity)
+              : reserved(resource.data))
           && getAfter(orderPath(request.resource.data.lastOrderId)).data.listingId == id
           && request.resource.data.quantitySold == resource.data.quantitySold
             + getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity
@@ -274,11 +289,71 @@ service cloud.firestore {
               && request.resource.data.status == 'soldOut')
             || (request.resource.data.quantitySold < resource.data.quantity
               && request.resource.data.status == resource.data.status)
-          ));
+          ))
+        // A buyer opens an order: its tickets are held while they pay.
+        || (signedIn()
+          && resource.data.status == 'active'
+          && onlyChanges(['quantityReserved', 'lastOrderId', 'updatedAt'])
+          && !exists(orderPath(request.resource.data.lastOrderId))
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.buyerId == request.auth.uid
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.listingId == id
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.status == 'pendingPayment'
+          && reserved(request.resource.data) == reserved(resource.data)
+            + getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity
+          && reserved(request.resource.data) + resource.data.quantitySold
+            <= resource.data.quantity)
+        // The payment failed: the held tickets are free again.
+        || (signedIn()
+          && onlyChanges(['quantityReserved', 'lastOrderId', 'updatedAt'])
+          && get(orderPath(request.resource.data.lastOrderId)).data.status == 'pendingPayment'
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.status == 'cancelled'
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.buyerId == request.auth.uid
+          && getAfter(orderPath(request.resource.data.lastOrderId)).data.listingId == id
+          && isReserved(getAfter(orderPath(request.resource.data.lastOrderId)).data)
+          && reserved(request.resource.data) == released(reserved(resource.data),
+            getAfter(orderPath(request.resource.data.lastOrderId)).data.quantity));
+    }
+
+    // Ticket files a seller uploaded for a listing (the files themselves are
+    // in Storage). Only the seller sees them; buyers get their copies under
+    // orders/{id}/files from the Cloud Function.
+    match /listings/{id}/files/{fileId} {
+      allow read: if signedIn() && get(listingPath(id)).data.sellerId == request.auth.uid;
+      allow create: if signedIn()
+        && get(listingPath(id)).data.sellerId == request.auth.uid
+        && request.resource.data.keys().hasOnly(['name', 'contentType', 'size',
+            'storagePath', 'tickets', 'orderId', 'uploadedAt'])
+        && str(request.resource.data.name, 1, 120)
+        && request.resource.data.contentType
+          in ['application/pdf', 'image/png', 'image/jpeg', 'image/webp']
+        && request.resource.data.size is int
+        && request.resource.data.size > 0
+        && request.resource.data.size < 10485760
+        && request.resource.data.storagePath
+          == 'tickets/' + request.auth.uid + '/' + id + '/' + fileId
+        && request.resource.data.tickets is int
+        && request.resource.data.tickets >= 1
+        && request.resource.data.tickets <= 50
+        && request.resource.data.orderId == null
+        && request.resource.data.uploadedAt == request.time;
+      // Not yet handed to a buyer.
+      allow delete: if signedIn()
+        && get(listingPath(id)).data.sellerId == request.auth.uid
+        && resource.data.orderId == null;
+    }
+
+    // The tickets an order received (written by the Cloud Function).
+    match /orders/{id}/files/{fileId} {
+      allow read: if signedIn()
+        && (get(orderPath(id)).data.buyerId == request.auth.uid
+          || get(orderPath(id)).data.sellerId == request.auth.uid
+          || isStaff());
     }
 
     match /orders/{id} {
-      allow read: if isUser(resource.data.buyerId) || isUser(resource.data.sellerId);
+      // The team reads orders to handle reported problems.
+      allow read: if isUser(resource.data.buyerId) || isUser(resource.data.sellerId)
+        || isStaff();
 
       // Test mode: the buyer opens an order at the listing's current price.
       allow create: if signedIn()
@@ -291,7 +366,7 @@ service cloud.firestore {
             'sellerId', 'event', 'quantity', 'unitPriceMinor', 'currency',
             'buyerFeePercent', 'sellerFeePercent',
             'ticketType', 'section', 'row', 'seats', 'status', 'history',
-            'testMode', 'createdAt'])
+            'testMode', 'reserved', 'createdAt'])
         // The listing's fees, 10 % for listings from before fees were set.
         && request.resource.data.get('buyerFeePercent', 10)
           == get(listingPath(request.resource.data.listingId)).data.get('buyerFeePercent', 10)
@@ -300,7 +375,11 @@ service cloud.firestore {
         && request.resource.data.number.matches('^SSW-[A-Z0-9]{6}$')
         && request.resource.data.history is list
         && request.resource.data.history.size() == 1
-        && request.resource.data.createdAt is timestamp
+        // The reservation runs from the server's time.
+        && request.resource.data.createdAt == request.time
+        // The tickets are held in the same write (see listings).
+        && request.resource.data.reserved == true
+        && getAfter(listingPath(request.resource.data.listingId)).data.lastOrderId == id
         && request.resource.data.quantity is int
         && request.resource.data.quantity > 0
         && request.resource.data.quantity <= 10
@@ -325,24 +404,35 @@ service cloud.firestore {
           == get(listingPath(request.resource.data.listingId)).data.currency
         && request.resource.data.quantity
           <= get(listingPath(request.resource.data.listingId)).data.quantity
-            - get(listingPath(request.resource.data.listingId)).data.quantitySold;
+            - get(listingPath(request.resource.data.listingId)).data.quantitySold
+            - reserved(get(listingPath(request.resource.data.listingId)).data);
 
       allow update: if resource.data.testMode == true && (
         // Buyer: the simulated payment failed.
         (isUser(resource.data.buyerId)
           && resource.data.status == 'pendingPayment'
           && request.resource.data.status == 'cancelled'
-          && onlyChanges(['status', 'history', 'failureReason', 'updatedAt']))
+          && onlyChanges(['status', 'history', 'failureReason', 'updatedAt'])
+          // Held tickets are released in the same write.
+          && (!isReserved(resource.data)
+            || reserved(getAfter(listingPath(resource.data.listingId)).data)
+              == released(reserved(get(listingPath(resource.data.listingId)).data),
+                resource.data.quantity)))
         // Buyer: paid, only together with the listing and the payout.
         || (isUser(resource.data.buyerId)
           && resource.data.status == 'pendingPayment'
           && request.resource.data.status == 'paid'
           && onlyChanges(['status', 'history', 'paymentId', 'paymentMethod', 'updatedAt'])
+          // Only while the tickets are held for this buyer.
+          && (!isReserved(resource.data)
+            || request.time < resource.data.createdAt + duration.value(15, 'm'))
           && getAfter(listingPath(resource.data.listingId)).data.lastOrderId == id
           && existsAfter(payoutPath(id)))
-        // Seller: tickets sent to the buyer.
+        // Seller: mobile or paper tickets handed over outside the app (e-tickets
+        // are delivered by uploading them).
         || (isUser(resource.data.sellerId)
           && resource.data.status == 'paid'
+          && resource.data.get('ticketType', 'eTicket') != 'eTicket'
           && request.resource.data.status == 'ticketsSent'
           && onlyChanges(['status', 'history', 'updatedAt']))
         // Seller: cancels the sale; only together with returning the tickets
@@ -363,7 +453,7 @@ service cloud.firestore {
     }
 
     match /payouts/{id} {
-      allow read: if isUser(resource.data.sellerId);
+      allow read: if isUser(resource.data.sellerId) || isStaff();
 
       // Test mode: dropped when the seller cancels the sale [id].
       allow delete: if isUser(resource.data.sellerId) && sellerCancelsNow(id);
@@ -419,19 +509,19 @@ service cloud.firestore {
       function validEventDoc(d) {
         return d.keys().hasOnly(['name', 'venue', 'city', 'date', 'category',
             'genre', 'status', 'createdBy', 'hasImage', 'imageVersion',
-            'createdAt', 'updatedAt'])
+            'postponedFrom', 'cancelReason', 'createdAt', 'updatedAt'])
           && str(d.name, 2, 100)
           && str(d.venue, 1, 100)
           && str(d.city, 1, 60)
           && d.date is timestamp
           && d.category in ['concerts', 'sports', 'theater', 'festivals', 'other']
           && optStr(d, 'genre', 40)
-          && d.status in ['pending', 'confirmed', 'hidden', 'active']
+          && d.status in ['pending', 'confirmed', 'hidden', 'active', 'cancelled']
           && d.hasImage is bool
           && d.imageVersion is int
           && d.updatedAt == request.time;
       }
-      allow read: if resource.data.status in ['pending', 'confirmed', 'active']
+      allow read: if resource.data.status in ['pending', 'confirmed', 'active', 'cancelled']
         || isStaff();
       allow create: if signedIn()
         && validEventDoc(request.resource.data)
@@ -440,6 +530,7 @@ service cloud.firestore {
         && request.resource.data.date > request.time
         && request.resource.data.date < request.time + duration.value(730, 'd')
         && request.resource.data.imageVersion == 1
+        && !('postponedFrom' in request.resource.data)
         && (
           // The team adds confirmed events.
           (isStaff() && request.resource.data.status == 'confirmed')
@@ -447,6 +538,9 @@ service cloud.firestore {
           || (verifiedEmail() && request.resource.data.status == 'pending')
         );
       allow update: if isStaff() && validEventDoc(request.resource.data)
+        // Cancelling refunds everybody: only the Cloud Function does it.
+        && (request.resource.data.status != 'cancelled' || resource.data.status == 'cancelled')
+        && request.resource.data.get('postponedFrom', null) == resource.data.get('postponedFrom', null)
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.get('createdBy', null)
           == resource.data.get('createdBy', null);
