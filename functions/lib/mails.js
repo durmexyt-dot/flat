@@ -1,7 +1,6 @@
-// Transactional emails. The functions put them into the "mail" collection in
-// the format of the Firebase extension "Trigger Email from Firestore", which
-// sends them over the SMTP account set up with the extension. Without the
-// extension they just wait there.
+// Transactional emails. The functions put them into the "mail" collection
+// (the format of the former "Trigger Email" extension); mailer.js sends them
+// over SMTP.
 import { Timestamp } from 'firebase-admin/firestore';
 
 const BRAND = '#5B2EFF';

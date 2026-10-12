@@ -7,9 +7,11 @@ import { setGlobalOptions } from 'firebase-functions/v2';
 import { onDocumentCreated, onDocumentDeleted, onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { HttpsError, onCall } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import { defineString } from 'firebase-functions/params';
+import { defineSecret, defineString } from 'firebase-functions/params';
+import nodemailer from 'nodemailer';
 import * as core from './lib/core.js';
 import * as moderation from './lib/moderation.js';
+import * as mailer from './lib/mailer.js';
 
 // Close to the Firestore location (eur3).
 setGlobalOptions({ region: 'europe-west1', maxInstances: 10 });
@@ -18,6 +20,20 @@ const DATABASE_ID = defineString('DATABASE_ID', { default: '(default)' });
 // Where links in emails go (the web app of this environment).
 const APP_URL = defineString('APP_URL', { default: 'https://durmexyt-dot.github.io/flat/' });
 const appUrl = () => APP_URL.value();
+// The SMTP account for emails, e.g. smtps://user:password@smtp-relay.brevo.com:465
+// (firebase functions:secrets:set SMTP_URI); "none" keeps emails queued.
+const SMTP_URI = defineSecret('SMTP_URI');
+const MAIL_FROM = defineString('MAIL_FROM', { default: 'Stubswap <no-reply@stubswap.ba>' });
+
+let transport;
+function mailTransport() {
+  const uri = SMTP_URI.value();
+  if (!uri || uri === 'none') return null;
+  transport ??= nodemailer.createTransport(uri);
+  return transport;
+}
+const sendMail = (id) =>
+  mailer.sendQueuedMail(db(), id, { transport: mailTransport(), from: MAIL_FROM.value() });
 
 initializeApp();
 const db = () =>
@@ -124,3 +140,19 @@ export const removeListing = callable((uid, data) =>
 );
 export const refundOrder = callable((uid, data) => moderation.refundOrder(db(), uid, data));
 export const setSellerTrusted = callable((uid, data) => moderation.setSellerTrusted(db(), uid, data));
+
+// Sends each queued email over SMTP (our own replacement for the Trigger
+// Email extension); failures are retried by the hourly schedule below.
+export const onMailQueued = onDocumentCreated(
+  { document: 'mail/{mailId}', database: DATABASE_ID, secrets: [SMTP_URI] },
+  async (event) => {
+    await sendMail(event.params.mailId).catch((e) => console.error('mail', event.params.mailId, e));
+  },
+);
+
+export const retryMail = onSchedule(
+  { schedule: 'every 60 minutes', timeZone: 'Europe/Sarajevo', secrets: [SMTP_URI] },
+  async () => {
+    console.log('mail retried', await mailer.retryFailedMail(db(), sendMail));
+  },
+);

@@ -17,6 +17,8 @@ open runs as Cloud Functions (`functions/`, 2nd gen, region `europe-west1`).
 | `onTicketDeleted` | file removed before delivery | the same file may be uploaded again |
 | `onListingChanged` | listing status changes | counts the seller's active listings (limits for new sellers) |
 | `onSupportMessage` | team answers a support request | email to the user |
+| `onMailQueued` | new `mail/{id}` | sends the email over SMTP |
+| `retryMail` | every hour | sends failed emails again |
 | `setUserBan` | callable (team) | block/unblock a user; blocking takes their listings off sale |
 | `removeListing` | callable (team) | take a listing off sale; email to the seller |
 | `refundOrder` | callable (team) | refund a paid order |
@@ -27,22 +29,27 @@ second time is blocked (never delivered) and reported to the team
 (`reports`). `maintenance` also reminds sellers by email when e-tickets are
 still missing 48 hours before the event.
 
-### Emails (Trigger Email extension)
+### Emails (own SMTP sender)
 
-The functions put emails into the Firestore collection `mail` in the format
-of the Firebase extension **Trigger Email from Firestore**. Until it is
-installed, emails just wait there. Once per project:
+The functions put emails into the Firestore collection `mail`;
+`onMailQueued` sends each one over SMTP with nodemailer and records the
+result on the document (`delivery.state`: SUCCESS, ERROR, SKIPPED);
+`retryMail` tries failed ones again every hour (3 tries at most). No
+Firebase Extension is needed (extensions are retired in March 2027).
 
-1. An SMTP account for sending, e.g. Brevo, Mailgun, SendGrid or the domain's
-   mail provider (sender like `no-reply@stubswap.ba`; set up SPF/DKIM for the
-   domain so mails don't land in spam).
-2. Firebase console → Extensions → *Trigger Email from Firestore* → Install:
-   - Firestore database: `(default)` on staging, `stubswap-prod` on prod
-   - Email documents collection: `mail`
-   - SMTP connection URI, e.g. `smtps://USER@smtp-relay.brevo.com:465`
-     and the SMTP password (stored as a secret)
-   - Default FROM address: `Stubswap <no-reply@stubswap.ba>`
-3. Links in emails open the app at `APP_URL` from `functions/.env.<project>`.
+Once per project:
+
+1. An SMTP account for sending, e.g. Brevo (free up to 300 emails a day),
+   Mailgun, SendGrid or the domain's mail provider. Set up SPF/DKIM for the
+   sender's domain so emails don't land in spam.
+2. Store the account as a secret (asked once; `none` keeps emails queued):
+   ```sh
+   firebase functions:secrets:set SMTP_URI -P staging
+   # e.g. smtps://LOGIN:SMTP-KEY@smtp-relay.brevo.com:465
+   firebase deploy --only functions -P staging
+   ```
+3. Sender address: `MAIL_FROM` in `functions/.env.<project>` (default
+   `Stubswap <no-reply@stubswap.ba>`); links open the app at `APP_URL`.
 
 Users switch emails off under Settings → Notifications (all emails or per
 kind); the app saves their language (bs/de/en) for the emails.

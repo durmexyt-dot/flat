@@ -9,6 +9,7 @@ import * as core from '../lib/core.js';
 import * as moderation from '../lib/moderation.js';
 import { render, money } from '../lib/mails.js';
 import { splitVat } from '../lib/invoices.js';
+import * as mailer from '../lib/mailer.js';
 
 const PROJECT = 'stubswap-moderation-test';
 const APP = 'https://example.test/flat/';
@@ -204,4 +205,32 @@ test('emails in three languages, amounts and VAT split', () => {
   }
   assert.equal(money(4500), '45,00 KM');
   assert.deepEqual(splitVat(1170, 17), { netMinor: 1000, vatMinor: 170, grossMinor: 1170 });
+});
+
+test('queued emails are sent once over SMTP; failures are recorded and retried', async () => {
+  await db.doc('mail/m1').set({ to: 'a@test.ba', message: { subject: 'Hi', text: 'Hallo', html: '<p>Hallo</p>' } });
+  const sent = [];
+  const transport = { sendMail: async (m) => { sent.push(m); return { messageId: 'x1' }; } };
+  const from = 'Stubswap <no-reply@test.ba>';
+  assert.equal(await mailer.sendQueuedMail(db, 'm1', { transport, from }), 'sent');
+  assert.equal(await mailer.sendQueuedMail(db, 'm1', { transport, from }), 'skipped');
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].from, from);
+  assert.equal(sent[0].to, 'a@test.ba');
+  assert.equal((await get('mail/m1')).delivery.state, 'SUCCESS');
+
+  // No SMTP account yet: stays unsent.
+  await db.doc('mail/m2').set({ to: 'b@test.ba', message: { subject: 'S', text: 't', html: 'h' } });
+  assert.equal(await mailer.sendQueuedMail(db, 'm2', { transport: null, from }), 'skipped');
+  assert.equal((await get('mail/m2')).delivery.state, 'SKIPPED');
+
+  // SMTP fails: recorded, then the schedule tries again.
+  await db.doc('mail/m3').set({ to: 'c@test.ba', message: { subject: 'S', text: 't', html: 'h' } });
+  const broken = { sendMail: async () => { throw new Error('535 auth failed'); } };
+  await assert.rejects(mailer.sendQueuedMail(db, 'm3', { transport: broken, from }));
+  assert.equal((await get('mail/m3')).delivery.state, 'ERROR');
+  assert.match((await get('mail/m3')).delivery.error, /535/);
+  assert.equal(await mailer.retryFailedMail(db, (id) => mailer.sendQueuedMail(db, id, { transport, from })), 1);
+  assert.equal((await get('mail/m3')).delivery.state, 'SUCCESS');
+  assert.equal((await get('mail/m3')).delivery.attempts, 2);
 });

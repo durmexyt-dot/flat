@@ -15,8 +15,8 @@ die nächste Version.
   Preisänderungen zeigen und prüfen den Höchstpreis.
 - Transaktionsmails (Bosnisch, Deutsch, Englisch): Kauf, Verkauf, Tickets
   da, Erstattung, Problem gemeldet, Auszahlung, Verschiebung, Erinnerung zum
-  Hochladen, Support-Antwort, entferntes Angebot. Versand über die
-  Firebase-Erweiterung „Trigger Email“.
+  Hochladen, Support-Antwort, entferntes Angebot. Versand über eine eigene
+  Function per SMTP (ohne Firebase-Erweiterung).
 - Betrugsschutz: dieselbe Ticketdatei kann nicht zweimal verkauft werden
   (Kopie gesperrt, Team informiert); Limits für neue Verkäufer; Angebote
   melden.
