@@ -39,6 +39,23 @@ abstract class ServerActions {
     required String eventId,
     required DateTime newDate,
   });
+
+  /// The team blocks or unblocks a user; returns how many listings were
+  /// taken off sale.
+  Future<int> setUserBan({
+    required String uid,
+    required bool banned,
+    String reason = '',
+  });
+
+  /// The team takes a listing off sale.
+  Future<void> removeListing({required String listingId, String reason = ''});
+
+  /// The team refunds a paid order.
+  Future<void> refundOrder({required String orderId, String reason = ''});
+
+  /// The team lifts (or sets again) the limits of a new seller.
+  Future<void> setSellerTrusted({required String uid, required bool trusted});
 }
 
 class CloudServerActions implements ServerActions {
@@ -104,6 +121,33 @@ class CloudServerActions implements ServerActions {
     'eventId': eventId,
     'newDate': newDate.toUtc().toIso8601String(),
   });
+
+  @override
+  Future<int> setUserBan({
+    required String uid,
+    required bool banned,
+    String reason = '',
+  }) async =>
+      ((await _call('setUserBan', {
+                'uid': uid,
+                'banned': banned,
+                'reason': reason,
+              }))['listingsRemoved']
+              as num?)
+          ?.toInt() ??
+      0;
+
+  @override
+  Future<void> removeListing({required String listingId, String reason = ''}) =>
+      _call('removeListing', {'listingId': listingId, 'reason': reason});
+
+  @override
+  Future<void> refundOrder({required String orderId, String reason = ''}) =>
+      _call('refundOrder', {'orderId': orderId, 'reason': reason});
+
+  @override
+  Future<void> setSellerTrusted({required String uid, required bool trusted}) =>
+      _call('setSellerTrusted', {'uid': uid, 'trusted': trusted});
 }
 
 /// Records the calls, for tests.
@@ -142,6 +186,34 @@ class FakeServerActions implements ServerActions {
     required String eventId,
     required DateTime newDate,
   }) async => calls.add('postponeEvent $eventId');
+
+  @override
+  Future<int> setUserBan({
+    required String uid,
+    required bool banned,
+    String reason = '',
+  }) async {
+    calls.add('setUserBan $uid $banned');
+    return 0;
+  }
+
+  @override
+  Future<void> removeListing({
+    required String listingId,
+    String reason = '',
+  }) async => calls.add('removeListing $listingId');
+
+  @override
+  Future<void> refundOrder({
+    required String orderId,
+    String reason = '',
+  }) async => calls.add('refundOrder $orderId');
+
+  @override
+  Future<void> setSellerTrusted({
+    required String uid,
+    required bool trusted,
+  }) async => calls.add('setSellerTrusted $uid $trusted');
 }
 
 /// The functions run in Europe, next to the database.

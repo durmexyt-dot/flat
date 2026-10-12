@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flat/src/admin/admin_repository.dart';
 import 'package:flat/src/app.dart';
 import 'package:flat/src/auth/auth_repository.dart';
+import 'package:flat/src/data/platform_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/repositories.dart';
@@ -135,6 +136,7 @@ late InMemorySupportRepository support;
 late InMemoryAdminRepository admin;
 late InMemoryTicketFileRepository ticketFiles;
 late FakeServerActions serverActions;
+late InMemoryPlatformRepository platform;
 
 Future<FakeAuthRepository> pumpApp(
   WidgetTester tester, {
@@ -144,6 +146,7 @@ Future<FakeAuthRepository> pumpApp(
   InMemorySupportRepository? supportRepository,
   InMemoryAdminRepository? adminRepository,
   InMemoryTicketFileRepository? ticketFileRepository,
+  InMemoryPlatformRepository? platformRepository,
 }) async {
   profiles = InMemoryProfileRepository();
   market = marketRepository ?? InMemoryMarketRepository();
@@ -152,6 +155,7 @@ Future<FakeAuthRepository> pumpApp(
   admin = adminRepository ?? InMemoryAdminRepository();
   ticketFiles = ticketFileRepository ?? InMemoryTicketFileRepository();
   serverActions = FakeServerActions();
+  platform = platformRepository ?? InMemoryPlatformRepository();
   tester.view.physicalSize = const Size(390, 844) * 3;
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -172,6 +176,7 @@ Future<FakeAuthRepository> pumpApp(
         adminRepositoryProvider.overrideWithValue(admin),
         ticketFileRepositoryProvider.overrideWithValue(ticketFiles),
         serverActionsProvider.overrideWithValue(serverActions),
+        platformRepositoryProvider.overrideWithValue(platform),
       ],
       child: const FlatApp(),
     ),

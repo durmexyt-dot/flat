@@ -75,12 +75,15 @@ class AdminPage extends ConsumerWidget {
   }
 }
 
-/// Shows [builder] only to admins: a skeleton while the role loads, and
-/// "no access" for everybody else.
+/// Shows [builder] only to admins (or, with [staff], to the whole team): a
+/// skeleton while the role loads, and "no access" for everybody else.
 class AdminGate extends ConsumerWidget {
-  const AdminGate({super.key, required this.builder});
+  const AdminGate({super.key, required this.builder, this.staff = false});
 
   final WidgetBuilder builder;
+
+  /// Support accounts may enter too.
+  final bool staff;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,7 +91,8 @@ class AdminGate extends ConsumerWidget {
     final role = ref.watch(staffRoleProvider);
     final Widget child = !role.hasValue && !role.hasError
         ? const KeyedSubtree(key: ValueKey('loading'), child: AdminSkeleton())
-        : role.value == StaffRole.admin
+        : role.value == StaffRole.admin ||
+              (staff && role.value == StaffRole.support)
         ? KeyedSubtree(key: const ValueKey('admin'), child: builder(context))
         : Center(
             key: const ValueKey('no-access'),

@@ -43,6 +43,9 @@ abstract class EventRepository {
 
   /// The team confirms, hides or shows an event again.
   Future<void> setStatus(String id, EventStatus status);
+
+  /// Admins: this event's own resale limit (null: the general rule).
+  Future<void> setMarkupLimit(String id, int? percent);
 }
 
 /// What the security rules accept as an event's status.
@@ -149,6 +152,13 @@ class FirestoreEventRepository implements EventRepository {
         'status': _statusName(status),
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
+  @override
+  Future<void> setMarkupLimit(String id, int? percent) =>
+      _events.doc(id).update({
+        'maxMarkupPercent': percent,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
 }
 
 /// Statuses everybody may read. "active" is how v1.3.0 stored events;
@@ -245,6 +255,10 @@ class InMemoryEventRepository implements EventRepository {
   @override
   Future<void> setStatus(String id, EventStatus status) async =>
       _put(_get(id).copyWith(status: status));
+
+  @override
+  Future<void> setMarkupLimit(String id, int? percent) async =>
+      _put(_get(id).copyWith(maxMarkupPercent: () => percent));
 }
 
 final eventRepositoryProvider = Provider<EventRepository>(

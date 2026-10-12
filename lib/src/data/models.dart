@@ -267,6 +267,7 @@ class Event {
     this.cancelReason = '',
     this.hasImage = false,
     this.imageVersion = 0,
+    this.maxMarkupPercent,
     this.createdAt,
   });
 
@@ -292,6 +293,9 @@ class Event {
 
   /// Changes with every new picture, so caches know to reload it.
   final int imageVersion;
+
+  /// This event's own resale limit (admins); null: the general rule.
+  final int? maxMarkupPercent;
   final DateTime? createdAt;
 
   bool get hidden => status == EventStatus.hidden;
@@ -314,6 +318,7 @@ class Event {
     createdBy: m['createdBy'] as String? ?? '',
     hasImage: m['hasImage'] == true,
     imageVersion: (m['imageVersion'] as num?)?.toInt() ?? 0,
+    maxMarkupPercent: (m['maxMarkupPercent'] as num?)?.toInt(),
     createdAt: _date(m['createdAt']),
   );
 
@@ -323,6 +328,7 @@ class Event {
     String? genre,
     bool? hasImage,
     int? imageVersion,
+    int? Function()? maxMarkupPercent,
   }) => Event(
     id: id,
     info: info ?? this.info,
@@ -333,8 +339,407 @@ class Event {
     cancelReason: cancelReason,
     hasImage: hasImage ?? this.hasImage,
     imageVersion: imageVersion ?? this.imageVersion,
+    maxMarkupPercent: maxMarkupPercent == null
+        ? this.maxMarkupPercent
+        : maxMarkupPercent(),
     createdAt: createdAt,
   );
+}
+
+// ---------------------------------------------------------------------------
+// Resale rules and seller limits
+// ---------------------------------------------------------------------------
+
+/// How far above the face value tickets may be resold (admins set it, for
+/// all events or per event), and whether sellers must give the face value.
+@immutable
+class ResaleConfig {
+  const ResaleConfig({this.maxMarkupPercent, this.requireFaceValue = false});
+
+  /// Highest markup an admin can set.
+  static const maxMarkup = 1000;
+
+  /// Null: no price limit.
+  final int? maxMarkupPercent;
+  final bool requireFaceValue;
+
+  factory ResaleConfig.fromMap(Map<String, dynamic>? m) => ResaleConfig(
+    maxMarkupPercent: (m?['maxMarkupPercent'] as num?)?.toInt(),
+    requireFaceValue: m?['requireFaceValue'] == true,
+  );
+
+  Map<String, dynamic> toMap() => {
+    'maxMarkupPercent': maxMarkupPercent,
+    'requireFaceValue': requireFaceValue,
+  };
+
+  /// The limit for [event]: its own, else this general one.
+  int? limitFor(Event? event) => event?.maxMarkupPercent ?? maxMarkupPercent;
+
+  /// Whether listings for [event] need the face value.
+  bool needsFaceValue(Event? event) =>
+      requireFaceValue || limitFor(event) != null;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ResaleConfig &&
+      other.maxMarkupPercent == maxMarkupPercent &&
+      other.requireFaceValue == requireFaceValue;
+
+  @override
+  int get hashCode => Object.hash(maxMarkupPercent, requireFaceValue);
+}
+
+/// The highest price per ticket for [faceValueMinor] with [markupPercent]
+/// (as the security rules check it: price × 100 ≤ face value × (100 + %)).
+int maxResalePrice(int faceValueMinor, int markupPercent) =>
+    faceValueMinor * (100 + markupPercent) ~/ 100;
+
+/// Limits for new sellers until they have completed sales (the team sets
+/// them).
+@immutable
+class SellerLimits {
+  const SellerLimits({
+    this.newSellerMaxListings = 5,
+    this.newSellerMaxTickets = 6,
+    this.trustedAfterSales = 3,
+  });
+
+  final int newSellerMaxListings;
+  final int newSellerMaxTickets;
+  final int trustedAfterSales;
+
+  factory SellerLimits.fromMap(Map<String, dynamic>? m) {
+    int v(String k, int d) => (m?[k] as num?)?.toInt() ?? d;
+    const d = SellerLimits();
+    return SellerLimits(
+      newSellerMaxListings: v('newSellerMaxListings', d.newSellerMaxListings),
+      newSellerMaxTickets: v('newSellerMaxTickets', d.newSellerMaxTickets),
+      trustedAfterSales: v('trustedAfterSales', d.trustedAfterSales),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    'newSellerMaxListings': newSellerMaxListings,
+    'newSellerMaxTickets': newSellerMaxTickets,
+    'trustedAfterSales': trustedAfterSales,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is SellerLimits &&
+      other.newSellerMaxListings == newSellerMaxListings &&
+      other.newSellerMaxTickets == newSellerMaxTickets &&
+      other.trustedAfterSales == trustedAfterSales;
+
+  @override
+  int get hashCode =>
+      Object.hash(newSellerMaxListings, newSellerMaxTickets, trustedAfterSales);
+}
+
+/// A seller's counts, kept by the Cloud Function.
+@immutable
+class SellerStats {
+  const SellerStats({
+    this.activeListings = 0,
+    this.completedSales = 0,
+    this.trusted = false,
+  });
+
+  final int activeListings;
+  final int completedSales;
+
+  /// The team lifted the limits.
+  final bool trusted;
+
+  bool isNew(SellerLimits limits) =>
+      !trusted && completedSales < limits.trustedAfterSales;
+
+  factory SellerStats.fromMap(Map<String, dynamic>? m) => SellerStats(
+    activeListings: (m?['activeListings'] as num?)?.toInt() ?? 0,
+    completedSales: (m?['completedSales'] as num?)?.toInt() ?? 0,
+    trusted: m?['trusted'] == true,
+  );
+}
+
+/// A blocked account (the team).
+@immutable
+class UserBan {
+  const UserBan({this.reason = '', this.at});
+  final String reason;
+  final DateTime? at;
+
+  factory UserBan.fromMap(Map<String, dynamic> m) =>
+      UserBan(reason: m['reason'] as String? ?? '', at: _date(m['at']));
+}
+
+// ---------------------------------------------------------------------------
+// Reports and the team's log
+// ---------------------------------------------------------------------------
+
+enum ReportType { listing, duplicateTicket }
+
+enum ReportReason { fake, price, wrongEvent, spam, other }
+
+enum ReportStatus { open, resolved, dismissed }
+
+@immutable
+class Report {
+  const Report({
+    required this.id,
+    required this.type,
+    required this.listingId,
+    this.reason = ReportReason.other,
+    this.text = '',
+    this.reporterId = '',
+    this.status = ReportStatus.open,
+    this.sellerId = '',
+    this.otherListingId = '',
+    this.otherSellerId = '',
+    this.eventName = '',
+    this.note = '',
+    this.createdAt,
+  });
+
+  final String id;
+  final ReportType type;
+  final String listingId;
+  final ReportReason reason;
+  final String text;
+  final String reporterId;
+  final ReportStatus status;
+
+  /// For copied ticket files: the seller of the copy and the first upload.
+  final String sellerId;
+  final String otherListingId;
+  final String otherSellerId;
+  final String eventName;
+
+  /// The team's note when handling it.
+  final String note;
+  final DateTime? createdAt;
+
+  factory Report.fromMap(String id, Map<String, dynamic> m) => Report(
+    id: id,
+    type: enumByName(ReportType.values, m['type'], ReportType.listing),
+    listingId: m['listingId'] as String? ?? '',
+    reason: enumByName(ReportReason.values, m['reason'], ReportReason.other),
+    text: m['text'] as String? ?? '',
+    reporterId: m['reporterId'] as String? ?? '',
+    status: enumByName(ReportStatus.values, m['status'], ReportStatus.open),
+    sellerId: m['sellerId'] as String? ?? '',
+    otherListingId: m['otherListingId'] as String? ?? '',
+    otherSellerId: m['otherSellerId'] as String? ?? '',
+    eventName: m['eventName'] as String? ?? '',
+    note: m['note'] as String? ?? '',
+    createdAt: _date(m['createdAt']),
+  );
+}
+
+/// One step the team took (written by the Cloud Function).
+@immutable
+class ModerationEntry {
+  const ModerationEntry({
+    required this.id,
+    required this.action,
+    this.targetUid = '',
+    this.staffUid = '',
+    this.reason = '',
+    this.listingId = '',
+    this.orderId = '',
+    this.at,
+  });
+
+  final String id;
+
+  /// ban, unban, removeListing, refund, trust, untrust.
+  final String action;
+  final String targetUid;
+  final String staffUid;
+  final String reason;
+  final String listingId;
+  final String orderId;
+  final DateTime? at;
+
+  factory ModerationEntry.fromMap(String id, Map<String, dynamic> m) =>
+      ModerationEntry(
+        id: id,
+        action: m['action'] as String? ?? '',
+        targetUid: m['targetUid'] as String? ?? '',
+        staffUid: m['staffUid'] as String? ?? '',
+        reason: m['reason'] as String? ?? '',
+        listingId: m['listingId'] as String? ?? '',
+        orderId: m['orderId'] as String? ?? '',
+        at: _date(m['at']),
+      );
+}
+
+// ---------------------------------------------------------------------------
+// The platform's invoices for its service fee
+// ---------------------------------------------------------------------------
+
+/// The platform's company details printed on invoices (admins).
+@immutable
+class CompanyInfo {
+  const CompanyInfo({
+    this.name = 'Stubswap',
+    this.address = '',
+    this.taxId = '',
+    this.vatNumber = '',
+    this.vatPercent = 17,
+    this.email = '',
+    this.invoicePrefix = 'SSW',
+  });
+
+  final String name;
+  final String address;
+
+  /// Identification number (JIB / tax number).
+  final String taxId;
+
+  /// VAT number (PDV broj); empty if not registered for VAT.
+  final String vatNumber;
+
+  /// VAT included in the service fee (17 % PDV in Bosnia and Herzegovina).
+  final int vatPercent;
+  final String email;
+
+  /// Before the year and number on invoices, e.g. SSW-2026-00001.
+  final String invoicePrefix;
+
+  factory CompanyInfo.fromMap(Map<String, dynamic>? m) {
+    const d = CompanyInfo();
+    String s(String k, String def) => (m?[k] as String?) ?? def;
+    return CompanyInfo(
+      name: s('name', d.name),
+      address: s('address', d.address),
+      taxId: s('taxId', d.taxId),
+      vatNumber: s('vatNumber', d.vatNumber),
+      vatPercent: (m?['vatPercent'] as num?)?.toInt() ?? d.vatPercent,
+      email: s('email', d.email),
+      invoicePrefix: s('invoicePrefix', d.invoicePrefix),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'address': address,
+    'taxId': taxId,
+    'vatNumber': vatNumber,
+    'vatPercent': vatPercent,
+    'email': email,
+    'invoicePrefix': invoicePrefix,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is CompanyInfo &&
+      other.name == name &&
+      other.address == address &&
+      other.taxId == taxId &&
+      other.vatNumber == vatNumber &&
+      other.vatPercent == vatPercent &&
+      other.email == email &&
+      other.invoicePrefix == invoicePrefix;
+
+  @override
+  int get hashCode => Object.hash(
+    name,
+    address,
+    taxId,
+    vatNumber,
+    vatPercent,
+    email,
+    invoicePrefix,
+  );
+}
+
+enum InvoiceType { invoice, creditNote }
+
+/// An invoice (or credit note) of the platform's service fee to a buyer or
+/// seller, issued by the Cloud Function.
+@immutable
+class PlatformInvoice {
+  const PlatformInvoice({
+    required this.id,
+    required this.number,
+    required this.type,
+    required this.orderId,
+    required this.orderNumber,
+    required this.recipientUid,
+    required this.recipientRole,
+    required this.netMinor,
+    required this.vatMinor,
+    required this.grossMinor,
+    required this.vatPercent,
+    required this.currency,
+    required this.company,
+    this.recipientName = '',
+    this.recipientEmail = '',
+    this.feePercent = 0,
+    this.baseMinor = 0,
+    this.eventName = '',
+    this.creditFor = '',
+    this.issuedAt,
+  });
+
+  final String id;
+  final String number;
+  final InvoiceType type;
+  final String orderId;
+  final String orderNumber;
+  final String recipientUid;
+
+  /// "buyer" (service fee) or "seller" (seller fee).
+  final String recipientRole;
+  final String recipientName;
+  final String recipientEmail;
+
+  /// The fee in percent of [baseMinor] (the tickets' price).
+  final int feePercent;
+  final int baseMinor;
+  final String eventName;
+  final int netMinor;
+  final int vatMinor;
+  final int grossMinor;
+  final int vatPercent;
+  final String currency;
+
+  /// The platform as it was when the invoice was issued.
+  final CompanyInfo company;
+
+  /// The invoice a credit note cancels.
+  final String creditFor;
+  final DateTime? issuedAt;
+
+  bool get isCreditNote => type == InvoiceType.creditNote;
+  bool get forBuyer => recipientRole == 'buyer';
+
+  factory PlatformInvoice.fromMap(String id, Map<String, dynamic> m) {
+    int n(String k) => (m[k] as num?)?.toInt() ?? 0;
+    return PlatformInvoice(
+      id: id,
+      number: m['number'] as String? ?? '',
+      type: enumByName(InvoiceType.values, m['type'], InvoiceType.invoice),
+      orderId: m['orderId'] as String? ?? '',
+      orderNumber: m['orderNumber'] as String? ?? '',
+      recipientUid: m['recipientUid'] as String? ?? '',
+      recipientRole: m['recipientRole'] as String? ?? 'buyer',
+      recipientName: m['recipientName'] as String? ?? '',
+      recipientEmail: m['recipientEmail'] as String? ?? '',
+      feePercent: n('feePercent'),
+      baseMinor: n('baseMinor'),
+      eventName: m['eventName'] as String? ?? '',
+      netMinor: n('netMinor'),
+      vatMinor: n('vatMinor'),
+      grossMinor: n('grossMinor'),
+      vatPercent: n('vatPercent'),
+      currency: m['currency'] as String? ?? 'BAM',
+      company: CompanyInfo.fromMap((m['company'] as Map?)?.cast()),
+      creditFor: m['creditFor'] as String? ?? '',
+      issuedAt: _date(m['issuedAt']),
+    );
+  }
 }
 
 enum TicketType { eTicket, mobile, paper }
@@ -354,6 +759,9 @@ enum ListingStatus {
 
   /// Taken down by the seller.
   withdrawn,
+
+  /// Taken down by the team (breaks the rules, blocked seller).
+  removed,
 }
 
 @immutable

@@ -30,6 +30,7 @@ import '../ui/skeleton.dart';
 import '../ui/snack.dart';
 import 'admin_repository.dart';
 import 'events_admin_page.dart';
+import 'platform_settings_pages.dart' show NumberField;
 import '../market/ticket_files_widgets.dart' show serverErrorText;
 
 /// Creates ([id] null) or edits an event.
@@ -149,6 +150,10 @@ class _EventFormState extends ConsumerState<_EventForm> {
   late EventCategory _category =
       widget.event?.info.category ?? EventCategory.concerts;
   late String _genre = widget.event?.genre ?? '';
+  // This event's own resale limit (admins); empty: the general rule.
+  late final _markup = TextEditingController(
+    text: widget.event?.maxMarkupPercent?.toString() ?? '',
+  );
   String? _dateError;
 
   /// A newly chosen picture (base64 JPEG) and its bytes for the preview.
@@ -162,7 +167,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
 
   @override
   void dispose() {
-    for (final c in [_name, _venue, _city]) {
+    for (final c in [_name, _venue, _city, _markup]) {
       c.dispose();
     }
     super.dispose();
@@ -292,6 +297,14 @@ class _EventFormState extends ConsumerState<_EventForm> {
           imageBase64: _newImage,
           removeImage: _removeImage && event.hasImage,
         );
+        final markup = _markup.text.trim().isEmpty
+            ? null
+            : NumberField.parse(_markup.text, 0, ResaleConfig.maxMarkup);
+        if (ref.read(isAdminProvider) &&
+            markup != event.maxMarkupPercent &&
+            (markup != null || _markup.text.trim().isEmpty)) {
+          await repo.setMarkupLimit(event.id, markup);
+        }
         if (confirm) {
           await repo.setStatus(event.id, EventStatus.confirmed);
         }
@@ -700,6 +713,18 @@ class _EventFormState extends ConsumerState<_EventForm> {
                           ),
                       ],
                     ),
+                    if (!_isNew && ref.watch(isAdminProvider)) ...[
+                      SettingsSectionTitle(l10n.resaleTitle),
+                      NumberField(
+                        controller: _markup,
+                        label: l10n.resaleEventMarkup,
+                        description: l10n.resaleEventMarkupInfo,
+                        min: 0,
+                        max: ResaleConfig.maxMarkup,
+                        optional: true,
+                        suffix: '%',
+                      ),
+                    ],
                     SettingsSectionTitle(l10n.genreLabel),
                     AnimatedSize(
                       duration: const Duration(milliseconds: 250),

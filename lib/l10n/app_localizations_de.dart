@@ -10,6 +10,349 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get moderationTitle => 'Moderation';
+
+  @override
+  String get moderationInfo => 'Meldungen, kopierte Tickets, Konten sperren';
+
+  @override
+  String get moderationOpen => 'Offen';
+
+  @override
+  String get moderationHandled => 'Erledigt';
+
+  @override
+  String get moderationUsers => 'Nutzer';
+
+  @override
+  String get moderationNoOpen => 'Keine offenen Meldungen';
+
+  @override
+  String get moderationNoHandled => 'Noch keine erledigten Meldungen';
+
+  @override
+  String get moderationDuplicate => 'Kopiertes Ticket';
+
+  @override
+  String get moderationDuplicateInfo =>
+      'Dieselbe Ticketdatei wurde schon für ein anderes Angebot hochgeladen. Die Kopie ist gesperrt und wird nicht ausgeliefert. Prüfe den Verkäufer.';
+
+  @override
+  String get moderationReport => 'Gemeldetes Angebot';
+
+  @override
+  String get moderationNote => 'Notiz des Teams';
+
+  @override
+  String get moderationOpenSeller => 'Verkäufer';
+
+  @override
+  String get moderationRemoveListing => 'Angebot entfernen';
+
+  @override
+  String get moderationRemoveListingInfo =>
+      'Das Angebot wird sofort aus dem Verkauf genommen. Der Verkäufer bekommt eine E-Mail mit dem Grund. Bestehende Käufe bleiben.';
+
+  @override
+  String get moderationListingRemoved => 'Angebot entfernt';
+
+  @override
+  String get moderationResolve => 'Erledigt';
+
+  @override
+  String get moderationDismiss => 'Verwerfen';
+
+  @override
+  String get moderationReason => 'Grund';
+
+  @override
+  String get moderationReasonInfo =>
+      'Optional; steht im Protokoll und in der E-Mail an den Nutzer.';
+
+  @override
+  String get moderationFindUser => 'Nutzer finden';
+
+  @override
+  String get moderationFindUserInfo =>
+      'Genaue E-Mail-Adresse oder Benutzername.';
+
+  @override
+  String get moderationSearch => 'Suchen';
+
+  @override
+  String get moderationUserNotFound => 'Kein Nutzer gefunden.';
+
+  @override
+  String get moderationUser => 'Nutzer';
+
+  @override
+  String get moderationBlock => 'Sperren';
+
+  @override
+  String get moderationUnblock => 'Entsperren';
+
+  @override
+  String get moderationBlockInfo =>
+      'Der Nutzer kann nicht mehr verkaufen, kaufen oder Events anlegen. Seine aktiven Angebote werden entfernt.';
+
+  @override
+  String get moderationUnblockInfo =>
+      'Der Nutzer kann wieder verkaufen und kaufen. Entfernte Angebote bleiben entfernt.';
+
+  @override
+  String get moderationBlocked => 'Nutzer gesperrt';
+
+  @override
+  String get moderationUnblocked => 'Nutzer entsperrt';
+
+  @override
+  String get moderationIsBlocked => 'Gesperrt';
+
+  @override
+  String get moderationNewSeller => 'Neuer Verkäufer (Limits)';
+
+  @override
+  String get moderationTrustedSeller => 'Ohne Limits';
+
+  @override
+  String moderationStats(int listings, int sales) {
+    return '$listings aktive Angebote · $sales abgeschlossene Verkäufe';
+  }
+
+  @override
+  String get moderationTrust => 'Limits aufheben';
+
+  @override
+  String get moderationUntrust => 'Limits wieder setzen';
+
+  @override
+  String get moderationListings => 'Angebote';
+
+  @override
+  String get moderationOrders => 'Bestellungen';
+
+  @override
+  String get moderationAsBuyer => 'Käufer';
+
+  @override
+  String get moderationAsSeller => 'Verkäufer';
+
+  @override
+  String get moderationLog => 'Protokoll des Teams';
+
+  @override
+  String get moderationNone => 'Keine.';
+
+  @override
+  String get moderationRefund => 'Erstatten';
+
+  @override
+  String moderationRefundInfo(String number) {
+    return 'Der Käufer bekommt den vollen Betrag für $number zurück, der Verkäufer keine Auszahlung. Das lässt sich nicht rückgängig machen.';
+  }
+
+  @override
+  String get moderationRefunded => 'Erstattet';
+
+  @override
+  String get reportReasonFake => 'Gefälschte oder ungültige Tickets';
+
+  @override
+  String get reportReasonPrice => 'Überhöhter Preis';
+
+  @override
+  String get reportReasonWrongEvent => 'Falsches Event oder falsche Angaben';
+
+  @override
+  String get reportReasonSpam => 'Spam oder Betrug';
+
+  @override
+  String get reportReasonOther => 'Sonstiges';
+
+  @override
+  String get reportListing => 'Angebot melden';
+
+  @override
+  String get reportListingInfo =>
+      'Stimmt mit diesem Angebot etwas nicht? Das Stubswap-Team prüft es.';
+
+  @override
+  String get reportDetails => 'Details (optional)';
+
+  @override
+  String get reportSend => 'Meldung senden';
+
+  @override
+  String get reportSent => 'Danke! Das Team prüft das Angebot.';
+
+  @override
+  String get reportAlready => 'Du hast dieses Angebot schon gemeldet.';
+
+  @override
+  String get accountBlocked => 'Dein Konto ist gesperrt';
+
+  @override
+  String get accountBlockedInfo =>
+      'Du kannst weder verkaufen noch kaufen. Bei Fragen wende dich an den Support.';
+
+  @override
+  String get sellNewSeller => 'Neuer Verkäufer';
+
+  @override
+  String get sellLimitReached => 'Limit für neue Verkäufer erreicht';
+
+  @override
+  String sellLimitInfo(int listings, int tickets, int sales) {
+    return 'Als neuer Verkäufer kannst du bis zu $listings aktive Angebote mit höchstens $tickets Tickets je Angebot haben. Nach $sales abgeschlossenen Verkäufen fallen die Limits weg.';
+  }
+
+  @override
+  String resaleLimitHint(int percent) {
+    return 'Höchstens $percent % über dem Originalpreis';
+  }
+
+  @override
+  String resaleMaxPrice(String price, int percent) {
+    return 'Höchstens $price ($percent % über dem Originalpreis)';
+  }
+
+  @override
+  String resaleTooHigh(String price) {
+    return 'Der höchste erlaubte Preis ist $price';
+  }
+
+  @override
+  String get resaleNeedsFaceValue =>
+      'Diesem Angebot fehlt der Originalpreis. Zieh es zurück und stell es mit Originalpreis neu ein.';
+
+  @override
+  String get statusRemoved => 'Entfernt';
+
+  @override
+  String numberBetween(int min, int max) {
+    return 'Gib eine Zahl von $min bis $max ein';
+  }
+
+  @override
+  String get resaleTitle => 'Wiederverkaufsregeln';
+
+  @override
+  String get resaleIntro =>
+      'Lege fest, wie weit über dem Originalpreis Tickets weiterverkauft werden dürfen. Einzelne Events können eine eigene Grenze haben.';
+
+  @override
+  String get resaleRules => 'Regeln';
+
+  @override
+  String get resaleLimitPrice => 'Preis begrenzen';
+
+  @override
+  String get resaleLimitPriceInfo =>
+      'Der Preis je Ticket darf höchstens einen bestimmten Prozentsatz über dem Originalpreis liegen.';
+
+  @override
+  String get resaleRequireFace => 'Originalpreis Pflicht';
+
+  @override
+  String get resaleRequireFaceInfo =>
+      'Verkäufer müssen den aufgedruckten Preis angeben. Mit Preisgrenze immer Pflicht.';
+
+  @override
+  String get resaleMarkup => 'Höchstens über dem Originalpreis';
+
+  @override
+  String get resaleMarkupInfo => '0 % heißt: höchstens der Originalpreis.';
+
+  @override
+  String resaleExample(String face, String max) {
+    return 'Beispiel: Ein Ticket für $face darf höchstens $max kosten.';
+  }
+
+  @override
+  String get resaleNotice =>
+      'Gilt für neue Angebote und Preisänderungen. Bestehende Angebote bleiben, bis der Verkäufer sie ändert.';
+
+  @override
+  String get resaleEventMarkup => 'Eigene Grenze für dieses Event';
+
+  @override
+  String get resaleEventMarkupInfo =>
+      'Höchstens % über dem Originalpreis. Leer: allgemeine Regel.';
+
+  @override
+  String get limitsTitle => 'Limits für neue Verkäufer';
+
+  @override
+  String get limitsIntro =>
+      'Neue Verkäufer dürfen nur wenige Tickets anbieten, bis sie einige Verkäufe abgeschlossen haben. Das schützt Käufer vor Betrug mit falschen Tickets.';
+
+  @override
+  String get limitsListings => 'Aktive Angebote höchstens';
+
+  @override
+  String get limitsListingsInfo =>
+      'Wie viele Angebote ein neuer Verkäufer gleichzeitig haben darf.';
+
+  @override
+  String get limitsTickets => 'Tickets je Angebot höchstens';
+
+  @override
+  String get limitsTicketsInfo => 'Wie viele Tickets ein Angebot haben darf.';
+
+  @override
+  String get limitsTrusted => 'Ohne Limit nach Verkäufen';
+
+  @override
+  String get limitsTrustedInfo =>
+      'Nach wie vielen abgeschlossenen Verkäufen die Limits wegfallen. Das Team kann sie auch von Hand aufheben.';
+
+  @override
+  String get limitsNotice =>
+      'Gilt sofort für neue Angebote. Bestehende bleiben.';
+
+  @override
+  String get companyTitle => 'Firmendaten';
+
+  @override
+  String get companyIntro =>
+      'Diese Angaben stehen auf den Rechnungen für die Servicegebühr. Sie gelten für neue Rechnungen.';
+
+  @override
+  String get companyName => 'Firmenname';
+
+  @override
+  String get companyAddress => 'Adresse';
+
+  @override
+  String get companyTaxId => 'Steuernummer (JIB)';
+
+  @override
+  String get companyVatNumber => 'USt-IdNr. (PDV)';
+
+  @override
+  String get companyVat => 'USt. (PDV)';
+
+  @override
+  String get companyVatInfo =>
+      'In der Servicegebühr enthalten (in BiH 17 %; 0, wenn die Firma nicht umsatzsteuerpflichtig ist).';
+
+  @override
+  String get companyEmail => 'E-Mail für Rechnungen';
+
+  @override
+  String get companyPrefix => 'Rechnungs-Präfix';
+
+  @override
+  String get companyPrefixInfo => '2–6 Buchstaben, z. B. SSW → SSW-2026-00001';
+
+  @override
+  String get companyPrefixInvalid => '2 bis 6 Buchstaben ohne Leerzeichen';
+
+  @override
+  String get companyNotice =>
+      'Rechnungsnummern laufen je Jahr lückenlos. Steuerfragen bitte mit der Buchhaltung klären.';
+
+  @override
   String get disputeOpenOrder => 'Bestellung öffnen';
 
   @override

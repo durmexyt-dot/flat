@@ -100,6 +100,618 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @moderationTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Moderacija'**
+  String get moderationTitle;
+
+  /// No description provided for @moderationInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijave, kopirane karte, blokiranje korisnika'**
+  String get moderationInfo;
+
+  /// No description provided for @moderationOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvoreno'**
+  String get moderationOpen;
+
+  /// No description provided for @moderationHandled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Riješeno'**
+  String get moderationHandled;
+
+  /// No description provided for @moderationUsers.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnici'**
+  String get moderationUsers;
+
+  /// No description provided for @moderationNoOpen.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema otvorenih prijava'**
+  String get moderationNoOpen;
+
+  /// No description provided for @moderationNoHandled.
+  ///
+  /// In bs, this message translates to:
+  /// **'Još nema riješenih prijava'**
+  String get moderationNoHandled;
+
+  /// No description provided for @moderationDuplicate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kopirana karta'**
+  String get moderationDuplicate;
+
+  /// No description provided for @moderationDuplicateInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ista datoteka karte je već učitana za drugu ponudu. Kopija je blokirana i neće biti isporučena. Provjeri prodavca.'**
+  String get moderationDuplicateInfo;
+
+  /// No description provided for @moderationReport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijava ponude'**
+  String get moderationReport;
+
+  /// No description provided for @moderationNote.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bilješka tima'**
+  String get moderationNote;
+
+  /// No description provided for @moderationOpenSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac'**
+  String get moderationOpenSeller;
+
+  /// No description provided for @moderationRemoveListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni ponudu'**
+  String get moderationRemoveListing;
+
+  /// No description provided for @moderationRemoveListingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda se odmah skida s prodaje. Prodavac dobija e-mail s razlogom. Postojeće kupovine ostaju.'**
+  String get moderationRemoveListingInfo;
+
+  /// No description provided for @moderationListingRemoved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponuda uklonjena'**
+  String get moderationListingRemoved;
+
+  /// No description provided for @moderationResolve.
+  ///
+  /// In bs, this message translates to:
+  /// **'Riješeno'**
+  String get moderationResolve;
+
+  /// No description provided for @moderationDismiss.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odbaci'**
+  String get moderationDismiss;
+
+  /// No description provided for @moderationReason.
+  ///
+  /// In bs, this message translates to:
+  /// **'Razlog'**
+  String get moderationReason;
+
+  /// No description provided for @moderationReasonInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Neobavezno; vidi se u dnevniku i u e-mailu korisniku.'**
+  String get moderationReasonInfo;
+
+  /// No description provided for @moderationFindUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pronađi korisnika'**
+  String get moderationFindUser;
+
+  /// No description provided for @moderationFindUserInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tačna e-mail adresa ili korisničko ime.'**
+  String get moderationFindUserInfo;
+
+  /// No description provided for @moderationSearch.
+  ///
+  /// In bs, this message translates to:
+  /// **'Traži'**
+  String get moderationSearch;
+
+  /// No description provided for @moderationUserNotFound.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik nije pronađen.'**
+  String get moderationUserNotFound;
+
+  /// No description provided for @moderationUser.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik'**
+  String get moderationUser;
+
+  /// No description provided for @moderationBlock.
+  ///
+  /// In bs, this message translates to:
+  /// **'Blokiraj'**
+  String get moderationBlock;
+
+  /// No description provided for @moderationUnblock.
+  ///
+  /// In bs, this message translates to:
+  /// **'Deblokiraj'**
+  String get moderationUnblock;
+
+  /// No description provided for @moderationBlockInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik više ne može prodavati, kupovati ni dodavati događaje. Njegove aktivne ponude se uklanjaju.'**
+  String get moderationBlockInfo;
+
+  /// No description provided for @moderationUnblockInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik ponovo može prodavati i kupovati. Uklonjene ponude ostaju uklonjene.'**
+  String get moderationUnblockInfo;
+
+  /// No description provided for @moderationBlocked.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik blokiran'**
+  String get moderationBlocked;
+
+  /// No description provided for @moderationUnblocked.
+  ///
+  /// In bs, this message translates to:
+  /// **'Korisnik deblokiran'**
+  String get moderationUnblocked;
+
+  /// No description provided for @moderationIsBlocked.
+  ///
+  /// In bs, this message translates to:
+  /// **'Blokiran'**
+  String get moderationIsBlocked;
+
+  /// No description provided for @moderationNewSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi prodavac (limiti)'**
+  String get moderationNewSeller;
+
+  /// No description provided for @moderationTrustedSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez limita'**
+  String get moderationTrustedSeller;
+
+  /// No description provided for @moderationStats.
+  ///
+  /// In bs, this message translates to:
+  /// **'{listings} aktivnih ponuda · {sales} završenih prodaja'**
+  String moderationStats(int listings, int sales);
+
+  /// No description provided for @moderationTrust.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni limite'**
+  String get moderationTrust;
+
+  /// No description provided for @moderationUntrust.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrati limite'**
+  String get moderationUntrust;
+
+  /// No description provided for @moderationListings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ponude'**
+  String get moderationListings;
+
+  /// No description provided for @moderationOrders.
+  ///
+  /// In bs, this message translates to:
+  /// **'Narudžbe'**
+  String get moderationOrders;
+
+  /// No description provided for @moderationAsBuyer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac'**
+  String get moderationAsBuyer;
+
+  /// No description provided for @moderationAsSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavac'**
+  String get moderationAsSeller;
+
+  /// No description provided for @moderationLog.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dnevnik tima'**
+  String get moderationLog;
+
+  /// No description provided for @moderationNone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema.'**
+  String get moderationNone;
+
+  /// No description provided for @moderationRefund.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrati novac'**
+  String get moderationRefund;
+
+  /// No description provided for @moderationRefundInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac dobija puni iznos za {number}, prodavac nema isplatu. Ovo se ne može poništiti.'**
+  String moderationRefundInfo(String number);
+
+  /// No description provided for @moderationRefunded.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novac vraćen'**
+  String get moderationRefunded;
+
+  /// No description provided for @reportReasonFake.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lažne ili nevažeće karte'**
+  String get reportReasonFake;
+
+  /// No description provided for @reportReasonPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Previsoka cijena'**
+  String get reportReasonPrice;
+
+  /// No description provided for @reportReasonWrongEvent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pogrešan događaj ili podaci'**
+  String get reportReasonWrongEvent;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In bs, this message translates to:
+  /// **'Spam ili prevara'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostalo'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportListing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavi ponudu'**
+  String get reportListing;
+
+  /// No description provided for @reportListingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nešto nije u redu s ovom ponudom? Tim Stubswap će je provjeriti.'**
+  String get reportListingInfo;
+
+  /// No description provided for @reportDetails.
+  ///
+  /// In bs, this message translates to:
+  /// **'Detalji (neobavezno)'**
+  String get reportDetails;
+
+  /// No description provided for @reportSend.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji prijavu'**
+  String get reportSend;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Hvala! Tim će provjeriti ponudu.'**
+  String get reportSent;
+
+  /// No description provided for @reportAlready.
+  ///
+  /// In bs, this message translates to:
+  /// **'Već si prijavio ovu ponudu.'**
+  String get reportAlready;
+
+  /// No description provided for @accountBlocked.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoj račun je blokiran'**
+  String get accountBlocked;
+
+  /// No description provided for @accountBlockedInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ne možeš prodavati ni kupovati. Za pitanja kontaktiraj podršku.'**
+  String get accountBlockedInfo;
+
+  /// No description provided for @sellNewSeller.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi prodavac'**
+  String get sellNewSeller;
+
+  /// No description provided for @sellLimitReached.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dostignut limit za nove prodavce'**
+  String get sellLimitReached;
+
+  /// No description provided for @sellLimitInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kao novi prodavac možeš imati do {listings} aktivnih ponuda s najviše {tickets} karata po ponudi. Nakon {sales} završenih prodaja limiti nestaju.'**
+  String sellLimitInfo(int listings, int tickets, int sales);
+
+  /// No description provided for @resaleLimitHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najviše {percent} % iznad originalne cijene'**
+  String resaleLimitHint(int percent);
+
+  /// No description provided for @resaleMaxPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najviše {price} ({percent} % iznad originalne cijene)'**
+  String resaleMaxPrice(String price, int percent);
+
+  /// No description provided for @resaleTooHigh.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najviša dozvoljena cijena je {price}'**
+  String resaleTooHigh(String price);
+
+  /// No description provided for @resaleNeedsFaceValue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ova ponuda nema originalnu cijenu. Povuci je i objavi ponovo s originalnom cijenom.'**
+  String get resaleNeedsFaceValue;
+
+  /// No description provided for @statusRemoved.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uklonjena'**
+  String get statusRemoved;
+
+  /// No description provided for @numberBetween.
+  ///
+  /// In bs, this message translates to:
+  /// **'Unesi broj od {min} do {max}'**
+  String numberBetween(int min, int max);
+
+  /// No description provided for @resaleTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pravila preprodaje'**
+  String get resaleTitle;
+
+  /// No description provided for @resaleIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odredi koliko iznad originalne cijene se karte smiju preprodavati. Pojedini događaji mogu imati vlastito ograničenje.'**
+  String get resaleIntro;
+
+  /// No description provided for @resaleRules.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pravila'**
+  String get resaleRules;
+
+  /// No description provided for @resaleLimitPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ograniči cijenu'**
+  String get resaleLimitPrice;
+
+  /// No description provided for @resaleLimitPriceInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena po karti smije biti najviše određeni postotak iznad originalne cijene.'**
+  String get resaleLimitPriceInfo;
+
+  /// No description provided for @resaleRequireFace.
+  ///
+  /// In bs, this message translates to:
+  /// **'Originalna cijena obavezna'**
+  String get resaleRequireFace;
+
+  /// No description provided for @resaleRequireFaceInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodavci moraju unijeti cijenu odštampanu na karti. Uz ograničenje cijene uvijek je obavezna.'**
+  String get resaleRequireFaceInfo;
+
+  /// No description provided for @resaleMarkup.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najviše iznad originalne cijene'**
+  String get resaleMarkup;
+
+  /// No description provided for @resaleMarkupInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'0 % znači: najviše originalna cijena.'**
+  String get resaleMarkupInfo;
+
+  /// No description provided for @resaleExample.
+  ///
+  /// In bs, this message translates to:
+  /// **'Primjer: karta od {face} smije koštati najviše {max}.'**
+  String resaleExample(String face, String max);
+
+  /// No description provided for @resaleNotice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Važi za nove ponude i promjene cijene. Postojeće ponude ostaju dok ih prodavac ne promijeni.'**
+  String get resaleNotice;
+
+  /// No description provided for @resaleEventMarkup.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vlastito ograničenje za ovaj događaj'**
+  String get resaleEventMarkup;
+
+  /// No description provided for @resaleEventMarkupInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Najviše % iznad originalne cijene. Prazno: opće pravilo.'**
+  String get resaleEventMarkupInfo;
+
+  /// No description provided for @limitsTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Limiti za nove prodavce'**
+  String get limitsTitle;
+
+  /// No description provided for @limitsIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Novi prodavci mogu prodavati samo malo karata dok ne završe nekoliko prodaja. To štiti kupce od prevara s lažnim kartama.'**
+  String get limitsIntro;
+
+  /// No description provided for @limitsListings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Aktivnih ponuda najviše'**
+  String get limitsListings;
+
+  /// No description provided for @limitsListingsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koliko ponuda novi prodavac može imati istovremeno.'**
+  String get limitsListingsInfo;
+
+  /// No description provided for @limitsTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karata po ponudi najviše'**
+  String get limitsTickets;
+
+  /// No description provided for @limitsTicketsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koliko karata smije biti u jednoj ponudi.'**
+  String get limitsTicketsInfo;
+
+  /// No description provided for @limitsTrusted.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez limita nakon prodaja'**
+  String get limitsTrusted;
+
+  /// No description provided for @limitsTrustedInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nakon koliko završenih prodaja limiti nestaju. Tim može i ručno ukloniti limite prodavcu.'**
+  String get limitsTrustedInfo;
+
+  /// No description provided for @limitsNotice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Važi odmah za nove ponude. Postojeće ponude ostaju.'**
+  String get limitsNotice;
+
+  /// No description provided for @companyTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podaci o firmi'**
+  String get companyTitle;
+
+  /// No description provided for @companyIntro.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ovi podaci stoje na računima za servisnu naknadu. Važe za nove račune.'**
+  String get companyIntro;
+
+  /// No description provided for @companyName.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naziv firme'**
+  String get companyName;
+
+  /// No description provided for @companyAddress.
+  ///
+  /// In bs, this message translates to:
+  /// **'Adresa'**
+  String get companyAddress;
+
+  /// No description provided for @companyTaxId.
+  ///
+  /// In bs, this message translates to:
+  /// **'Identifikacioni broj (JIB)'**
+  String get companyTaxId;
+
+  /// No description provided for @companyVatNumber.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDV broj'**
+  String get companyVatNumber;
+
+  /// No description provided for @companyVat.
+  ///
+  /// In bs, this message translates to:
+  /// **'PDV'**
+  String get companyVat;
+
+  /// No description provided for @companyVatInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Uključen u servisnu naknadu (u BiH 17 %; 0 ako firma nije u sistemu PDV-a).'**
+  String get companyVatInfo;
+
+  /// No description provided for @companyEmail.
+  ///
+  /// In bs, this message translates to:
+  /// **'E-mail za račune'**
+  String get companyEmail;
+
+  /// No description provided for @companyPrefix.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prefiks računa'**
+  String get companyPrefix;
+
+  /// No description provided for @companyPrefixInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'2–6 slova, npr. SSW → SSW-2026-00001'**
+  String get companyPrefixInfo;
+
+  /// No description provided for @companyPrefixInvalid.
+  ///
+  /// In bs, this message translates to:
+  /// **'2 do 6 slova bez razmaka'**
+  String get companyPrefixInvalid;
+
+  /// No description provided for @companyNotice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Brojevi računa idu redom po godini, bez praznina. Za poreska pitanja pitaj računovođu.'**
+  String get companyNotice;
+
   /// No description provided for @disputeOpenOrder.
   ///
   /// In bs, this message translates to:

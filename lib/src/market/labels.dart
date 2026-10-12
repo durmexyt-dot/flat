@@ -32,6 +32,7 @@ String listingStatusName(AppLocalizations l10n, ListingStatus s) => switch (s) {
   ListingStatus.soldOut => l10n.statusSoldOut,
   ListingStatus.expired => l10n.statusExpired,
   ListingStatus.withdrawn => l10n.statusWithdrawn,
+  ListingStatus.removed => l10n.statusRemoved,
 };
 
 /// Tone of a status: decides the chip colors.
@@ -42,6 +43,7 @@ StatusTone listingTone(ListingStatus s) => switch (s) {
   ListingStatus.reserved => StatusTone.waiting,
   ListingStatus.soldOut => StatusTone.positive,
   ListingStatus.expired || ListingStatus.withdrawn => StatusTone.neutral,
+  ListingStatus.removed => StatusTone.negative,
 };
 
 /// Signal color of a status tone.

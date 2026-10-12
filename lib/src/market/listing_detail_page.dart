@@ -9,6 +9,7 @@ import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../data/platform_repository.dart';
 import '../events/event_image.dart';
 import '../events/event_status_badge.dart';
 import '../ui/app_style.dart';
@@ -24,6 +25,7 @@ import 'listing_ticket.dart';
 import '../ui/app_dialog.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
+import '../admin/moderation_pages.dart' show reportReasonName;
 
 /// A listing as its seller (manage) or a buyer (buy) sees it.
 class ListingDetailPage extends ConsumerWidget {
@@ -72,8 +74,12 @@ class ListingDetailPage extends ConsumerWidget {
                   side: [
                     if (listing.sellerId == uid)
                       _SellerPanel(listing: listing)
-                    else
+                    else ...[
                       _BuyerPanel(listing: listing),
+                      // Signed-in buyers can report a listing to the team.
+                      if (uid != null && !ref.watch(isStaffProvider))
+                        _ReportButton(listing: listing),
+                    ],
                   ],
                 ),
               ],
@@ -209,10 +215,24 @@ class _SellerPanel extends ConsumerWidget {
   Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
     final form = GlobalKey<_PriceFormState>();
+    // The resale rule for this event: the highest price over the face value.
+    final resale = ref.read(resaleConfigProvider).value ?? const ResaleConfig();
+    final event = listing.eventId.isEmpty
+        ? null
+        : ref.read(eventProvider(listing.eventId)).value;
+    final markup = resale.limitFor(event);
+    final face = listing.faceValueMinor;
     final minor = await showAppDialog<int>(
       context: context,
       title: l10n.editPrice,
-      body: _PriceForm(key: form, listing: listing),
+      body: _PriceForm(
+        key: form,
+        listing: listing,
+        needsFaceValue: resale.needsFaceValue(event) && face == null,
+        maxPriceMinor: markup == null || face == null
+            ? null
+            : maxResalePrice(face, markup),
+      ),
       actions: (ctx) => [
         FButton(
           variant: FButtonVariant.outline,
@@ -275,6 +295,9 @@ class _SellerPanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Loaded now, so the price dialog knows the resale rule.
+    ref.watch(resaleConfigProvider);
+    if (listing.eventId.isNotEmpty) ref.watch(eventProvider(listing.eventId));
     final l10n = AppLocalizations.of(context);
     final active = listing.status == ListingStatus.active;
     // E-tickets not yet uploaded: a warning until every ticket is there.
@@ -418,9 +441,20 @@ class _SellerPanel extends ConsumerWidget {
 /// Asks for a new price inside the dialog body. Owns its text controller,
 /// which must outlive the dialog's closing animation.
 class _PriceForm extends StatefulWidget {
-  const _PriceForm({super.key, required this.listing});
+  const _PriceForm({
+    super.key,
+    required this.listing,
+    this.maxPriceMinor,
+    this.needsFaceValue = false,
+  });
 
   final Listing listing;
+
+  /// The highest price the resale rules allow, if limited.
+  final int? maxPriceMinor;
+
+  /// The rules need a face value the listing doesn't have.
+  final bool needsFaceValue;
 
   @override
   State<_PriceForm> createState() => _PriceFormState();
@@ -467,9 +501,28 @@ class _PriceFormState extends State<_PriceForm> {
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           textInputAction: TextInputAction.done,
           onSubmit: (_) => submit(),
+          description: widget.maxPriceMinor == null
+              ? null
+              : Text(
+                  l10n.resaleTooHigh(
+                    formatMoney(
+                      context,
+                      widget.maxPriceMinor!,
+                      widget.listing.currency,
+                    ),
+                  ),
+                ),
           validator: (v) {
             final m = parseMoney(v ?? '');
-            return (m == null || m <= 0) ? l10n.priceInvalid : null;
+            if (m == null || m <= 0) return l10n.priceInvalid;
+            if (widget.needsFaceValue) return l10n.resaleNeedsFaceValue;
+            final max = widget.maxPriceMinor;
+            if (max != null && m > max) {
+              return l10n.resaleTooHigh(
+                formatMoney(context, max, widget.listing.currency),
+              );
+            }
+            return null;
           },
         ),
       ),
@@ -671,6 +724,96 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Lets a buyer report a listing (fake tickets, price, …) to the team.
+class _ReportButton extends ConsumerWidget {
+  const _ReportButton({required this.listing});
+
+  final Listing listing;
+
+  Future<void> _report(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final uid = ref.read(currentUidProvider);
+    if (uid == null) return;
+    final repo = ref.read(platformRepositoryProvider);
+    if (await repo.hasReported(listing.id, uid)) {
+      showSnack(l10n.reportAlready);
+      return;
+    }
+    if (!context.mounted) return;
+    var reason = ReportReason.fake;
+    final text = TextEditingController();
+    final send = await showAppDialog<bool>(
+      context: context,
+      title: l10n.reportListing,
+      body: StatefulBuilder(
+        builder: (context, setState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.reportListingInfo),
+            const SizedBox(height: 12),
+            for (final r in ReportReason.values)
+              FTile(
+                prefix: Icon(
+                  r == reason ? FLucideIcons.circleDot : FLucideIcons.circle,
+                ),
+                title: Text(reportReasonName(l10n, r)),
+                onPress: () => setState(() => reason = r),
+              ),
+            const SizedBox(height: 12),
+            FTextField(
+              control: FTextFieldControl.managed(controller: text),
+              label: Text(l10n.reportDetails),
+              maxLines: 3,
+              minLines: 1,
+              maxLength: 500,
+            ),
+          ],
+        ),
+      ),
+      actions: (ctx) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(ctx, false),
+          child: Text(l10n.cancel),
+        ),
+        FButton(
+          onPress: () => Navigator.pop(ctx, true),
+          child: Text(l10n.reportSend),
+        ),
+      ],
+    );
+    final details = text.text.trim();
+    text.dispose();
+    if (send != true) return;
+    try {
+      await repo.reportListing(
+        listingId: listing.id,
+        uid: uid,
+        reason: reason,
+        text: details,
+      );
+      showSnack(l10n.reportSent);
+    } catch (_) {
+      showSnack(l10n.saveError);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: FButton(
+        variant: FButtonVariant.ghost,
+        onPress: () => _report(context, ref),
+        prefix: const Icon(FLucideIcons.flag),
+        child: Text(l10n.reportListing),
+      ),
     );
   }
 }

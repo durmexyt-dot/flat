@@ -10,6 +10,349 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get moderationTitle => 'Moderacija';
+
+  @override
+  String get moderationInfo => 'Prijave, kopirane karte, blokiranje korisnika';
+
+  @override
+  String get moderationOpen => 'Otvoreno';
+
+  @override
+  String get moderationHandled => 'Riješeno';
+
+  @override
+  String get moderationUsers => 'Korisnici';
+
+  @override
+  String get moderationNoOpen => 'Nema otvorenih prijava';
+
+  @override
+  String get moderationNoHandled => 'Još nema riješenih prijava';
+
+  @override
+  String get moderationDuplicate => 'Kopirana karta';
+
+  @override
+  String get moderationDuplicateInfo =>
+      'Ista datoteka karte je već učitana za drugu ponudu. Kopija je blokirana i neće biti isporučena. Provjeri prodavca.';
+
+  @override
+  String get moderationReport => 'Prijava ponude';
+
+  @override
+  String get moderationNote => 'Bilješka tima';
+
+  @override
+  String get moderationOpenSeller => 'Prodavac';
+
+  @override
+  String get moderationRemoveListing => 'Ukloni ponudu';
+
+  @override
+  String get moderationRemoveListingInfo =>
+      'Ponuda se odmah skida s prodaje. Prodavac dobija e-mail s razlogom. Postojeće kupovine ostaju.';
+
+  @override
+  String get moderationListingRemoved => 'Ponuda uklonjena';
+
+  @override
+  String get moderationResolve => 'Riješeno';
+
+  @override
+  String get moderationDismiss => 'Odbaci';
+
+  @override
+  String get moderationReason => 'Razlog';
+
+  @override
+  String get moderationReasonInfo =>
+      'Neobavezno; vidi se u dnevniku i u e-mailu korisniku.';
+
+  @override
+  String get moderationFindUser => 'Pronađi korisnika';
+
+  @override
+  String get moderationFindUserInfo =>
+      'Tačna e-mail adresa ili korisničko ime.';
+
+  @override
+  String get moderationSearch => 'Traži';
+
+  @override
+  String get moderationUserNotFound => 'Korisnik nije pronađen.';
+
+  @override
+  String get moderationUser => 'Korisnik';
+
+  @override
+  String get moderationBlock => 'Blokiraj';
+
+  @override
+  String get moderationUnblock => 'Deblokiraj';
+
+  @override
+  String get moderationBlockInfo =>
+      'Korisnik više ne može prodavati, kupovati ni dodavati događaje. Njegove aktivne ponude se uklanjaju.';
+
+  @override
+  String get moderationUnblockInfo =>
+      'Korisnik ponovo može prodavati i kupovati. Uklonjene ponude ostaju uklonjene.';
+
+  @override
+  String get moderationBlocked => 'Korisnik blokiran';
+
+  @override
+  String get moderationUnblocked => 'Korisnik deblokiran';
+
+  @override
+  String get moderationIsBlocked => 'Blokiran';
+
+  @override
+  String get moderationNewSeller => 'Novi prodavac (limiti)';
+
+  @override
+  String get moderationTrustedSeller => 'Bez limita';
+
+  @override
+  String moderationStats(int listings, int sales) {
+    return '$listings aktivnih ponuda · $sales završenih prodaja';
+  }
+
+  @override
+  String get moderationTrust => 'Ukloni limite';
+
+  @override
+  String get moderationUntrust => 'Vrati limite';
+
+  @override
+  String get moderationListings => 'Ponude';
+
+  @override
+  String get moderationOrders => 'Narudžbe';
+
+  @override
+  String get moderationAsBuyer => 'Kupac';
+
+  @override
+  String get moderationAsSeller => 'Prodavac';
+
+  @override
+  String get moderationLog => 'Dnevnik tima';
+
+  @override
+  String get moderationNone => 'Nema.';
+
+  @override
+  String get moderationRefund => 'Vrati novac';
+
+  @override
+  String moderationRefundInfo(String number) {
+    return 'Kupac dobija puni iznos za $number, prodavac nema isplatu. Ovo se ne može poništiti.';
+  }
+
+  @override
+  String get moderationRefunded => 'Novac vraćen';
+
+  @override
+  String get reportReasonFake => 'Lažne ili nevažeće karte';
+
+  @override
+  String get reportReasonPrice => 'Previsoka cijena';
+
+  @override
+  String get reportReasonWrongEvent => 'Pogrešan događaj ili podaci';
+
+  @override
+  String get reportReasonSpam => 'Spam ili prevara';
+
+  @override
+  String get reportReasonOther => 'Ostalo';
+
+  @override
+  String get reportListing => 'Prijavi ponudu';
+
+  @override
+  String get reportListingInfo =>
+      'Nešto nije u redu s ovom ponudom? Tim Stubswap će je provjeriti.';
+
+  @override
+  String get reportDetails => 'Detalji (neobavezno)';
+
+  @override
+  String get reportSend => 'Pošalji prijavu';
+
+  @override
+  String get reportSent => 'Hvala! Tim će provjeriti ponudu.';
+
+  @override
+  String get reportAlready => 'Već si prijavio ovu ponudu.';
+
+  @override
+  String get accountBlocked => 'Tvoj račun je blokiran';
+
+  @override
+  String get accountBlockedInfo =>
+      'Ne možeš prodavati ni kupovati. Za pitanja kontaktiraj podršku.';
+
+  @override
+  String get sellNewSeller => 'Novi prodavac';
+
+  @override
+  String get sellLimitReached => 'Dostignut limit za nove prodavce';
+
+  @override
+  String sellLimitInfo(int listings, int tickets, int sales) {
+    return 'Kao novi prodavac možeš imati do $listings aktivnih ponuda s najviše $tickets karata po ponudi. Nakon $sales završenih prodaja limiti nestaju.';
+  }
+
+  @override
+  String resaleLimitHint(int percent) {
+    return 'Najviše $percent % iznad originalne cijene';
+  }
+
+  @override
+  String resaleMaxPrice(String price, int percent) {
+    return 'Najviše $price ($percent % iznad originalne cijene)';
+  }
+
+  @override
+  String resaleTooHigh(String price) {
+    return 'Najviša dozvoljena cijena je $price';
+  }
+
+  @override
+  String get resaleNeedsFaceValue =>
+      'Ova ponuda nema originalnu cijenu. Povuci je i objavi ponovo s originalnom cijenom.';
+
+  @override
+  String get statusRemoved => 'Uklonjena';
+
+  @override
+  String numberBetween(int min, int max) {
+    return 'Unesi broj od $min do $max';
+  }
+
+  @override
+  String get resaleTitle => 'Pravila preprodaje';
+
+  @override
+  String get resaleIntro =>
+      'Odredi koliko iznad originalne cijene se karte smiju preprodavati. Pojedini događaji mogu imati vlastito ograničenje.';
+
+  @override
+  String get resaleRules => 'Pravila';
+
+  @override
+  String get resaleLimitPrice => 'Ograniči cijenu';
+
+  @override
+  String get resaleLimitPriceInfo =>
+      'Cijena po karti smije biti najviše određeni postotak iznad originalne cijene.';
+
+  @override
+  String get resaleRequireFace => 'Originalna cijena obavezna';
+
+  @override
+  String get resaleRequireFaceInfo =>
+      'Prodavci moraju unijeti cijenu odštampanu na karti. Uz ograničenje cijene uvijek je obavezna.';
+
+  @override
+  String get resaleMarkup => 'Najviše iznad originalne cijene';
+
+  @override
+  String get resaleMarkupInfo => '0 % znači: najviše originalna cijena.';
+
+  @override
+  String resaleExample(String face, String max) {
+    return 'Primjer: karta od $face smije koštati najviše $max.';
+  }
+
+  @override
+  String get resaleNotice =>
+      'Važi za nove ponude i promjene cijene. Postojeće ponude ostaju dok ih prodavac ne promijeni.';
+
+  @override
+  String get resaleEventMarkup => 'Vlastito ograničenje za ovaj događaj';
+
+  @override
+  String get resaleEventMarkupInfo =>
+      'Najviše % iznad originalne cijene. Prazno: opće pravilo.';
+
+  @override
+  String get limitsTitle => 'Limiti za nove prodavce';
+
+  @override
+  String get limitsIntro =>
+      'Novi prodavci mogu prodavati samo malo karata dok ne završe nekoliko prodaja. To štiti kupce od prevara s lažnim kartama.';
+
+  @override
+  String get limitsListings => 'Aktivnih ponuda najviše';
+
+  @override
+  String get limitsListingsInfo =>
+      'Koliko ponuda novi prodavac može imati istovremeno.';
+
+  @override
+  String get limitsTickets => 'Karata po ponudi najviše';
+
+  @override
+  String get limitsTicketsInfo => 'Koliko karata smije biti u jednoj ponudi.';
+
+  @override
+  String get limitsTrusted => 'Bez limita nakon prodaja';
+
+  @override
+  String get limitsTrustedInfo =>
+      'Nakon koliko završenih prodaja limiti nestaju. Tim može i ručno ukloniti limite prodavcu.';
+
+  @override
+  String get limitsNotice =>
+      'Važi odmah za nove ponude. Postojeće ponude ostaju.';
+
+  @override
+  String get companyTitle => 'Podaci o firmi';
+
+  @override
+  String get companyIntro =>
+      'Ovi podaci stoje na računima za servisnu naknadu. Važe za nove račune.';
+
+  @override
+  String get companyName => 'Naziv firme';
+
+  @override
+  String get companyAddress => 'Adresa';
+
+  @override
+  String get companyTaxId => 'Identifikacioni broj (JIB)';
+
+  @override
+  String get companyVatNumber => 'PDV broj';
+
+  @override
+  String get companyVat => 'PDV';
+
+  @override
+  String get companyVatInfo =>
+      'Uključen u servisnu naknadu (u BiH 17 %; 0 ako firma nije u sistemu PDV-a).';
+
+  @override
+  String get companyEmail => 'E-mail za račune';
+
+  @override
+  String get companyPrefix => 'Prefiks računa';
+
+  @override
+  String get companyPrefixInfo => '2–6 slova, npr. SSW → SSW-2026-00001';
+
+  @override
+  String get companyPrefixInvalid => '2 do 6 slova bez razmaka';
+
+  @override
+  String get companyNotice =>
+      'Brojevi računa idu redom po godini, bez praznina. Za poreska pitanja pitaj računovođu.';
+
+  @override
   String get disputeOpenOrder => 'Otvori narudžbu';
 
   @override

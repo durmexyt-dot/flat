@@ -9,6 +9,7 @@ import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../data/platform_repository.dart';
 import '../events/event_picker.dart';
 import '../admin/admin_repository.dart';
 import '../data/repositories.dart';
@@ -185,6 +186,24 @@ class _SellPageState extends ConsumerState<SellPage> {
     final l10n = AppLocalizations.of(context);
     final currency = ref.watch(settingsProvider).currency;
     final selected = _selected(events);
+    final resale =
+        ref.watch(resaleConfigProvider).value ?? const ResaleConfig();
+    final markup = resale.limitFor(selected);
+    final limits =
+        ref.watch(sellerLimitsProvider).value ?? const SellerLimits();
+    final stats = user == null
+        ? const SellerStats()
+        : ref.watch(sellerStatsProvider(user.uid)).value ?? const SellerStats();
+    final ban = ref.watch(myBanProvider);
+    final isNew = stats.isNew(limits);
+    final maxQuantity = isNew ? limits.newSellerMaxTickets.clamp(1, 20) : 20;
+    final tooMany =
+        isNew && stats.activeListings >= limits.newSellerMaxListings;
+    if (_quantity > maxQuantity) _quantity = maxQuantity;
+    final face = parseMoney(_faceValue.text);
+    final maxPrice = markup == null || face == null || face <= 0
+        ? null
+        : maxResalePrice(face, markup);
     return _WithGuide(
       form: Form(
         key: _formKey,
@@ -219,6 +238,46 @@ class _SellPageState extends ConsumerState<SellPage> {
                     ),
                   ),
                 ),
+              if (ban != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: FAlert(
+                    variant: FAlertVariant.destructive,
+                    icon: const Icon(FLucideIcons.ban),
+                    title: Text(l10n.accountBlocked),
+                    subtitle: Text(l10n.accountBlockedInfo),
+                  ),
+                )
+              else if (tooMany)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: FAlert(
+                    icon: const Icon(FLucideIcons.shieldCheck),
+                    title: Text(l10n.sellLimitReached),
+                    subtitle: Text(
+                      l10n.sellLimitInfo(
+                        limits.newSellerMaxListings,
+                        limits.newSellerMaxTickets,
+                        limits.trustedAfterSales,
+                      ),
+                    ),
+                  ),
+                )
+              else if (isNew)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: FAlert(
+                    icon: const Icon(FLucideIcons.shieldCheck),
+                    title: Text(l10n.sellNewSeller),
+                    subtitle: Text(
+                      l10n.sellLimitInfo(
+                        limits.newSellerMaxListings,
+                        limits.newSellerMaxTickets,
+                        limits.trustedAfterSales,
+                      ),
+                    ),
+                  ),
+                ),
               SettingsSectionTitle(l10n.event),
               EventField(
                 event: selected,
@@ -237,6 +296,7 @@ class _SellPageState extends ConsumerState<SellPage> {
               const SizedBox(height: 12),
               _QuantityStepper(
                 value: _quantity,
+                max: maxQuantity,
                 onChanged: (v) => setState(() => _quantity = v),
               ),
               const SizedBox(height: 12),
@@ -310,6 +370,17 @@ class _SellPageState extends ConsumerState<SellPage> {
                   onChange: (_) => setState(() {}),
                 ),
                 label: Text(l10n.pricePerTicket),
+                // The resale rule for this event, as the rules check it.
+                description: markup == null
+                    ? null
+                    : Text(
+                        maxPrice == null
+                            ? l10n.resaleLimitHint(markup)
+                            : l10n.resaleMaxPrice(
+                                formatMoney(context, maxPrice, currency.code),
+                                markup,
+                              ),
+                      ),
                 prefixBuilder: (context, style, variants) =>
                     fieldIcon(FLucideIcons.tag),
                 suffixBuilder: (context, style, variants) => Padding(
@@ -326,9 +397,13 @@ class _SellPageState extends ConsumerState<SellPage> {
                 ),
                 validator: (v) {
                   final minor = parseMoney(v ?? '');
-                  return (minor == null || minor <= 0)
-                      ? l10n.priceInvalid
-                      : null;
+                  if (minor == null || minor <= 0) return l10n.priceInvalid;
+                  if (maxPrice != null && minor > maxPrice) {
+                    return l10n.resaleTooHigh(
+                      formatMoney(context, maxPrice, currency.code),
+                    );
+                  }
+                  return null;
                 },
               ),
               const SizedBox(height: 12),
@@ -352,7 +427,7 @@ class _SellPageState extends ConsumerState<SellPage> {
               SubmitButton(
                 label: l10n.publishListing,
                 loading: _saving,
-                onPressed: _publish,
+                onPressed: ban != null || tooMany ? null : _publish,
               ),
             ],
           ),
@@ -522,10 +597,15 @@ class _NoEvents extends StatelessWidget {
 }
 
 class _QuantityStepper extends StatelessWidget {
-  const _QuantityStepper({required this.value, required this.onChanged});
+  const _QuantityStepper({
+    required this.value,
+    required this.onChanged,
+    this.max = 20,
+  });
 
   final int value;
   final ValueChanged<int> onChanged;
+  final int max;
 
   @override
   Widget build(BuildContext context) {
@@ -568,7 +648,7 @@ class _QuantityStepper extends StatelessWidget {
         ),
         FButton.icon(
           variant: FButtonVariant.outline,
-          onPress: value < 20 ? () => onChanged(value + 1) : null,
+          onPress: value < max ? () => onChanged(value + 1) : null,
           child: const Icon(FLucideIcons.plus),
         ),
       ],
