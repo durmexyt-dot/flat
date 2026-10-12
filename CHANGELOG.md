@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.6.4] – 2026-10-12
+
+- Account pages fill the page beside the sidebar, like the profile
+
 ## [1.6.3] – 2026-10-12
 
 - Event editor: account sidebar on wide screens for the team
