@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "disputeOpenOrder": "Open order",
   "deliveryPageTitle": "Tickets for this listing",
   "deliveryFilesSection": "Uploaded tickets",
   "deliveryProgress": "{done} of {total} tickets uploaded",

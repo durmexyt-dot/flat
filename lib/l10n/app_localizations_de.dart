@@ -10,6 +10,9 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get disputeOpenOrder => 'Bestellung öffnen';
+
+  @override
   String get deliveryPageTitle => 'Tickets zum Angebot';
 
   @override

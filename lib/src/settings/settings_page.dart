@@ -11,6 +11,7 @@ import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/events_repository.dart';
 import '../data/repositories.dart';
+import '../market/ticket_files_widgets.dart';
 import '../support/support_repository.dart';
 import '../ui/app_dialog.dart';
 import '../config/app_info.dart';
@@ -57,6 +58,9 @@ class SettingsPage extends ConsumerWidget {
     // On wide screens the sidebar holds buying, selling and account links.
     final wide = isWideLayout(context);
     final sections = <Widget>[
+      // Sellers: sold e-tickets still to upload.
+      if (user != null && !isStaff)
+        const SalesAwaitingTicketsAlert(padding: EdgeInsets.only(top: 16)),
       // Team accounts: their work comes first.
       if (isStaff) ...[
         SettingsSectionTitle(l10n.adminTeamSection),

@@ -14,7 +14,7 @@ import '../ui/skeleton.dart';
 import 'admin_repository.dart';
 
 /// Which events the team's list shows.
-enum EventsFilter { pending, confirmed, hidden, past }
+enum EventsFilter { pending, confirmed, hidden, past, cancelled }
 
 /// Whether [e] belongs under [filter]. Events waiting for a check stay
 /// under "pending" whatever their date, so nothing slips through.
@@ -23,6 +23,7 @@ bool eventMatches(Event e, EventsFilter filter) => switch (filter) {
   EventsFilter.confirmed => e.confirmed && e.isUpcoming,
   EventsFilter.hidden => e.hidden,
   EventsFilter.past => e.confirmed && !e.isUpcoming,
+  EventsFilter.cancelled => e.cancelled,
 };
 
 /// The team (admins and support accounts) reviews events here: those users
@@ -114,7 +115,8 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
         if (eventMatches(e, filter)) e,
     ];
     // Most recent past events first; everything else soonest first.
-    final ordered = filter == EventsFilter.past
+    final ordered =
+        filter == EventsFilter.past || filter == EventsFilter.cancelled
         ? shown.reversed.toList()
         : shown;
 
@@ -132,6 +134,7 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
               EventsFilter.confirmed => l10n.eventsReviewTabConfirmed,
               EventsFilter.hidden => l10n.eventsReviewTabHidden,
               EventsFilter.past => l10n.eventsReviewTabPast,
+              EventsFilter.cancelled => l10n.eventChangeFilterCancelled,
             },
             onChanged: (f) => setState(() => _filter = f),
           ),

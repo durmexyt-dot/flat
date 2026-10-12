@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../admin/admin_repository.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
 import '../auth/auth_widgets.dart';
@@ -24,6 +25,8 @@ import 'labels.dart';
 import 'listing_ticket.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
+import 'dispute_sheet.dart';
+import 'ticket_files_widgets.dart';
 import '../ui/site_scaffold.dart';
 
 /// One order with its progress and invoice; for the buyer or the seller.
@@ -40,6 +43,13 @@ class OrderDetailPage extends ConsumerWidget {
     final order = live.value ?? initial;
     final uid = ref.watch(currentUidProvider);
     final role = order?.sellerId == uid ? OrderRole.seller : OrderRole.buyer;
+    // The team opens other people's orders, e.g. to decide on a problem.
+    final staffView =
+        order != null &&
+        uid != order.sellerId &&
+        uid != order.buyerId &&
+        ref.watch(isStaffProvider);
+    final buyer = role == OrderRole.buyer && !staffView;
 
     return SiteScaffold(
       title: role == OrderRole.seller ? l10n.saleDetails : l10n.orderDetails,
@@ -58,6 +68,38 @@ class OrderDetailPage extends ConsumerWidget {
               children: [
                 OrderTicket(order: order, role: role),
                 const SizedBox(height: 16),
+                if (role == OrderRole.seller && order.ticketsMissing > 0) ...[
+                  FAlert(
+                    variant: FAlertVariant.destructive,
+                    icon: const Icon(FLucideIcons.fileWarning),
+                    title: Text(l10n.deliverySellerMissingTitle),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.deliverySellerMissingInfo(
+                            formatDateTime(context, order.deliveryDeadline),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        FButton(
+                          variant: FButtonVariant.outline,
+                          size: FButtonSizeVariant.sm,
+                          mainAxisSize: MainAxisSize.min,
+                          prefix: const Icon(FLucideIcons.upload),
+                          onPress: () => context.push(
+                            '/listing/${order.listingId}/tickets',
+                          ),
+                          child: Text(
+                            l10n.deliveryUploadAction,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 NextStepCard(
                   text: order.failureReason.isNotEmpty
                       ? l10n.paymentFailedInfo(
@@ -77,31 +119,58 @@ class OrderDetailPage extends ConsumerWidget {
                       : orderNextStep(l10n, order.status, role),
                   tone: orderTone(order.status),
                 ),
-                _OrderActions(order: order, role: role),
+                if (!staffView) _OrderActions(order: order, role: role),
+                if ((buyer || staffView) &&
+                    OrderFilesSection.applies(order)) ...[
+                  SettingsSectionTitle(l10n.deliveryBuyerSection),
+                  OrderFilesSection(order: order),
+                ],
+                if (order.dispute case final dispute?) ...[
+                  SettingsSectionTitle(l10n.disputeBoxTitle),
+                  DisputeBox(dispute: dispute, showSupportLink: buyer),
+                ],
+                if (staffView) ...[
+                  SettingsSectionTitle(l10n.disputeStaffTitle),
+                  StaffDisputePanel(order: order),
+                ],
                 SettingsSectionTitle(l10n.statusHistory),
                 StatusTimeline(steps: orderTimeline(context, order)),
                 SettingsSectionTitle(l10n.invoice),
                 _Invoice(order: order, role: role),
-                const SizedBox(height: 12),
-                FButton(
-                  variant: FButtonVariant.outline,
-                  onPress: () => context.push(
-                    '/support/new',
-                    extra: SupportContext(
-                      topic: role == OrderRole.buyer
-                          ? SupportTopic.order
-                          : SupportTopic.sale,
-                      reference: order.number,
-                    ),
-                  ),
-                  prefix: const Icon(FLucideIcons.headset),
-                  child: Flexible(
+                if (buyer && canReportProblem(order)) ...[
+                  const SizedBox(height: 12),
+                  FButton(
+                    variant: FButtonVariant.outline,
+                    onPress: () => showDisputeSheet(context, order),
+                    prefix: const Icon(FLucideIcons.flag),
                     child: Text(
-                      l10n.getHelpOrder,
+                      l10n.disputeReport,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
+                ],
+                if (!staffView) ...[
+                  const SizedBox(height: 12),
+                  FButton(
+                    variant: FButtonVariant.outline,
+                    onPress: () => context.push(
+                      '/support/new',
+                      extra: SupportContext(
+                        topic: role == OrderRole.buyer
+                            ? SupportTopic.order
+                            : SupportTopic.sale,
+                        reference: order.number,
+                      ),
+                    ),
+                    prefix: const Icon(FLucideIcons.headset),
+                    child: Flexible(
+                      child: Text(
+                        l10n.getHelpOrder,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
                 if (role == OrderRole.seller &&
                     order.status == OrderStatus.completed) ...[
                   const SizedBox(height: 12),
@@ -157,9 +226,11 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
         widget.role == OrderRole.buyer &&
         order.testMode &&
         order.status == OrderStatus.pendingPayment;
+    // E-tickets reach the buyer as uploaded files; mobile and paper
+    // tickets are handed over and the seller confirms it here.
     final sellerSends =
         widget.role == OrderRole.seller &&
-        order.testMode &&
+        order.ticketType != TicketType.eTicket &&
         order.status == OrderStatus.paid;
 
     // Only the seller can cancel a sale; buyers contact support.

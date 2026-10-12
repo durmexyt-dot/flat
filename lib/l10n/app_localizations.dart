@@ -100,6 +100,12 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @disputeOpenOrder.
+  ///
+  /// In bs, this message translates to:
+  /// **'Otvori narudžbu'**
+  String get disputeOpenOrder;
+
   /// No description provided for @deliveryPageTitle.
   ///
   /// In bs, this message translates to:

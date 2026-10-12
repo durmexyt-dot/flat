@@ -13,6 +13,7 @@ import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
 import '../data/repositories.dart';
 import '../data/models.dart';
+import '../data/server_actions.dart';
 import '../events/event_image.dart';
 import '../events/event_status_badge.dart';
 import '../events/genres.dart';
@@ -22,12 +23,14 @@ import '../ui/app_dialog.dart';
 import '../ui/app_style.dart';
 import '../ui/async_view.dart';
 import '../ui/date_field.dart';
+import '../ui/format.dart';
 import '../ui/images.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import '../ui/snack.dart';
 import 'admin_repository.dart';
 import 'events_admin_page.dart';
+import '../market/ticket_files_widgets.dart' show serverErrorText;
 
 /// Creates ([id] null) or edits an event.
 ///
@@ -336,11 +339,138 @@ class _EventFormState extends ConsumerState<_EventForm> {
     }
   }
 
+  /// The team calls the event off: every buyer is refunded.
+  Future<void> _cancelEvent(Event event) async {
+    final l10n = AppLocalizations.of(context);
+    final reason = TextEditingController();
+    final error = ValueNotifier<String?>(null);
+    final ok = await showAppDialog<bool>(
+      context: context,
+      title: l10n.eventChangeCancel,
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.eventChangeCancelInfo),
+          const SizedBox(height: 12),
+          ValueListenableBuilder<String?>(
+            valueListenable: error,
+            builder: (context, message, _) => FTextFormField.multiline(
+              control: FTextFieldControl.managed(controller: reason),
+              label: Text(l10n.eventChangeReason),
+              hint: l10n.eventChangeReasonHint,
+              minLines: 2,
+              inputFormatters: [LengthLimitingTextInputFormatter(500)],
+              forceErrorText: message,
+            ),
+          ),
+        ],
+      ),
+      actions: (ctx) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(ctx, false),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
+        ),
+        FButton(
+          variant: FButtonVariant.destructive,
+          onPress: () {
+            if (reason.text.trim().isEmpty) {
+              error.value = l10n.required;
+              return;
+            }
+            Navigator.pop(ctx, true);
+          },
+          child: Flexible(
+            child: Text(
+              l10n.eventChangeCancel,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _saving = true);
+    try {
+      final refunded = await ref
+          .read(serverActionsProvider)
+          .cancelEvent(eventId: event.id, reason: reason.text.trim());
+      showSnack(l10n.eventChangeCancelled(refunded));
+    } catch (e) {
+      showSnack(serverErrorText(l10n, e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  /// The team moves the event to a new date; tickets stay valid.
+  Future<void> _postponeEvent(Event event) async {
+    final l10n = AppLocalizations.of(context);
+    final date = await pickDateTime(context, initial: event.info.date);
+    if (date == null || !mounted) return;
+    if (!date.isAfter(DateTime.now())) {
+      showSnack(l10n.dateInPast);
+      return;
+    }
+    final ok = await showAppDialog<bool>(
+      context: context,
+      title: l10n.eventChangePostpone,
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            '${l10n.eventChangeNewDate}: ${formatDateTime(context, date)}',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(l10n.eventChangePostponeInfo),
+        ],
+      ),
+      actions: (ctx) => [
+        FButton(
+          variant: FButtonVariant.outline,
+          onPress: () => Navigator.pop(ctx, false),
+          child: Flexible(
+            child: Text(l10n.cancel, overflow: TextOverflow.ellipsis),
+          ),
+        ),
+        FButton(
+          onPress: () => Navigator.pop(ctx, true),
+          child: Flexible(
+            child: Text(
+              l10n.eventChangePostpone,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ],
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(serverActionsProvider)
+          .postponeEvent(eventId: event.id, newDate: date);
+      // The form keeps the new date, so saving doesn't move it back.
+      if (mounted) setState(() => _date = date);
+      showSnack(l10n.eventChangePostponed);
+    } catch (e) {
+      showSnack(serverErrorText(l10n, e));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final live = _live;
+    final cancelled = live?.cancelled ?? false;
     final user = ref.watch(authStateProvider).value;
     final uid = user?.uid;
     final team = widget.team;
@@ -410,176 +540,242 @@ class _EventFormState extends ConsumerState<_EventForm> {
                     ),
                 ],
               ),
+              if (live.postponedFrom case final from?) ...[
+                const SizedBox(height: 6),
+                Text(
+                  l10n.eventChangePostponedFrom(formatDateTime(context, from)),
+                  style: muted,
+                ),
+              ],
               const SizedBox(height: 8),
-              FAlert(
-                icon: const Icon(FLucideIcons.info),
-                title: Text(l10n.eventsListingsKeepData),
-              ),
+              if (cancelled)
+                FAlert(
+                  variant: FAlertVariant.destructive,
+                  icon: const Icon(FLucideIcons.ban),
+                  title: Text(l10n.eventChangeCancelledBanner),
+                  subtitle: live.cancelReason.isEmpty
+                      ? null
+                      : Text(l10n.eventChangeCancelReason(live.cancelReason)),
+                )
+              else
+                FAlert(
+                  icon: const Icon(FLucideIcons.info),
+                  title: Text(l10n.eventsListingsKeepData),
+                ),
             ],
-            SettingsSectionTitle(l10n.eventsPicture),
-            _picture(context),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
+            // A cancelled event stays as it was.
+            IgnorePointer(
+              ignoring: cancelled,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 250),
+                opacity: cancelled ? 0.5 : 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SettingsSectionTitle(l10n.eventsPicture),
+                    _picture(context),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        FButton(
+                          variant: FButtonVariant.outline,
+                          size: FButtonSizeVariant.sm,
+                          mainAxisSize: MainAxisSize.min,
+                          onPress: _encoding || _saving ? null : _pickImage,
+                          prefix: const Icon(FLucideIcons.imageUp),
+                          child: Text(
+                            _hasPicture
+                                ? l10n.eventsPictureReplace
+                                : l10n.eventsPicturePick,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (_hasPicture)
+                          FButton(
+                            variant: FButtonVariant.ghost,
+                            size: FButtonSizeVariant.sm,
+                            mainAxisSize: MainAxisSize.min,
+                            onPress: _encoding || _saving ? null : _dropImage,
+                            prefix: const Icon(FLucideIcons.trash2),
+                            child: Text(
+                              l10n.eventsPictureRemove,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      team
+                          ? l10n.eventsPictureHint
+                          : '${l10n.eventsPictureHint} (${l10n.optional})',
+                      style: muted,
+                    ),
+                    SettingsSectionTitle(l10n.event),
+                    FTextFormField(
+                      control: FTextFieldControl.managed(controller: _name),
+                      inputFormatters: [LengthLimitingTextInputFormatter(100)],
+                      label: Text(l10n.eventName),
+                      prefixBuilder: (context, style, variants) =>
+                          fieldIcon(FLucideIcons.ticket),
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
+                      validator: (v) => text(v, 2),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: FTextFormField(
+                            control: FTextFieldControl.managed(
+                              controller: _venue,
+                            ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(100),
+                            ],
+                            label: Text(l10n.venue),
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            validator: (v) => text(v, 1),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FTextFormField(
+                            control: FTextFieldControl.managed(
+                              controller: _city,
+                            ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(60),
+                            ],
+                            label: Text(l10n.city),
+                            textCapitalization: TextCapitalization.words,
+                            textInputAction: TextInputAction.next,
+                            validator: (v) => text(v, 1),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    DateTimeField(
+                      date: _date,
+                      error: _dateError,
+                      onTap: _pickDate,
+                    ),
+                    SettingsSectionTitle(l10n.category),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final c in EventCategory.values)
+                          FButton(
+                            size: FButtonSizeVariant.sm,
+                            mainAxisSize: MainAxisSize.min,
+                            variant: _category == c
+                                ? FButtonVariant.primary
+                                : FButtonVariant.outline,
+                            prefix: Icon(categoryIcon(c)),
+                            onPress: () => _setCategory(c),
+                            child: Text(
+                              categoryName(l10n, c),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                    ),
+                    SettingsSectionTitle(l10n.genreLabel),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      alignment: Alignment.topCenter,
+                      child: Wrap(
+                        key: ValueKey(_category),
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final g in ['', ...?eventGenres[_category]])
+                            FButton(
+                              size: FButtonSizeVariant.sm,
+                              mainAxisSize: MainAxisSize.min,
+                              variant: _genre == g
+                                  ? FButtonVariant.secondary
+                                  : FButtonVariant.outline,
+                              prefix: _genre == g
+                                  ? const Icon(FLucideIcons.check)
+                                  : null,
+                              onPress: () => setState(() => _genre = g),
+                              child: Text(
+                                g.isEmpty ? l10n.genreNone : genreName(l10n, g),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (!cancelled) ...[
+              const SizedBox(height: 24),
+              SubmitButton(
+                label: team ? l10n.save : l10n.eventsUserNewTitle,
+                loading: _saving,
+                onPressed: () {
+                  if (!_encoding) _save();
+                },
+              ),
+              if (live != null && live.pending) ...[
+                const SizedBox(height: 12),
                 FButton(
-                  variant: FButtonVariant.outline,
-                  size: FButtonSizeVariant.sm,
-                  mainAxisSize: MainAxisSize.min,
-                  onPress: _encoding || _saving ? null : _pickImage,
-                  prefix: const Icon(FLucideIcons.imageUp),
+                  variant: FButtonVariant.secondary,
+                  onPress: _saving || _encoding
+                      ? null
+                      : () => _save(confirm: true),
+                  prefix: const Icon(FLucideIcons.badgeCheck),
                   child: Text(
-                    _hasPicture
-                        ? l10n.eventsPictureReplace
-                        : l10n.eventsPicturePick,
+                    l10n.eventsReviewConfirm,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (_hasPicture)
-                  FButton(
-                    variant: FButtonVariant.ghost,
-                    size: FButtonSizeVariant.sm,
-                    mainAxisSize: MainAxisSize.min,
-                    onPress: _encoding || _saving ? null : _dropImage,
-                    prefix: const Icon(FLucideIcons.trash2),
-                    child: Text(
-                      l10n.eventsPictureRemove,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
               ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              team
-                  ? l10n.eventsPictureHint
-                  : '${l10n.eventsPictureHint} (${l10n.optional})',
-              style: muted,
-            ),
-            SettingsSectionTitle(l10n.event),
-            FTextFormField(
-              control: FTextFieldControl.managed(controller: _name),
-              inputFormatters: [LengthLimitingTextInputFormatter(100)],
-              label: Text(l10n.eventName),
-              prefixBuilder: (context, style, variants) =>
-                  fieldIcon(FLucideIcons.ticket),
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              validator: (v) => text(v, 2),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: FTextFormField(
-                    control: FTextFieldControl.managed(controller: _venue),
-                    inputFormatters: [LengthLimitingTextInputFormatter(100)],
-                    label: Text(l10n.venue),
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    validator: (v) => text(v, 1),
+              if (live != null) ...[
+                const SizedBox(height: 12),
+                FButton(
+                  variant: live.hidden
+                      ? FButtonVariant.outline
+                      : FButtonVariant.ghost,
+                  onPress: _saving ? null : () => _toggleHidden(live),
+                  prefix: Icon(
+                    live.hidden ? FLucideIcons.eye : FLucideIcons.eyeOff,
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FTextFormField(
-                    control: FTextFieldControl.managed(controller: _city),
-                    inputFormatters: [LengthLimitingTextInputFormatter(60)],
-                    label: Text(l10n.city),
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    validator: (v) => text(v, 1),
+                  child: Text(
+                    live.hidden ? l10n.eventsShow : l10n.eventsHide,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 12),
-            DateTimeField(date: _date, error: _dateError, onTap: _pickDate),
-            SettingsSectionTitle(l10n.category),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final c in EventCategory.values)
-                  FButton(
-                    size: FButtonSizeVariant.sm,
-                    mainAxisSize: MainAxisSize.min,
-                    variant: _category == c
-                        ? FButtonVariant.primary
-                        : FButtonVariant.outline,
-                    prefix: Icon(categoryIcon(c)),
-                    onPress: () => _setCategory(c),
-                    child: Text(
-                      categoryName(l10n, c),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-              ],
-            ),
-            SettingsSectionTitle(l10n.genreLabel),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              alignment: Alignment.topCenter,
-              child: Wrap(
-                key: ValueKey(_category),
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final g in ['', ...?eventGenres[_category]])
-                    FButton(
-                      size: FButtonSizeVariant.sm,
-                      mainAxisSize: MainAxisSize.min,
-                      variant: _genre == g
-                          ? FButtonVariant.secondary
-                          : FButtonVariant.outline,
-                      prefix: _genre == g
-                          ? const Icon(FLucideIcons.check)
-                          : null,
-                      onPress: () => setState(() => _genre = g),
-                      child: Text(
-                        g.isEmpty ? l10n.genreNone : genreName(l10n, g),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            SubmitButton(
-              label: team ? l10n.save : l10n.eventsUserNewTitle,
-              loading: _saving,
-              onPressed: () {
-                if (!_encoding) _save();
-              },
-            ),
-            if (live != null && live.pending) ...[
-              const SizedBox(height: 12),
+            ],
+            if (live != null && team && !cancelled) ...[
+              SettingsSectionTitle(l10n.eventChangeSection),
               FButton(
-                variant: FButtonVariant.secondary,
-                onPress: _saving || _encoding
-                    ? null
-                    : () => _save(confirm: true),
-                prefix: const Icon(FLucideIcons.badgeCheck),
+                variant: FButtonVariant.outline,
+                onPress: _saving ? null : () => _postponeEvent(live),
+                prefix: const Icon(FLucideIcons.calendarClock),
                 child: Text(
-                  l10n.eventsReviewConfirm,
+                  l10n.eventChangePostpone,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ],
-            if (live != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               FButton(
-                variant: live.hidden
-                    ? FButtonVariant.outline
-                    : FButtonVariant.ghost,
-                onPress: _saving ? null : () => _toggleHidden(live),
-                prefix: Icon(
-                  live.hidden ? FLucideIcons.eye : FLucideIcons.eyeOff,
-                ),
+                variant: FButtonVariant.destructive,
+                onPress: _saving ? null : () => _cancelEvent(live),
+                prefix: const Icon(FLucideIcons.ban),
                 child: Text(
-                  live.hidden ? l10n.eventsShow : l10n.eventsHide,
+                  l10n.eventChangeCancel,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

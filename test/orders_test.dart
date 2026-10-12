@@ -59,8 +59,9 @@ void main() {
 
   testWidgets('sale shows seller earnings and a dispute', (tester) async {
     await _openAccountEntry(tester, 'Prodaje');
-    await tester.tap(find.text('Zdravko Čolić'));
-    await tester.pumpAndSettle();
+    // Sold e-tickets without files: the warning comes first.
+    expect(find.textContaining('još nisu uploadovane'), findsOneWidget);
+    await tapVisible(tester, find.text('Zdravko Čolić'));
     expect(find.text('Detalji prodaje'), findsOneWidget);
     await tapVisible(tester, find.text('Tvoja zarada'));
     // 4 × 60,00 = 240,00 − 10 % = 216,00.

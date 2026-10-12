@@ -11,6 +11,7 @@ import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'order_labels.dart';
 import 'order_ticket.dart';
+import 'ticket_files_widgets.dart';
 import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 
@@ -98,6 +99,10 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
                     key: ValueKey(_filter),
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                     children: [
+                      if (!buyer)
+                        const SalesAwaitingTicketsAlert(
+                          padding: EdgeInsets.only(bottom: 12),
+                        ),
                       ResponsiveGrid(
                         maxColumns: 2,
                         children: [

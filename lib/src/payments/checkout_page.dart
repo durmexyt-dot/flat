@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,9 @@ import 'payment_gateway.dart';
 import 'test_payment_gateway.dart';
 import '../ui/site_scaffold.dart';
 
+/// The clock of the reservation countdown; tests move it forward.
+DateTime Function() checkoutNow = DateTime.now;
+
 /// Buying tickets from a listing: summary, then payment.
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({
@@ -43,8 +48,54 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   bool _busy = false;
   PaymentFailure? _failure;
 
-  /// Created on the first pay tap; reused while its payment is open.
+  /// Created on the first pay tap; reused while its payment is open. Its
+  /// tickets are held for the buyer for [reservationDuration].
   Order? _order;
+
+  /// The time to pay ran out: the tickets went back on sale.
+  bool _expired = false;
+  Timer? _ticker;
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  /// Time left to pay for the held tickets, or null without a hold.
+  Duration? get _left {
+    final until = _order?.reservedUntil;
+    if (until == null) return null;
+    final left = until.difference(checkoutNow());
+    return left.isNegative ? Duration.zero : left;
+  }
+
+  /// Starts the countdown for a new order.
+  void _hold(Order order) {
+    _ticker?.cancel();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      if (_left == Duration.zero) _expire();
+      setState(() {});
+    });
+  }
+
+  void _expire() {
+    _ticker?.cancel();
+    _ticker = null;
+    if (mounted) setState(() => _expired = true);
+  }
+
+  /// Starts over after the hold ran out.
+  void _restart() {
+    _ticker?.cancel();
+    _ticker = null;
+    setState(() {
+      _order = null;
+      _expired = false;
+      _failure = null;
+    });
+  }
 
   Future<void> _pay(Listing listing) async {
     final uid = ref.read(currentUidProvider);
@@ -56,9 +107,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
       _failure = null;
     });
     try {
-      final order = _order ??= await ref
-          .read(checkoutRepositoryProvider)
-          .createOrder(listing: listing, quantity: _quantity, buyerId: uid);
+      var order = _order;
+      if (order == null) {
+        order = _order = await ref
+            .read(checkoutRepositoryProvider)
+            .createOrder(listing: listing, quantity: _quantity, buyerId: uid);
+        _hold(order);
+      }
       if (!mounted) return;
       final outcome = await payOrder(context, ref, order);
       switch (outcome) {
@@ -68,10 +123,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
         case PaymentFailed(:final reason):
           // A failed payment cancels its order; a retry starts a new one.
           _order = null;
+          _ticker?.cancel();
           if (mounted) setState(() => _failure = reason);
         case PaymentCancelled():
           break;
       }
+    } on ReservationExpiredException {
+      _expire();
     } catch (_) {
       showSnack(l10n.errorUnknown);
     } finally {
@@ -111,7 +169,45 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 child: Text(l10n.openListing),
               ),
             )
+          : _expired
+          ? _expiredView(context, listing)
           : _body(context, listing),
+    );
+  }
+
+  Widget _expiredView(BuildContext context, Listing listing) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FAlert(
+                variant: FAlertVariant.destructive,
+                icon: const Icon(FLucideIcons.timerOff),
+                title: Text(l10n.reservationExpiredTitle),
+                subtitle: Text(l10n.reservationExpiredInfo),
+              ),
+              const SizedBox(height: 16),
+              FButton(
+                onPress: () =>
+                    context.go('/listing/${listing.id}', extra: listing),
+                child: Text(l10n.reservationBackToListing),
+              ),
+              const SizedBox(height: 8),
+              FButton(
+                variant: FButtonVariant.outline,
+                onPress: _restart,
+                child: Text(l10n.tryAgain),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -121,9 +217,17 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final colors = theme.colors;
     final gateway = ref.watch(paymentGatewayProvider);
     final email = ref.watch(authStateProvider).value?.email ?? '';
+    // The listing counts the tickets held for this buyer's own order as
+    // taken; they are still theirs to pay for.
+    final held = _order?.reserved == true ? _order!.quantity : 0;
+    final left = listing.available + held;
     final available =
-        listing.status == ListingStatus.active && listing.available > 0;
-    final quantity = _quantity.clamp(1, listing.available.clamp(1, 99));
+        (listing.status == ListingStatus.active ||
+            (held > 0 && listing.status == ListingStatus.reserved)) &&
+        left > 0;
+    final locked = _busy || _order != null;
+    final quantity = _quantity.clamp(1, left.clamp(1, 99));
+    final timeLeft = _left;
     final subtotal = listing.priceMinor * quantity;
     final total = subtotal + listing.fees.buyerFee(subtotal);
     String money(int m) => formatMoney(context, m, listing.currency);
@@ -175,7 +279,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                           ),
                         ),
                         FButton.icon(
-                          onPress: !_busy && quantity > 1
+                          onPress: !locked && quantity > 1
                               ? () => setState(() {
                                   _quantity = quantity - 1;
                                   _order = null;
@@ -195,7 +299,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                           ),
                         ),
                         FButton.icon(
-                          onPress: !_busy && quantity < listing.available
+                          onPress: !locked && quantity < left
                               ? () => setState(() {
                                   _quantity = quantity + 1;
                                   _order = null;
@@ -264,6 +368,45 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       child: _FailureCard(failure: _failure!),
                     ),
             ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: timeLeft == null
+                  ? Padding(
+                      key: const ValueKey('hint'),
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            FLucideIcons.timer,
+                            size: 18,
+                            color: colors.mutedForeground,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.reservationHint,
+                              style: theme.typography.body.xs.copyWith(
+                                color: colors.mutedForeground,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Padding(
+                      key: const ValueKey('held'),
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: FAlert(
+                        icon: const Icon(FLucideIcons.timer),
+                        title: Text(
+                          l10n.reservationHeld(_mmss(timeLeft)),
+                          style: const TextStyle(
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
             if (!available)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -306,6 +449,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
       ],
     );
   }
+}
+
+String _mmss(Duration d) {
+  final s = d.inSeconds;
+  return '${(s ~/ 60).toString().padLeft(2, '0')}:'
+      '${(s % 60).toString().padLeft(2, '0')}';
 }
 
 class _Line extends StatelessWidget {

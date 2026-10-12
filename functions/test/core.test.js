@@ -141,6 +141,7 @@ test('a reported problem holds the order and opens a support request; the team d
   assert.equal(o.status, 'disputed');
   assert.equal(o.dispute.previousStatus, 'ticketsSent');
   assert.equal((await get(`supportTickets/${supportTicketId}`)).reference, o.number);
+  assert.equal((await get(`supportTickets/${supportTicketId}`)).orderId, 'o1');
   // Not completed while open.
   assert.equal(await core.completeOrders(db, NOW + 10 * DAY), 0);
   // Only the team decides.

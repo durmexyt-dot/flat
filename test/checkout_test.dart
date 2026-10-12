@@ -2,6 +2,7 @@ import 'package:flat/src/auth/auth_widgets.dart';
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
+import 'package:flat/src/payments/checkout_page.dart';
 import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
@@ -166,6 +167,46 @@ void main() {
     );
   });
 
+  testWidgets('tickets are held for 15 minutes, then the hold ends', (
+    tester,
+  ) async {
+    addTearDown(() => checkoutNow = DateTime.now);
+    await _toCheckout(tester);
+    expect(find.textContaining('15 minuta rezervisane'), findsOneWidget);
+
+    // Starting the payment holds the tickets; closing the form keeps them.
+    final pay = find.descendant(
+      of: find.byType(SubmitButton),
+      matching: find.textContaining('Plati 77,00'),
+    );
+    await tester.ensureVisible(pay.first);
+    await tester.pumpAndSettle();
+    await tester.tap(pay.first);
+    await _settleSheet(tester);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(PaymentSimulatorSheet),
+        matching: find.byIcon(FLucideIcons.x),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Karte su rezervisane za tebe još 1'),
+      findsOneWidget,
+    );
+    final listing = await tester.runAsync(
+      () => market.watchListing('jazz').first,
+    );
+    expect(listing!.quantityReserved, 2);
+
+    // A quarter of an hour later the time is up.
+    checkoutNow = () => DateTime.now().add(const Duration(minutes: 16));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Rezervacija je istekla'), findsOneWidget);
+    expect(find.text('Nazad na ponudu'), findsOneWidget);
+  });
+
   testWidgets('buying the last tickets sells the listing out', (tester) async {
     await _toCheckout(tester, quantity: 2);
     await _openSimulatorAndPay(tester);
@@ -175,10 +216,17 @@ void main() {
     expect(listing!.status, ListingStatus.soldOut);
   });
 
-  testWidgets('seller marks tickets sent on a paid sale', (tester) async {
+  testWidgets('seller marks mobile tickets sent on a paid sale', (
+    tester,
+  ) async {
+    // E-tickets go out as uploaded files; mobile tickets are confirmed.
     final market = InMemoryMarketRepository(
       listings: [
-        Listing.fromMap('jazz', {..._jazz().toMap(), 'sellerId': '1'}),
+        Listing.fromMap('jazz', {
+          ..._jazz().toMap(),
+          'sellerId': '1',
+          'ticketType': 'mobile',
+        }),
       ],
     );
     final listing = (await market.watchListing('jazz').first)!;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../data/repositories.dart';
+import '../market/order_labels.dart';
 import '../router.dart';
 import '../settings/settings_controller.dart';
 import '../ui/format.dart';
@@ -84,6 +85,19 @@ class _LiveAlertsState extends ConsumerState<LiveAlerts> {
           formatMoney(context, o.sellerEarningsMinor, o.currency),
         ),
       ),
+      OrderAlertKind.disputeOpened => (
+        l10n.disputeAlertOpenedTitle,
+        l10n.disputeAlertOpenedBody(o.event.name),
+      ),
+      OrderAlertKind.refundedDeadline => (
+        l10n.deliveryAlertDeadlineTitle,
+        l10n.deliveryAlertDeadlineBody(o.event.name),
+      ),
+      // Uploaded e-tickets are there to download.
+      OrderAlertKind.ticketsSent when o.ticketsDelivered > 0 => (
+        l10n.deliveryAlertArrivedTitle,
+        l10n.deliveryAlertArrivedBody(o.event.name),
+      ),
       OrderAlertKind.ticketsSent => (
         l10n.alertTicketsSentTitle,
         l10n.alertTicketsSentBody(o.event.name),
@@ -91,6 +105,17 @@ class _LiveAlertsState extends ConsumerState<LiveAlerts> {
       OrderAlertKind.refundedBySeller => (
         l10n.alertRefundTitle,
         l10n.alertRefundBody(o.event.name),
+      ),
+      OrderAlertKind.refunded => (
+        l10n.deliveryAlertRefundTitle,
+        l10n.deliveryAlertRefundBody(
+          o.event.name,
+          orderReasonText(l10n, o) ?? l10n.orderRefunded,
+        ),
+      ),
+      OrderAlertKind.disputeRejected => (
+        l10n.disputeAlertRejectedTitle,
+        l10n.disputeAlertRejectedBody(o.event.name),
       ),
     };
     void open() => ref.read(routerProvider).push('/order/${o.id}');

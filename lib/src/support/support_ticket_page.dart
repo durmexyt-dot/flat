@@ -327,6 +327,33 @@ class _TicketHeader extends StatelessWidget {
                   ],
                 ),
             ],
+            // Problem reports from the order page: the team decides there.
+            if (staffView &&
+                t.appVersion == 'dispute' &&
+                t.reference.startsWith('SSW-'))
+              FAlert(
+                icon: const Icon(FLucideIcons.gavel),
+                title: Text(l10n.disputeStaffHint(t.reference)),
+                subtitle: t.orderId.isEmpty
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: FButton(
+                            variant: FButtonVariant.outline,
+                            size: FButtonSizeVariant.sm,
+                            mainAxisSize: MainAxisSize.min,
+                            onPress: () => context.push('/order/${t.orderId}'),
+                            prefix: const Icon(FLucideIcons.receipt),
+                            child: Text(
+                              l10n.disputeOpenOrder,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
           ],
         ),
       ),

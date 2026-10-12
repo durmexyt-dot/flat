@@ -10,6 +10,7 @@ import '../ui/async_view.dart';
 import '../ui/responsive_grid.dart';
 import '../ui/skeleton.dart';
 import 'listing_ticket.dart';
+import 'ticket_files_widgets.dart';
 import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 
@@ -111,15 +112,26 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                     key: ValueKey(_filter),
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                     children: [
+                      const SalesAwaitingTicketsAlert(
+                        padding: EdgeInsets.only(bottom: 12),
+                      ),
                       ResponsiveGrid(
                         maxColumns: 2,
                         children: [
                           for (final l in shown)
-                            ListingTicket(
-                              listing: l,
-                              showStatus: true,
-                              onTap: () =>
-                                  context.push('/listing/${l.id}', extra: l),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                ListingTicket(
+                                  listing: l,
+                                  showStatus: true,
+                                  onTap: () => context.push(
+                                    '/listing/${l.id}',
+                                    extra: l,
+                                  ),
+                                ),
+                                ListingMissingTickets(listing: l),
+                              ],
                             ),
                         ],
                       ),

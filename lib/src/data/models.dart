@@ -1007,6 +1007,7 @@ class SupportTicket {
     this.unreadForStaff = false,
     this.closedBy = '',
     this.appVersion = '',
+    this.orderId = '',
     this.createdAt,
     this.lastMessageAt,
   });
@@ -1036,6 +1037,9 @@ class SupportTicket {
   /// 'user' or 'staff'.
   final String closedBy;
   final String appVersion;
+
+  /// For a reported problem: the order it is about.
+  final String orderId;
   final DateTime? createdAt;
   final DateTime? lastMessageAt;
 
@@ -1060,6 +1064,7 @@ class SupportTicket {
         unreadForStaff: m['unreadForStaff'] == true,
         closedBy: m['closedBy'] as String? ?? '',
         appVersion: m['appVersion'] as String? ?? '',
+        orderId: m['orderId'] as String? ?? '',
         createdAt: _date(m['createdAt']),
         lastMessageAt: _date(m['lastMessageAt']),
       );

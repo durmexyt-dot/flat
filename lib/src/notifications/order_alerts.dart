@@ -5,11 +5,25 @@ enum OrderAlertKind {
   /// Seller: a buyer paid for tickets.
   sold,
 
-  /// Buyer: the seller sent the tickets.
+  /// Seller: the buyer reported a problem; the payout waits.
+  disputeOpened,
+
+  /// Seller: the e-tickets weren't uploaded in time; the buyer got the
+  /// money back.
+  refundedDeadline,
+
+  /// Buyer: the seller sent the tickets (or the uploaded files arrived).
   ticketsSent,
 
   /// Buyer: the seller cancelled the sale; the money is back.
   refundedBySeller,
+
+  /// Buyer: the money is back for another reason (tickets not sent in
+  /// time, event cancelled, support's decision); see [Order.cancelledBy].
+  refunded,
+
+  /// Buyer: the team rejected the reported problem; the order continues.
+  disputeRejected,
 }
 
 class OrderAlert {
@@ -30,27 +44,53 @@ List<OrderAlert> orderAlerts({
   required bool asSeller,
   DateTime? since,
 }) {
-  OrderAlertKind? kindOf(Order o) {
+  final previous = before == null
+      ? null
+      : {for (final o in before) o.id: o.status};
+
+  /// The alert for [o], given the status it had before (null when unknown
+  /// or new).
+  OrderAlertKind? kindOf(Order o, OrderStatus? was) {
     if (asSeller) {
-      return o.status == OrderStatus.paid ? OrderAlertKind.sold : null;
+      return switch (o.status) {
+        OrderStatus.paid when was != OrderStatus.disputed =>
+          OrderAlertKind.sold,
+        OrderStatus.disputed => OrderAlertKind.disputeOpened,
+        OrderStatus.refunded when o.cancelledBy == 'deadline' =>
+          OrderAlertKind.refundedDeadline,
+        _ => null,
+      };
+    }
+    // Back from a reported problem: the team said no.
+    if (o.dispute?.decision == 'reject' &&
+        o.status != OrderStatus.disputed &&
+        (was == OrderStatus.disputed || previous == null)) {
+      return OrderAlertKind.disputeRejected;
     }
     return switch (o.status) {
       OrderStatus.ticketsSent => OrderAlertKind.ticketsSent,
       OrderStatus.refunded when o.cancelledBySeller =>
         OrderAlertKind.refundedBySeller,
+      OrderStatus.refunded
+          when const {'deadline', 'event', 'support'}.contains(o.cancelledBy) =>
+        OrderAlertKind.refunded,
       _ => null,
     };
   }
 
-  final previous = before == null
-      ? null
-      : {for (final o in before) o.id: o.status};
+  /// When [o] got to where [kind] is about.
+  DateTime? changedAt(Order o, OrderAlertKind kind) =>
+      kind == OrderAlertKind.disputeRejected
+      ? o.dispute?.resolvedAt
+      : o.reachedAt(o.status);
+
   return [
     for (final o in after)
-      if (kindOf(o) case final kind?)
-        if (previous != null
-            ? previous[o.id] != o.status
-            : since != null && (o.reachedAt(o.status)?.isAfter(since) ?? false))
-          OrderAlert(kind, o),
+      if (previous != null) ...[
+        if (previous[o.id] != o.status)
+          if (kindOf(o, previous[o.id]) case final kind?) OrderAlert(kind, o),
+      ] else if (since != null)
+        if (kindOf(o, null) case final kind?)
+          if (changedAt(o, kind)?.isAfter(since) ?? false) OrderAlert(kind, o),
   ];
 }

@@ -41,6 +41,13 @@ class OrderTicket extends StatelessWidget {
           label: orderStatusName(l10n, order.status),
           tone: orderTone(order.status),
         ),
+        if (orderReasonText(l10n, order) case final reason?) ...[
+          const SizedBox(height: 4),
+          Text(
+            reason,
+            style: type.body.xs.copyWith(color: colors.mutedForeground),
+          ),
+        ],
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,

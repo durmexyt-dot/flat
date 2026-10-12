@@ -1,5 +1,6 @@
 {
   "@@locale": "bs",
+  "disputeOpenOrder": "Otvori narudžbu",
   "deliveryPageTitle": "Karte za ponudu",
   "deliveryFilesSection": "Uploadovane karte",
   "deliveryProgress": "{done} od {total} karata uploadovano",

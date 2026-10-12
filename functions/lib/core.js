@@ -315,6 +315,8 @@ export async function openDispute(db, uid, { orderId, reason, text }, now = Date
       unreadForUser: false,
       unreadForStaff: true,
       appVersion: 'dispute',
+      // The team opens the order from the request to decide.
+      orderId: order.id,
       createdAt: Timestamp.fromMillis(now),
       lastMessageAt: Timestamp.fromMillis(now),
     });

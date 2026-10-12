@@ -20,7 +20,9 @@ Future<PickedFile?> pickFile({String accept = ''}) async {
       ((web.Event _) {
         final files = input.files;
         if (!picked.isCompleted) {
-          picked.complete(files == null || files.length == 0 ? null : files.item(0));
+          picked.complete(
+            files == null || files.length == 0 ? null : files.item(0),
+          );
         }
       }).toJS,
     )

@@ -18,6 +18,29 @@ String orderStatusName(AppLocalizations l10n, OrderStatus s) => switch (s) {
   OrderStatus.disputed => l10n.orderDisputed,
 };
 
+/// Why an order ended (refunded or cancelled) or is on hold (a reported
+/// problem); null when the status says it all.
+String? orderReasonText(AppLocalizations l10n, Order o) => switch (o.status) {
+  OrderStatus.disputed => l10n.disputeStatusLine,
+  OrderStatus.refunded || OrderStatus.cancelled => switch (o.cancelledBy) {
+    'seller' => l10n.deliveryCancelSeller,
+    'expired' => l10n.deliveryCancelExpired,
+    'deadline' => l10n.deliveryCancelDeadline,
+    'event' => l10n.deliveryCancelEvent,
+    'support' => l10n.deliveryCancelSupport,
+    _ => null,
+  },
+  _ => null,
+};
+
+String disputeReasonName(AppLocalizations l10n, DisputeReason r) => switch (r) {
+  DisputeReason.notReceived => l10n.disputeReasonNotReceived,
+  DisputeReason.invalid => l10n.disputeReasonInvalid,
+  DisputeReason.wrongTickets => l10n.disputeReasonWrongTickets,
+  DisputeReason.eventChanged => l10n.disputeReasonEventChanged,
+  DisputeReason.other => l10n.disputeReasonOther,
+};
+
 StatusTone orderTone(OrderStatus s) => switch (s) {
   OrderStatus.pendingPayment => StatusTone.waiting,
   OrderStatus.paid || OrderStatus.ticketsSent => StatusTone.active,
