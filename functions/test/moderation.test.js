@@ -234,3 +234,17 @@ test('queued emails are sent once over SMTP; failures are recorded and retried',
   assert.equal((await get('mail/m3')).delivery.state, 'SUCCESS');
   assert.equal((await get('mail/m3')).delivery.attempts, 2);
 });
+
+test('the sale email says nothing is left to do when the tickets are already uploaded', async () => {
+  await listing('L1');
+  await upload('L1', 'f1', '%PDF ready 1');
+  await upload('L1', 'f2', '%PDF ready 2');
+  await moderation.orderChanged(db, 'o1', order({ status: 'pendingPayment' }), order(), { appUrl: APP, now: NOW });
+  const sold = (await mails()).find((m) => m.kind === 'ticketSold');
+  assert.match(sold.message.text, /schon hochgeladen/);
+  // Not enough files: the reminder to upload.
+  await db.doc('listings/L2').set({ sellerId: 'seller', status: 'active' });
+  await moderation.orderChanged(db, 'o2', order({ status: 'pendingPayment', listingId: 'L2' }), order({ listingId: 'L2' }), { appUrl: APP, now: NOW });
+  const later = (await db.doc('mail/o2-ticketSold').get()).data();
+  assert.match(later.message.text, /spätestens 24 Stunden/);
+});

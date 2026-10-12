@@ -132,7 +132,7 @@ export async function orderChanged(db, orderId, before, after, { appUrl, now = D
   }
   if (to === 'paid' && from === 'pendingPayment') {
     await buyer('orderPaid');
-    await seller('ticketSold');
+    await seller('ticketSold', { ticketsReady: await uploadedFor(db, after, orderId) });
     await issueOrderInvoices(db, orderId, now);
   } else if (to === 'ticketsSent') {
     await buyer('ticketsReady');
@@ -150,6 +150,19 @@ export async function orderChanged(db, orderId, before, after, { appUrl, now = D
     });
     await countCompletedSales(db, after.sellerId, now);
   }
+}
+
+/**
+ * Whether the seller already uploaded enough e-tickets for [order]: files
+ * not handed to another order (nor blocked copies) cover its quantity.
+ */
+async function uploadedFor(db, order, orderId) {
+  if ((order.ticketType ?? 'eTicket') !== 'eTicket' || !order.listingId) return false;
+  const files = await db.collection(`listings/${order.listingId}/files`).get();
+  const tickets = files.docs
+    .filter((f) => [null, undefined, orderId].includes(f.get('orderId')) && f.get('blocked') !== true)
+    .reduce((n, f) => n + (f.get('tickets') ?? 1), 0);
+  return tickets >= order.quantity;
 }
 
 /** Reminds sellers once when e-tickets are still missing two days before the event. */
