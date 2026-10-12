@@ -580,7 +580,14 @@ class _EventFormState extends ConsumerState<_EventForm> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SettingsSectionTitle(l10n.eventsPicture),
-                    _picture(context),
+                    // A preview, not a banner: on wide pages it stays card-sized.
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 560),
+                        child: _picture(context),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,

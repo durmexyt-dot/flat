@@ -67,7 +67,8 @@ class SiteScaffold extends StatelessWidget {
   final Widget? narrowHeader;
   final bool showTitle;
 
-  /// Shows the account sidebar on wide screens.
+  /// Shows the account sidebar on wide screens; the content then fills
+  /// the page and [maxWidth] is ignored.
   final bool accountNav;
 
   @override
@@ -143,7 +144,11 @@ class SiteScaffold extends StatelessWidget {
           child: Align(
             alignment: Alignment.topLeft,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxWidth),
+              // Pages beside the account sidebar all fill the page, like
+              // the profile, so switching between them doesn't jump.
+              constraints: BoxConstraints(
+                maxWidth: accountNav ? SiteWidth.full : maxWidth,
+              ),
               child: body,
             ),
           ),
