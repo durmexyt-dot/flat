@@ -16,6 +16,11 @@ die nächste Version.
 - Datenauskunft: unter Privatsphäre & Sicherheit alle eigenen Daten als
   JSON-Datei herunterladen.
 
+### Sicherheit
+- Firebase App Check mit reCAPTCHA Enterprise (Fraud Defense) auf Staging:
+  Anfragen an Firestore, Storage und Functions tragen einen Nachweis, dass
+  sie aus der App kommen. Noch nicht erzwungen.
+
 ## [1.7.1] – 2026-10-12
 
 - Moderation: open reports again

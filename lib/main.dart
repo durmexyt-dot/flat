@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 import 'firebase_options_prod.dart';
+import 'src/config/app_check.dart';
 import 'src/config/app_info.dart';
 import 'src/app.dart';
 import 'src/auth/auth_repository.dart';
@@ -21,6 +22,7 @@ FirebaseOptions firebaseOptions() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: firebaseOptions());
+  await activateAppCheck();
   final prefs = await SharedPreferences.getInstance();
   await FirebaseAuthRepository.dropUnwantedSession(
     FirebaseAuth.instance,

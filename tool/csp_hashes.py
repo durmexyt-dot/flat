@@ -17,6 +17,7 @@ SERVICES = [
     ('firebase_firestore', 'firestore-pipelines'),
     ('firebase_storage', 'storage'),
     ('firebase_functions', 'functions'),
+    ('firebase_app_check', 'app-check'),
 ]
 
 

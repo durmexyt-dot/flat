@@ -58,9 +58,14 @@ Nutzereingaben ohnehin kaum möglich.
    - Autorisierte Domains: nur `durmexyt-dot.github.io` (bzw. deine Domain)
      und `localhost`; alles andere entfernen
 4. 🔴 **App Check** (Schutz gegen Bots und Skripte, die die API direkt
-   aufrufen): reCAPTCHA-Enterprise-Schlüssel anlegen, mir den Site-Key geben →
-   ich binde `firebase_app_check` ein → danach in der Konsole für Firestore
-   und Authentication „erzwingen“.
+   aufrufen): in der App eingebaut (`lib/src/config/app_check.dart`).
+   Staging hat seinen Fraud-Defense-Schlüssel (Web, ohne Challenge,
+   Mindestscore 0,5). Prod: eigenen Schlüssel im Projekt `stubswap-prod`
+   anlegen und in `_siteKeyProd` eintragen. Erst die Messwerte in der
+   Konsole beobachten, dann Firestore, Storage, Functions und
+   Authentication „erzwingen“. Vorher für Browser-Tests einen Debug-Token
+   registrieren (`?appCheckDebug=<token>` auf localhost); die
+   REST-Testskripte brauchen dann den Header `X-Firebase-AppCheck`.
 5. 🟠 **Budget-Warnung** in der Google Cloud (z. B. bei 10 €), damit ein
    Missbrauch nicht unbemerkt Kosten erzeugt.
 6. 🟠 **Hosting auf Firebase Hosting + eigene Domain**: GitHub Pages kann
@@ -87,12 +92,12 @@ Moderation für Admin + Support, Rechnungen der Plattform mit CSV-Export.
 
 ### 🔴 Noch vor dem Start (Code)
 
-1. **Mobile- und Papiertickets**: Übergabeangaben (Transfer an Name/E-Mail,
+1. ✅ **Mobile- und Papiertickets**: Übergabeangaben (Transfer an Name/E-Mail,
    Sendungsnummer) statt nur „gesendet“; Bestätigung durch den Käufer.
-2. **App Check** einbauen (braucht den reCAPTCHA-Schlüssel, siehe 2.4).
+2. ✅ **App Check** eingebaut (Staging); Prod-Schlüssel fehlt noch, siehe 2.4.
 3. **Einstellungen ohne Funktion** (Preisalarme, Event-Erinnerungen,
    Newsletter) bauen oder ausblenden.
-4. **Datenauskunft (DSGVO/ZZLP)**: eigene Daten exportieren.
+4. ✅ **Datenauskunft (DSGVO/ZZLP)**: eigene Daten exportieren.
 5. **Prod aufräumen**: Skript zum Löschen von Testdaten und -konten.
 
 ### 🟠 Sollte vor dem Start kommen
