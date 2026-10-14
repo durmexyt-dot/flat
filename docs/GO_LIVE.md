@@ -74,61 +74,52 @@ Nutzereingaben ohnehin kaum möglich.
 
 ---
 
-## 3. Fehlende Funktionen vor dem Go-Live (ohne Stripe)
+## 3. Stand der Funktionen (ohne Stripe), Oktober 2026
 
-### 🔴 Muss vor dem Start da sein
+### ✅ Erledigt (v1.7)
 
-1. **Ticket-Übergabe** – das wichtigste fehlende Stück. Heute markiert der
-   Verkäufer nur „Karten gesendet“. Nötig:
-   - Upload der Tickets (PDF/QR/Bild) durch den Verkäufer in Firebase Storage,
-     nur der Käufer kann sie nach der Zahlung herunterladen
-   - für Mobile-Tickets: Übertragungsangaben (z. B. Ticketmaster-Transfer)
-   - für Papier-Tickets: Versand mit Sendungsnummer
-2. **Server-Logik (Cloud Functions)** – heute erledigt die App alles selbst,
-   abgesichert durch Regeln. Für den Echtbetrieb braucht es einen Server für:
-   - Bestellung nach dem Event automatisch „abgeschlossen“, Auszahlung freigeben
-   - Angebote vergangener Events automatisch „abgelaufen“
-   - unbezahlte Bestellungen nach X Minuten verfallen lassen
-   - Tickets während des Bezahlens reservieren (gegen Überverkauf)
-   - (wird für Stripe ohnehin gebraucht → Blaze-Tarif)
-3. **Käuferschutz-Ablauf**: Käufer meldet „Ticket ungültig / nicht erhalten“,
-   Auszahlung wird angehalten, Support entscheidet, Rückerstattung.
-4. **Admin-Bereich**: Support-Anfragen und Streitfälle bearbeiten, Angebote
-   entfernen, Nutzer sperren, Rückerstattungen auslösen.
-5. **Rechtliches**: Impressum, AGB/Nutzungsbedingungen, Datenschutzerklärung
-   (DSGVO + bosnisches ZZLP), Zustimmung bei der Registrierung, Gebühren- und
-   Rückerstattungsregeln, Hinweis zu lokalem Speicher.
-6. **E-Mails** zu Bestellung, Verkauf, Versand, Auszahlung (z. B. Firebase
-   Extension „Trigger Email“).
+Ticket-Upload und automatische Auslieferung, Reservierung (15 Min),
+Fristen/Abschluss/Ablauf per Cloud Function, Problem melden/Streitfall,
+Absage/Verschiebung, Rechtstexte (Platzhalter), Endpreis, Originalpreis +
+Gewinn, Wiederverkaufsregeln, Transaktionsmails (eigener SMTP-Versand),
+Betrugsschutz (Doppel-Upload, Limits neuer Verkäufer, Angebot melden),
+Moderation für Admin + Support, Rechnungen der Plattform mit CSV-Export.
+
+### 🔴 Noch vor dem Start (Code)
+
+1. **Mobile- und Papiertickets**: Übergabeangaben (Transfer an Name/E-Mail,
+   Sendungsnummer) statt nur „gesendet“; Bestätigung durch den Käufer.
+2. **App Check** einbauen (braucht den reCAPTCHA-Schlüssel, siehe 2.4).
+3. **Einstellungen ohne Funktion** (Preisalarme, Event-Erinnerungen,
+   Newsletter) bauen oder ausblenden.
+4. **Datenauskunft (DSGVO/ZZLP)**: eigene Daten exportieren.
+5. **Prod aufräumen**: Skript zum Löschen von Testdaten und -konten.
 
 ### 🟠 Sollte vor dem Start kommen
 
-7. **Push bei geschlossener App** (Firebase Cloud Messaging + Function).
-   Live-Benachrichtigungen bei offener App gibt es schon.
-8. **Verkäuferprofil & Vertrauen**: öffentliche Profilseite, Anzahl Verkäufe,
-   Bewertungen, „verifizierter Verkäufer“ (kommt mit Stripe Connect / KYC).
-9. **„Angebot melden“** (Betrug, Fake-Tickets).
-10. **Event-Seiten**: Angebote pro Event bündeln, Suche nach Stadt/Datum,
-    Sortierung nach Preis (wie viagogo).
-11. **Fehler-Monitoring** (z. B. Sentry) und Analytics.
-12. **Einstellungen ohne Funktion** entweder bauen oder ausblenden:
-    Preisalarme, Event-Erinnerungen, Newsletter.
+6. Push bei geschlossener App (FCM).
+7. Fehler-Monitoring (Sentry/Crashlytics); Analytics nur mit Einwilligung.
+8. Event-Seite: Filter (Anzahl, Preis, Sektor), Aufteilungsregeln,
+   Angebot bearbeiten/pausieren.
+9. Öffentliches Verkäuferprofil mit Bewertungen.
+10. Admin-Seite „E-Mail“: Absender, Testmail, Versandstatus.
 
-### 🟢 Kann nach dem Start kommen
+### 🟢 Nach dem Start
 
-13. Zwei-Faktor-Anmeldung, E-Mail-Adresse ändern
-14. Originalpreis (Face Value) und Preisobergrenzen gegen Wucher
-15. Wallet-Pässe, Währungsumrechnung, Wartelisten
-16. Suchmaschinen-taugliche Event-Seiten (Flutter-Web wird schlecht indexiert)
+Zwei-Faktor-Anmeldung, E-Mail ändern, SEO-Seiten, Apps im Store, Wallet,
+Merkliste/Preisalarm, „Ich suche Tickets“, mehr Währungen.
 
 ---
 
-## 4. Empfohlene Reihenfolge
+## 4. Vor dem Go-Live: nur der Inhaber
 
-1. Konsole-Schritte aus Abschnitt 2 (1–5) – eine Stunde Arbeit
-2. Blaze-Tarif + Cloud Functions (Server-Logik, Reservierung, Ablauf)
-3. Ticket-Übergabe mit Storage
-4. Käuferschutz + Admin-Bereich
-5. Rechtstexte, E-Mails, Push
-6. Stripe (Zahlung + Connect-Auszahlungen), Testmodus-Regeln entfernen
-7. Testdaten löschen → Go-Live
+- Rechtstexte (Impressum, AGB, Datenschutz) ausfüllen und prüfen lassen.
+- Firmendaten unter Administracija → Podaci o firmi; Rechnungsinhalt (PDV)
+  von der Steuerberatung bestätigen lassen.
+- Eigene Domain, Mails über einen Anbieter mit SPF/DKIM (statt Gmail),
+  `MAIL_FROM` für Prod anpassen.
+- Firebase Authentication: E-Mail-Vorlagen (Absender, Sprache), siehe 2.3.
+- Konsole-Schritte aus Abschnitt 2 (API-Schlüssel, Auth-Einstellungen,
+  App Check, Budget, Hosting mit Domain, Backups).
+- Team-Konten auf Prod anlegen; Testdaten und -konten löschen.
+- Stripe (Zahlung + Connect-Auszahlungen), danach Testmodus-Regeln entfernen.
