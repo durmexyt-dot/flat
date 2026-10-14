@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.8.0] – 2026-10-14
+
 ### Neu
 - Handy- und Papiertickets: Der Verkäufer gibt die Übergabe an (Übertragung
   an Name/E-Mail, Post/Kurier mit Sendungsnummer oder persönlich), der
