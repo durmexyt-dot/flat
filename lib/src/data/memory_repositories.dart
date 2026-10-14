@@ -283,6 +283,12 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
     'reserved': o.reserved,
     'cancelledBy': o.cancelledBy,
     'ticketsDelivered': o.ticketsDelivered,
+    if (o.handover case final h?)
+      'handover': {
+        ...h.toMap(),
+        'sentAt': h.sentAt,
+        'confirmedAt': h.confirmedAt,
+      },
     'history': [
       for (final h in o.history) {'status': h.status.name, 'at': h.at},
     ],
@@ -405,11 +411,27 @@ class InMemoryMarketRepository implements MarketRepository, CheckoutRepository {
   }
 
   @override
-  Future<void> markTicketsSent(Order order) async => _replaceOrder(
-    _current(order),
-    {'status': OrderStatus.ticketsSent.name},
-    OrderStatus.ticketsSent,
-  );
+  Future<void> markTicketsSent(Order order, TicketHandover handover) async =>
+      _replaceOrder(_current(order), {
+        'status': OrderStatus.ticketsSent.name,
+        'handover': {...handover.toMap(), 'sentAt': DateTime.now()},
+      }, OrderStatus.ticketsSent);
+
+  @override
+  Future<void> confirmReceipt(Order order) async {
+    final current = _current(order);
+    final map = _orderMap(current);
+    final updated = Order.fromMap(current.id, {
+      ...map,
+      'handover': {
+        ...?(map['handover'] as Map<String, dynamic>?),
+        'confirmedAt': DateTime.now(),
+      },
+    });
+    _orders.value = [
+      for (final x in _orders.value) x.id == current.id ? updated : x,
+    ];
+  }
 
   @override
   Future<void> cancelSale(Order order) async {

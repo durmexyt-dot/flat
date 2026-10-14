@@ -471,7 +471,38 @@ service cloud.firestore {
             - get(listingPath(request.resource.data.listingId)).data.quantitySold
             - reserved(get(listingPath(request.resource.data.listingId)).data);
 
-      allow update: if resource.data.testMode == true && (
+      // How the seller handed over mobile or paper tickets.
+      function validHandover(h, type) {
+        return h is map
+          && h.keys().hasOnly(['method', 'recipient', 'trackingNumber', 'note', 'sentAt'])
+          && h.method in (type == 'mobile' ? ['appTransfer'] : ['post', 'courier', 'inPerson'])
+          && str(h.recipient, 0, 120)
+          && str(h.trackingNumber, 0, 60)
+          && str(h.note, 0, 300)
+          && (h.method != 'appTransfer' || h.recipient.size() >= 3)
+          && (h.method != 'inPerson' || h.note.size() >= 1)
+          && h.sentAt == request.time;
+      }
+
+      allow update: if
+        // Seller: mobile or paper tickets handed over, with the details (e-tickets
+        // are delivered by uploading them).
+        (isUser(resource.data.sellerId)
+          && resource.data.status == 'paid'
+          && resource.data.get('ticketType', 'eTicket') != 'eTicket'
+          && request.resource.data.status == 'ticketsSent'
+          && onlyChanges(['status', 'handover', 'history', 'updatedAt'])
+          && validHandover(request.resource.data.handover, resource.data.ticketType))
+        // Buyer: confirms having the mobile or paper tickets.
+        || (isUser(resource.data.buyerId)
+          && resource.data.status == 'ticketsSent'
+          && 'handover' in resource.data
+          && !('confirmedAt' in resource.data.handover)
+          && onlyChanges(['handover', 'updatedAt'])
+          && request.resource.data.handover.diff(resource.data.handover)
+            .affectedKeys().hasOnly(['confirmedAt'])
+          && request.resource.data.handover.confirmedAt == request.time)
+        || resource.data.testMode == true && (
         // Buyer: the simulated payment failed.
         (isUser(resource.data.buyerId)
           && resource.data.status == 'pendingPayment'
@@ -492,13 +523,6 @@ service cloud.firestore {
             || request.time < resource.data.createdAt + duration.value(15, 'm'))
           && getAfter(listingPath(resource.data.listingId)).data.lastOrderId == id
           && existsAfter(payoutPath(id)))
-        // Seller: mobile or paper tickets handed over outside the app (e-tickets
-        // are delivered by uploading them).
-        || (isUser(resource.data.sellerId)
-          && resource.data.status == 'paid'
-          && resource.data.get('ticketType', 'eTicket') != 'eTicket'
-          && request.resource.data.status == 'ticketsSent'
-          && onlyChanges(['status', 'history', 'updatedAt']))
         // Seller: cancels the sale; only together with returning the tickets
         // and dropping the payout. Buyers can't cancel a paid order.
         || (isUser(resource.data.sellerId)

@@ -100,6 +100,162 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @handoverSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Predaja karata'**
+  String get handoverSection;
+
+  /// No description provided for @handoverTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kako si predao karte?'**
+  String get handoverTitle;
+
+  /// No description provided for @handoverSubmit.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte predane'**
+  String get handoverSubmit;
+
+  /// No description provided for @handoverInfoMobile.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prenesi karte u aplikaciji organizatora (npr. Eventim, Ticketmaster) na račun kupca i upiši kome si ih prenio. Ovi podaci pomažu ako dođe do problema.'**
+  String get handoverInfoMobile;
+
+  /// No description provided for @handoverInfoPaper.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošalji karte poštom ili kurirom (s brojem pošiljke ako ga imaš) ili ih predaj lično. Ovi podaci pomažu ako dođe do problema.'**
+  String get handoverInfoPaper;
+
+  /// No description provided for @handoverAppTransfer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prenos u aplikaciji'**
+  String get handoverAppTransfer;
+
+  /// No description provided for @handoverPost.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pošta'**
+  String get handoverPost;
+
+  /// No description provided for @handoverCourier.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kurir'**
+  String get handoverCourier;
+
+  /// No description provided for @handoverInPerson.
+  ///
+  /// In bs, this message translates to:
+  /// **'Lično'**
+  String get handoverInPerson;
+
+  /// No description provided for @handoverRecipient.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prenijeto na'**
+  String get handoverRecipient;
+
+  /// No description provided for @handoverRecipientInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ime ili e-mail računa kupca u aplikaciji organizatora'**
+  String get handoverRecipientInfo;
+
+  /// No description provided for @handoverRecipientMissing.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upiši kome si prenio karte'**
+  String get handoverRecipientMissing;
+
+  /// No description provided for @handoverTracking.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj pošiljke'**
+  String get handoverTracking;
+
+  /// No description provided for @handoverTrackingInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Neobavezno, ali preporučeno'**
+  String get handoverTrackingInfo;
+
+  /// No description provided for @handoverNote.
+  ///
+  /// In bs, this message translates to:
+  /// **'Napomena'**
+  String get handoverNote;
+
+  /// No description provided for @handoverNoteInPerson.
+  ///
+  /// In bs, this message translates to:
+  /// **'Gdje i kada ste se sreli'**
+  String get handoverNoteInPerson;
+
+  /// No description provided for @handoverSentAt.
+  ///
+  /// In bs, this message translates to:
+  /// **'Predano'**
+  String get handoverSentAt;
+
+  /// No description provided for @handoverConfirm.
+  ///
+  /// In bs, this message translates to:
+  /// **'Potvrdi prijem'**
+  String get handoverConfirm;
+
+  /// No description provided for @handoverConfirmInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kad karte budu kod tebe, potvrdi prijem. Ako ne stignu, prijavi problem.'**
+  String get handoverConfirmInfo;
+
+  /// No description provided for @handoverConfirmed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Hvala! Prijem je potvrđen.'**
+  String get handoverConfirmed;
+
+  /// No description provided for @handoverConfirmedAt.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac je potvrdio prijem {date}'**
+  String handoverConfirmedAt(String date);
+
+  /// No description provided for @handoverWaiting.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupac još nije potvrdio prijem.'**
+  String get handoverWaiting;
+
+  /// No description provided for @dataExportSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tvoji podaci'**
+  String get dataExportSection;
+
+  /// No description provided for @dataExport.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preuzmi moje podatke'**
+  String get dataExport;
+
+  /// No description provided for @dataExportInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sve što Stubswap čuva o tvom računu (profil, ponude, narudžbe, isplate, upiti, računi) kao JSON datoteka.'**
+  String get dataExportInfo;
+
+  /// No description provided for @dataExportDone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Podaci su preuzeti.'**
+  String get dataExportDone;
+
   /// No description provided for @invoicesTitle.
   ///
   /// In bs, this message translates to:
@@ -5407,7 +5563,7 @@ abstract class AppLocalizations {
   /// No description provided for @markTicketsSent.
   ///
   /// In bs, this message translates to:
-  /// **'Označi karte kao poslane'**
+  /// **'Unesi predaju karata'**
   String get markTicketsSent;
 
   /// No description provided for @ticketsMarkedSent.

@@ -941,6 +941,7 @@ class Order {
     this.ticketsDelivered = 0,
     this.deliveredAt,
     this.dispute,
+    this.handover,
     this.history = const [],
     this.createdAt,
   });
@@ -991,6 +992,9 @@ class Order {
 
   /// A problem the buyer reported, or null.
   final OrderDispute? dispute;
+
+  /// How the seller handed over mobile or paper tickets, or null.
+  final TicketHandover? handover;
 
   /// Paid with the payment simulator, not real money.
   final bool testMode;
@@ -1057,6 +1061,9 @@ class Order {
     dispute: m['dispute'] is Map
         ? OrderDispute.fromMap((m['dispute'] as Map).cast<String, dynamic>())
         : null,
+    handover: m['handover'] is Map
+        ? TicketHandover.fromMap((m['handover'] as Map).cast<String, dynamic>())
+        : null,
     testMode: m['testMode'] == true,
     history: _history(m['history'], OrderStatus.values),
     createdAt: _date(m['createdAt']),
@@ -1076,6 +1083,80 @@ const completeAfterEvent = Duration(days: 3);
 
 /// Buyers can report a problem until this long after the event.
 const disputeWindowAfterEvent = Duration(days: 7);
+
+/// How mobile or paper tickets reach the buyer.
+enum HandoverMethod {
+  /// Mobile tickets moved in the organizer's app to the buyer's account.
+  appTransfer,
+
+  /// Paper tickets by post or courier, with a tracking number if any.
+  post,
+  courier,
+
+  /// Paper tickets handed over in person.
+  inPerson,
+}
+
+/// The methods a ticket type is handed over with (e-tickets are files).
+List<HandoverMethod> handoverMethods(TicketType type) => switch (type) {
+  TicketType.mobile => const [HandoverMethod.appTransfer],
+  TicketType.paper => const [
+    HandoverMethod.post,
+    HandoverMethod.courier,
+    HandoverMethod.inPerson,
+  ],
+  TicketType.eTicket => const [],
+};
+
+/// What the seller says about handing over mobile or paper tickets, and
+/// when the buyer confirmed getting them: the record if anything goes wrong.
+@immutable
+class TicketHandover {
+  const TicketHandover({
+    required this.method,
+    this.recipient = '',
+    this.trackingNumber = '',
+    this.note = '',
+    this.sentAt,
+    this.confirmedAt,
+  });
+
+  final HandoverMethod method;
+
+  /// Mobile: the name or email the tickets were transferred to.
+  final String recipient;
+
+  /// Post or courier: the shipment's tracking number.
+  final String trackingNumber;
+  final String note;
+  final DateTime? sentAt;
+
+  /// When the buyer confirmed getting the tickets.
+  final DateTime? confirmedAt;
+
+  bool get confirmed => confirmedAt != null;
+
+  factory TicketHandover.fromMap(Map<String, dynamic> m) => TicketHandover(
+    method: enumByName(
+      HandoverMethod.values,
+      m['method'],
+      HandoverMethod.inPerson,
+    ),
+    recipient: m['recipient'] as String? ?? '',
+    trackingNumber: m['trackingNumber'] as String? ?? '',
+    note: m['note'] as String? ?? '',
+    sentAt: _date(m['sentAt']),
+    confirmedAt: _date(m['confirmedAt']),
+  );
+
+  /// The fields the seller writes (times are the server's).
+  Map<String, dynamic> toMap() => {
+    'method': method.name,
+    'recipient': recipient,
+    'trackingNumber': trackingNumber,
+    'note': note,
+  };
+}
 
 enum DisputeReason { notReceived, invalid, wrongTickets, eventChanged, other }
 

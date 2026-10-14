@@ -9,6 +9,13 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Handy- und Papiertickets: Der Verkäufer gibt die Übergabe an (Übertragung
+  an Name/E-Mail, Post/Kurier mit Sendungsnummer oder persönlich), der
+  Käufer sieht die Angaben, bekommt sie per Mail und bestätigt den Erhalt.
+- Datenauskunft: unter Privatsphäre & Sicherheit alle eigenen Daten als
+  JSON-Datei herunterladen.
+
 ## [1.7.1] – 2026-10-12
 
 - Moderation: open reports again

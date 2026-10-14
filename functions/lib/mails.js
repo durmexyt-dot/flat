@@ -34,10 +34,17 @@ const TEXTS = {
     en: (o) => [`Sold: ${o.event.name}`, [`You sold ${o.quantity} ticket(s) for ${o.event.name} (order ${o.number}).`, o.ticketsReady ? 'The buyer gets the tickets you already uploaded automatically. Nothing else to do.' : o.ticketType === 'eTicket' ? 'Upload the tickets soon, at the latest 24 hours before the event; otherwise the buyer is refunded.' : 'Hand the tickets to the buyer and mark them as sent.'], 'Open sale'],
   },
   ticketsReady: {
-    bs: (o) => [`Tvoje karte su spremne: ${o.event.name}`, [`Karte za narudžbu ${o.number} su stigle. Preuzmi ih u aplikaciji.`], 'Preuzmi karte'],
-    de: (o) => [`Deine Tickets sind da: ${o.event.name}`, [`Die Tickets für Bestellung ${o.number} sind da. Lade sie in der App herunter.`], 'Tickets herunterladen'],
-    en: (o) => [`Your tickets are ready: ${o.event.name}`, [`The tickets for order ${o.number} have arrived. Download them in the app.`], 'Download tickets'],
+    bs: (o) => o.handover
+      ? [`Prodavac je predao karte: ${o.event.name}`, [`Prodavac je predao karte za narudžbu ${o.number}.`, ...handoverLines(o.handover, 'bs'), 'Kad karte budu kod tebe, potvrdi prijem u aplikaciji. Ako ne stignu, prijavi problem.'], 'Otvori narudžbu']
+      : [`Tvoje karte su spremne: ${o.event.name}`, [`Karte za narudžbu ${o.number} su stigle. Preuzmi ih u aplikaciji.`], 'Preuzmi karte'],
+    de: (o) => o.handover
+      ? [`Der Verkäufer hat die Tickets übergeben: ${o.event.name}`, [`Der Verkäufer hat die Tickets für Bestellung ${o.number} übergeben.`, ...handoverLines(o.handover, 'de'), 'Bestätige in der App, sobald du sie hast. Kommen sie nicht an, melde ein Problem.'], 'Bestellung öffnen']
+      : [`Deine Tickets sind da: ${o.event.name}`, [`Die Tickets für Bestellung ${o.number} sind da. Lade sie in der App herunter.`], 'Tickets herunterladen'],
+    en: (o) => o.handover
+      ? [`The seller handed over your tickets: ${o.event.name}`, [`The seller handed over the tickets for order ${o.number}.`, ...handoverLines(o.handover, 'en'), 'Confirm in the app once you have them. If they don’t arrive, report a problem.'], 'Open order']
+      : [`Your tickets are ready: ${o.event.name}`, [`The tickets for order ${o.number} have arrived. Download them in the app.`], 'Download tickets'],
   },
+
   orderRefunded: {
     bs: (o) => [`Povrat novca: ${o.event.name}`, [`Narudžba ${o.number} je otkazana${o.cancelledBy === 'event' ? ' jer je događaj otkazan' : ''}. Novac ti vraćamo u punom iznosu.`], 'Otvori narudžbu'],
     de: (o) => [`Erstattung: ${o.event.name}`, [`Die Bestellung ${o.number} wurde storniert${o.cancelledBy === 'event' ? ', weil das Event abgesagt wurde' : ''}. Du bekommst den vollen Betrag zurück.`], 'Bestellung öffnen'],
@@ -79,6 +86,27 @@ const TEXTS = {
     en: (l) => [`Listing removed: ${l.event.name}`, ['The Stubswap team removed your listing because it breaks the platform rules.', l.reason ? `Reason: ${l.reason}` : ''], 'My listings'],
   },
 };
+
+/** The handover details of mobile or paper tickets, one line each. */
+function handoverLines(h, lang) {
+  const how = {
+    appTransfer: { bs: 'Prenos u aplikaciji organizatora', de: 'Übertragung in der App des Veranstalters', en: 'Transfer in the organizer’s app' },
+    post: { bs: 'Pošta', de: 'Post', en: 'Post' },
+    courier: { bs: 'Kurirska služba', de: 'Kurier', en: 'Courier' },
+    inPerson: { bs: 'Lična predaja', de: 'Persönliche Übergabe', en: 'In person' },
+  }[h.method]?.[lang] ?? h.method;
+  const label = {
+    bs: ['Način', 'Prenijeto na', 'Broj pošiljke', 'Napomena'],
+    de: ['Art', 'Übertragen an', 'Sendungsnummer', 'Hinweis'],
+    en: ['Method', 'Transferred to', 'Tracking number', 'Note'],
+  }[lang];
+  return [
+    `${label[0]}: ${how}`,
+    h.recipient ? `${label[1]}: ${h.recipient}` : '',
+    h.trackingNumber ? `${label[2]}: ${h.trackingNumber}` : '',
+    h.note ? `${label[3]}: ${h.note}` : '',
+  ];
+}
 
 const FOOTER = {
   bs: 'Ovaj e-mail šaljemo jer imaš račun na Stubswap. E-mailove možeš isključiti u Postavke → Obavještenja.',

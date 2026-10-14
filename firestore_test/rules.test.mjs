@@ -236,7 +236,16 @@ test('e-tickets go out by upload; the seller marks mobile tickets sent after pay
   await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent' }));
   await assertSucceeds(payBatch(db('buyer'), { orderId: 'O2', quantitySold: 4, status: 'soldOut' }).commit());
   await assertFails(updateDoc(doc(db('buyer'), 'orders/O2'), { status: 'ticketsSent' }));
-  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  // Only with the handover details.
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', handover: { method: 'post', recipient: '', trackingNumber: '', note: '', sentAt: serverTimestamp() } }));
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', handover: { method: 'appTransfer', recipient: '', trackingNumber: '', note: '', sentAt: serverTimestamp() } }));
+  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O2'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }), handover: { method: 'appTransfer', recipient: 'kupac@test.ba', trackingNumber: '', note: '', sentAt: serverTimestamp() } }));
+  // The buyer confirms getting them, once; nothing else.
+  await assertFails(updateDoc(doc(db('seller'), 'orders/O2'), { 'handover.confirmedAt': serverTimestamp() }));
+  await assertFails(updateDoc(doc(db('buyer'), 'orders/O2'), { 'handover.recipient': 'x', 'handover.confirmedAt': serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(db('buyer'), 'orders/O2'), { 'handover.confirmedAt': serverTimestamp() }));
+  await assertFails(updateDoc(doc(db('buyer'), 'orders/O2'), { 'handover.confirmedAt': serverTimestamp() }));
 });
 
 test('profiles are private', async () => {
@@ -278,7 +287,7 @@ test('the seller can cancel after sending the tickets too', async () => {
   await useMobileTickets();
   await openOrder('O1', { ticketType: 'mobile' });
   await assertSucceeds(payBatch(db('buyer')).commit());
-  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }) }));
+  await assertSucceeds(updateDoc(doc(db('seller'), 'orders/O1'), { status: 'ticketsSent', history: arrayUnion({ status: 'ticketsSent' }), handover: { method: 'appTransfer', recipient: 'kupac@test.ba', trackingNumber: '', note: '', sentAt: serverTimestamp() } }));
   await assertSucceeds(cancelBatch(db('seller')).commit());
 });
 

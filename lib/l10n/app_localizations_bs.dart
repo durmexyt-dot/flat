@@ -10,6 +10,91 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get handoverSection => 'Predaja karata';
+
+  @override
+  String get handoverTitle => 'Kako si predao karte?';
+
+  @override
+  String get handoverSubmit => 'Karte predane';
+
+  @override
+  String get handoverInfoMobile =>
+      'Prenesi karte u aplikaciji organizatora (npr. Eventim, Ticketmaster) na račun kupca i upiši kome si ih prenio. Ovi podaci pomažu ako dođe do problema.';
+
+  @override
+  String get handoverInfoPaper =>
+      'Pošalji karte poštom ili kurirom (s brojem pošiljke ako ga imaš) ili ih predaj lično. Ovi podaci pomažu ako dođe do problema.';
+
+  @override
+  String get handoverAppTransfer => 'Prenos u aplikaciji';
+
+  @override
+  String get handoverPost => 'Pošta';
+
+  @override
+  String get handoverCourier => 'Kurir';
+
+  @override
+  String get handoverInPerson => 'Lično';
+
+  @override
+  String get handoverRecipient => 'Prenijeto na';
+
+  @override
+  String get handoverRecipientInfo =>
+      'Ime ili e-mail računa kupca u aplikaciji organizatora';
+
+  @override
+  String get handoverRecipientMissing => 'Upiši kome si prenio karte';
+
+  @override
+  String get handoverTracking => 'Broj pošiljke';
+
+  @override
+  String get handoverTrackingInfo => 'Neobavezno, ali preporučeno';
+
+  @override
+  String get handoverNote => 'Napomena';
+
+  @override
+  String get handoverNoteInPerson => 'Gdje i kada ste se sreli';
+
+  @override
+  String get handoverSentAt => 'Predano';
+
+  @override
+  String get handoverConfirm => 'Potvrdi prijem';
+
+  @override
+  String get handoverConfirmInfo =>
+      'Kad karte budu kod tebe, potvrdi prijem. Ako ne stignu, prijavi problem.';
+
+  @override
+  String get handoverConfirmed => 'Hvala! Prijem je potvrđen.';
+
+  @override
+  String handoverConfirmedAt(String date) {
+    return 'Kupac je potvrdio prijem $date';
+  }
+
+  @override
+  String get handoverWaiting => 'Kupac još nije potvrdio prijem.';
+
+  @override
+  String get dataExportSection => 'Tvoji podaci';
+
+  @override
+  String get dataExport => 'Preuzmi moje podatke';
+
+  @override
+  String get dataExportInfo =>
+      'Sve što Stubswap čuva o tvom računu (profil, ponude, narudžbe, isplate, upiti, računi) kao JSON datoteka.';
+
+  @override
+  String get dataExportDone => 'Podaci su preuzeti.';
+
+  @override
   String get invoicesTitle => 'Računi';
 
   @override
@@ -2963,7 +3048,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get payNow => 'Plati sada';
 
   @override
-  String get markTicketsSent => 'Označi karte kao poslane';
+  String get markTicketsSent => 'Unesi predaju karata';
 
   @override
   String get ticketsMarkedSent => 'Kupac je obaviješten';

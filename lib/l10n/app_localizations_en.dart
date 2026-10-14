@@ -10,6 +10,92 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get handoverSection => 'Ticket handover';
+
+  @override
+  String get handoverTitle => 'How did you hand over the tickets?';
+
+  @override
+  String get handoverSubmit => 'Tickets handed over';
+
+  @override
+  String get handoverInfoMobile =>
+      'Transfer the tickets in the organizer’s app (e.g. Eventim, Ticketmaster) to the buyer’s account and say to whom. These details help if there is a problem.';
+
+  @override
+  String get handoverInfoPaper =>
+      'Send the tickets by post or courier (with a tracking number if you have one) or hand them over in person. These details help if there is a problem.';
+
+  @override
+  String get handoverAppTransfer => 'Transfer in the app';
+
+  @override
+  String get handoverPost => 'Post';
+
+  @override
+  String get handoverCourier => 'Courier';
+
+  @override
+  String get handoverInPerson => 'In person';
+
+  @override
+  String get handoverRecipient => 'Transferred to';
+
+  @override
+  String get handoverRecipientInfo =>
+      'Name or email of the buyer’s account in the organizer’s app';
+
+  @override
+  String get handoverRecipientMissing =>
+      'Say who you transferred the tickets to';
+
+  @override
+  String get handoverTracking => 'Tracking number';
+
+  @override
+  String get handoverTrackingInfo => 'Optional, but recommended';
+
+  @override
+  String get handoverNote => 'Note';
+
+  @override
+  String get handoverNoteInPerson => 'Where and when you met';
+
+  @override
+  String get handoverSentAt => 'Handed over';
+
+  @override
+  String get handoverConfirm => 'Confirm receipt';
+
+  @override
+  String get handoverConfirmInfo =>
+      'Confirm receipt once you have the tickets. If they don’t arrive, report a problem.';
+
+  @override
+  String get handoverConfirmed => 'Thanks! Receipt confirmed.';
+
+  @override
+  String handoverConfirmedAt(String date) {
+    return 'The buyer confirmed receipt on $date';
+  }
+
+  @override
+  String get handoverWaiting => 'The buyer hasn’t confirmed receipt yet.';
+
+  @override
+  String get dataExportSection => 'Your data';
+
+  @override
+  String get dataExport => 'Download my data';
+
+  @override
+  String get dataExportInfo =>
+      'Everything Stubswap stores about your account (profile, listings, orders, payouts, requests, invoices) as a JSON file.';
+
+  @override
+  String get dataExportDone => 'Data downloaded.';
+
+  @override
   String get invoicesTitle => 'Invoices';
 
   @override
@@ -2967,7 +3053,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payNow => 'Pay now';
 
   @override
-  String get markTicketsSent => 'Mark tickets as sent';
+  String get markTicketsSent => 'Enter the ticket handover';
 
   @override
   String get ticketsMarkedSent => 'The buyer has been notified';

@@ -39,7 +39,11 @@ abstract class CheckoutRepository {
   /// the seller's payout) or cancelled. Throws [SoldOutException].
   Future<void> completePayment(Order order, PaymentOutcome outcome);
 
-  Future<void> markTicketsSent(Order order);
+  /// The seller hands over mobile or paper tickets as [handover] says.
+  Future<void> markTicketsSent(Order order, TicketHandover handover);
+
+  /// The buyer confirms having the mobile or paper tickets.
+  Future<void> confirmReceipt(Order order);
 
   /// The seller cancels a sale before it is completed: the buyer gets the
   /// money back, the tickets go back on sale and the payout is dropped.
@@ -208,9 +212,20 @@ class FirestoreCheckoutRepository implements CheckoutRepository {
   }
 
   @override
-  Future<void> markTicketsSent(Order order) => _order(order.id).update({
-    'status': OrderStatus.ticketsSent.name,
-    'history': FieldValue.arrayUnion([_step(OrderStatus.ticketsSent)]),
+  Future<void> markTicketsSent(Order order, TicketHandover handover) =>
+      _order(order.id).update({
+        'status': OrderStatus.ticketsSent.name,
+        'handover': {
+          ...handover.toMap(),
+          'sentAt': FieldValue.serverTimestamp(),
+        },
+        'history': FieldValue.arrayUnion([_step(OrderStatus.ticketsSent)]),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+  @override
+  Future<void> confirmReceipt(Order order) => _order(order.id).update({
+    'handover.confirmedAt': FieldValue.serverTimestamp(),
     'updatedAt': FieldValue.serverTimestamp(),
   });
 

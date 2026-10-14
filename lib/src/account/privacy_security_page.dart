@@ -10,6 +10,11 @@ import '../data/models.dart';
 import '../data/repositories.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/snack.dart';
+import '../web/save_file.dart';
+import 'data_export.dart';
+
+import 'dart:convert';
+
 import '../ui/site_scaffold.dart';
 
 class PrivacySecurityPage extends ConsumerWidget {
@@ -90,6 +95,8 @@ class PrivacySecurityPage extends ConsumerWidget {
                 ),
             ],
           ),
+          SettingsSectionTitle(l10n.dataExportSection),
+          SettingsGroup(children: [_DataExportTile(user: user)]),
           SettingsSectionTitle(l10n.dangerZone),
           SettingsGroup(
             children: [
@@ -582,6 +589,66 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Downloads everything stored about the account as a JSON file.
+class _DataExportTile extends ConsumerStatefulWidget with FTileMixin {
+  const _DataExportTile({required this.user});
+  final AppUser user;
+
+  @override
+  ConsumerState<_DataExportTile> createState() => _DataExportTileState();
+}
+
+class _DataExportTileState extends ConsumerState<_DataExportTile> {
+  bool _busy = false;
+
+  Future<void> _export() async {
+    final l10n = AppLocalizations.of(context);
+    final user = widget.user;
+    setState(() => _busy = true);
+    try {
+      final data = await ref
+          .read(dataExportRepositoryProvider)
+          .collect(user.uid);
+      final now = DateTime.now();
+      final json = exportJson(
+        data: data,
+        account: {
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': user.displayName,
+          'emailVerified': user.emailVerified,
+          'signInMethods': user.providers,
+        },
+        now: now,
+      );
+      final day = now.toIso8601String().substring(0, 10);
+      final saved = await saveFile(
+        utf8.encode(json),
+        'stubswap-podaci-$day.json',
+        'application/json',
+      );
+      showSnack(saved ? l10n.dataExportDone : l10n.invoiceDownloadUnavailable);
+    } catch (_) {
+      showSnack(l10n.loadError);
+    }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return FTile(
+      prefix: const Icon(FLucideIcons.fileDown),
+      title: Text(l10n.dataExport),
+      subtitle: Text(l10n.dataExportInfo, overflow: TextOverflow.visible),
+      suffix: _busy
+          ? FCircularProgress.loader()
+          : const Icon(FLucideIcons.download),
+      onPress: _busy ? null : _export,
     );
   }
 }

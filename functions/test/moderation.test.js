@@ -248,3 +248,16 @@ test('the sale email says nothing is left to do when the tickets are already upl
   const later = (await db.doc('mail/o2-ticketSold').get()).data();
   assert.match(later.message.text, /spätestens 24 Stunden/);
 });
+
+test('mobile tickets: the buyer gets the handover details by email', async () => {
+  const before = order({ ticketType: 'mobile' });
+  const after = order({
+    ticketType: 'mobile', status: 'ticketsSent',
+    handover: { method: 'appTransfer', recipient: 'kupac@test.ba', trackingNumber: '', note: 'Eventim app', sentAt: ts(NOW) },
+  });
+  await moderation.orderChanged(db, 'o1', before, after, { appUrl: APP, now: NOW });
+  const m = (await mails()).find((x) => x.kind === 'ticketsReady');
+  assert.match(m.message.subject, /Verkäufer hat die Tickets übergeben/);
+  assert.match(m.message.text, /Übertragen an: kupac@test.ba/);
+  assert.match(m.message.text, /Hinweis: Eventim app/);
+});

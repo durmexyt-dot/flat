@@ -10,6 +10,93 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get handoverSection => 'Übergabe der Tickets';
+
+  @override
+  String get handoverTitle => 'Wie hast du die Tickets übergeben?';
+
+  @override
+  String get handoverSubmit => 'Tickets übergeben';
+
+  @override
+  String get handoverInfoMobile =>
+      'Übertrage die Tickets in der App des Veranstalters (z. B. Eventim, Ticketmaster) auf das Konto des Käufers und gib an, an wen. Die Angaben helfen, falls es ein Problem gibt.';
+
+  @override
+  String get handoverInfoPaper =>
+      'Schick die Tickets per Post oder Kurier (mit Sendungsnummer, wenn vorhanden) oder übergib sie persönlich. Die Angaben helfen, falls es ein Problem gibt.';
+
+  @override
+  String get handoverAppTransfer => 'Übertragung in der App';
+
+  @override
+  String get handoverPost => 'Post';
+
+  @override
+  String get handoverCourier => 'Kurier';
+
+  @override
+  String get handoverInPerson => 'Persönlich';
+
+  @override
+  String get handoverRecipient => 'Übertragen an';
+
+  @override
+  String get handoverRecipientInfo =>
+      'Name oder E-Mail des Käuferkontos in der Veranstalter-App';
+
+  @override
+  String get handoverRecipientMissing =>
+      'Gib an, an wen du die Tickets übertragen hast';
+
+  @override
+  String get handoverTracking => 'Sendungsnummer';
+
+  @override
+  String get handoverTrackingInfo => 'Optional, aber empfohlen';
+
+  @override
+  String get handoverNote => 'Hinweis';
+
+  @override
+  String get handoverNoteInPerson => 'Wo und wann ihr euch getroffen habt';
+
+  @override
+  String get handoverSentAt => 'Übergeben';
+
+  @override
+  String get handoverConfirm => 'Erhalt bestätigen';
+
+  @override
+  String get handoverConfirmInfo =>
+      'Bestätige den Erhalt, sobald du die Tickets hast. Kommen sie nicht an, melde ein Problem.';
+
+  @override
+  String get handoverConfirmed => 'Danke! Erhalt bestätigt.';
+
+  @override
+  String handoverConfirmedAt(String date) {
+    return 'Der Käufer hat den Erhalt am $date bestätigt';
+  }
+
+  @override
+  String get handoverWaiting =>
+      'Der Käufer hat den Erhalt noch nicht bestätigt.';
+
+  @override
+  String get dataExportSection => 'Deine Daten';
+
+  @override
+  String get dataExport => 'Meine Daten herunterladen';
+
+  @override
+  String get dataExportInfo =>
+      'Alles, was Stubswap zu deinem Konto speichert (Profil, Angebote, Bestellungen, Auszahlungen, Anfragen, Rechnungen), als JSON-Datei.';
+
+  @override
+  String get dataExportDone => 'Daten heruntergeladen.';
+
+  @override
   String get invoicesTitle => 'Rechnungen';
 
   @override
@@ -2989,7 +3076,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get payNow => 'Jetzt bezahlen';
 
   @override
-  String get markTicketsSent => 'Tickets als übertragen markieren';
+  String get markTicketsSent => 'Übergabe der Tickets eintragen';
 
   @override
   String get ticketsMarkedSent => 'Der Käufer wurde informiert';

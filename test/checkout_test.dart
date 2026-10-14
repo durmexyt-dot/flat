@@ -7,6 +7,7 @@ import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flat/src/ui/ticket.dart';
+import 'package:flutter/widgets.dart' show EditableText;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
 
@@ -249,7 +250,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Pošalji karte kupcu što prije.'), findsOneWidget);
 
-    await tapVisible(tester, find.text('Označi karte kao poslane'));
+    // With the handover details: transferred to the buyer's account.
+    await tapVisible(tester, find.text('Unesi predaju karata'));
+    await tester.enterText(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Prenijeto na'),
+          matching: find.byType(FTextFormField),
+        ),
+        matching: find.byType(EditableText),
+      ),
+      'kupac@test.ba',
+    );
+    await tester.tap(find.text('Karte predane'));
+    await tester.pumpAndSettle();
     final sales = await tester.runAsync(() => market.watchSales('1').first);
     expect(sales!.single.status, OrderStatus.ticketsSent);
     await tester.pumpAndSettle();

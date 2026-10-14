@@ -16,6 +16,7 @@ import '../payments/test_payment_gateway.dart';
 import '../settings/settings_widgets.dart';
 import '../support/contact_support_page.dart';
 import '../invoices/invoice_pages.dart' show OrderInvoices;
+import 'handover_widgets.dart';
 import '../ui/app_dialog.dart';
 import '../ui/async_view.dart';
 import '../ui/format.dart';
@@ -125,6 +126,10 @@ class OrderDetailPage extends ConsumerWidget {
                     OrderFilesSection.applies(order)) ...[
                   SettingsSectionTitle(l10n.deliveryBuyerSection),
                   OrderFilesSection(order: order),
+                ],
+                if (order.handover != null) ...[
+                  SettingsSectionTitle(l10n.handoverSection),
+                  HandoverCard(order: order, isBuyer: buyer),
                 ],
                 if (order.dispute case final dispute?) ...[
                   SettingsSectionTitle(l10n.disputeBoxTitle),
@@ -253,21 +258,16 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
               child: SubmitButton(
                 label: buyerPays ? l10n.payNow : l10n.markTicketsSent,
                 loading: _busy,
-                onPressed: () => _run(() async {
-                  if (buyerPays) {
-                    final outcome = await payOrder(context, ref, order);
-                    if (outcome is PaymentSucceeded && context.mounted) {
-                      showSnack(l10n.paymentSucceeded);
-                    }
-                  } else {
-                    await ref
-                        .read(checkoutRepositoryProvider)
-                        .markTicketsSent(order);
-                    if (context.mounted) {
-                      showSnack(l10n.ticketsMarkedSent);
-                    }
-                  }
-                }),
+                // Mobile and paper tickets: how they went to the buyer (the
+                // dialog shows its own progress, so no spinner behind it).
+                onPressed: buyerPays
+                    ? () => _run(() async {
+                        final outcome = await payOrder(context, ref, order);
+                        if (outcome is PaymentSucceeded && context.mounted) {
+                          showSnack(l10n.paymentSucceeded);
+                        }
+                      })
+                    : () => showHandoverDialog(context, ref, order),
               ),
             ),
           if (sellerCancels)
