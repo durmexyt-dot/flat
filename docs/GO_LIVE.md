@@ -59,9 +59,8 @@ Nutzereingaben ohnehin kaum möglich.
      und `localhost`; alles andere entfernen
 4. 🔴 **App Check** (Schutz gegen Bots und Skripte, die die API direkt
    aufrufen): in der App eingebaut (`lib/src/config/app_check.dart`).
-   Prod hat seinen Fraud-Defense-Schlüssel (Web, ohne Challenge,
-   Mindestscore 0,5). Staging: eigenen Schlüssel im Projekt
-   `stubswap-eda59` anlegen und in `_siteKeyStaging` eintragen. Erst die Messwerte in der
+   Staging und Prod haben je einen eigenen Fraud-Defense-Schlüssel aus
+   ihrem Projekt (Web, ohne Challenge, Mindestscore 0,5). Erst die Messwerte in der
    Konsole beobachten, dann Firestore, Storage, Functions und
    Authentication „erzwingen“. Vorher für Browser-Tests einen Debug-Token
    registrieren (`?appCheckDebug=<token>` auf localhost); die
@@ -94,7 +93,7 @@ Moderation für Admin + Support, Rechnungen der Plattform mit CSV-Export.
 
 1. ✅ **Mobile- und Papiertickets**: Übergabeangaben (Transfer an Name/E-Mail,
    Sendungsnummer) statt nur „gesendet“; Bestätigung durch den Käufer.
-2. ✅ **App Check** eingebaut (Prod-Schlüssel da); Staging-Schlüssel fehlt noch, siehe 2.4.
+2. ✅ **App Check** eingebaut (Staging und Prod), noch nicht erzwungen, siehe 2.4.
 3. **Einstellungen ohne Funktion** (Preisalarme, Event-Erinnerungen,
    Newsletter) bauen oder ausblenden.
 4. ✅ **Datenauskunft (DSGVO/ZZLP)**: eigene Daten exportieren.
