@@ -17,7 +17,7 @@ die nächste Version.
   JSON-Datei herunterladen.
 
 ### Sicherheit
-- Firebase App Check mit reCAPTCHA Enterprise (Fraud Defense) auf Staging:
+- Firebase App Check mit reCAPTCHA Enterprise (Fraud Defense):
   Anfragen an Firestore, Storage und Functions tragen einen Nachweis, dass
   sie aus der App kommen. Noch nicht erzwungen.
 
