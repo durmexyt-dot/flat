@@ -17,6 +17,7 @@ import '../ui/snack.dart';
 import 'contact_support_page.dart';
 import 'support_repository.dart';
 import 'support_widgets.dart';
+import '../ui/tokens.dart';
 
 /// One support request: its details, the conversation and a composer.
 /// Users see their own requests; the team sees all of them.
@@ -60,11 +61,7 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
     if (count > _messageCount && _messageCount > 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scroll.hasClients) {
-          _scroll.animateTo(
-            0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
+          _scroll.animateTo(0, duration: Motion.slow, curve: Motion.ease);
         }
       });
     }
@@ -179,7 +176,7 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
     final items = <Widget>[
       if (!t.isClosed)
         Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 4),
+          padding: const EdgeInsets.only(top: Space.md, bottom: Space.xs),
           child: Center(
             child: FButton(
               variant: FButtonVariant.ghost,
@@ -210,7 +207,7 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
       if (messages.isLoading && !messages.hasValue)
         const Shimmer(
           child: Column(
-            spacing: 12,
+            spacing: Space.lg,
             children: [
               Align(
                 alignment: Alignment.centerRight,
@@ -224,7 +221,7 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
           ),
         ),
       Padding(
-        padding: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.only(bottom: Space.xl),
         child: _TicketHeader(ticket: t, staffView: asStaff),
       ),
     ];
@@ -236,13 +233,18 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
           child: ListView.builder(
             controller: _scroll,
             reverse: true,
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.md,
+              Space.xl,
+              Space.md,
+            ),
             itemCount: items.length,
             itemBuilder: (_, i) => items[i],
           ),
         ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           child: t.isClosed
               ? _ClosedBanner(
                   key: const ValueKey('closed'),
@@ -271,9 +273,7 @@ class _TicketHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final t = ticket;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     final value = theme.typography.body.sm.copyWith(
       color: theme.colors.foreground,
     );
@@ -286,10 +286,10 @@ class _TicketHeader extends StatelessWidget {
     ];
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 8,
+          spacing: Space.md,
           children: [
             Row(
               children: [
@@ -297,7 +297,7 @@ class _TicketHeader extends StatelessWidget {
                   child: Text(
                     t.number,
                     style: theme.typography.body.lg.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                       color: theme.colors.foreground,
                     ),
                   ),
@@ -315,7 +315,7 @@ class _TicketHeader extends StatelessWidget {
             if (details.isNotEmpty) ...[
               const FDivider(
                 style: .delta(
-                  padding: .value(EdgeInsets.symmetric(vertical: 4)),
+                  padding: .value(EdgeInsets.symmetric(vertical: Space.xs)),
                 ),
               ),
               for (final (label, text) in details)
@@ -337,7 +337,7 @@ class _TicketHeader extends StatelessWidget {
                 subtitle: t.orderId.isEmpty
                     ? null
                     : Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.only(top: Space.md),
                         child: Align(
                           alignment: AlignmentDirectional.centerStart,
                           child: FButton(
@@ -379,7 +379,7 @@ class _Bubble extends StatelessWidget {
     final m = message;
     final radius = theme.style.borderRadius.lg;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: Space.lg),
       child: Align(
         alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
         child: LayoutBuilder(
@@ -394,8 +394,8 @@ class _Bubble extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 4,
+                    horizontal: Space.xs,
+                    vertical: Space.xs,
                   ),
                   child: Text(
                     [
@@ -403,9 +403,7 @@ class _Bubble extends StatelessWidget {
                       if (m.createdAt != null)
                         supportShortTime(context, m.createdAt),
                     ].join(' · '),
-                    style: theme.typography.body.xs.copyWith(
-                      color: theme.colors.mutedForeground,
-                    ),
+                    style: theme.mutedSmallText,
                   ),
                 ),
                 DecoratedBox(
@@ -424,7 +422,7 @@ class _Bubble extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
-                      spacing: 8,
+                      spacing: Space.md,
                       children: [
                         if (m.text.isNotEmpty)
                           SelectableText(
@@ -435,8 +433,8 @@ class _Bubble extends StatelessWidget {
                           ),
                         if (m.images.isNotEmpty)
                           Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                            spacing: Space.md,
+                            runSpacing: Space.md,
                             children: [
                               for (final img in m.images)
                                 SupportImageThumb(data: img, size: 96),
@@ -482,34 +480,27 @@ class _ClosedBanner extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          padding: const EdgeInsets.fromLTRB(
+            Space.xl,
+            Space.lg,
+            Space.xl,
+            Space.lg,
+          ),
           child: Row(
             children: [
               Icon(FLucideIcons.lock, color: theme.colors.mutedForeground),
-              const SizedBox(width: 12),
+              const SizedBox(width: Space.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.supportClosed,
-                      style: theme.typography.body.md.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
-                    ),
-                    if (by != null)
-                      Text(
-                        by,
-                        style: theme.typography.body.sm.copyWith(
-                          color: theme.colors.mutedForeground,
-                        ),
-                      ),
+                    Text(l10n.supportClosed, style: theme.titleText),
+                    if (by != null) Text(by, style: theme.mutedText),
                   ],
                 ),
               ),
               if (!staffView) ...[
-                const SizedBox(width: 12),
+                const SizedBox(width: Space.lg),
                 FButton(
                   variant: FButtonVariant.outline,
                   size: FButtonSizeVariant.sm,
@@ -533,10 +524,10 @@ class _TicketSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Shimmer(
     child: Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(Space.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 16,
+        spacing: Space.xl,
         children: [
           SkeletonBox(height: 96, radius: 12),
           Align(

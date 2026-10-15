@@ -11,6 +11,7 @@ import '../ui/format.dart';
 import '../ui/snack.dart';
 import '../web/open_url.dart';
 import '../web/pick_file.dart';
+import '../ui/tokens.dart';
 
 export '../web/pick_file.dart' show PickedFile;
 
@@ -63,7 +64,7 @@ String serverErrorText(AppLocalizations l10n, Object error) => switch (error) {
 class SalesAwaitingTicketsAlert extends ConsumerWidget {
   const SalesAwaitingTicketsAlert({
     super.key,
-    this.padding = const EdgeInsets.fromLTRB(16, 8, 16, 0),
+    this.padding = const EdgeInsets.fromLTRB(Space.xl, Space.md, Space.xl, 0),
   });
 
   final EdgeInsetsGeometry padding;
@@ -75,7 +76,7 @@ class SalesAwaitingTicketsAlert extends ConsumerWidget {
       ..sort((a, b) => a.deliveryDeadline.compareTo(b.deliveryDeadline));
     final missing = waiting.fold(0, (sum, o) => sum + o.ticketsMissing);
     return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
+      duration: Motion.normal,
       alignment: Alignment.topCenter,
       child: waiting.isEmpty
           ? const SizedBox(width: double.infinity)
@@ -93,7 +94,7 @@ class SalesAwaitingTicketsAlert extends ConsumerWidget {
                         formatDateTime(context, waiting.first.deliveryDeadline),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Space.md),
                     FButton(
                       variant: FButtonVariant.outline,
                       size: FButtonSizeVariant.sm,
@@ -137,34 +138,34 @@ class ListingMissingTickets extends ConsumerWidget {
         : null;
     final show = files != null && ticketsIn(files) < listing.quantity;
     return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
+      duration: Motion.normal,
       alignment: Alignment.topCenter,
       child: !show
           ? const SizedBox(width: double.infinity)
           : Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: Space.sm),
               child: FTappable(
                 semanticsLabel: l10n.deliveryUploadAction,
                 onPress: () => context.push('/listing/${listing.id}/tickets'),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 6,
+                    horizontal: Space.xs,
+                    vertical: Space.sm,
                   ),
                   child: Row(
                     children: [
                       Icon(
                         FLucideIcons.fileWarning,
-                        size: 16,
+                        size: IconSizes.sm,
                         color: theme.colors.destructive,
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: Space.sm),
                       Expanded(
                         child: Text(
                           l10n.deliveryMissingBadge,
                           style: theme.typography.body.sm.copyWith(
                             color: theme.colors.destructive,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeights.semibold,
                           ),
                         ),
                       ),
@@ -177,7 +178,7 @@ class ListingMissingTickets extends ConsumerWidget {
                       ),
                       Icon(
                         FLucideIcons.chevronRight,
-                        size: 16,
+                        size: IconSizes.sm,
                         color: theme.colors.mutedForeground,
                       ),
                     ],
@@ -255,8 +256,11 @@ class _OrderFilesSectionState extends ConsumerState<OrderFilesSection> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(l10n.deliveryDownload),
-                            const SizedBox(width: 6),
-                            const Icon(FLucideIcons.download, size: 16),
+                            const SizedBox(width: Space.sm),
+                            const Icon(
+                              FLucideIcons.download,
+                              size: IconSizes.sm,
+                            ),
                           ],
                         ),
                   onPress: _opening == null ? () => _download(f) : null,
@@ -264,7 +268,7 @@ class _OrderFilesSectionState extends ConsumerState<OrderFilesSection> {
             ],
           ),
         if (waiting) ...[
-          if (files.isNotEmpty) const SizedBox(height: 12),
+          if (files.isNotEmpty) const SizedBox(height: Space.lg),
           FAlert(
             icon: const Icon(FLucideIcons.clock),
             title: Text(l10n.deliveryBuyerSection),

@@ -26,6 +26,7 @@ import '../ui/snack.dart';
 import 'city_picker.dart';
 import 'event_row.dart';
 import 'home_sections.dart';
+import '../ui/tokens.dart';
 
 /// Event discovery: filters by city and type, rows of recently viewed,
 /// popular, recommended and nearby events, popular categories and all
@@ -105,7 +106,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     Widget padded(Widget child) => wide
         ? child
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: Space.xl),
             child: child,
           );
 
@@ -131,14 +132,19 @@ class _HomePageState extends ConsumerState<HomePage> {
         },
         child: ListView(
           padding: wide
-              ? const EdgeInsets.fromLTRB(16, 32, 16, 32)
-              : const EdgeInsets.only(top: 8),
+              ? const EdgeInsets.fromLTRB(
+                  Space.xl,
+                  Space.x5l,
+                  Space.xl,
+                  Space.x5l,
+                )
+              : const EdgeInsets.only(top: Space.md),
           children: [
             padded(wide ? _wideIntro(context) : _narrowIntro(context)),
-            const SizedBox(height: 16),
+            const SizedBox(height: Space.xl),
             padded(_filters(context, types, type)),
             if (ref.watch(authStateProvider).value == null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               padded(_guestBanner(context)),
             ],
             SizedBox(height: wide ? 40 : 28),
@@ -147,7 +153,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               onRetry: () => ref.invalidate(eventsProvider),
               loading: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 32,
+                spacing: Space.x5l,
                 children: [
                   for (var i = 0; i < 2; i++) SkeletonEventRow(gutter: gutter),
                 ],
@@ -199,7 +205,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             suffix: const Icon(FLucideIcons.chevronDown),
             onPress: () => showCityPicker(context),
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: Motion.quick,
               child: Text(
                 chosen?.name ?? l10n.homeCityPick,
                 key: ValueKey(chosen?.name),
@@ -214,9 +220,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             child: Text(
               l10n.homeCityFromLocation,
               overflow: TextOverflow.ellipsis,
-              style: theme.typography.body.xs.copyWith(
-                color: theme.colors.mutedForeground,
-              ),
+              style: theme.mutedSmallText,
             ),
           ),
         ],
@@ -241,7 +245,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             constraints: const BoxConstraints(maxWidth: 320),
             child: city,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: Space.xl),
           Expanded(child: typeBar),
         ],
       );
@@ -250,7 +254,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Align(alignment: Alignment.centerLeft, child: city),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         typeBar,
       ],
     );
@@ -287,7 +291,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             HomeSectionHeader(title: l10n.homeSearchResults),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             if (found.isEmpty)
               EmptyState(
                 icon: FLucideIcons.searchX,
@@ -367,9 +371,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         for (final s in sections.rows) ...[row(s), gap],
         if (sections.popularCategories.isNotEmpty) ...[
           padded(HomeSectionHeader(title: l10n.homePopularCategories)),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           for (final (i, s) in sections.popularCategories.indexed) ...[
-            if (i > 0) const SizedBox(height: 28),
+            if (i > 0) const SizedBox(height: Space.x4l),
             row(s, small: true),
           ],
           gap,
@@ -381,7 +385,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 : l10n.homeAllEventsOfType(categoryName(l10n, type)),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         padded(
           EventGrid(
             events: sections.all,
@@ -442,15 +446,15 @@ class _HomePageState extends ConsumerState<HomePage> {
             color: theme.colors.mutedForeground,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Space.xs),
         Text(
           l10n.homeHeadline,
           style: theme.typography.display.xl.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeights.bold,
             color: theme.colors.foreground,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         _searchBar(context),
       ],
     );
@@ -462,7 +466,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final type = context.theme.typography;
     final colors = context.theme.colors;
     return Container(
-      padding: const EdgeInsets.fromLTRB(40, 40, 40, 32),
+      padding: const EdgeInsets.fromLTRB(40, 40, 40, Space.x5l),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppStyle.of(context).cardRadius),
         color: colors.muted,
@@ -475,18 +479,18 @@ class _HomePageState extends ConsumerState<HomePage> {
             child: Text(
               l10n.heroTitle,
               style: type.display.xl3.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeights.heavy,
                 color: colors.foreground,
                 height: 1.1,
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           Text(
             l10n.heroSubtitle,
             style: type.body.lg.copyWith(color: colors.mutedForeground),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: Space.x4l),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
             child: _searchBar(context),
@@ -513,15 +517,20 @@ class _HomePageState extends ConsumerState<HomePage> {
     final colors = context.theme.colors;
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+        padding: const EdgeInsets.fromLTRB(
+          Space.xl,
+          Space.lg,
+          Space.lg,
+          Space.lg,
+        ),
         child: Row(
           children: [
             Icon(
               FLucideIcons.lockOpen,
-              size: 20,
+              size: IconSizes.lg,
               color: colors.mutedForeground,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Space.lg),
             Expanded(
               child: Text(
                 l10n.guestSignInPrompt,
@@ -530,7 +539,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Space.md),
             FButton(
               variant: FButtonVariant.outline,
               size: FButtonSizeVariant.sm,

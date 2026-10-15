@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'tokens.dart';
+
 enum TimelineState { done, current, upcoming, failed }
 
 @immutable
@@ -95,7 +97,7 @@ class _StatusTimelineState extends State<StatusTimeline>
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Space.md),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5, bottom: 18),
@@ -112,8 +114,8 @@ class _StatusTimelineState extends State<StatusTimeline>
                               _ => theme.colorScheme.onSurface,
                             },
                             fontWeight: states[i] == TimelineState.current
-                                ? FontWeight.w800
-                                : FontWeight.w500,
+                                ? FontWeights.heavy
+                                : FontWeights.medium,
                           ),
                         ),
                         if (widget.steps[i].detail case final detail?)

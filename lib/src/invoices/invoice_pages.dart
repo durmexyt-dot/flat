@@ -18,6 +18,7 @@ import '../ui/snack.dart';
 import '../web/save_file.dart';
 import 'invoice_pdf.dart';
 import 'invoice_texts.dart';
+import '../ui/tokens.dart';
 
 /// Downloads [inv] as a PDF.
 Future<void> downloadInvoice(BuildContext context, PlatformInvoice inv) async {
@@ -92,15 +93,10 @@ class MyInvoicesPage extends ConsumerWidget {
                 ),
               )
             : ListView(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+                padding: Insets.page,
                 children: [
-                  Text(
-                    l10n.invoicesInfo,
-                    style: context.theme.typography.body.sm.copyWith(
-                      color: context.theme.colors.mutedForeground,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
+                  Text(l10n.invoicesInfo, style: context.theme.mutedText),
+                  const SizedBox(height: Space.lg),
                   SettingsGroup(
                     children: [
                       for (final i in invoices) InvoiceTile(invoice: i),
@@ -174,16 +170,14 @@ class _InvoiceView extends StatelessWidget {
     final theme = context.theme;
     final inv = invoice;
     final c = inv.company;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     final strong = theme.typography.body.md.copyWith(
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeights.bold,
       color: theme.colors.foreground,
     );
     String m(int minor) => formatMoney(context, minor, inv.currency);
     Widget line(String label, String value, {bool bold = false}) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: Space.xs),
       child: Row(
         children: [
           Expanded(child: Text(label, style: bold ? strong : null)),
@@ -192,11 +186,11 @@ class _InvoiceView extends StatelessWidget {
       ),
     );
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      padding: Insets.page,
       children: [
         FCard(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(Space.xxl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -237,7 +231,7 @@ class _InvoiceView extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: Space.xxl),
                 Text(l10n.invoiceRecipient, style: muted),
                 Text(
                   inv.recipientName.isEmpty
@@ -249,10 +243,10 @@ class _InvoiceView extends StatelessWidget {
                     inv.recipientEmail.isNotEmpty)
                   Text(inv.recipientEmail, style: muted),
                 if (inv.isCreditNote) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                   Text(l10n.invoiceCreditFor(inv.creditFor)),
                 ],
-                const SizedBox(height: 20),
+                const SizedBox(height: Space.xxl),
                 Text(invoiceLine(l10n, inv), style: strong),
                 Text(
                   '${l10n.invoiceOrder} ${inv.orderNumber}'
@@ -273,7 +267,7 @@ class _InvoiceView extends StatelessWidget {
                 ),
                 const FDivider(),
                 line(l10n.invoiceGross, m(inv.grossMinor), bold: true),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 Text(
                   inv.forBuyer ? l10n.invoicePaidBuyer : l10n.invoicePaidSeller,
                   style: muted,
@@ -282,7 +276,7 @@ class _InvoiceView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         FButton(
           onPress: () => downloadInvoice(context, inv),
           prefix: const Icon(FLucideIcons.download),
@@ -377,7 +371,7 @@ class _AdminInvoicesPageState extends ConsumerState<AdminInvoicesPage> {
             // shown in the list.
             final currency = invoices.firstOrNull?.currency ?? 'BAM';
             return ListView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+              padding: Insets.page,
               children: [
                 Row(
                   children: [
@@ -392,7 +386,7 @@ class _AdminInvoicesPageState extends ConsumerState<AdminInvoicesPage> {
                         label,
                         textAlign: TextAlign.center,
                         style: theme.typography.body.lg.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeights.semibold,
                           color: theme.colors.foreground,
                         ),
                       ),
@@ -405,20 +399,18 @@ class _AdminInvoicesPageState extends ConsumerState<AdminInvoicesPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: Space.xl),
                 FCard(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Space.xl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
                           l10n.invoicesCount(invoices.length),
-                          style: theme.typography.body.sm.copyWith(
-                            color: theme.colors.mutedForeground,
-                          ),
+                          style: theme.mutedText,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Space.md),
                         _Total(
                           l10n.invoiceNet,
                           formatMoney(
@@ -448,7 +440,7 @@ class _AdminInvoicesPageState extends ConsumerState<AdminInvoicesPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 FButton(
                   variant: FButtonVariant.outline,
                   onPress: invoices.isEmpty
@@ -467,12 +459,7 @@ class _AdminInvoicesPageState extends ConsumerState<AdminInvoicesPage> {
                 ),
                 SettingsSectionTitle(l10n.invoicesTitle),
                 if (invoices.isEmpty)
-                  Text(
-                    l10n.invoicesNoneInMonth,
-                    style: theme.typography.body.sm.copyWith(
-                      color: theme.colors.mutedForeground,
-                    ),
-                  )
+                  Text(l10n.invoicesNoneInMonth, style: theme.mutedText)
                 else
                   SettingsGroup(
                     children: [
@@ -500,7 +487,7 @@ class _Total extends StatelessWidget {
     final theme = context.theme;
     final style = strong
         ? theme.typography.body.lg.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeights.bold,
             color: theme.colors.foreground,
           )
         : theme.typography.body.sm.copyWith(color: theme.colors.foreground);

@@ -3,6 +3,7 @@ import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
+import '../ui/tokens.dart';
 
 String categoryName(AppLocalizations l10n, EventCategory c) => switch (c) {
   EventCategory.concerts => l10n.catConcerts,
@@ -48,9 +49,9 @@ StatusTone listingTone(ListingStatus s) => switch (s) {
 
 /// Signal color of a status tone.
 Color statusToneColor(StatusTone tone, ColorScheme c) => switch (tone) {
-  StatusTone.positive => const Color(0xFF2E9E5B),
+  StatusTone.positive => FixedColors.positive,
   StatusTone.active => c.primary,
-  StatusTone.waiting => const Color(0xFFE0A100),
+  StatusTone.waiting => FixedColors.waiting,
   StatusTone.neutral => c.outline,
   StatusTone.negative => c.error,
 };
@@ -72,7 +73,7 @@ class StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
+            duration: Motion.slow,
             width: 7,
             height: 7,
             decoration: BoxDecoration(
@@ -80,7 +81,7 @@ class StatusChip extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: Space.sm),
           Text(label),
         ],
       ),

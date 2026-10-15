@@ -14,31 +14,15 @@ import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
+import 'tokens.dart';
 
-/// From this width on, pages are laid out like a website: header with
-/// navigation, account drawer, wider content.
-const wideLayoutBreakpoint = 900.0;
+export 'tokens.dart' show SiteWidth, wideLayoutBreakpoint;
 
 bool isWideLayout(BuildContext context) =>
     MediaQuery.sizeOf(context).width >= wideLayoutBreakpoint;
 
 /// The page's back button, phone header or wide title row (for tests).
 const backButtonKey = ValueKey('back');
-
-/// Content widths on wide screens.
-abstract final class SiteWidth {
-  /// The page: header, lists and grids.
-  static const wide = 1200.0;
-
-  /// No limit inside the page.
-  static const full = double.infinity;
-
-  /// Detail pages.
-  static const detail = 900.0;
-
-  /// Forms and settings.
-  static const form = 760.0;
-}
 
 /// A page: an app bar on phones; on wide screens the site header, a page
 /// title and centered content.
@@ -123,20 +107,20 @@ class SiteScaffold extends StatelessWidget {
                     onPress: () => context.pop(),
                     child: const Icon(FLucideIcons.arrowLeft),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: Space.md),
                 ],
                 Expanded(
                   child: Text(
                     title,
                     style: theme.typography.display.xl2.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                       color: theme.colors.foreground,
                     ),
                   ),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: 8,
+                  spacing: Space.md,
                   children: actions,
                 ),
               ],
@@ -171,7 +155,7 @@ class SiteScaffold extends StatelessWidget {
                   // Every page shares the header's width.
                   constraints: const BoxConstraints(maxWidth: SiteWidth.wide),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: Space.xl),
                     child: accountNav
                         ? Row(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -184,7 +168,7 @@ class SiteScaffold extends StatelessWidget {
                                   child: AccountSidebar(),
                                 ),
                               ),
-                              const SizedBox(width: 32),
+                              const SizedBox(width: Space.x5l),
                               Expanded(child: content),
                             ],
                           )
@@ -346,7 +330,7 @@ class SiteHeader extends ConsumerWidget {
             color: active
                 ? theme.colors.foreground
                 : theme.colors.mutedForeground,
-            fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+            fontWeight: active ? FontWeights.semibold : FontWeights.medium,
           ),
           overflow: TextOverflow.ellipsis,
         ),
@@ -370,19 +354,19 @@ class SiteHeader extends ConsumerWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: SiteWidth.wide),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: Space.xl),
               child: Row(
-                spacing: 4,
+                spacing: Space.xs,
                 children: [
                   FTappable(
                     semanticsLabel: l10n.appTitle,
                     onPress: () => context.go('/'),
                     child: const Padding(
-                      padding: EdgeInsets.all(6),
+                      padding: EdgeInsets.all(Space.sm),
                       child: BrandHeader(markSize: 32, wordmarkHeight: 22),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: Space.xxl),
                   link(l10n.navEvents, '/'),
                   // Team accounts don't buy or sell.
                   if (!staff) ...[
@@ -420,7 +404,7 @@ class SiteHeader extends ConsumerWidget {
                           semanticsLabel: l10n.openAccountMenu,
                           onPress: () => Scaffold.of(context).openEndDrawer(),
                           child: Padding(
-                            padding: const EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(Space.xs),
                             child: Row(
                               children: [
                                 AccountBadge(
@@ -435,10 +419,10 @@ class SiteHeader extends ConsumerWidget {
                                     hero: false,
                                   ),
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: Space.xs),
                                 Icon(
                                   FLucideIcons.chevronDown,
-                                  size: 16,
+                                  size: IconSizes.sm,
                                   color: theme.colors.mutedForeground,
                                 ),
                               ],

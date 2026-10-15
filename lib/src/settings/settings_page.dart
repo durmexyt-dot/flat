@@ -20,6 +20,7 @@ import '../ui/site_scaffold.dart';
 import 'appearance_page.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
+import '../ui/tokens.dart';
 
 /// Shown in the about dialog; keep in sync with pubspec.yaml.
 
@@ -64,7 +65,9 @@ class SettingsPage extends ConsumerWidget {
     final sections = <Widget>[
       // Sellers: sold e-tickets still to upload.
       if (user != null && !isStaff)
-        const SalesAwaitingTicketsAlert(padding: EdgeInsets.only(top: 16)),
+        const SalesAwaitingTicketsAlert(
+          padding: EdgeInsets.only(top: Space.xl),
+        ),
       // Team accounts: their work comes first.
       if (isStaff) ...[
         SettingsSectionTitle(l10n.adminTeamSection),
@@ -234,14 +237,14 @@ class SettingsPage extends ConsumerWidget {
                   ? null
                   : Icon(
                       FLucideIcons.circleAlert,
-                      size: 18,
+                      size: IconSizes.md,
                       color: theme.colors.destructive,
                     ),
               onTap: () => context.push('/settings/privacy'),
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: Space.x3l),
         SettingsGroup(
           children: [
             FTile(
@@ -270,14 +273,19 @@ class SettingsPage extends ConsumerWidget {
             // Website account page: profile card, then the settings that
             // aren't in the sidebar.
             ? SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 48),
+                padding: const EdgeInsets.fromLTRB(
+                  Space.xl,
+                  Space.md,
+                  Space.xl,
+                  48,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (user != null)
                       const FCard(
                         child: Padding(
-                          padding: EdgeInsets.all(24),
+                          padding: EdgeInsets.all(Space.x3l),
                           child: ProfileHeader(horizontal: true),
                         ),
                       )
@@ -289,7 +297,7 @@ class SettingsPage extends ConsumerWidget {
                 ),
               )
             : ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                padding: Insets.pageList,
                 children: [?header, ...sections],
               ),
       ),
@@ -313,16 +321,11 @@ void _showAbout(BuildContext context) {
         Row(
           children: [
             const BrandMark(size: 48),
-            const SizedBox(width: 12),
-            Text(
-              AppInfo.label,
-              style: context.theme.typography.body.sm.copyWith(
-                color: context.theme.colors.mutedForeground,
-              ),
-            ),
+            const SizedBox(width: Space.lg),
+            Text(AppInfo.label, style: context.theme.mutedText),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         Text(l10n.aboutText),
       ],
     ),
@@ -362,7 +365,7 @@ class _GuestCard extends StatelessWidget {
     final theme = context.theme;
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(Space.xxl),
         child: Column(
           children: [
             FAvatar.raw(
@@ -373,23 +376,21 @@ class _GuestCard extends StatelessWidget {
                 color: theme.colors.mutedForeground,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             Text(
               l10n.guest,
               style: theme.typography.body.lg.copyWith(
                 color: theme.colors.foreground,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeights.semibold,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             Text(
               l10n.guestSignInPrompt,
               textAlign: TextAlign.center,
-              style: theme.typography.body.sm.copyWith(
-                color: theme.colors.mutedForeground,
-              ),
+              style: theme.mutedText,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Space.xl),
             FButton(
               onPress: onSignIn,
               child: Flexible(

@@ -10,6 +10,7 @@ import '../ui/format.dart';
 import 'event_card.dart';
 import 'event_image.dart';
 import 'event_status_badge.dart';
+import '../ui/tokens.dart';
 
 /// A sheet with a search field and the given events. Returns the chosen
 /// one, or null if dismissed.
@@ -86,12 +87,17 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
       decoration: BoxDecoration(
         color: theme.colors.background,
         border: Border(top: BorderSide(color: theme.colors.border)),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: Radii.sheetTop,
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(
+            Space.xl,
+            Space.xl,
+            Space.xl,
+            Space.md,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,11 +105,11 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
               Text(
                 l10n.eventsPick,
                 style: theme.typography.body.lg.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeights.semibold,
                   color: theme.colors.foreground,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               FTextField(
                 control: FTextFieldControl.managed(controller: _search),
                 hint: l10n.eventsSearch,
@@ -112,10 +118,10 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
                     fieldIcon(FLucideIcons.search),
                 clearable: (value) => value.text.isNotEmpty,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               Flexible(
                 child: AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
+                  duration: Motion.quick,
                   alignment: Alignment.topCenter,
                   child: shown.isEmpty
                       ? EmptyState(
@@ -124,9 +130,12 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
                         )
                       : ListView.separated(
                           shrinkWrap: true,
-                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: Space.xs,
+                          ),
                           itemCount: shown.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 4),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: Space.xs),
                           itemBuilder: (context, i) => EventRow(
                             event: shown[i],
                             selected: shown[i].id == widget.selectedId,
@@ -136,7 +145,7 @@ class _EventPickerSheetState extends State<_EventPickerSheet> {
                 ),
               ),
               if (widget.onAddEvent != null) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: Space.xs),
                 AddEventPrompt(
                   onPress: () {
                     Navigator.pop(context);
@@ -165,14 +174,9 @@ class AddEventPrompt extends StatelessWidget {
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 4,
+      spacing: Space.xs,
       children: [
-        Text(
-          l10n.eventsUserNotListed,
-          style: theme.typography.body.sm.copyWith(
-            color: theme.colors.mutedForeground,
-          ),
-        ),
+        Text(l10n.eventsUserNotListed, style: theme.mutedText),
         FButton(
           variant: FButtonVariant.ghost,
           size: FButtonSizeVariant.sm,
@@ -217,8 +221,8 @@ class EventRow extends StatelessWidget {
     return FTappable(
       onPress: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
+        duration: Motion.quick,
+        padding: const EdgeInsets.all(Space.md),
         decoration: BoxDecoration(
           color: selected ? colors.muted : null,
           borderRadius: BorderRadius.circular(radius),
@@ -233,7 +237,7 @@ class EventRow extends StatelessWidget {
                 iconSize: 20,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Space.lg),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,11 +248,11 @@ class EventRow extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.typography.body.md.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Space.xxs),
                   Text(
                     formatDateTime(context, event.info.date),
                     maxLines: 1,
@@ -266,16 +270,23 @@ class EventRow extends StatelessWidget {
                     ),
                   ),
                   if (showStatus && (showConfirmed || !event.confirmed)) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Space.xs),
                     EventStatusBadge(event),
                   ],
                 ],
               ),
             ),
-            if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+            if (trailing != null) ...[
+              const SizedBox(width: Space.md),
+              trailing!,
+            ],
             if (selected) ...[
-              const SizedBox(width: 8),
-              Icon(FLucideIcons.check, size: 18, color: colors.primary),
+              const SizedBox(width: Space.md),
+              Icon(
+                FLucideIcons.check,
+                size: IconSizes.md,
+                color: colors.primary,
+              ),
             ],
           ],
         ),
@@ -313,7 +324,7 @@ class EventField extends StatelessWidget {
           onPress: onTap,
           semanticsLabel: l10n.eventsPick,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.quick,
             decoration: BoxDecoration(
               color: colors.card,
               border: Border.all(
@@ -322,19 +333,19 @@ class EventField extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius),
             ),
             child: AnimatedSize(
-              duration: const Duration(milliseconds: 250),
+              duration: Motion.normal,
               alignment: Alignment.topCenter,
               child: e == null
                   ? Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
+                        horizontal: Space.lg,
                         vertical: 14,
                       ),
                       child: Row(
                         children: [
                           Icon(
                             FLucideIcons.ticket,
-                            size: 18,
+                            size: IconSizes.md,
                             color: colors.mutedForeground,
                           ),
                           const SizedBox(width: 10),
@@ -348,7 +359,7 @@ class EventField extends StatelessWidget {
                           ),
                           Icon(
                             FLucideIcons.chevronDown,
-                            size: 16,
+                            size: IconSizes.sm,
                             color: colors.mutedForeground,
                           ),
                         ],
@@ -360,7 +371,7 @@ class EventField extends StatelessWidget {
                       trailing: Text(
                         l10n.eventsChange,
                         style: theme.typography.body.sm.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeights.medium,
                           color: colors.foreground,
                         ),
                       ),
@@ -369,12 +380,17 @@ class EventField extends StatelessWidget {
           ),
         ),
         AnimatedSize(
-          duration: const Duration(milliseconds: 200),
+          duration: Motion.quick,
           alignment: Alignment.topCenter,
           child: error == null
               ? const SizedBox(width: double.infinity)
               : Padding(
-                  padding: const EdgeInsets.fromLTRB(2, 6, 2, 0),
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.xxs,
+                    Space.sm,
+                    Space.xxs,
+                    0,
+                  ),
                   child: Text(
                     error!,
                     style: theme.typography.body.xs.copyWith(

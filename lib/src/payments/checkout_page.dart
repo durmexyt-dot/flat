@@ -22,6 +22,7 @@ import 'pay_flow.dart';
 import 'payment_gateway.dart';
 import 'test_payment_gateway.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 /// The clock of the reservation countdown; tests move it forward.
 DateTime Function() checkoutNow = DateTime.now;
@@ -179,7 +180,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final l10n = AppLocalizations.of(context);
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
           child: Column(
@@ -192,13 +193,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 title: Text(l10n.reservationExpiredTitle),
                 subtitle: Text(l10n.reservationExpiredInfo),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               FButton(
                 onPress: () =>
                     context.go('/listing/${listing.id}', extra: listing),
                 child: Text(l10n.reservationBackToListing),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FButton(
                 variant: FButtonVariant.outline,
                 onPress: _restart,
@@ -232,11 +233,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final total = subtotal + listing.fees.buyerFee(subtotal);
     String money(int m) => formatMoney(context, m, listing.currency);
     const divider = FDivider(
-      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 12))),
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: Space.lg))),
     );
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      padding: Insets.pageList,
       children: [
         // The event left, the payment right on wide screens.
         SplitView(
@@ -244,7 +245,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           main: [
             ListingTicket(listing: listing),
             if (gateway.isTest) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               Align(
                 alignment: Alignment.centerLeft,
                 child: FBadge(
@@ -252,8 +253,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(FLucideIcons.flaskConical, size: 14),
-                      const SizedBox(width: 4),
+                      const Icon(FLucideIcons.flaskConical, size: IconSizes.xs),
+                      const SizedBox(width: Space.xs),
                       Text(l10n.testModeBadge),
                     ],
                   ),
@@ -265,7 +266,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             SettingsSectionTitle(l10n.tickets),
             FCard(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Space.xl),
                 child: Column(
                   children: [
                     Row(
@@ -293,7 +294,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                             '$quantity',
                             textAlign: TextAlign.center,
                             style: theme.typography.body.lg.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeights.semibold,
                               color: colors.foreground,
                             ),
                           ),
@@ -324,17 +325,17 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: Space.md),
               child: Row(
                 children: [
                   Icon(
                     FLucideIcons.mail,
-                    size: 18,
+                    size: IconSizes.md,
                     color: colors.mutedForeground,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: Space.lg),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,31 +358,31 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
+              duration: Motion.normal,
+              curve: Motion.enter,
               child: _failure == null
                   ? const SizedBox(width: double.infinity)
                   : Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: Space.lg),
                       child: _FailureCard(failure: _failure!),
                     ),
             ),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
+              duration: Motion.normal,
               child: timeLeft == null
                   ? Padding(
                       key: const ValueKey('hint'),
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: Space.lg),
                       child: Row(
                         children: [
                           Icon(
                             FLucideIcons.timer,
-                            size: 18,
+                            size: IconSizes.md,
                             color: colors.mutedForeground,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: Space.md),
                           Expanded(
                             child: Text(
                               l10n.reservationHint,
@@ -395,7 +396,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     )
                   : Padding(
                       key: const ValueKey('held'),
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: Space.lg),
                       child: FAlert(
                         icon: const Icon(FLucideIcons.timer),
                         title: Text(
@@ -409,7 +410,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             ),
             if (!available)
               Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: Space.lg),
                 child: Text(
                   l10n.notAvailableAnymore,
                   textAlign: TextAlign.center,
@@ -425,15 +426,15 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               loading: _busy,
               onPressed: available ? () => _pay(listing) : () {},
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             Row(
               children: [
                 Icon(
                   FLucideIcons.shieldCheck,
-                  size: 18,
+                  size: IconSizes.md,
                   color: colors.mutedForeground,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Space.md),
                 Expanded(
                   child: Text(
                     l10n.buyerProtection,
@@ -478,7 +479,7 @@ class _Line extends StatelessWidget {
               label,
               style: strong
                   ? body.sm.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     )
                   : body.sm.copyWith(color: colors.mutedForeground),
@@ -488,7 +489,7 @@ class _Line extends StatelessWidget {
             value,
             style: strong
                 ? body.lg.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeights.heavy,
                     color: colors.foreground,
                   )
                 : body.sm.copyWith(color: colors.foreground),

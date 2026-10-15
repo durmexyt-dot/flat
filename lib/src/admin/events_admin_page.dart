@@ -12,6 +12,7 @@ import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import 'admin_repository.dart';
+import '../ui/tokens.dart';
 
 /// Which events the team's list shows.
 enum EventsFilter { pending, confirmed, hidden, past, cancelled }
@@ -124,7 +125,12 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          padding: const EdgeInsets.fromLTRB(
+            Space.xl,
+            Space.md,
+            Space.xl,
+            Space.md,
+          ),
           child: Segmented<EventsFilter>(
             values: EventsFilter.values,
             selected: filter,
@@ -141,7 +147,7 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
         ),
         Expanded(
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
+            duration: Motion.normal,
             child: ordered.isEmpty
                 ? Center(
                     key: ValueKey('empty-$filter'),
@@ -161,7 +167,12 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
                   )
                 : ListView(
                     key: ValueKey(filter),
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                    padding: const EdgeInsets.fromLTRB(
+                      Space.xl,
+                      Space.xs,
+                      Space.xl,
+                      Space.x5l,
+                    ),
                     children: [for (final e in ordered) _row(context, e)],
                   ),
           ),
@@ -172,14 +183,14 @@ class _EventsAdminPageState extends ConsumerState<EventsAdminPage> {
 
   Widget _row(BuildContext context, Event e) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: Space.xs),
       child: EventRow(
         event: e,
         showConfirmed: true,
         onTap: () => context.push('/admin/events/${e.id}'),
         trailing: Icon(
           FLucideIcons.chevronRight,
-          size: 16,
+          size: IconSizes.sm,
           color: context.theme.colors.mutedForeground,
         ),
       ),

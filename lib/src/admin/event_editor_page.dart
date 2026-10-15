@@ -32,6 +32,7 @@ import 'admin_repository.dart';
 import 'events_admin_page.dart';
 import 'platform_settings_pages.dart' show NumberField;
 import '../market/ticket_files_widgets.dart' show serverErrorText;
+import '../ui/tokens.dart';
 
 /// Creates ([id] null) or edits an event.
 ///
@@ -372,7 +373,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.eventChangeCancelInfo),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           ValueListenableBuilder<String?>(
             valueListenable: error,
             builder: (context, message, _) => FTextFormField.multiline(
@@ -444,9 +445,9 @@ class _EventFormState extends ConsumerState<_EventForm> {
         children: [
           Text(
             '${l10n.eventChangeNewDate}: ${formatDateTime(context, date)}',
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: const TextStyle(fontWeight: FontWeights.semibold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           Text(l10n.eventChangePostponeInfo),
         ],
       ),
@@ -499,24 +500,22 @@ class _EventFormState extends ConsumerState<_EventForm> {
         : v.trim().length < min
         ? l10n.eventsNameTooShort
         : null;
-    final muted = theme.typography.body.xs.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedSmallText;
 
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (!team && user != null && !user.emailVerified) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FAlert(
                 icon: const Icon(FLucideIcons.mailWarning),
                 title: Text(l10n.eventsUserVerifyFirst),
                 subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: FButton(
@@ -534,7 +533,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
               ),
             ],
             if (!team) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FAlert(
                 icon: const Icon(FLucideIcons.info),
                 title: Text(l10n.eventsUserInfoTitle),
@@ -542,10 +541,10 @@ class _EventFormState extends ConsumerState<_EventForm> {
               ),
             ],
             if (live != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               Wrap(
-                spacing: 8,
-                runSpacing: 6,
+                spacing: Space.md,
+                runSpacing: Space.sm,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   EventStatusBadge(live),
@@ -561,13 +560,13 @@ class _EventFormState extends ConsumerState<_EventForm> {
                 ],
               ),
               if (live.postponedFrom case final from?) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: Space.sm),
                 Text(
                   l10n.eventChangePostponedFrom(formatDateTime(context, from)),
                   style: muted,
                 ),
               ],
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               if (cancelled)
                 FAlert(
                   variant: FAlertVariant.destructive,
@@ -587,7 +586,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
             IgnorePointer(
               ignoring: cancelled,
               child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 250),
+                duration: Motion.normal,
                 opacity: cancelled ? 0.5 : 1,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -601,10 +600,10 @@ class _EventFormState extends ConsumerState<_EventForm> {
                         child: _picture(context),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Space.md),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: Space.md,
+                      runSpacing: Space.md,
                       children: [
                         FButton(
                           variant: FButtonVariant.outline,
@@ -633,7 +632,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Space.xs),
                     Text(
                       team
                           ? l10n.eventsPictureHint
@@ -651,7 +650,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                       textInputAction: TextInputAction.next,
                       validator: (v) => text(v, 2),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -669,7 +668,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                             validator: (v) => text(v, 1),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: Space.lg),
                         Expanded(
                           child: FTextFormField(
                             control: FTextFieldControl.managed(
@@ -686,7 +685,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     DateTimeField(
                       date: _date,
                       error: _dateError,
@@ -694,8 +693,8 @@ class _EventFormState extends ConsumerState<_EventForm> {
                     ),
                     SettingsSectionTitle(l10n.category),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: Space.md,
+                      runSpacing: Space.md,
                       children: [
                         for (final c in EventCategory.values)
                           FButton(
@@ -727,12 +726,12 @@ class _EventFormState extends ConsumerState<_EventForm> {
                     ],
                     SettingsSectionTitle(l10n.genreLabel),
                     AnimatedSize(
-                      duration: const Duration(milliseconds: 250),
+                      duration: Motion.normal,
                       alignment: Alignment.topCenter,
                       child: Wrap(
                         key: ValueKey(_category),
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: Space.md,
+                        runSpacing: Space.md,
                         children: [
                           for (final g in ['', ...?eventGenres[_category]])
                             FButton(
@@ -758,7 +757,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
               ),
             ),
             if (!cancelled) ...[
-              const SizedBox(height: 24),
+              const SizedBox(height: Space.x3l),
               SubmitButton(
                 label: team ? l10n.save : l10n.eventsUserNewTitle,
                 loading: _saving,
@@ -767,7 +766,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                 },
               ),
               if (live != null && live.pending) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 FButton(
                   variant: FButtonVariant.secondary,
                   onPress: _saving || _encoding
@@ -781,7 +780,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                 ),
               ],
               if (live != null) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 FButton(
                   variant: live.hidden
                       ? FButtonVariant.outline
@@ -808,7 +807,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FButton(
                 variant: FButtonVariant.destructive,
                 onPress: _saving ? null : () => _cancelEvent(live),
@@ -855,10 +854,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: preview,
-        ),
+        AnimatedSwitcher(duration: Motion.slow, child: preview),
         if (_encoding)
           const Positioned.fill(child: Center(child: FCircularProgress())),
       ],

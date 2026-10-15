@@ -8,6 +8,7 @@ import '../location/cities.dart';
 import '../location/location_controller.dart';
 import '../ui/app_style.dart';
 import '../ui/snack.dart';
+import '../ui/tokens.dart';
 
 /// A sheet to choose the home page's city: search, the device location or
 /// none.
@@ -83,12 +84,17 @@ class _CityPickerSheetState extends ConsumerState<_CityPickerSheet> {
       decoration: BoxDecoration(
         color: theme.colors.background,
         border: Border(top: BorderSide(color: theme.colors.border)),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: Radii.sheetTop,
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(
+            Space.xl,
+            Space.xl,
+            Space.xl,
+            Space.md,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,11 +102,11 @@ class _CityPickerSheetState extends ConsumerState<_CityPickerSheet> {
               Text(
                 l10n.homeCityPick,
                 style: theme.typography.body.lg.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeights.semibold,
                   color: theme.colors.foreground,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               FTextField(
                 control: FTextFieldControl.managed(controller: _search),
                 hint: l10n.homeCitySearch,
@@ -114,9 +120,9 @@ class _CityPickerSheetState extends ConsumerState<_CityPickerSheet> {
                   _choose(match.isEmpty ? value : match.first);
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               Row(
-                spacing: 8,
+                spacing: Space.md,
                 children: [
                   Expanded(
                     child: FButton(
@@ -146,11 +152,11 @@ class _CityPickerSheetState extends ConsumerState<_CityPickerSheet> {
                     ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               Flexible(
                 child: ListView(
                   shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: Space.xs),
                   children: [
                     if (query.isNotEmpty && !exact)
                       _CityTile(
@@ -195,8 +201,11 @@ class _CityTile extends StatelessWidget {
     return FTappable(
       onPress: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        duration: Motion.quick,
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.md,
+          vertical: Space.lg,
+        ),
         decoration: BoxDecoration(
           color: selected ? colors.muted : null,
           borderRadius: BorderRadius.circular(
@@ -205,8 +214,8 @@ class _CityTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: colors.mutedForeground),
-            const SizedBox(width: 12),
+            Icon(icon, size: IconSizes.md, color: colors.mutedForeground),
+            const SizedBox(width: Space.lg),
             Expanded(
               child: Text(
                 name,
@@ -214,12 +223,18 @@ class _CityTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: theme.typography.body.md.copyWith(
                   color: colors.foreground,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                  fontWeight: selected
+                      ? FontWeights.semibold
+                      : FontWeights.regular,
                 ),
               ),
             ),
             if (selected)
-              Icon(FLucideIcons.check, size: 18, color: colors.primary),
+              Icon(
+                FLucideIcons.check,
+                size: IconSizes.md,
+                color: colors.primary,
+              ),
           ],
         ),
       ),

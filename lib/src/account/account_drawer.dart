@@ -10,6 +10,7 @@ import '../data/repositories.dart';
 import 'account_sidebar.dart';
 import 'avatar.dart';
 import 'profile_header.dart';
+import '../ui/tokens.dart';
 
 /// The account menu on wide screens, opened from the avatar in the header.
 class AccountDrawer extends ConsumerWidget {
@@ -62,7 +63,12 @@ class AccountDrawer extends ConsumerWidget {
           header: user == null
               ? null
               : Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.xxl,
+                    Space.xl,
+                    Space.xxl,
+                    Space.md,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -74,7 +80,7 @@ class AccountDrawer extends ConsumerWidget {
                             name: profile?.displayName ?? user.displayName,
                             hero: false,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: Space.lg),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,18 +90,13 @@ class AccountDrawer extends ConsumerWidget {
                                       user.displayName ??
                                       user.email ??
                                       '',
-                                  style: theme.typography.body.md.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: theme.colors.foreground,
-                                  ),
+                                  style: theme.titleText,
                                 ),
                                 Text(
                                   profile?.username != null
                                       ? '@${profile!.username}'
                                       : user.email ?? '',
-                                  style: theme.typography.body.sm.copyWith(
-                                    color: theme.colors.mutedForeground,
-                                  ),
+                                  style: theme.mutedText,
                                 ),
                               ],
                             ),
@@ -103,7 +104,7 @@ class AccountDrawer extends ConsumerWidget {
                         ],
                       ),
                       if (marketplace) ...[
-                        const SizedBox(height: 16),
+                        const SizedBox(height: Space.xl),
                         const StatsRow(),
                       ],
                     ],

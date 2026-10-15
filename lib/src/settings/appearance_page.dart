@@ -8,6 +8,7 @@ import '../ui/ticket.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 String brandColorName(AppLocalizations l10n, BrandColor c) => switch (c) {
   BrandColor.violet => l10n.colorViolet,
@@ -56,7 +57,7 @@ class AppearancePage extends ConsumerWidget {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: Insets.pageList,
         children: [
           const _Preview(),
           SettingsSectionTitle(l10n.themeModeLabel),
@@ -73,8 +74,8 @@ class AppearancePage extends ConsumerWidget {
           ),
           SettingsSectionTitle(l10n.themeColor),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: Space.lg,
+            runSpacing: Space.lg,
             children: [
               for (final color in BrandColor.values)
                 _ColorDot(
@@ -92,7 +93,7 @@ class AppearancePage extends ConsumerWidget {
                 'A',
                 style: TextStyle(fontSize: 14, color: colors.foreground),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Space.lg),
               Expanded(
                 child: FSlider(
                   control: .liftedDiscrete(
@@ -112,7 +113,7 @@ class AppearancePage extends ConsumerWidget {
                       textSizeName(l10n, TextSize.values[(v * last).round()]),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: Space.lg),
               Text(
                 'A',
                 style: TextStyle(fontSize: 24, color: colors.foreground),
@@ -121,13 +122,13 @@ class AppearancePage extends ConsumerWidget {
           ),
           Center(
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: Motion.quick,
               child: Text(
                 textSizeName(l10n, settings.textSize),
                 key: ValueKey(settings.textSize),
                 style: context.theme.typography.body.sm.copyWith(
                   color: colors.mutedForeground,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeights.medium,
                 ),
               ),
             ),
@@ -136,7 +137,8 @@ class AppearancePage extends ConsumerWidget {
           Row(
             children: [
               for (final style in UiStyle.values) ...[
-                if (style != UiStyle.values.first) const SizedBox(width: 12),
+                if (style != UiStyle.values.first)
+                  const SizedBox(width: Space.lg),
                 Expanded(
                   child: _StyleOption(
                     style: style,
@@ -168,7 +170,7 @@ class _Preview extends StatelessWidget {
 
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -176,10 +178,10 @@ class _Preview extends StatelessWidget {
               l10n.preview,
               style: type.sm.copyWith(
                 color: colors.mutedForeground,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeights.medium,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             TicketCard(
               color: colors.background,
               stub: Column(
@@ -188,7 +190,7 @@ class _Preview extends StatelessWidget {
                   Text(
                     '14',
                     style: type.xl.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeights.heavy,
                       color: colors.foreground,
                     ),
                   ),
@@ -196,7 +198,7 @@ class _Preview extends StatelessWidget {
                     'JUL',
                     style: type.xs.copyWith(
                       color: colors.mutedForeground,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeights.medium,
                     ),
                   ),
                 ],
@@ -207,41 +209,41 @@ class _Preview extends StatelessWidget {
                   Text(
                     'Sarajevo Film Festival',
                     style: type.md.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                       color: colors.foreground,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Space.xs),
                   Text(
                     l10n.previewTickets,
                     style: type.sm.copyWith(color: colors.mutedForeground),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Space.md),
                   Text(
                     '89,00 KM',
                     style: type.md.copyWith(
                       color: colors.foreground,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             // Wraps instead of overflowing with large text sizes.
             Wrap(
               alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 12,
-              runSpacing: 8,
+              spacing: Space.lg,
+              runSpacing: Space.md,
               children: [
                 FBadge(
                   variant: .secondary,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(FLucideIcons.music, size: 14),
-                      const SizedBox(width: 4),
+                      const Icon(FLucideIcons.music, size: IconSizes.xs),
+                      const SizedBox(width: Space.xs),
                       Text(l10n.catConcerts),
                     ],
                   ),
@@ -289,9 +291,9 @@ class _ColorDot extends StatelessWidget {
         selected: selected,
         onPress: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           // No overshooting curve here: padding must not go negative.
-          curve: Curves.easeOutCubic,
+          curve: Motion.enter,
           width: 48,
           height: 48,
           padding: EdgeInsets.all(selected ? 4 : 0),
@@ -306,11 +308,11 @@ class _ColorDot extends StatelessWidget {
             decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
             child: AnimatedScale(
               scale: selected ? 1 : 0,
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutBack,
+              duration: Motion.normal,
+              curve: Motion.pop,
               child: Icon(
                 FLucideIcons.check,
-                size: 20,
+                size: IconSizes.lg,
                 color: scheme.onPrimary,
               ),
             ),
@@ -346,9 +348,9 @@ class _StyleOption extends StatelessWidget {
       selected: selected,
       onPress: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(12),
+        duration: Motion.normal,
+        curve: Motion.enter,
+        padding: const EdgeInsets.all(Space.lg),
         decoration: BoxDecoration(
           color: selected ? colors.secondary : colors.card,
           borderRadius: theme.style.borderRadius.lg,
@@ -367,7 +369,7 @@ class _StyleOption extends StatelessWidget {
                 border: Border.all(color: colors.border),
               ),
               alignment: Alignment.bottomRight,
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(Space.sm),
               child: Container(
                 width: 32,
                 height: 12,
@@ -377,13 +379,15 @@ class _StyleOption extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Space.md),
             Text(
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.typography.body.sm.copyWith(
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                fontWeight: selected
+                    ? FontWeights.semibold
+                    : FontWeights.medium,
                 color: colors.foreground,
               ),
             ),

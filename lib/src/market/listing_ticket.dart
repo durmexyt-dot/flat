@@ -9,6 +9,7 @@ import '../ui/format.dart';
 import '../ui/hero_tags.dart';
 import '../ui/ticket.dart';
 import 'labels.dart';
+import '../ui/tokens.dart';
 
 /// Ticket-shaped card for an event: name, place, date stub. Flies between
 /// lists and detail pages as a shared element.
@@ -51,7 +52,7 @@ class EventTicket extends StatelessWidget {
             Text(
               day,
               style: type.display.xl.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeights.heavy,
                 color: colors.foreground,
                 height: 1,
               ),
@@ -59,12 +60,12 @@ class EventTicket extends StatelessWidget {
             Text(
               month,
               style: type.body.xs.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeights.semibold,
                 color: colors.mutedForeground,
                 letterSpacing: 0.8,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             Text(
               time,
               style: type.body.xs.copyWith(color: colors.mutedForeground),
@@ -83,22 +84,25 @@ class EventTicket extends StatelessWidget {
                   size: 18,
                   color: colors.foreground,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: Space.sm),
                 Expanded(
                   child: Text(
                     event.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: type.body.md.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     ),
                   ),
                 ),
-                if (trailing != null) ...[const SizedBox(width: 8), trailing!],
+                if (trailing != null) ...[
+                  const SizedBox(width: Space.md),
+                  trailing!,
+                ],
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             Text(
               [event.venue, event.city].where((s) => s.isNotEmpty).join(' · '),
               maxLines: 1,
@@ -173,10 +177,10 @@ class ListingTicket extends ConsumerWidget {
             )
           : null,
       lines: [
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         Wrap(
-          spacing: 8,
-          runSpacing: 4,
+          spacing: Space.md,
+          runSpacing: Space.xs,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
@@ -187,7 +191,7 @@ class ListingTicket extends ConsumerWidget {
               ),
               style: type.body.lg.copyWith(
                 color: colors.foreground,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeights.bold,
               ),
             ),
             Text(

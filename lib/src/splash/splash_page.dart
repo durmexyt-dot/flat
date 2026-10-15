@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../web/html_splash.dart';
+import '../ui/tokens.dart';
 
 /// How long the splash stays at least, so the brand can be seen.
 const splashMinDuration = Duration(milliseconds: 1800);
@@ -57,12 +58,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(Space.x5l),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const BrandMark(size: 96),
-              const SizedBox(height: 20),
+              const SizedBox(height: Space.xxl),
               const BrandWordmark(height: 48),
               const SizedBox(height: 14),
               _FadeIn(
@@ -91,7 +92,7 @@ class _FadeIn extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOut,
+      curve: Motion.ease,
       builder: (context, value, child) => Opacity(opacity: value, child: child),
       child: child,
     );

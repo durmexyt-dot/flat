@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../ui/hero_tags.dart';
+import '../ui/tokens.dart';
 
 /// The Stubswap ticket logo. Flies between screens as a shared element.
 ///
@@ -55,7 +56,7 @@ class BrandWordmark extends StatelessWidget {
     const style = TextStyle(
       fontSize: 100,
       height: 1,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeights.heavy,
       letterSpacing: -2,
     );
 

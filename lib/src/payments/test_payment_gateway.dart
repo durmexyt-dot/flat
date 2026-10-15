@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../ui/format.dart';
 import 'payment_gateway.dart';
+import '../ui/tokens.dart';
 
 String paymentFailureText(AppLocalizations l10n, PaymentFailure f) =>
     switch (f) {
@@ -101,7 +102,7 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
       decoration: BoxDecoration(
         color: colors.background,
         border: Border(top: BorderSide(color: colors.border)),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: Radii.sheetTop,
       ),
       child: SafeArea(
         top: false,
@@ -110,7 +111,12 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                padding: const EdgeInsets.fromLTRB(
+                  Space.xxl,
+                  Space.lg,
+                  Space.xxl,
+                  Space.xxl,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -120,10 +126,10 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                       child: Container(
                         width: 36,
                         height: 4,
-                        margin: const EdgeInsets.only(bottom: 12),
+                        margin: const EdgeInsets.only(bottom: Space.lg),
                         decoration: BoxDecoration(
                           color: colors.border,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(Radii.handle),
                         ),
                       ),
                     ),
@@ -132,26 +138,26 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                         Text(
                           'stripe',
                           style: theme.typography.display.md.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF635BFF),
+                            fontWeight: FontWeights.black,
+                            color: _SimulatorColors.stripe,
                             letterSpacing: -1,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Space.md),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
+                            horizontal: Space.md,
+                            vertical: Space.xxs,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFDE92),
+                            color: _SimulatorColors.testBadge,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
                             'TEST',
                             style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF983705),
+                              fontWeight: FontWeights.heavy,
+                              color: _SimulatorColors.onTestBadge,
                               fontSize: 12,
                             ),
                           ),
@@ -173,25 +179,25 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Space.xs),
                     Text(
                       l10n.simulatorInfo,
                       style: theme.typography.body.sm.copyWith(
                         color: colors.mutedForeground,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Space.xl),
                     field(l10n.cardNumber, '4242 4242 4242 4242'),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(child: field(l10n.cardExpiry, '12 / 34')),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: Space.lg),
                         Expanded(child: field(l10n.cardCvc, '123')),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Space.xl),
                     FCheckbox(
                       value: _succeed,
                       enabled: !_processing,
@@ -199,18 +205,18 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                       label: Text(l10n.simulateSuccess),
                       description: Text(l10n.simulateSuccessInfo),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     AnimatedSize(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeOutCubic,
+                      duration: Motion.normal,
+                      curve: Motion.enter,
                       alignment: Alignment.topCenter,
                       child: _succeed
                           ? const SizedBox(width: double.infinity)
                           : Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.only(bottom: Space.lg),
                               child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
+                                spacing: Space.md,
+                                runSpacing: Space.md,
                                 children: [
                                   for (final f in _declines)
                                     FButton(
@@ -231,14 +237,14 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                               ),
                             ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Space.md),
                     IgnorePointer(
                       ignoring: _processing,
                       child: FButton(
                         size: FButtonSizeVariant.lg,
                         onPress: _pay,
                         child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 200),
+                          duration: Motion.quick,
                           child: _processing
                               ? Row(
                                   key: const ValueKey('processing'),
@@ -251,7 +257,7 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: Space.lg),
                                     Text(l10n.processingPayment),
                                   ],
                                 )
@@ -271,4 +277,11 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
       ),
     );
   }
+}
+
+/// Stripe's look for the test checkout, until real Stripe replaces it.
+abstract final class _SimulatorColors {
+  static const stripe = Color(0xFF635BFF);
+  static const testBadge = Color(0xFFFFDE92);
+  static const onTestBadge = Color(0xFF983705);
 }

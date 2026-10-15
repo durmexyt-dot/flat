@@ -14,6 +14,7 @@ import '../ui/snack.dart';
 import 'labels.dart';
 import 'order_labels.dart';
 import 'ticket_files_widgets.dart';
+import '../ui/tokens.dart';
 
 /// Whether the buyer can report a problem with [o] now.
 bool canReportProblem(Order o, [DateTime? now]) =>
@@ -88,7 +89,7 @@ class _DisputeSheetState extends ConsumerState<_DisputeSheet> {
       decoration: BoxDecoration(
         color: theme.colors.background,
         border: Border(top: BorderSide(color: theme.colors.border)),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: Radii.sheetTop,
       ),
       child: SafeArea(
         top: false,
@@ -114,7 +115,7 @@ class _DisputeSheetState extends ConsumerState<_DisputeSheet> {
                           child: Text(
                             l10n.disputeSheetTitle,
                             style: theme.typography.body.lg.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeights.bold,
                               color: theme.colors.foreground,
                             ),
                           ),
@@ -129,25 +130,20 @@ class _DisputeSheetState extends ConsumerState<_DisputeSheet> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.disputeSheetInfo,
-                      style: theme.typography.body.sm.copyWith(
-                        color: theme.colors.mutedForeground,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Space.xs),
+                    Text(l10n.disputeSheetInfo, style: theme.mutedText),
+                    const SizedBox(height: Space.xl),
                     Text(
                       l10n.disputeReasonLabel,
                       style: theme.typography.body.sm.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeights.semibold,
                         color: theme.colors.foreground,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Space.md),
                     for (final r in DisputeReason.values)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: Space.xs),
                         child: FRadio(
                           label: Text(disputeReasonName(l10n, r)),
                           value: _reason == r,
@@ -156,7 +152,7 @@ class _DisputeSheetState extends ConsumerState<_DisputeSheet> {
                               : (_) => setState(() => _reason = r),
                         ),
                       ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     FTextFormField.multiline(
                       control: FTextFieldControl.managed(controller: _text),
                       label: Text(l10n.disputeTextLabel),
@@ -167,7 +163,7 @@ class _DisputeSheetState extends ConsumerState<_DisputeSheet> {
                           ? l10n.disputeTextTooShort
                           : null,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Space.xl),
                     SubmitButton(
                       label: l10n.disputeSubmit,
                       loading: _sending,
@@ -201,9 +197,7 @@ class DisputeBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     final (status, tone) = switch (dispute.decision) {
       'refund' => (l10n.disputeStatusRefund, StatusTone.positive),
       'reject' => (l10n.disputeStatusReject, StatusTone.neutral),
@@ -211,26 +205,23 @@ class DisputeBox extends StatelessWidget {
     };
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
+          spacing: Space.md,
           children: [
             Row(
               children: [
                 Icon(
                   FLucideIcons.messageSquareWarning,
-                  size: 18,
+                  size: IconSizes.md,
                   color: theme.colors.foreground,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: Space.md),
                 Expanded(
                   child: Text(
                     disputeReasonName(l10n, dispute.reason),
-                    style: theme.typography.body.md.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
-                    ),
+                    style: theme.titleText,
                   ),
                 ),
               ],
@@ -244,7 +235,7 @@ class DisputeBox extends StatelessWidget {
               ),
             ),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
+              duration: Motion.normal,
               child: StatusChip(
                 key: ValueKey(dispute.decision),
                 label: status,
@@ -298,7 +289,7 @@ class _StaffDisputePanelState extends ConsumerState<StaffDisputePanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(refund ? l10n.disputeRefundConfirm : l10n.disputeRejectConfirm),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FTextFormField.multiline(
             control: FTextFieldControl.managed(controller: note),
             label: Text('${l10n.disputeNoteLabel} (${l10n.optional})'),
@@ -341,9 +332,7 @@ class _StaffDisputePanelState extends ConsumerState<StaffDisputePanel> {
     final theme = context.theme;
     final order = widget.order;
     final dispute = order.dispute;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     final value = theme.typography.body.sm.copyWith(
       color: theme.colors.foreground,
     );
@@ -355,9 +344,9 @@ class _StaffDisputePanelState extends ConsumerState<StaffDisputePanel> {
       children: [
         FCard(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
-              spacing: 6,
+              spacing: Space.sm,
               children: [
                 for (final (label, id) in [
                   (l10n.disputeStaffBuyer, order.buyerId),
@@ -375,14 +364,14 @@ class _StaffDisputePanelState extends ConsumerState<StaffDisputePanel> {
           ),
         ),
         if (open) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FButton(
             variant: FButtonVariant.destructive,
             onPress: _busy ? null : () => _decide(refund: true),
             prefix: const Icon(FLucideIcons.undo2),
             child: Text(l10n.disputeRefund, overflow: TextOverflow.ellipsis),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           FButton(
             variant: FButtonVariant.outline,
             onPress: _busy ? null : () => _decide(refund: false),

@@ -11,6 +11,7 @@ import '../data/models.dart';
 import '../ui/images.dart';
 import '../ui/snack.dart';
 import 'contact_support_page.dart';
+import '../ui/tokens.dart';
 
 String supportStatusName(AppLocalizations l10n, SupportStatus s) => switch (s) {
   SupportStatus.open => l10n.supportStatusOpen,
@@ -62,8 +63,8 @@ class UnreadDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AnimatedScale(
     scale: visible ? 1 : 0,
-    duration: const Duration(milliseconds: 250),
-    curve: Curves.easeOutBack,
+    duration: Motion.normal,
+    curve: Motion.pop,
     child: Container(
       width: 8,
       height: 8,
@@ -95,9 +96,7 @@ class SupportTicketTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     final who = [
       ticket.name,
       ticket.email,
@@ -107,19 +106,24 @@ class SupportTicketTile extends StatelessWidget {
       onPress: onTap,
       child: FCard(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
+          padding: const EdgeInsets.fromLTRB(
+            Space.lg,
+            Space.lg,
+            Space.xl,
+            Space.lg,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 6),
+                padding: const EdgeInsets.only(top: Space.sm),
                 child: UnreadDot(visible: unread),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
+                  spacing: Space.xxs,
                   children: [
                     Row(
                       children: [
@@ -132,7 +136,7 @@ class SupportTicketTile extends StatelessWidget {
                             style: muted,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: Space.md),
                         Text(
                           supportShortTime(
                             context,
@@ -149,7 +153,7 @@ class SupportTicketTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: theme.typography.body.sm.copyWith(
                           color: theme.colors.foreground,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeights.medium,
                         ),
                       ),
                     Text(
@@ -158,13 +162,15 @@ class SupportTicketTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.typography.body.md.copyWith(
                         color: theme.colors.foreground,
-                        fontWeight: unread ? FontWeight.w600 : FontWeight.w400,
+                        fontWeight: unread
+                            ? FontWeights.semibold
+                            : FontWeights.regular,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: Space.sm),
                     Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
+                      spacing: Space.sm,
+                      runSpacing: Space.sm,
                       children: [
                         SupportStatusBadge(status: ticket.status),
                         if (unread && !staffView)
@@ -314,7 +320,7 @@ class SupportImageThumb extends StatelessWidget {
                   ),
                   child: Icon(
                     FLucideIcons.x,
-                    size: 14,
+                    size: IconSizes.xs,
                     color: theme.colors.background,
                   ),
                 ),
@@ -331,11 +337,11 @@ Future<void> showSupportImage(BuildContext context, String data) {
   return Navigator.of(context, rootNavigator: true).push(
     PageRouteBuilder<void>(
       opaque: false,
-      barrierColor: Colors.black,
+      barrierColor: FixedColors.imageBackdrop,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      transitionDuration: const Duration(milliseconds: 200),
-      reverseTransitionDuration: const Duration(milliseconds: 150),
+      transitionDuration: Motion.quick,
+      reverseTransitionDuration: Motion.fast,
       pageBuilder: (context, _, _) => const SizedBox(),
       transitionsBuilder: (context, animation, _, _) => FadeTransition(
         opacity: animation,
@@ -368,7 +374,7 @@ class _ImageViewer extends StatelessWidget {
           right: 0,
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(Space.md),
               child: FTappable(
                 semanticsLabel: close,
                 onPress: () => Navigator.of(context).pop(),
@@ -376,10 +382,13 @@ class _ImageViewer extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: Color(0x99000000),
+                    color: FixedColors.imageControl,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(FLucideIcons.x, color: Colors.white),
+                  child: const Icon(
+                    FLucideIcons.x,
+                    color: FixedColors.onImageControl,
+                  ),
                 ),
               ),
             ),
@@ -429,12 +438,12 @@ class SupportAttachments extends StatelessWidget {
     final theme = context.theme;
     final canAdd = images.length < maxSupportImages && !busy;
     return AnimatedSize(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
+      duration: Motion.quick,
+      curve: Motion.ease,
       alignment: Alignment.topLeft,
       child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
+        spacing: Space.lg,
+        runSpacing: Space.lg,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           for (final (i, data) in images.indexed)
@@ -544,19 +553,24 @@ class _SupportComposerState extends State<SupportComposer> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          padding: const EdgeInsets.fromLTRB(Space.lg, 10, Space.lg, 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AnimatedSize(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
+                duration: Motion.quick,
+                curve: Motion.ease,
                 alignment: Alignment.topLeft,
                 child: _images.isEmpty && !_busy
                     ? const SizedBox(width: double.infinity)
                     : Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 6, 4, 10),
+                        padding: const EdgeInsets.fromLTRB(
+                          Space.xs,
+                          Space.sm,
+                          Space.xs,
+                          10,
+                        ),
                         child: SupportAttachments(
                           images: _images,
                           busy: _busy,
@@ -569,7 +583,7 @@ class _SupportComposerState extends State<SupportComposer> {
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                spacing: 8,
+                spacing: Space.md,
                 children: [
                   FButton.icon(
                     variant: FButtonVariant.ghost,

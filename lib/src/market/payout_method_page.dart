@@ -10,6 +10,7 @@ import '../data/repositories.dart';
 import '../ui/snack.dart';
 import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 /// Groups an IBAN in blocks of four while typing. Keeps the cursor where
 /// it was, so a digit can be fixed in the middle.
@@ -132,22 +133,17 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                l10n.payoutMethodInfo,
-                style: theme.typography.body.sm.copyWith(
-                  color: theme.colors.mutedForeground,
-                ),
-              ),
-              const SizedBox(height: 16),
+              Text(l10n.payoutMethodInfo, style: theme.mutedText),
+              const SizedBox(height: Space.xl),
               FCard(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(Space.xl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -166,9 +162,9 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                             ? l10n.required
                             : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: Space.xl),
                       AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
+                        duration: Motion.normal,
                         child: entering
                             ? _ibanField(l10n, autofocus: _replacingIban)
                             : _SavedIban(
@@ -195,7 +191,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Space.x3l),
               SubmitButton(
                 label: l10n.save,
                 loading: _saving,
@@ -261,16 +257,16 @@ class _SavedIban extends StatelessWidget {
         Text(
           l10n.iban,
           style: theme.typography.body.sm.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeights.medium,
             color: theme.colors.foreground,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: Space.sm),
         Row(
           children: [
             Icon(
               FLucideIcons.landmark,
-              size: 18,
+              size: IconSizes.md,
               color: theme.colors.mutedForeground,
             ),
             const SizedBox(width: 10),

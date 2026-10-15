@@ -30,6 +30,7 @@ import 'order_ticket.dart';
 import 'dispute_sheet.dart';
 import 'ticket_files_widgets.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 /// One order with its progress and invoice; for the buyer or the seller.
 class OrderDetailPage extends ConsumerWidget {
@@ -66,10 +67,10 @@ class OrderDetailPage extends ConsumerWidget {
                   EmptyState(icon: FLucideIcons.searchX, title: l10n.loadError),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              padding: Insets.pageList,
               children: [
                 OrderTicket(order: order, role: role),
-                const SizedBox(height: 16),
+                const SizedBox(height: Space.xl),
                 if (role == OrderRole.seller && order.ticketsMissing > 0) ...[
                   FAlert(
                     variant: FAlertVariant.destructive,
@@ -83,7 +84,7 @@ class OrderDetailPage extends ConsumerWidget {
                             formatDateTime(context, order.deliveryDeadline),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Space.md),
                         FButton(
                           variant: FButtonVariant.outline,
                           size: FButtonSizeVariant.sm,
@@ -100,7 +101,7 @@ class OrderDetailPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                 ],
                 NextStepCard(
                   text: order.failureReason.isNotEmpty
@@ -145,7 +146,7 @@ class OrderDetailPage extends ConsumerWidget {
                 _Invoice(order: order, role: role),
                 OrderInvoices(orderId: order.id),
                 if (buyer && canReportProblem(order)) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                   FButton(
                     variant: FButtonVariant.outline,
                     onPress: () => showDisputeSheet(context, order),
@@ -157,7 +158,7 @@ class OrderDetailPage extends ConsumerWidget {
                   ),
                 ],
                 if (!staffView) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                   FButton(
                     variant: FButtonVariant.outline,
                     onPress: () => context.push(
@@ -180,7 +181,7 @@ class OrderDetailPage extends ConsumerWidget {
                 ],
                 if (role == OrderRole.seller &&
                     order.status == OrderStatus.completed) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                   FButton(
                     variant: FButtonVariant.outline,
                     onPress: () => context.push('/account/payouts'),
@@ -247,14 +248,14 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
         canSellerCancel(order.status);
 
     return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
+      duration: Motion.normal,
       alignment: Alignment.topCenter,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (buyerPays || sellerSends)
             Padding(
-              padding: const EdgeInsets.only(top: 12),
+              padding: const EdgeInsets.only(top: Space.lg),
               child: SubmitButton(
                 label: buyerPays ? l10n.payNow : l10n.markTicketsSent,
                 loading: _busy,
@@ -272,7 +273,7 @@ class _OrderActionsState extends ConsumerState<_OrderActions> {
             ),
           if (sellerCancels)
             Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.only(top: Space.md),
               child: FButton(
                 variant: FButtonVariant.outline,
                 onPress: _busy ? null : () => _confirmCancel(order),
@@ -336,7 +337,7 @@ class NextStepCard extends StatelessWidget {
     };
     final negative = tone == StatusTone.negative;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: Motion.slow,
       child: FAlert(
         key: ValueKey(tone),
         variant: negative ? FAlertVariant.destructive : FAlertVariant.primary,
@@ -363,11 +364,11 @@ class _Invoice extends StatelessWidget {
     String money(int m) => formatMoney(context, m, order.currency);
     final seats = seatText(l10n, order.section, order.row, order.seats);
     const divider = FDivider(
-      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 12))),
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: Space.lg))),
     );
 
     Widget row(String label, String value, {bool strong = false}) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: Space.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -376,19 +377,19 @@ class _Invoice extends StatelessWidget {
               label,
               style: strong
                   ? body.sm.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     )
                   : body.sm.copyWith(color: colors.mutedForeground),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: Space.lg),
           Text(
             value,
             textAlign: TextAlign.end,
             style: strong
                 ? body.lg.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeights.heavy,
                     color: colors.foreground,
                   )
                 : body.sm.copyWith(color: colors.foreground),
@@ -399,7 +400,7 @@ class _Invoice extends StatelessWidget {
 
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -413,14 +414,14 @@ class _Invoice extends StatelessWidget {
                         l10n.orderNumber,
                         style: body.xs.copyWith(
                           color: colors.mutedForeground,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeights.medium,
                         ),
                       ),
                       SelectableText(
                         order.number,
                         style: body.lg.copyWith(
                           letterSpacing: 1,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeights.bold,
                           color: colors.foreground,
                         ),
                       ),

@@ -8,6 +8,7 @@ import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../support/support_repository.dart';
 import '../ui/count_badge.dart';
+import '../ui/tokens.dart';
 
 /// Pages for buying and selling. Team accounts (admins, support) don't buy
 /// or sell, so they don't get these.
@@ -96,7 +97,7 @@ class AccountSidebar extends ConsumerWidget {
       style: .delta(
         decoration: const .value(BoxDecoration()),
         constraints: const BoxConstraints.tightFor(width: 248),
-        contentPadding: const .value(EdgeInsets.symmetric(vertical: 24)),
+        contentPadding: const .value(EdgeInsets.symmetric(vertical: Space.x3l)),
       ),
       footer: signedIn ? const LogoutItem() : null,
       children: [
@@ -114,7 +115,9 @@ class AccountSidebar extends ConsumerWidget {
         ),
         if (team.isNotEmpty)
           FSidebarGroup(
-            style: const .delta(padding: .value(EdgeInsets.only(top: 16))),
+            style: const .delta(
+              padding: .value(EdgeInsets.only(top: Space.xl)),
+            ),
             children: [
               for (final (icon, label, path) in team)
                 FSidebarItem(
@@ -142,7 +145,7 @@ class LogoutItem extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final error = context.theme.colors.error;
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: Space.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../ui/async_view.dart';
 import '../ui/site_scaffold.dart';
 import 'legal_texts.dart';
+import '../ui/tokens.dart';
 
 /// The footer's pages: about, press, how it works and buying safely, and
 /// the legal pages ([legalTopics]).
@@ -125,12 +126,12 @@ class InfoPage extends ConsumerWidget {
       title: title,
       maxWidth: SiteWidth.form,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 48),
+        padding: const EdgeInsets.fromLTRB(Space.xl, Space.xl, Space.xl, 48),
         children: [
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(Space.lg),
               decoration: BoxDecoration(
                 color: colors.muted,
                 shape: BoxShape.circle,
@@ -139,7 +140,7 @@ class InfoPage extends ConsumerWidget {
             ),
           ),
           if (legal != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             Text(
               legalValidFrom(Localizations.localeOf(context)),
               style: theme.typography.body.xs.copyWith(
@@ -148,16 +149,16 @@ class InfoPage extends ConsumerWidget {
             ),
           ],
           for (final b in blocks) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: Space.xxl),
             if (b.title != null) ...[
               Text(
                 b.title!,
                 style: theme.typography.body.lg.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeights.semibold,
                   color: colors.foreground,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: Space.sm),
             ],
             if (b.text != null)
               Text(
@@ -171,7 +172,7 @@ class InfoPage extends ConsumerWidget {
               ),
             for (final (i, step) in b.steps.indexed)
               Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: Space.md),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -187,17 +188,17 @@ class InfoPage extends ConsumerWidget {
                           ? Text(
                               '${i + 1}',
                               style: theme.typography.body.xs.copyWith(
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeights.semibold,
                                 color: colors.foreground,
                               ),
                             )
                           : Icon(
                               FLucideIcons.check,
-                              size: 14,
+                              size: IconSizes.xs,
                               color: colors.foreground,
                             ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Space.lg),
                     Expanded(
                       child: Text(
                         step,
@@ -211,7 +212,7 @@ class InfoPage extends ConsumerWidget {
                 ),
               ),
           ],
-          const SizedBox(height: 32),
+          const SizedBox(height: Space.x5l),
           Align(
             alignment: Alignment.centerLeft,
             child: FButton(
@@ -244,9 +245,7 @@ class LegalLinksText extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final style = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final style = theme.mutedText;
     const terms = '\u0001', privacy = '\u0002';
     final raw = template(terms, privacy);
 
@@ -259,7 +258,7 @@ class LegalLinksText extends StatelessWidget {
           text,
           style: style.copyWith(
             color: theme.colors.foreground,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeights.medium,
             decoration: TextDecoration.underline,
           ),
         ),

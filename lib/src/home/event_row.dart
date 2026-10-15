@@ -7,6 +7,7 @@ import '../events/event_card.dart';
 import '../ui/responsive_grid.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
+import '../ui/tokens.dart';
 
 const _gap = 16.0;
 
@@ -54,18 +55,13 @@ class HomeSectionHeader extends StatelessWidget {
               Text(
                 title,
                 style: style.copyWith(
-                  fontWeight: small ? FontWeight.w600 : FontWeight.w700,
+                  fontWeight: small ? FontWeights.semibold : FontWeights.bold,
                   color: theme.colors.foreground,
                 ),
               ),
               if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: theme.typography.body.sm.copyWith(
-                    color: theme.colors.mutedForeground,
-                  ),
-                ),
+                const SizedBox(height: Space.xxs),
+                Text(subtitle!, style: theme.mutedText),
               ],
             ],
           ),
@@ -126,8 +122,8 @@ class _EventRowSectionState extends State<EventRowSection> {
         0,
         p.maxScrollExtent,
       ),
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
+      duration: Motion.slower,
+      curve: Motion.enter,
     );
   }
 
@@ -147,7 +143,7 @@ class _EventRowSectionState extends State<EventRowSection> {
             actions: [
               ...widget.actions,
               if (wide && widget.events.length > 4) ...[
-                const SizedBox(width: 4),
+                const SizedBox(width: Space.xs),
                 FButton.icon(
                   variant: FButtonVariant.ghost,
                   semanticsLabel: l10n.homeScrollBack,
@@ -164,7 +160,7 @@ class _EventRowSectionState extends State<EventRowSection> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         LayoutBuilder(
           builder: (context, constraints) {
             final width = _cardWidth(
@@ -250,7 +246,7 @@ class SkeletonEventRow extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: gutter),
             child: const SkeletonBox(width: 180, height: 20),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           LayoutBuilder(
             builder: (context, constraints) {
               final width = _cardWidth(

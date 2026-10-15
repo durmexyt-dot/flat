@@ -10,6 +10,7 @@ import '../ui/app_dialog.dart';
 import '../ui/format.dart';
 import '../ui/segmented.dart';
 import '../ui/snack.dart';
+import '../ui/tokens.dart';
 
 String handoverMethodName(AppLocalizations l10n, HandoverMethod m) =>
     switch (m) {
@@ -120,7 +121,7 @@ class _HandoverFormState extends State<_HandoverForm> {
                 ? l10n.handoverInfoMobile
                 : l10n.handoverInfoPaper,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           if (methods.length > 1) ...[
             Segmented<HandoverMethod>(
               values: methods,
@@ -128,7 +129,7 @@ class _HandoverFormState extends State<_HandoverForm> {
               label: (m) => handoverMethodName(l10n, m),
               onChanged: (m) => setState(() => _method = m),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
           ],
           if (_method == HandoverMethod.appTransfer)
             FTextFormField(
@@ -147,7 +148,7 @@ class _HandoverFormState extends State<_HandoverForm> {
               description: Text(l10n.handoverTrackingInfo),
               inputFormatters: [LengthLimitingTextInputFormatter(60)],
             ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FTextFormField(
             control: FTextFieldControl.managed(controller: _note),
             label: Text(l10n.handoverNote),
@@ -202,11 +203,9 @@ class _HandoverCardState extends ConsumerState<HandoverCard> {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final h = widget.order.handover!;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     Widget line(String label, String value) => Padding(
-      padding: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.only(top: Space.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -221,21 +220,18 @@ class _HandoverCardState extends ConsumerState<HandoverCard> {
         widget.order.status == OrderStatus.ticketsSent;
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 Icon(handoverIcon(h.method), size: 18),
-                const SizedBox(width: 8),
+                const SizedBox(width: Space.md),
                 Expanded(
                   child: Text(
                     handoverMethodName(l10n, h.method),
-                    style: theme.typography.body.md.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colors.foreground,
-                    ),
+                    style: theme.titleText,
                   ),
                 ),
               ],
@@ -247,12 +243,12 @@ class _HandoverCardState extends ConsumerState<HandoverCard> {
             if (h.note.isNotEmpty) line(l10n.handoverNote, h.note),
             if (h.sentAt != null)
               line(l10n.handoverSentAt, formatDateTime(context, h.sentAt!)),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             if (h.confirmed)
               Row(
                 children: [
-                  const Icon(FLucideIcons.circleCheck, size: 16),
-                  const SizedBox(width: 6),
+                  const Icon(FLucideIcons.circleCheck, size: IconSizes.sm),
+                  const SizedBox(width: Space.sm),
                   Expanded(
                     child: Text(
                       l10n.handoverConfirmedAt(
@@ -264,7 +260,7 @@ class _HandoverCardState extends ConsumerState<HandoverCard> {
               )
             else if (canConfirm) ...[
               Text(l10n.handoverConfirmInfo, style: muted),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FButton(
                 onPress: _busy ? null : _confirm,
                 prefix: const Icon(FLucideIcons.packageCheck),

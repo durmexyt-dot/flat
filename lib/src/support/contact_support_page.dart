@@ -14,6 +14,7 @@ import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 import 'support_repository.dart';
 import 'support_widgets.dart';
+import '../ui/tokens.dart';
 
 /// What a support request is about, passed from order or payout pages.
 class SupportContext {
@@ -111,7 +112,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         child: Form(
           key: _formKey,
           child: Column(
@@ -119,8 +120,8 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
             children: [
               SettingsSectionTitle(l10n.topic),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: Space.md,
+                runSpacing: Space.md,
                 children: [
                   for (final t in SupportTopic.values)
                     FButton(
@@ -138,7 +139,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                     ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               FTextFormField(
                 control: FTextFieldControl.managed(controller: _reference),
                 inputFormatters: [LengthLimitingTextInputFormatter(60)],
@@ -149,7 +150,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                 textCapitalization: TextCapitalization.characters,
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               FTextFormField.multiline(
                 control: FTextFieldControl.managed(controller: _message),
                 label: Text(l10n.message),
@@ -165,38 +166,34 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
               SettingsSectionTitle(l10n.supportImages),
               Text(
                 l10n.supportImagesInfo(maxSupportImages),
-                style: theme.typography.body.sm.copyWith(
-                  color: theme.colors.mutedForeground,
-                ),
+                style: theme.mutedText,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               SupportAttachments(
                 images: _images,
                 busy: _encoding,
                 onAdd: _addImage,
                 onRemove: (i) => setState(() => _images.removeAt(i)),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Space.x3l),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     FLucideIcons.messagesSquare,
-                    size: 18,
+                    size: IconSizes.md,
                     color: theme.colors.mutedForeground,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: Space.md),
                   Expanded(
                     child: Text(
                       l10n.supportAnswerInApp,
-                      style: theme.typography.body.sm.copyWith(
-                        color: theme.colors.mutedForeground,
-                      ),
+                      style: theme.mutedText,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               SubmitButton(
                 label: l10n.send,
                 loading: _sending,

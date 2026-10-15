@@ -5,6 +5,16 @@ import '../settings/settings_controller.dart';
 import 'app_style.dart';
 import 'forui_theme.dart';
 
+/// Neutral greys for Material's surface steps, which Forui has no names for.
+abstract final class _Surface {
+  static const lightLow = Color(0xFFF5F5F5);
+  static const light = Color(0xFFF0F0F0);
+  static const lightHigh = Color(0xFFEBEBEB);
+  static const lightHighest = Color(0xFFE5E5E5);
+  static const dark = Color(0xFF1F1F1F);
+  static const darkHighest = Color(0xFF2E2E2E);
+}
+
 /// Material colors taken from the Forui palette, so the few remaining
 /// Material widgets and our own painters match the Forui widgets.
 ColorScheme materialColors(BrandColor color, Brightness brightness) {
@@ -25,14 +35,14 @@ ColorScheme materialColors(BrandColor color, Brightness brightness) {
     surfaceDim: f.background,
     surfaceBright: f.background,
     surfaceContainerLowest: f.background,
-    surfaceContainerLow: light ? const Color(0xFFF5F5F5) : f.card,
-    surfaceContainer: light ? const Color(0xFFF0F0F0) : const Color(0xFF1F1F1F),
-    surfaceContainerHigh: light ? const Color(0xFFEBEBEB) : f.secondary,
+    surfaceContainerLow: light ? _Surface.lightLow : f.card,
+    surfaceContainer: light ? _Surface.light : _Surface.dark,
+    surfaceContainerHigh: light ? _Surface.lightHigh : f.secondary,
     surfaceContainerHighest: light
-        ? const Color(0xFFE5E5E5)
-        : const Color(0xFF2E2E2E),
+        ? _Surface.lightHighest
+        : _Surface.darkHighest,
     outline: f.mutedForeground,
-    outlineVariant: light ? f.border : const Color(0xFF2E2E2E),
+    outlineVariant: light ? f.border : _Surface.darkHighest,
     inverseSurface: f.foreground,
     onInverseSurface: f.background,
   );

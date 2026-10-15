@@ -14,6 +14,7 @@ import 'order_ticket.dart';
 import 'ticket_files_widgets.dart';
 import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 enum _Filter { all, inProgress, completed, cancelled }
 
@@ -64,7 +65,12 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.md,
+              Space.xl,
+              Space.md,
+            ),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
               child: ConstrainedBox(
@@ -94,14 +100,14 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
                 }
                 final shown = all.where(_matches).toList();
                 return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                  duration: Motion.normal,
                   child: ListView(
                     key: ValueKey(_filter),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                    padding: Insets.pageList,
                     children: [
                       if (!buyer)
                         const SalesAwaitingTicketsAlert(
-                          padding: EdgeInsets.only(bottom: 12),
+                          padding: EdgeInsets.only(bottom: Space.lg),
                         ),
                       ResponsiveGrid(
                         maxColumns: 2,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../ui/hero_tags.dart';
+import '../ui/tokens.dart';
 
 /// Decoded photos, so the image doesn't flicker on rebuilds.
 final _imageCache = <String, MemoryImage>{};
@@ -45,11 +46,11 @@ class UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final initials = Text(
       initialsOf(name),
-      style: TextStyle(fontSize: size * 0.36, fontWeight: FontWeight.w600),
+      style: TextStyle(fontSize: size * 0.36, fontWeight: FontWeights.semibold),
     );
     // Forui avatar: the photo, or the initials on a muted circle.
     final avatar = AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: Motion.slow,
       child: photoBase64 != null
           ? FAvatar(
               key: ValueKey(photoBase64.hashCode),

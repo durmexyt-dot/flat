@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../ui/tokens.dart';
+
 /// A small muted heading above a group or a section.
 class SettingsSectionTitle extends StatelessWidget {
   const SettingsSectionTitle(this.title, {super.key, this.padding});
@@ -12,12 +14,14 @@ class SettingsSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     return Padding(
-      padding: padding ?? const EdgeInsets.fromLTRB(2, 24, 2, 8),
+      padding:
+          padding ??
+          const EdgeInsets.fromLTRB(Space.xxs, Space.x3l, Space.xxs, Space.md),
       child: Text(
         title,
         style: theme.typography.body.sm.copyWith(
           color: theme.colors.mutedForeground,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeights.medium,
         ),
       ),
     );

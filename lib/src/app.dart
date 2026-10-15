@@ -14,6 +14,7 @@ import 'settings/settings_controller.dart';
 import 'ui/forui_theme.dart';
 import 'ui/snack.dart';
 import 'ui/theme.dart';
+import 'ui/tokens.dart';
 
 class FlatApp extends ConsumerWidget {
   const FlatApp({super.key});
@@ -30,8 +31,8 @@ class FlatApp extends ConsumerWidget {
       theme: buildTheme(Brightness.light, settings),
       darkTheme: buildTheme(Brightness.dark, settings),
       themeMode: settings.themeMode,
-      themeAnimationDuration: const Duration(milliseconds: 350),
-      themeAnimationCurve: Curves.easeOutCubic,
+      themeAnimationDuration: Motion.slower,
+      themeAnimationCurve: Motion.enter,
       builder: (context, child) {
         // The user's text size on top of the system's.
         final media = MediaQuery.of(context);
@@ -49,7 +50,7 @@ class FlatApp extends ConsumerWidget {
           ),
           child: FTheme(
             data: buildForuiTheme(settings, brightness, touch: touch),
-            motion: const FThemeMotion(duration: Duration(milliseconds: 300)),
+            motion: const FThemeMotion(duration: Motion.slow),
             child: FToaster(
               key: toasterKey,
               child: FTooltipGroup(
@@ -89,11 +90,11 @@ class _StagingBanner extends StatelessWidget {
     return Banner(
       message: 'STAGING',
       location: BannerLocation.topEnd,
-      color: const Color(0xFFE0A100),
+      color: FixedColors.stagingRibbon,
       textStyle: const TextStyle(
-        color: Color(0xFF1B1B1B),
+        color: FixedColors.onStagingRibbon,
         fontSize: 10,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeights.heavy,
         letterSpacing: 1,
       ),
       child: child,

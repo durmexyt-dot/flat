@@ -13,6 +13,7 @@ import 'listing_ticket.dart';
 import 'ticket_files_widgets.dart';
 import '../ui/segmented.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 enum _Filter { all, active, soldOut, ended }
 
@@ -69,7 +70,12 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.md,
+              Space.xl,
+              Space.md,
+            ),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
               child: ConstrainedBox(
@@ -107,13 +113,18 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                   );
                 }
                 return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
+                  duration: Motion.normal,
                   child: ListView(
                     key: ValueKey(_filter),
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+                    padding: const EdgeInsets.fromLTRB(
+                      Space.xl,
+                      Space.md,
+                      Space.xl,
+                      96,
+                    ),
                     children: [
                       const SalesAwaitingTicketsAlert(
-                        padding: EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: Space.lg),
                       ),
                       ResponsiveGrid(
                         maxColumns: 2,

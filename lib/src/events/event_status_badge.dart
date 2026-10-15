@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/models.dart';
 import '../market/labels.dart';
 import 'genres.dart';
+import '../ui/tokens.dart';
 
 /// The name of an event status.
 String eventStatusName(AppLocalizations l10n, EventStatus s) => switch (s) {
@@ -39,7 +40,7 @@ class EventStatusBadge extends StatelessWidget {
     final muted = !onImage && status != EventStatus.confirmed;
     final color = muted ? colors.mutedForeground : null;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 250),
+      duration: Motion.normal,
       child: FBadge(
         key: ValueKey(status),
         variant: onImage || status == EventStatus.confirmed
@@ -49,7 +50,7 @@ class EventStatusBadge extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(eventStatusIcon(status), size: 13, color: color),
-            const SizedBox(width: 4),
+            const SizedBox(width: Space.xs),
             Text(
               eventStatusName(l10n, status),
               style: color == null ? null : TextStyle(color: color),
@@ -77,7 +78,7 @@ class EventCategoryBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(categoryIcon(category), size: 14),
-          const SizedBox(width: 4),
+          const SizedBox(width: Space.xs),
           Flexible(
             child: Text(
               [

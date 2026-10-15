@@ -16,6 +16,7 @@ import 'data_export.dart';
 import 'dart:convert';
 
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 class PrivacySecurityPage extends ConsumerWidget {
   const PrivacySecurityPage({super.key});
@@ -41,7 +42,7 @@ class PrivacySecurityPage extends ConsumerWidget {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         children: [
           SettingsSectionTitle(l10n.profileVisibility),
           _VisibilityOption(
@@ -51,7 +52,7 @@ class PrivacySecurityPage extends ConsumerWidget {
             selected: visibility == ProfileVisibility.public,
             onTap: () => setVisibility(ProfileVisibility.public),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           _VisibilityOption(
             icon: FLucideIcons.lock,
             title: l10n.profilePrivate,
@@ -67,10 +68,10 @@ class PrivacySecurityPage extends ConsumerWidget {
                 prefix: const Icon(FLucideIcons.key),
                 title: Text(l10n.signInMethods),
                 subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.only(top: Space.xs),
                   child: Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
+                    spacing: Space.sm,
+                    runSpacing: Space.sm,
                     children: [
                       if (user.hasPassword)
                         FBadge(
@@ -146,9 +147,9 @@ class _VisibilityOption extends StatelessWidget {
       selected: selected,
       onPress: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(16),
+        duration: Motion.normal,
+        curve: Motion.enter,
+        padding: const EdgeInsets.all(Space.xl),
         decoration: BoxDecoration(
           borderRadius: theme.style.borderRadius.lg,
           color: selected ? colors.secondary : colors.card,
@@ -162,10 +163,10 @@ class _VisibilityOption extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 20,
+              size: IconSizes.lg,
               color: selected ? colors.primary : colors.mutedForeground,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: Space.xl),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,11 +174,11 @@ class _VisibilityOption extends StatelessWidget {
                   Text(
                     title,
                     style: theme.typography.body.sm.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: Space.xs),
                   Text(
                     info,
                     style: theme.typography.body.sm.copyWith(
@@ -189,11 +190,11 @@ class _VisibilityOption extends StatelessWidget {
             ),
             AnimatedScale(
               scale: selected ? 1 : 0,
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutBack,
+              duration: Motion.normal,
+              curve: Motion.pop,
               child: Icon(
                 FLucideIcons.circleCheck,
-                size: 20,
+                size: IconSizes.lg,
                 color: colors.primary,
               ),
             ),
@@ -246,9 +247,9 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.only(top: Space.xs),
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
+              duration: Motion.slow,
               transitionBuilder: (child, animation) =>
                   ScaleTransition(scale: animation, child: child),
               child: FBadge(
@@ -261,9 +262,9 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
                       verified
                           ? FLucideIcons.badgeCheck
                           : FLucideIcons.circleAlert,
-                      size: 14,
+                      size: IconSizes.xs,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: Space.xs),
                     Text(verified ? l10n.emailVerified : l10n.emailNotVerified),
                   ],
                 ),
@@ -271,12 +272,12 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
             ),
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 250),
+            duration: Motion.normal,
             alignment: Alignment.topCenter,
             child: verified
                 ? const SizedBox.shrink()
                 : Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: Space.xs),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -285,10 +286,10 @@ class _EmailTileState extends ConsumerState<_EmailTile> {
                           overflow: TextOverflow.visible,
                           style: TextStyle(color: colors.mutedForeground),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Space.md),
                         Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                          spacing: Space.md,
+                          runSpacing: Space.md,
                           children: [
                             FButton(
                               variant: .secondary,
@@ -338,30 +339,30 @@ class _DialogLayout extends StatelessWidget {
     builder: (context, style) {
       final narrow = MediaQuery.sizeOf(context).width < 600;
       return Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.x3l),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(title, style: style.titleTextStyle),
-            const SizedBox(height: 8),
+            const SizedBox(height: Space.md),
             DefaultTextStyle.merge(
               style: style.bodyTextStyle.copyWith(
                 fontSize: context.theme.typography.body.sm.fontSize,
               ),
               child: body,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: Space.xxl),
             if (narrow)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 8,
+                spacing: Space.md,
                 children: actions.reversed.toList(),
               )
             else
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                spacing: 8,
+                spacing: Space.md,
                 children: [for (final a in actions) IntrinsicWidth(child: a)],
               ),
           ],
@@ -440,7 +441,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
               validator: (v) =>
                   (v == null || v.isEmpty) ? l10n.passwordRequired : null,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             PasswordField(
               controller: _new,
               label: l10n.newPassword,
@@ -450,7 +451,7 @@ class _ChangePasswordDialogState extends ConsumerState<_ChangePasswordDialog> {
               validator: (v) =>
                   (v == null || v.length < 8) ? l10n.passwordTooShort : null,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             PasswordField(
               controller: _confirm,
               label: l10n.confirmPasswordLabel,
@@ -560,7 +561,7 @@ class _DeleteAccountDialogState extends ConsumerState<_DeleteAccountDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.deleteAccountInfo),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           if (widget.user.hasPassword)
             PasswordField(
               controller: _password,

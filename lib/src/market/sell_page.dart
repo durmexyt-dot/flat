@@ -22,6 +22,7 @@ import 'labels.dart';
 import '../ui/segmented.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 class SellPage extends ConsumerStatefulWidget {
   const SellPage({super.key, this.eventId});
@@ -210,18 +211,18 @@ class _SellPageState extends ConsumerState<SellPage> {
         // Not a ListView: it would drop off-screen fields, and the form
         // would skip validating them.
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+          padding: Insets.page,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (user != null && !user.emailVerified)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: FAlert(
                     icon: const Icon(FLucideIcons.mailWarning),
                     title: Text(l10n.verifyBeforeSelling),
                     subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: Space.md),
                       child: Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: FButton(
@@ -240,7 +241,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                 ),
               if (ban != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: FAlert(
                     variant: FAlertVariant.destructive,
                     icon: const Icon(FLucideIcons.ban),
@@ -250,7 +251,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                 )
               else if (tooMany)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: FAlert(
                     icon: const Icon(FLucideIcons.shieldCheck),
                     title: Text(l10n.sellLimitReached),
@@ -265,7 +266,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                 )
               else if (isNew)
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: FAlert(
                     icon: const Icon(FLucideIcons.shieldCheck),
                     title: Text(l10n.sellNewSeller),
@@ -293,13 +294,13 @@ class _SellPageState extends ConsumerState<SellPage> {
                 label: (t) => ticketTypeName(l10n, t),
                 onChanged: (t) => setState(() => _type = t),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               _QuantityStepper(
                 value: _quantity,
                 max: maxQuantity,
                 onChanged: (v) => setState(() => _quantity = v),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -312,7 +313,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                       textInputAction: TextInputAction.next,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: Space.lg),
                   Expanded(
                     child: FTextFormField(
                       control: FTextFieldControl.managed(controller: _row),
@@ -324,7 +325,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               FTextFormField(
                 control: FTextFieldControl.managed(controller: _seats),
                 inputFormatters: [LengthLimitingTextInputFormatter(60)],
@@ -344,12 +345,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                     fieldIcon(FLucideIcons.receiptText),
                 suffixBuilder: (context, style, variants) => Padding(
                   padding: const EdgeInsetsDirectional.only(end: 12),
-                  child: Text(
-                    currency.symbol,
-                    style: context.theme.typography.body.sm.copyWith(
-                      color: context.theme.colors.mutedForeground,
-                    ),
-                  ),
+                  child: Text(currency.symbol, style: context.theme.mutedText),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
@@ -363,7 +359,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                       : null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               FTextFormField(
                 control: FTextFieldControl.managed(
                   controller: _price,
@@ -385,12 +381,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                     fieldIcon(FLucideIcons.tag),
                 suffixBuilder: (context, style, variants) => Padding(
                   padding: const EdgeInsetsDirectional.only(end: 12),
-                  child: Text(
-                    currency.symbol,
-                    style: context.theme.typography.body.sm.copyWith(
-                      color: context.theme.colors.mutedForeground,
-                    ),
-                  ),
+                  child: Text(currency.symbol, style: context.theme.mutedText),
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
@@ -406,14 +397,14 @@ class _SellPageState extends ConsumerState<SellPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               _PriceBreakdown(
                 priceMinor: parseMoney(_price.text) ?? 0,
                 faceValueMinor: parseMoney(_faceValue.text),
                 quantity: _quantity,
                 currency: currency.code,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               FTextFormField(
                 control: FTextFieldControl.managed(controller: _note),
                 label: Text(l10n.noteLabel),
@@ -423,7 +414,7 @@ class _SellPageState extends ConsumerState<SellPage> {
                 minLines: 1,
                 maxLength: 300,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               SubmitButton(
                 label: l10n.publishListing,
                 loading: _saving,
@@ -459,11 +450,11 @@ class _WithGuide extends StatelessWidget {
           ),
         ),
         // The form's scroll padding already adds 16 on its right.
-        const SizedBox(width: 16),
+        const SizedBox(width: Space.xl),
         const SizedBox(
           width: 340,
           child: Padding(
-            padding: EdgeInsets.only(top: 8, right: 16),
+            padding: EdgeInsets.only(top: Space.md, right: Space.xl),
             child: _SellingGuide(),
           ),
         ),
@@ -488,19 +479,13 @@ class _SellingGuide extends ConsumerWidget {
     ];
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(Space.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.howSellingWorks,
-              style: theme.typography.body.md.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colors.foreground,
-              ),
-            ),
-            const SizedBox(height: 16),
+            Text(l10n.howSellingWorks, style: theme.titleText),
+            const SizedBox(height: Space.xl),
             for (var i = 0; i < steps.length; i++)
               Padding(
                 padding: const EdgeInsets.only(bottom: 14),
@@ -512,12 +497,12 @@ class _SellingGuide extends ConsumerWidget {
                       child: Text(
                         '${i + 1}',
                         style: theme.typography.body.xs.copyWith(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeights.bold,
                           color: theme.colors.foreground,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: Space.lg),
                     Expanded(
                       child: Text(
                         steps[i],
@@ -530,13 +515,11 @@ class _SellingGuide extends ConsumerWidget {
                 ),
               ),
             const FDivider(
-              style: .delta(padding: .value(EdgeInsets.only(bottom: 12))),
+              style: .delta(padding: .value(EdgeInsets.only(bottom: Space.lg))),
             ),
             Text(
               l10n.faqFeesA('${fees.buyerPercent}', '${fees.sellerPercent}'),
-              style: theme.typography.body.xs.copyWith(
-                color: theme.colors.mutedForeground,
-              ),
+              style: theme.mutedSmallText,
             ),
           ],
         ),
@@ -617,7 +600,7 @@ class _QuantityStepper extends StatelessWidget {
           child: Text(
             l10n.quantity,
             style: theme.typography.body.sm.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeights.medium,
               color: theme.colors.foreground,
             ),
           ),
@@ -630,7 +613,7 @@ class _QuantityStepper extends StatelessWidget {
         SizedBox(
           width: 48,
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.quick,
             transitionBuilder: (child, animation) => ScaleTransition(
               scale: animation,
               child: FadeTransition(opacity: animation, child: child),
@@ -640,7 +623,7 @@ class _QuantityStepper extends StatelessWidget {
               key: ValueKey(value),
               textAlign: TextAlign.center,
               style: theme.typography.body.lg.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeights.semibold,
                 color: theme.colors.foreground,
               ),
             ),
@@ -704,13 +687,13 @@ class _PriceBreakdown extends ConsumerWidget {
             ),
           ),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.quick,
             child: Text(
               value,
               key: ValueKey(value),
               style: strong
                   ? theme.typography.body.lg.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                       color: color ?? colors.foreground,
                     )
                   : theme.typography.body.sm.copyWith(
@@ -723,15 +706,15 @@ class _PriceBreakdown extends ConsumerWidget {
     );
 
     const divider = FDivider(
-      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: 8))),
+      style: .delta(padding: .value(EdgeInsets.symmetric(vertical: Space.md))),
     );
     final profitColor = loss ? colors.destructive : null;
 
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: AnimatedSize(
-          duration: const Duration(milliseconds: 200),
+          duration: Motion.quick,
           alignment: Alignment.topCenter,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -757,7 +740,7 @@ class _PriceBreakdown extends ConsumerWidget {
                 ),
                 if (loss)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: Space.xs),
                     child: Text(
                       l10n.priceBelowFaceValue,
                       style: theme.typography.body.xs.copyWith(
@@ -770,11 +753,11 @@ class _PriceBreakdown extends ConsumerWidget {
               Text(
                 l10n.priceForQuantity(quantity),
                 style: theme.typography.body.xs.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeights.semibold,
                   color: colors.mutedForeground,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: Space.xxs),
               row(l10n.totalPayout, money(perTicket * quantity), strong: true),
               if (profit != null)
                 row(

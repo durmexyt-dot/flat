@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_widgets.dart';
 import 'format.dart';
+import 'tokens.dart';
 
 /// Asks for a day, then a time. Null if either picker is cancelled.
 Future<DateTime?> pickDateTime(
@@ -103,7 +104,7 @@ class _DateTimeFieldState extends State<DateTimeField> {
         padding: const EdgeInsetsDirectional.only(end: 12),
         child: Icon(
           FLucideIcons.chevronDown,
-          size: 16,
+          size: IconSizes.sm,
           color: context.theme.colors.mutedForeground,
         ),
       ),

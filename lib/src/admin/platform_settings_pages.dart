@@ -13,6 +13,7 @@ import '../ui/format.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/snack.dart';
 import 'admin_page.dart';
+import '../ui/tokens.dart';
 
 /// A whole number field in [min]..[max]; empty means null when [optional].
 class NumberField extends StatelessWidget {
@@ -166,16 +167,11 @@ class _ResaleFormState extends ConsumerState<_ResaleForm> {
     final changed = edited != null && edited != widget.current;
     final example = edited?.maxMarkupPercent;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      padding: Insets.page,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.resaleIntro,
-            style: context.theme.typography.body.sm.copyWith(
-              color: context.theme.colors.mutedForeground,
-            ),
-          ),
+          Text(l10n.resaleIntro, style: context.theme.mutedText),
           SettingsSectionTitle(l10n.resaleRules),
           SettingsGroup(
             children: [
@@ -212,12 +208,12 @@ class _ResaleFormState extends ConsumerState<_ResaleForm> {
             ],
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 250),
+            duration: Motion.normal,
             alignment: Alignment.topCenter,
             child: !_limited
                 ? const SizedBox(width: double.infinity)
                 : Padding(
-                    padding: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.only(top: Space.xl),
                     child: NumberField(
                       key: const ValueKey('markup'),
                       controller: _markup,
@@ -231,7 +227,7 @@ class _ResaleFormState extends ConsumerState<_ResaleForm> {
                   ),
           ),
           if (example != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             AdminNotice(
               text: l10n.resaleExample(
                 formatMoney(context, 5000, 'BAM'),
@@ -239,9 +235,9 @@ class _ResaleFormState extends ConsumerState<_ResaleForm> {
               ),
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           AdminNotice(text: l10n.resaleNotice),
-          const SizedBox(height: 24),
+          const SizedBox(height: Space.x3l),
           FButton(
             onPress: changed && !_busy ? _save : null,
             prefix: _busy ? FCircularProgress.loader() : null,
@@ -340,17 +336,12 @@ class _LimitsFormState extends ConsumerState<_LimitsForm> {
     final changed = edited != null && edited != widget.current;
     void update() => setState(() {});
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      padding: Insets.page,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l10n.limitsIntro,
-            style: context.theme.typography.body.sm.copyWith(
-              color: context.theme.colors.mutedForeground,
-            ),
-          ),
-          const SizedBox(height: 16),
+          Text(l10n.limitsIntro, style: context.theme.mutedText),
+          const SizedBox(height: Space.xl),
           NumberField(
             controller: _listings,
             label: l10n.limitsListings,
@@ -359,7 +350,7 @@ class _LimitsFormState extends ConsumerState<_LimitsForm> {
             max: 100,
             onChanged: update,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           NumberField(
             controller: _tickets,
             label: l10n.limitsTickets,
@@ -368,7 +359,7 @@ class _LimitsFormState extends ConsumerState<_LimitsForm> {
             max: 50,
             onChanged: update,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           NumberField(
             controller: _sales,
             label: l10n.limitsTrusted,
@@ -377,9 +368,9 @@ class _LimitsFormState extends ConsumerState<_LimitsForm> {
             max: 100,
             onChanged: update,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           AdminNotice(text: l10n.limitsNotice),
-          const SizedBox(height: 24),
+          const SizedBox(height: Space.x3l),
           FButton(
             onPress: changed && !_busy ? _save : null,
             prefix: _busy ? FCircularProgress.loader() : null,
@@ -502,17 +493,12 @@ class _CompanyFormState extends ConsumerState<_CompanyForm> {
     return Form(
       key: _form,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              l10n.companyIntro,
-              style: context.theme.typography.body.sm.copyWith(
-                color: context.theme.colors.mutedForeground,
-              ),
-            ),
-            const SizedBox(height: 16),
+            Text(l10n.companyIntro, style: context.theme.mutedText),
+            const SizedBox(height: Space.xl),
             _text(
               _name,
               l10n.companyName,
@@ -548,7 +534,7 @@ class _CompanyFormState extends ConsumerState<_CompanyForm> {
                   : l10n.companyPrefixInvalid,
             ),
             AdminNotice(text: l10n.companyNotice),
-            const SizedBox(height: 24),
+            const SizedBox(height: Space.x3l),
             FButton(
               onPress: _busy ? null : _save,
               prefix: _busy ? FCircularProgress.loader() : null,

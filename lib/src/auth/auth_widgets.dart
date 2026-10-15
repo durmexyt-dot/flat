@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../brand/brand.dart';
 import 'auth_repository.dart';
+import '../ui/tokens.dart';
 
 String authExceptionText(AppLocalizations l10n, AuthException e) =>
     authErrorText(l10n, e.error, code: e.code);
@@ -78,7 +79,12 @@ class AuthScaffold extends StatelessWidget {
   final String? subtitle;
   final List<Widget> children;
 
-  static const _padding = EdgeInsets.fromLTRB(16, 8, 16, 24);
+  static const _padding = EdgeInsets.fromLTRB(
+    Space.xl,
+    Space.md,
+    Space.xl,
+    Space.x3l,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -105,20 +111,20 @@ class AuthScaffold extends StatelessWidget {
             const SettingsButton(),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: Space.xxl),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BrandTagline(
                 title,
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeights.bold,
                 ),
               ),
               if (subtitle != null) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: Space.sm),
                 Text(
                   subtitle!,
                   textAlign: TextAlign.center,
@@ -127,7 +133,7 @@ class AuthScaffold extends StatelessWidget {
                   ),
                 ),
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: Space.xxl),
               ...children,
             ],
           ),
@@ -230,7 +236,11 @@ class _FieldIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsetsDirectional.only(start: 12, end: 2),
-    child: Icon(icon, size: 18, color: context.theme.colors.mutedForeground),
+    child: Icon(
+      icon,
+      size: IconSizes.md,
+      color: context.theme.colors.mutedForeground,
+    ),
   );
 }
 
@@ -278,16 +288,16 @@ class AnimatedErrorText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutCubic,
+      duration: Motion.normal,
+      curve: Motion.enter,
       alignment: Alignment.topCenter,
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
+        duration: Motion.normal,
         child: text.isEmpty
             ? const SizedBox(width: double.infinity)
             : Padding(
                 key: ValueKey(text),
-                padding: const EdgeInsets.only(top: 12),
+                padding: const EdgeInsets.only(top: Space.lg),
                 child: Text(
                   text,
                   textAlign: TextAlign.center,
@@ -324,7 +334,7 @@ class SubmitButton extends StatelessWidget {
       child: FButton(
         onPress: onPressed,
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
+          duration: Motion.quick,
           child: loading
               ? FCircularProgress.loader(
                   key: const ValueKey('loading'),
@@ -360,8 +370,8 @@ class GoogleButton extends StatelessWidget {
         'G',
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF4285F4),
+          fontWeight: FontWeights.bold,
+          color: FixedColors.google,
         ),
       ),
       child: Flexible(
@@ -381,17 +391,15 @@ class OrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.theme;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: Space.xl),
       child: Row(
         children: [
           const Expanded(child: FDivider()),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: Space.lg),
             child: Text(
               AppLocalizations.of(context).orDivider,
-              style: theme.typography.body.xs.copyWith(
-                color: theme.colors.mutedForeground,
-              ),
+              style: theme.mutedSmallText,
             ),
           ),
           const Expanded(child: FDivider()),

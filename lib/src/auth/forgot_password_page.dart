@@ -6,6 +6,7 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
+import '../ui/tokens.dart';
 
 class ForgotPasswordPage extends ConsumerStatefulWidget {
   const ForgotPasswordPage({super.key, this.initialEmail = ''});
@@ -75,7 +76,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 size: 56,
                 color: theme.colors.mutedForeground,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: Space.xl),
               Text(
                 l10n.resetSent(_email.text.trim()),
                 textAlign: TextAlign.center,
@@ -83,7 +84,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   color: theme.colors.foreground,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: Space.x3l),
               SubmitButton(
                 label: l10n.backToLogin,
                 loading: false,
@@ -101,7 +102,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 ),
               ),
               AnimatedErrorText(error),
-              const SizedBox(height: 20),
+              const SizedBox(height: Space.xxl),
               SubmitButton(
                 label: l10n.resetButton,
                 loading: _loading,

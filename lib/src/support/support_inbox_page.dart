@@ -12,6 +12,7 @@ import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import 'support_repository.dart';
 import 'support_widgets.dart';
+import '../ui/tokens.dart';
 
 enum _Filter { open, answered, closed, all }
 
@@ -73,7 +74,12 @@ class _SupportInboxPageState extends ConsumerState<SupportInboxPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.md,
+              Space.xl,
+              Space.md,
+            ),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
               child: ConstrainedBox(
@@ -96,7 +102,7 @@ class _SupportInboxPageState extends ConsumerState<SupportInboxPage> {
               onRetry: () => ref.invalidate(staffTicketsProvider),
               loading: const SkeletonTicketList(),
               data: (_) => AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: Motion.normal,
                 child: shown.isEmpty
                     ? Align(
                         key: ValueKey('empty-$_filter'),
@@ -108,9 +114,10 @@ class _SupportInboxPageState extends ConsumerState<SupportInboxPage> {
                       )
                     : ListView.separated(
                         key: ValueKey('list-$_filter'),
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                        padding: Insets.pageList,
                         itemCount: shown.length,
-                        separatorBuilder: (_, _) => const SizedBox(height: 8),
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: Space.md),
                         itemBuilder: (context, i) {
                           final t = shown[i];
                           return SupportTicketTile(
@@ -134,10 +141,7 @@ class _SupportInboxPageState extends ConsumerState<SupportInboxPage> {
       title: l10n.supportInbox,
       maxWidth: SiteWidth.form,
       accountNav: true,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        child: body,
-      ),
+      body: AnimatedSwitcher(duration: Motion.normal, child: body),
     );
   }
 }

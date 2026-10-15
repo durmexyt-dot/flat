@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../info/info_page.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
+import '../ui/tokens.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -76,7 +77,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 EmailField(controller: _email, enabled: !_loading),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 PasswordField(
                   controller: _password,
                   label: l10n.passwordLabel,
@@ -90,7 +91,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         // Side by side; on narrow phones the link moves below instead of
         // being cut off.
         Wrap(
@@ -101,7 +102,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             // tappable label keeps its natural width in this row.
             Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 8,
+              spacing: Space.md,
               children: [
                 FCheckbox(
                   semanticsLabel: l10n.keepSignedIn,
@@ -137,7 +138,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ],
         ),
         AnimatedErrorText(error),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         SubmitButton(
           label: l10n.loginButton,
           loading: _loading,
@@ -146,22 +147,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         const OrDivider(),
         GoogleButton(onPressed: _loading ? null : _signInWithGoogle),
         // Google sign-in creates an account on first use.
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         LegalLinksText(
           template: l10n.legalContinueAccept,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: Space.xxl),
         Wrap(
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(
-              l10n.noAccount,
-              style: theme.typography.body.sm.copyWith(
-                color: theme.colors.mutedForeground,
-              ),
-            ),
+            Text(l10n.noAccount, style: theme.mutedText),
             FButton(
               variant: FButtonVariant.ghost,
               size: FButtonSizeVariant.sm,
@@ -171,7 +167,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: Space.xs),
         Center(
           child: FButton(
             variant: FButtonVariant.ghost,

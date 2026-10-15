@@ -12,6 +12,7 @@ import 'photo_actions.dart';
 import '../ui/snack.dart';
 import '../ui/nav.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 final usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
 
@@ -91,7 +92,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: Insets.pageList,
         child: Align(
           // Website layout: under the page title, not centered.
           alignment: isWideLayout(context)
@@ -111,7 +112,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       name: _name.text,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Space.md),
                   Center(
                     child: FButton(
                       variant: FButtonVariant.ghost,
@@ -125,10 +126,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: Space.xl),
                   FCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(Space.xl),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -150,7 +151,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                 ? l10n.nameRequired
                                 : null,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Space.xl),
                           FTextFormField(
                             control: FTextFieldControl.managed(
                               controller: _username,
@@ -176,7 +177,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: Space.xl),
                           FTextFormField(
                             control: FTextFieldControl.managed(
                               initial: TextEditingValue(
@@ -192,7 +193,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: Space.x3l),
                   SubmitButton(
                     label: l10n.save,
                     loading: _saving,

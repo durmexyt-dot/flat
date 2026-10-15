@@ -9,6 +9,7 @@ import '../config/app_info.dart';
 import '../data/repositories.dart';
 import 'app_style.dart';
 import 'site_scaffold.dart';
+import 'tokens.dart';
 
 /// The website footer: brand, company pages, help, legal pages and the
 /// version. Columns
@@ -89,29 +90,29 @@ class SiteFooter extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(flex: 2, child: brand),
-                const SizedBox(width: 32),
+                const SizedBox(width: Space.x5l),
                 Expanded(child: company),
-                const SizedBox(width: 32),
+                const SizedBox(width: Space.x5l),
                 Expanded(child: help),
-                const SizedBox(width: 32),
+                const SizedBox(width: Space.x5l),
                 Expanded(child: legal),
               ],
             )
           else ...[
             brand,
-            const SizedBox(height: 24),
+            const SizedBox(height: Space.x3l),
             company,
-            const SizedBox(height: 20),
+            const SizedBox(height: Space.xxl),
             help,
-            const SizedBox(height: 20),
+            const SizedBox(height: Space.xxl),
             legal,
           ],
-          const SizedBox(height: 24),
+          const SizedBox(height: Space.x3l),
           const FDivider(),
-          const SizedBox(height: 4),
+          const SizedBox(height: Space.xs),
           Wrap(
-            spacing: 16,
-            runSpacing: 4,
+            spacing: Space.xl,
+            runSpacing: Space.xs,
             children: [
               for (final text in [
                 l10n.footerCopyright(DateTime.now().year),
@@ -147,22 +148,17 @@ class _FooterColumn extends StatelessWidget {
         Text(
           title,
           style: theme.typography.body.sm.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeights.semibold,
             color: theme.colors.foreground,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: Space.sm),
         for (final (label, path) in links)
           FTappable(
             onPress: () => context.push(path),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Text(
-                label,
-                style: theme.typography.body.sm.copyWith(
-                  color: theme.colors.mutedForeground,
-                ),
-              ),
+              padding: const EdgeInsets.symmetric(vertical: Space.sm),
+              child: Text(label, style: theme.mutedText),
             ),
           ),
       ],

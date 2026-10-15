@@ -18,6 +18,7 @@ import '../ui/snack.dart';
 import 'labels.dart';
 import 'listing_ticket.dart';
 import 'ticket_files_widgets.dart';
+import '../ui/tokens.dart';
 
 /// The seller's ticket files of a listing: upload, status and delete.
 /// Uploaded files go to buyers automatically right after they pay.
@@ -166,10 +167,10 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
     final eTicket = listing.ticketType == TicketType.eTicket;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      padding: Insets.pageList,
       children: [
         ListingTicket(listing: listing, showStatus: true),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         if (eTicket)
           ..._eTickets(context)
         else ...[
@@ -182,7 +183,7 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
             title: Text(l10n.deliveryManualTitle),
             subtitle: Text(l10n.deliveryManualInfo),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FButton(
             variant: FButtonVariant.outline,
             prefix: const Icon(FLucideIcons.store),
@@ -219,7 +220,7 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
       SettingsSectionTitle(l10n.deliveryFilesSection),
       FCard(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Space.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -227,31 +228,29 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
                 l10n.deliveryProgress(uploaded, listing.quantity),
                 style: theme.typography.body.sm.copyWith(
                   color: theme.colors.foreground,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeights.semibold,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Space.md),
               FDeterminateProgress(
                 value: listing.quantity == 0
                     ? 0
                     : (uploaded / listing.quantity).clamp(0, 1),
               ),
               if (remaining == 0) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: Space.md),
                 Row(
                   children: [
                     Icon(
                       FLucideIcons.circleCheck,
-                      size: 16,
+                      size: IconSizes.sm,
                       color: theme.colors.mutedForeground,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: Space.sm),
                     Expanded(
                       child: Text(
                         l10n.deliveryAllUploaded,
-                        style: theme.typography.body.sm.copyWith(
-                          color: theme.colors.mutedForeground,
-                        ),
+                        style: theme.mutedText,
                       ),
                     ),
                   ],
@@ -261,21 +260,19 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
           ),
         ),
       ),
-      const SizedBox(height: 12),
+      const SizedBox(height: Space.lg),
       AnimatedSize(
-        duration: const Duration(milliseconds: 250),
+        duration: Motion.normal,
         alignment: Alignment.topCenter,
         child: filesValue.isLoading && !filesValue.hasValue
             ? const Shimmer(child: SkeletonBox(height: 64, radius: 12))
             : files.isEmpty
             ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: Space.md),
                 child: Text(
                   l10n.deliveryNoFiles,
                   textAlign: TextAlign.center,
-                  style: theme.typography.body.sm.copyWith(
-                    color: theme.colors.mutedForeground,
-                  ),
+                  style: theme.mutedText,
                 ),
               )
             : FTileGroup(
@@ -292,7 +289,7 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
                             '${l10n.deliveryFileTickets(f.tickets)} · '
                             '${formatFileSize(context, f.size)}',
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: Space.sm),
                           StatusChip(
                             label: f.assigned
                                 ? l10n
@@ -320,19 +317,17 @@ class _TicketFilesState extends ConsumerState<_TicketFiles> {
               ),
       ),
       if (active && remaining > 0) ...[
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         SubmitButton(
           label: _uploading ? l10n.deliveryUploading : l10n.deliveryAddFile,
           loading: _uploading,
           onPressed: () => _add(remaining),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         Text(
           l10n.deliveryFileTypes,
           textAlign: TextAlign.center,
-          style: theme.typography.body.xs.copyWith(
-            color: theme.colors.mutedForeground,
-          ),
+          style: theme.mutedSmallText,
         ),
       ],
     ];
@@ -355,7 +350,7 @@ class _TicketCountPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(l10n.deliveryHowManyInfo),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         ValueListenableBuilder<int>(
           valueListenable: count,
           builder: (context, n, _) => Row(
@@ -372,7 +367,7 @@ class _TicketCountPicker extends StatelessWidget {
                   l10n.deliveryFileTickets(n),
                   textAlign: TextAlign.center,
                   style: theme.typography.body.lg.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeights.semibold,
                     color: theme.colors.foreground,
                   ),
                 ),

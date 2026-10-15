@@ -14,6 +14,7 @@ import '../ui/site_scaffold.dart';
 import '../ui/snack.dart';
 import 'admin_page.dart';
 import 'admin_repository.dart';
+import '../ui/tokens.dart';
 
 /// Admins and support accounts; admins add and remove support accounts.
 class TeamPage extends ConsumerWidget {
@@ -29,7 +30,7 @@ class TeamPage extends ConsumerWidget {
         builder: (context) {
           final team = ref.watch(teamProvider);
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            padding: Insets.page,
             children: [
               SettingsSectionTitle(l10n.adminTeamMembers),
               AsyncView<List<StaffMember>>(
@@ -38,7 +39,7 @@ class TeamPage extends ConsumerWidget {
                 onRetry: () => ref.invalidate(teamProvider),
                 data: (members) => _TeamList(members: members),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: Space.lg),
               AdminNotice(text: l10n.adminAdminsInfo),
               SettingsSectionTitle(l10n.adminAddSupport),
               _AddSupport(team: team.value ?? const []),
@@ -225,13 +226,8 @@ class _AddSupportState extends ConsumerState<_AddSupport> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.adminAddSupportInfo,
-          style: theme.typography.body.sm.copyWith(
-            color: theme.colors.mutedForeground,
-          ),
-        ),
-        const SizedBox(height: 12),
+        Text(l10n.adminAddSupportInfo, style: theme.mutedText),
+        const SizedBox(height: Space.lg),
         FTextFormField(
           key: const ValueKey('find-user'),
           control: FTextFieldControl.managed(
@@ -249,7 +245,7 @@ class _AddSupportState extends ConsumerState<_AddSupport> {
           enableSuggestions: false,
           onSubmit: (_) => _search(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         FButton(
           variant: .outline,
           onPress: _searching ? null : _search,
@@ -259,16 +255,16 @@ class _AddSupportState extends ConsumerState<_AddSupport> {
           child: Text(l10n.adminFindUser),
         ),
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
+          duration: Motion.normal,
+          curve: Motion.ease,
           alignment: Alignment.topCenter,
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
+            duration: Motion.normal,
             child: result == null
                 ? const SizedBox(key: ValueKey('none'), width: double.infinity)
                 : Padding(
                     key: ValueKey(result.user?.uid ?? 'not-found'),
-                    padding: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.only(top: Space.xl),
                     child: result.user == null
                         ? _NotFound()
                         : _UserCard(
@@ -292,30 +288,19 @@ class _NotFound extends StatelessWidget {
     final theme = context.theme;
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(FLucideIcons.userX, color: theme.colors.mutedForeground),
-            const SizedBox(width: 12),
+            const SizedBox(width: Space.lg),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.adminUserNotFound,
-                    style: theme.typography.body.md.copyWith(
-                      color: theme.colors.foreground,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    l10n.adminUserNotFoundInfo,
-                    style: theme.typography.body.sm.copyWith(
-                      color: theme.colors.mutedForeground,
-                    ),
-                  ),
+                  Text(l10n.adminUserNotFound, style: theme.titleText),
+                  const SizedBox(height: Space.xxs),
+                  Text(l10n.adminUserNotFoundInfo, style: theme.mutedText),
                 ],
               ),
             ),
@@ -345,9 +330,7 @@ class _UserCard extends ConsumerWidget {
     final theme = context.theme;
     final me = ref.watch(currentUidProvider);
     final member = team.where((m) => m.uid == user.uid).firstOrNull;
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
 
     final Widget action;
     if (user.uid == me) {
@@ -357,10 +340,10 @@ class _UserCard extends ConsumerWidget {
         children: [
           Icon(
             FLucideIcons.shieldCheck,
-            size: 18,
+            size: IconSizes.md,
             color: theme.colors.foreground,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: Space.md),
           Expanded(
             child: Text(
               l10n.adminAlreadyInTeam(_roleName(l10n, member.role)),
@@ -381,7 +364,7 @@ class _UserCard extends ConsumerWidget {
 
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -391,17 +374,14 @@ class _UserCard extends ConsumerWidget {
                   size: 48,
                   child: Text(_initials(user.name, user.email)),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: Space.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         user.name.isNotEmpty ? user.name : l10n.adminNoName,
-                        style: theme.typography.body.md.copyWith(
-                          color: theme.colors.foreground,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: theme.titleText,
                       ),
                       if (user.email.isNotEmpty)
                         Text(
@@ -416,7 +396,7 @@ class _UserCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: Space.xl),
             action,
           ],
         ),

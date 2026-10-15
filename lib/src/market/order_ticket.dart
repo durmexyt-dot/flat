@@ -8,6 +8,7 @@ import '../ui/hero_tags.dart';
 import 'labels.dart';
 import 'listing_ticket.dart';
 import 'order_labels.dart';
+import '../ui/tokens.dart';
 
 /// An order as a ticket: number, quantity, amount and status.
 class OrderTicket extends StatelessWidget {
@@ -36,29 +37,29 @@ class OrderTicket extends StatelessWidget {
       event: order.event,
       onTap: onTap,
       lines: [
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         StatusChip(
           label: orderStatusName(l10n, order.status),
           tone: orderTone(order.status),
         ),
         if (orderReasonText(l10n, order) case final reason?) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: Space.xs),
           Text(
             reason,
             style: type.body.xs.copyWith(color: colors.mutedForeground),
           ),
         ],
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         Wrap(
-          spacing: 8,
-          runSpacing: 4,
+          spacing: Space.md,
+          runSpacing: Space.xs,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               formatMoney(context, amount, order.currency),
               style: type.body.lg.copyWith(
                 color: colors.foreground,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeights.bold,
               ),
             ),
             Text(

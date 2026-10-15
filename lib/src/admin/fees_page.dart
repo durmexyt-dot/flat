@@ -15,6 +15,7 @@ import '../ui/site_scaffold.dart';
 import '../ui/snack.dart';
 import 'admin_page.dart';
 import 'admin_repository.dart';
+import '../ui/tokens.dart';
 
 /// Ticket price of the example on the fees page (50,00).
 const _examplePriceMinor = 5000;
@@ -107,9 +108,9 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
         children: [
           Text(
             l10n.adminFeesSummary(fees.buyerPercent, fees.sellerPercent),
-            style: const TextStyle(fontWeight: FontWeight.w600),
+            style: const TextStyle(fontWeight: FontWeights.semibold),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           Text(l10n.adminFeesNotice),
         ],
       ),
@@ -144,7 +145,7 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
     final edited = _edited;
     final changed = edited != null && edited != current;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      padding: Insets.pageList,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -155,14 +156,12 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
                 current.sellerPercent,
               ),
             ),
-            style: theme.typography.body.sm.copyWith(
-              color: theme.colors.mutedForeground,
-            ),
+            style: theme.mutedText,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           FCard(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Space.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -174,7 +173,7 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
                     icon: FLucideIcons.shoppingCart,
                     onChanged: () => setState(() {}),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: Space.xxl),
                   _PercentField(
                     key: const ValueKey('seller-fee'),
                     controller: _seller,
@@ -188,9 +187,9 @@ class _FeesFormState extends ConsumerState<_FeesForm> {
             ),
           ),
           _Example(fees: edited ?? current),
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           AdminNotice(text: l10n.adminFeesNotice),
-          const SizedBox(height: 24),
+          const SizedBox(height: Space.x3l),
           FButton(
             onPress: changed && !_saving ? _save : null,
             prefix: _saving ? FCircularProgress.loader() : null,
@@ -237,26 +236,13 @@ class _PercentField extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: 18, color: theme.colors.mutedForeground),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                label,
-                style: theme.typography.body.md.copyWith(
-                  color: theme.colors.foreground,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            Icon(icon, size: IconSizes.md, color: theme.colors.mutedForeground),
+            const SizedBox(width: Space.md),
+            Expanded(child: Text(label, style: theme.titleText)),
           ],
         ),
-        const SizedBox(height: 2),
-        Text(
-          description,
-          style: theme.typography.body.sm.copyWith(
-            color: theme.colors.mutedForeground,
-          ),
-        ),
+        const SizedBox(height: Space.xxs),
+        Text(description, style: theme.mutedText),
         const SizedBox(height: 10),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +252,7 @@ class _PercentField extends StatelessWidget {
               onPress: value != null && value > 0 ? () => _step(-1) : null,
               child: const Icon(FLucideIcons.minus),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Space.md),
             Expanded(
               child: FTextFormField(
                 control: FTextFieldControl.managed(
@@ -294,7 +280,7 @@ class _PercentField extends StatelessWidget {
                     : null,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Space.md),
             FButton.icon(
               semanticsLabel: '${l10n.adminFeeIncrease} $label',
               onPress: value == null || value < FeeConfig.maxPercent
@@ -326,7 +312,7 @@ class _Example extends ConsumerWidget {
     final sellerFee = fees.sellerFee(price);
 
     Widget row(String label, String value, {bool strong = false}) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: Space.xs),
       child: Row(
         children: [
           Expanded(
@@ -336,12 +322,12 @@ class _Example extends ConsumerWidget {
                 color: strong
                     ? theme.colors.foreground
                     : theme.colors.mutedForeground,
-                fontWeight: strong ? FontWeight.w600 : null,
+                fontWeight: strong ? FontWeights.semibold : null,
               ),
             ),
           ),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.quick,
             transitionBuilder: (child, animation) =>
                 FadeTransition(opacity: animation, child: child),
             child: Text(
@@ -349,7 +335,7 @@ class _Example extends ConsumerWidget {
               key: ValueKey(value),
               style: theme.typography.body.sm.copyWith(
                 color: theme.colors.foreground,
-                fontWeight: strong ? FontWeight.w600 : FontWeight.w500,
+                fontWeight: strong ? FontWeights.semibold : FontWeights.medium,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -364,7 +350,10 @@ class _Example extends ConsumerWidget {
         SettingsSectionTitle(l10n.adminFeesExample(money(price))),
         FCard(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: Space.xl,
+              vertical: Space.lg,
+            ),
             child: Column(
               children: [
                 row(l10n.adminTicketPrice, money(price)),
@@ -375,7 +364,7 @@ class _Example extends ConsumerWidget {
                 row(l10n.adminBuyerPays, money(price + buyerFee), strong: true),
                 const FDivider(
                   style: .delta(
-                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                    padding: .value(EdgeInsets.symmetric(vertical: Space.md)),
                   ),
                 ),
                 row(
@@ -389,7 +378,7 @@ class _Example extends ConsumerWidget {
                 ),
                 const FDivider(
                   style: .delta(
-                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                    padding: .value(EdgeInsets.symmetric(vertical: Space.md)),
                   ),
                 ),
                 row(l10n.adminPlatformEarns, money(buyerFee + sellerFee)),

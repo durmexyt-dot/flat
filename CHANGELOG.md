@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Intern
+- Design-Variablen an einer Stelle (`lib/src/ui/tokens.dart`, Übersicht in
+  `docs/DESIGN.md`): Abstände, Icon-Größen, Animationen, Schriftgewichte,
+  Textstile, feste Farben. Aussehen unverändert (Screenshots pixelgleich).
+
 ## [1.8.1] – 2026-10-15
 
 ### Geändert

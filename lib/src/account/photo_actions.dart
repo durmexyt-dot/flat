@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../data/repositories.dart';
 import 'photo_picker.dart';
 import '../ui/snack.dart';
+import '../ui/tokens.dart';
 
 /// Bottom sheet to change or remove the profile photo.
 Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
@@ -24,12 +25,12 @@ Future<void> showPhotoActions(BuildContext context, WidgetRef ref) async {
         decoration: BoxDecoration(
           color: theme.colors.background,
           border: Border(top: BorderSide(color: theme.colors.border)),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          borderRadius: Radii.sheetTop,
         ),
         child: SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.xl),
             child: FTileGroup(
               children: [
                 FTile(

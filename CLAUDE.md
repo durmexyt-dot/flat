@@ -19,3 +19,5 @@
   Test passwords are never committed.
 - Prod keeps the payment simulator until Stripe is added.
 - UI: Forui 0.27.5, mobile first, 70/20/10 colors, no gradients.
+  Spacing, sizes, motion, weights, text styles and fixed colors come from
+  `lib/src/ui/tokens.dart` (see `docs/DESIGN.md`); no new magic numbers.

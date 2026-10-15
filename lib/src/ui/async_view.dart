@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import 'tokens.dart';
 
 /// Shows [loading] (usually a skeleton), an error with retry, or the data,
 /// cross-fading between them.
@@ -38,8 +39,8 @@ class AsyncView<T> extends StatelessWidget {
           )
         : KeyedSubtree(key: const ValueKey('loading'), child: loading);
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      switchInCurve: Curves.easeOut,
+      duration: Motion.slow,
+      switchInCurve: Motion.ease,
       switchOutCurve: Curves.easeIn,
       layoutBuilder: (current, previous) => Stack(
         alignment: Alignment.topCenter,
@@ -71,18 +72,18 @@ class ErrorState extends StatelessWidget {
     if (error != null) debugPrint('Load error: $error');
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(Space.x3l),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             FLucideIcons.cloudOff,
-            size: 48,
+            size: IconSizes.illustration,
             color: theme.colorScheme.outline,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           Text(l10n.loadError, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
+          const SizedBox(height: Space.xs),
           Text(
             l10n.loadErrorInfo,
             textAlign: TextAlign.center,
@@ -91,7 +92,7 @@ class ErrorState extends StatelessWidget {
             ),
           ),
           if (code != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             Text(
               code,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -100,7 +101,7 @@ class ErrorState extends StatelessWidget {
             ),
           ],
           if (onRetry != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             FButton(
               variant: FButtonVariant.outline,
               mainAxisSize: MainAxisSize.min,
@@ -134,19 +135,19 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: Space.x3l, vertical: 40),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.6, end: 1),
             duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutBack,
+            curve: Motion.pop,
             builder: (context, v, child) =>
                 Transform.scale(scale: v, child: child),
             // Icon in a muted circle, like Forui's empty states.
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(Space.xl),
               decoration: BoxDecoration(
                 color: context.theme.colors.muted,
                 shape: BoxShape.circle,
@@ -158,17 +159,17 @@ class EmptyState extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           Text(
             title,
             textAlign: TextAlign.center,
             style: context.theme.typography.body.lg.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeights.semibold,
               color: context.theme.colors.foreground,
             ),
           ),
           if (message != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: Space.xs),
             Text(
               message!,
               textAlign: TextAlign.center,
@@ -177,7 +178,7 @@ class EmptyState extends StatelessWidget {
               ),
             ),
           ],
-          if (action != null) ...[const SizedBox(height: 16), action!],
+          if (action != null) ...[const SizedBox(height: Space.xl), action!],
         ],
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'tokens.dart';
+
 /// Sweeps a highlight across its [child]. Children are drawn with
 /// [SkeletonBox]es; the sweep runs across all of them as one surface.
 class Shimmer extends StatefulWidget {
@@ -14,7 +16,7 @@ class Shimmer extends StatefulWidget {
 class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1400),
+    duration: Motion.shimmer,
   )..repeat();
 
   @override
@@ -93,10 +95,10 @@ class SkeletonTicketList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer(
       child: ListView.separated(
-        padding: padding ?? const EdgeInsets.all(16),
+        padding: padding ?? const EdgeInsets.all(Space.xl),
         physics: const NeverScrollableScrollPhysics(),
         itemCount: count,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        separatorBuilder: (_, _) => const SizedBox(height: Space.lg),
         itemBuilder: (_, _) => const SkeletonTicketTile(),
       ),
     );
@@ -113,16 +115,16 @@ class SkeletonTicketTile extends StatelessWidget {
       child: Row(
         children: [
           SkeletonBox(width: 56, height: 72, radius: 12),
-          SizedBox(width: 12),
+          SizedBox(width: Space.lg),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SkeletonBox(width: 180, height: 16),
-                SizedBox(height: 8),
+                SizedBox(height: Space.md),
                 SkeletonBox(width: 120, height: 12),
-                SizedBox(height: 8),
+                SizedBox(height: Space.md),
                 SkeletonBox(width: 80, height: 12),
               ],
             ),

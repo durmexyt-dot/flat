@@ -23,6 +23,7 @@ import '../ui/snack.dart';
 import 'event_image.dart';
 import 'event_status_badge.dart';
 import 'recently_viewed.dart';
+import '../ui/tokens.dart';
 
 /// One event: picture, details, selling and all offers, cheapest first.
 class EventPage extends ConsumerStatefulWidget {
@@ -93,13 +94,13 @@ class _EventPageState extends ConsumerState<EventPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(flex: 7, child: picture),
-                const SizedBox(width: 32),
+                const SizedBox(width: Space.x5l),
                 Expanded(flex: 5, child: _Details(event: event)),
               ],
             )
           else ...[
             picture,
-            const SizedBox(height: 16),
+            const SizedBox(height: Space.xl),
             _Details(event: event),
           ],
           SettingsSectionTitle(l10n.eventsOffers),
@@ -146,43 +147,41 @@ class _Details extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Wrap(
-          spacing: 6,
-          runSpacing: 6,
+          spacing: Space.sm,
+          runSpacing: Space.sm,
           children: [EventCategoryBadge(event), EventStatusBadge(event)],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         Text(
           info.name,
           style: theme.typography.display.lg.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeights.bold,
             color: theme.colors.foreground,
             height: 1.15,
           ),
         ),
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           alignment: Alignment.topCenter,
           child: event.pending
               ? Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: Space.md),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.only(top: Space.xxs),
                         child: Icon(
                           FLucideIcons.info,
-                          size: 14,
+                          size: IconSizes.xs,
                           color: theme.colors.mutedForeground,
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: Space.sm),
                       Expanded(
                         child: Text(
                           l10n.eventStatusPendingInfo,
-                          style: theme.typography.body.sm.copyWith(
-                            color: theme.colors.mutedForeground,
-                          ),
+                          style: theme.mutedText,
                         ),
                       ),
                     ],
@@ -191,7 +190,7 @@ class _Details extends ConsumerWidget {
               : const SizedBox(width: double.infinity),
         ),
         if (event.cancelled) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FAlert(
             variant: FAlertVariant.destructive,
             icon: const Icon(FLucideIcons.ban),
@@ -204,7 +203,7 @@ class _Details extends ConsumerWidget {
             ),
           ),
         ] else if (event.postponed) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FAlert(
             icon: const Icon(FLucideIcons.calendarClock),
             title: Text(l10n.eventPagePostponed),
@@ -215,16 +214,16 @@ class _Details extends ConsumerWidget {
             ),
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         _Fact(
           icon: FLucideIcons.calendar,
           text: formatDateTime(context, info.date),
         ),
         _Fact(icon: FLucideIcons.mapPin, text: info.venue),
         _Fact(icon: FLucideIcons.building2, text: info.city),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           alignment: Alignment.topCenter,
           // Team accounts don't sell: they get the team actions below.
           child: event.hidden || event.cancelled || ref.watch(isStaffProvider)
@@ -244,7 +243,7 @@ class _Details extends ConsumerWidget {
                 ),
         ),
         if (ref.watch(isStaffProvider)) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           _TeamActions(event: event),
         ],
       ],
@@ -276,8 +275,8 @@ class _TeamActions extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: Space.md,
+      runSpacing: Space.md,
       children: [
         FButton(
           variant: FButtonVariant.outline,
@@ -346,8 +345,8 @@ class _Fact extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: theme.colors.mutedForeground),
-          const SizedBox(width: 8),
+          Icon(icon, size: IconSizes.sm, color: theme.colors.mutedForeground),
+          const SizedBox(width: Space.md),
           Expanded(
             child: Text(
               text,

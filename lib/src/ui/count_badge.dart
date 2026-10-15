@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import 'tokens.dart';
+
 /// A small count in the brand color on the top right of [child], e.g. unread
 /// support answers on the profile picture. Hidden at zero; pops in and out.
 class CountBadge extends StatelessWidget {
@@ -21,8 +23,8 @@ class CountBadge extends StatelessWidget {
           right: -4,
           child: AnimatedScale(
             scale: count > 0 ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutBack,
+            duration: Motion.normal,
+            curve: Motion.pop,
             child: Container(
               constraints: const BoxConstraints(minWidth: 18),
               height: 18,
@@ -39,7 +41,7 @@ class CountBadge extends StatelessWidget {
                   color: colors.primaryForeground,
                   fontSize: 10,
                   height: 1,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeights.bold,
                 ),
               ),
             ),

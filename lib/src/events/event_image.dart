@@ -8,6 +8,7 @@ import '../data/events_repository.dart';
 import '../data/models.dart';
 import '../market/labels.dart';
 import '../ui/skeleton.dart';
+import '../ui/tokens.dart';
 
 /// An event's 16:9 picture: a shimmer while it loads, a muted box with the
 /// category icon when there is none.
@@ -56,7 +57,7 @@ class EventImage extends ConsumerWidget {
       child: ClipRRect(
         borderRadius: borderRadius,
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
+          duration: Motion.slow,
           layoutBuilder: (current, previous) =>
               Stack(fit: StackFit.expand, children: [...previous, ?current]),
           child: child,

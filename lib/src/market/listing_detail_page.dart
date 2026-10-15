@@ -26,6 +26,7 @@ import '../ui/app_dialog.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
 import '../admin/moderation_pages.dart' show reportReasonName;
+import '../ui/tokens.dart';
 
 /// A listing as its seller (manage) or a buyer (buy) sees it.
 class ListingDetailPage extends ConsumerWidget {
@@ -57,7 +58,7 @@ class ListingDetailPage extends ConsumerWidget {
               ),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              padding: Insets.pageList,
               children: [
                 // Details left, buying or managing right on wide screens.
                 SplitView(
@@ -65,10 +66,10 @@ class ListingDetailPage extends ConsumerWidget {
                   main: [
                     if (listing.eventId.isNotEmpty) ...[
                       _EventBanner(eventId: listing.eventId),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: Space.xl),
                     ],
                     ListingTicket(listing: listing, showStatus: true),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Space.xl),
                     _Facts(listing: listing),
                   ],
                   side: [
@@ -104,11 +105,11 @@ class _EventBanner extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         AnimatedSize(
-          duration: const Duration(milliseconds: 300),
+          duration: Motion.slow,
           alignment: Alignment.topCenter,
           child: visible
               ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: Space.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -119,22 +120,20 @@ class _EventBanner extends ConsumerWidget {
                           AppStyle.of(context).cardRadius,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: Space.md),
                       Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
+                        spacing: Space.sm,
+                        runSpacing: Space.sm,
                         children: [
                           EventCategoryBadge(event),
                           EventStatusBadge(event),
                         ],
                       ),
                       if (event.pending) ...[
-                        const SizedBox(height: 6),
+                        const SizedBox(height: Space.sm),
                         Text(
                           l10n.eventStatusPendingInfo,
-                          style: context.theme.typography.body.xs.copyWith(
-                            color: context.theme.colors.mutedForeground,
-                          ),
+                          style: context.theme.mutedSmallText,
                         ),
                       ],
                     ],
@@ -315,10 +314,10 @@ class _SellerPanel extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           child: live && uploaded < listing.quantity
               ? Padding(
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: Space.xl),
                   child: FAlert(
                     variant: FAlertVariant.destructive,
                     icon: const Icon(FLucideIcons.fileWarning),
@@ -332,7 +331,7 @@ class _SellerPanel extends ConsumerWidget {
                             listing.quantity,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: Space.md),
                         FButton(
                           variant: FButtonVariant.outline,
                           size: FButtonSizeVariant.sm,
@@ -354,7 +353,7 @@ class _SellerPanel extends ConsumerWidget {
         SettingsSectionTitle(l10n.yourListing),
         FCard(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
               children: [
                 _MoneyRow(
@@ -371,7 +370,7 @@ class _SellerPanel extends ConsumerWidget {
                 ),
                 const FDivider(
                   style: .delta(
-                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                    padding: .value(EdgeInsets.symmetric(vertical: Space.md)),
                   ),
                 ),
                 _MoneyRow(
@@ -388,13 +387,13 @@ class _SellerPanel extends ConsumerWidget {
           ),
         ),
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
+          duration: Motion.normal,
           child: active
               ? Padding(
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: Space.xl),
                   child: Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
+                    spacing: Space.lg,
+                    runSpacing: Space.md,
                     children: [
                       // E-tickets are uploaded and sent automatically.
                       if (listing.ticketType == TicketType.eTicket)
@@ -483,7 +482,7 @@ class _PriceFormState extends State<_PriceForm> {
     final l10n = AppLocalizations.of(context);
     final symbol = currencySymbols[widget.listing.currency];
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: Space.md),
       child: Form(
         key: _formKey,
         child: FTextFormField(
@@ -555,13 +554,13 @@ class _MoneyRow extends StatelessWidget {
             ),
           ),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: Motion.quick,
             child: Text(
               value,
               key: ValueKey(value),
               style: strong
                   ? theme.typography.body.lg.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeights.bold,
                       color: theme.colors.foreground,
                     )
                   : theme.typography.body.sm.copyWith(
@@ -623,7 +622,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
         SettingsSectionTitle(l10n.buyTickets),
         FCard(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
               children: [
                 Row(
@@ -632,7 +631,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                       child: Text(
                         l10n.quantity,
                         style: theme.typography.body.sm.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeights.medium,
                           color: theme.colors.foreground,
                         ),
                       ),
@@ -650,7 +649,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                         '$quantity',
                         textAlign: TextAlign.center,
                         style: theme.typography.body.lg.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeights.semibold,
                           color: theme.colors.foreground,
                         ),
                       ),
@@ -664,7 +663,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: Space.md),
                 _MoneyRow(
                   '$quantity × ${formatMoney(context, listing.priceMinor, listing.currency)}',
                   formatMoney(context, subtotal, listing.currency),
@@ -675,7 +674,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
                 ),
                 const FDivider(
                   style: .delta(
-                    padding: .value(EdgeInsets.symmetric(vertical: 8)),
+                    padding: .value(EdgeInsets.symmetric(vertical: Space.md)),
                   ),
                 ),
                 _MoneyRow(
@@ -687,7 +686,7 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         if (ref.watch(isStaffProvider))
           // Team accounts don't buy.
           FAlert(
@@ -704,22 +703,17 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
               child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
             ),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         Row(
           children: [
             Icon(
               FLucideIcons.shieldCheck,
-              size: 18,
+              size: IconSizes.md,
               color: theme.colors.mutedForeground,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: Space.md),
             Expanded(
-              child: Text(
-                l10n.buyerProtection,
-                style: theme.typography.body.xs.copyWith(
-                  color: theme.colors.mutedForeground,
-                ),
-              ),
+              child: Text(l10n.buyerProtection, style: theme.mutedSmallText),
             ),
           ],
         ),
@@ -755,7 +749,7 @@ class _ReportButton extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(l10n.reportListingInfo),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             for (final r in ReportReason.values)
               FTile(
                 prefix: Icon(
@@ -764,7 +758,7 @@ class _ReportButton extends ConsumerWidget {
                 title: Text(reportReasonName(l10n, r)),
                 onPress: () => setState(() => reason = r),
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             FTextField(
               control: FTextFieldControl.managed(controller: text),
               label: Text(l10n.reportDetails),
@@ -807,7 +801,7 @@ class _ReportButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: Space.lg),
       child: FButton(
         variant: FButtonVariant.ghost,
         onPress: () => _report(context, ref),

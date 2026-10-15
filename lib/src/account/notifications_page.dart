@@ -10,6 +10,7 @@ import '../settings/settings_widgets.dart';
 import '../web/browser_notifications.dart';
 import '../ui/snack.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 /// Which alerts to get and where. Saved in the profile, so the server sends
 /// only what the user wants, on every device.
@@ -90,7 +91,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         children: [
           SettingsSectionTitle(l10n.channels),
           SettingsGroup(
@@ -125,10 +126,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ],
           ),
           AnimatedSize(
-            duration: const Duration(milliseconds: 250),
+            duration: Motion.normal,
             child: pushOn
                 ? Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: Space.md),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: FButton(

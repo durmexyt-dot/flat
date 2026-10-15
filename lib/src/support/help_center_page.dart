@@ -13,6 +13,7 @@ import '../ui/skeleton.dart';
 import '../ui/site_scaffold.dart';
 import 'support_repository.dart';
 import 'support_widgets.dart';
+import '../ui/tokens.dart';
 
 class HelpCenterPage extends ConsumerWidget {
   const HelpCenterPage({super.key});
@@ -50,14 +51,14 @@ class HelpCenterPage extends ConsumerWidget {
       maxWidth: SiteWidth.form,
       accountNav: true,
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+        padding: Insets.page,
         children: [
           if (signedIn) const _MyRequests(),
           for (final (title, faqs) in sections) ...[
             SettingsSectionTitle(title),
             FCard(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: Space.xl),
                 child: FAccordion(
                   children: [
                     for (final (q, a) in faqs)
@@ -65,12 +66,7 @@ class HelpCenterPage extends ConsumerWidget {
                         title: Text(q),
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Text(
-                            a,
-                            style: theme.typography.body.sm.copyWith(
-                              color: theme.colors.mutedForeground,
-                            ),
-                          ),
+                          child: Text(a, style: theme.mutedText),
                         ),
                       ),
                   ],
@@ -79,31 +75,28 @@ class HelpCenterPage extends ConsumerWidget {
             ),
           ],
           if (!signedIn) ...[
-            const SizedBox(height: 24),
+            const SizedBox(height: Space.x3l),
             DecoratedBox(
               decoration: BoxDecoration(
                 color: theme.colors.muted,
                 borderRadius: theme.style.borderRadius.lg,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Space.xl),
                 child: Column(
                   children: [
                     Icon(
                       FLucideIcons.headset,
-                      size: 40,
+                      size: IconSizes.feature,
                       color: theme.colors.mutedForeground,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Space.md),
                     Text(
                       l10n.stillNeedHelp,
                       textAlign: TextAlign.center,
-                      style: theme.typography.body.md.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colors.foreground,
-                      ),
+                      style: theme.titleText,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: Space.lg),
                     FButton(
                       mainAxisSize: MainAxisSize.min,
                       onPress: () => context.go('/login'),
@@ -138,15 +131,15 @@ class _MyRequests extends ConsumerWidget {
       children: [
         SettingsSectionTitle(l10n.supportMyRequests),
         AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
+          duration: Motion.normal,
+          curve: Motion.ease,
           alignment: Alignment.topCenter,
           child: AsyncView<List<SupportTicket>>(
             value: tickets,
             onRetry: () => ref.invalidate(myTicketsProvider),
             loading: const Shimmer(
               child: Column(
-                spacing: 12,
+                spacing: Space.lg,
                 children: [
                   SkeletonBox(height: 88, radius: 12),
                   SkeletonBox(height: 88, radius: 12),
@@ -160,20 +153,18 @@ class _MyRequests extends ConsumerWidget {
                       borderRadius: theme.style.borderRadius.lg,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(Space.xl),
                       child: Row(
                         children: [
                           Icon(
                             FLucideIcons.messagesSquare,
                             color: theme.colors.mutedForeground,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: Space.lg),
                           Expanded(
                             child: Text(
                               l10n.supportNoRequests,
-                              style: theme.typography.body.sm.copyWith(
-                                color: theme.colors.mutedForeground,
-                              ),
+                              style: theme.mutedText,
                             ),
                           ),
                         ],
@@ -182,7 +173,7 @@ class _MyRequests extends ConsumerWidget {
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: 8,
+                    spacing: Space.md,
                     children: [
                       for (final t in list)
                         SupportTicketTile(
@@ -195,13 +186,13 @@ class _MyRequests extends ConsumerWidget {
                   ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         FButton(
           prefix: const Icon(FLucideIcons.messageSquarePlus),
           onPress: () => context.push('/support/new'),
           child: Text(l10n.contactSupport, overflow: TextOverflow.ellipsis),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
       ],
     );
   }

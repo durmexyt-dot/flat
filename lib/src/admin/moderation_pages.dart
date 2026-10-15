@@ -21,6 +21,7 @@ import '../ui/site_scaffold.dart';
 import '../ui/snack.dart';
 import 'admin_page.dart';
 import 'admin_repository.dart';
+import '../ui/tokens.dart';
 
 /// Any user's profile, for the team.
 final userProfileProvider = StreamProvider.autoDispose
@@ -46,7 +47,7 @@ Future<String?> askReason(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(message),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         FTextField(
           control: FTextFieldControl.managed(controller: reason),
           label: Text(l10n.moderationReason),
@@ -121,7 +122,12 @@ class _ModerationPageState extends ConsumerState<ModerationPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(
+                Space.xl,
+                0,
+                Space.xl,
+                Space.md,
+              ),
               child: Segmented<_Tab>(
                 values: _Tab.values,
                 selected: _tab,
@@ -135,7 +141,7 @@ class _ModerationPageState extends ConsumerState<ModerationPage> {
             ),
             Expanded(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: Motion.normal,
                 child: switch (_tab) {
                   _Tab.open => const _Reports(
                     key: ValueKey('open'),
@@ -184,7 +190,7 @@ class _Reports extends ConsumerWidget {
               ),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              padding: Insets.pageList,
               children: [
                 SettingsGroup(
                   children: [
@@ -253,7 +259,7 @@ Future<void> showReport(BuildContext context, WidgetRef ref, Report r) async {
               ? l10n.moderationDuplicateInfo
               : '${reportReasonName(l10n, r.reason)}${r.text.isEmpty ? '' : ': ${r.text}'}',
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         if (listing != null)
           FTile(
             prefix: const Icon(FLucideIcons.ticket),
@@ -269,7 +275,7 @@ Future<void> showReport(BuildContext context, WidgetRef ref, Report r) async {
             ),
           ),
         if (r.status == ReportStatus.open) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           FTextField(
             control: FTextFieldControl.managed(controller: note),
             label: Text(l10n.moderationNote),
@@ -278,7 +284,7 @@ Future<void> showReport(BuildContext context, WidgetRef ref, Report r) async {
             inputFormatters: [LengthLimitingTextInputFormatter(500)],
           ),
         ] else if (r.note.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           Text('${l10n.moderationNote}: ${r.note}'),
         ],
       ],
@@ -409,7 +415,7 @@ class _UserSearchState extends ConsumerState<_UserSearch> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      padding: Insets.pageList,
       children: [
         FTextField(
           control: FTextFieldControl.managed(controller: _query),
@@ -420,7 +426,7 @@ class _UserSearchState extends ConsumerState<_UserSearch> {
           textInputAction: TextInputAction.search,
           onSubmit: (_) => _search(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         FButton(
           onPress: _searching ? null : _search,
           prefix: _searching
@@ -429,7 +435,7 @@ class _UserSearchState extends ConsumerState<_UserSearch> {
           child: Text(l10n.moderationSearch),
         ),
         if (_notFound) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: Space.xl),
           Text(l10n.moderationUserNotFound, textAlign: TextAlign.center),
         ],
       ],
@@ -497,15 +503,13 @@ class _UserDetail extends ConsumerWidget {
     final listings = ref.watch(listingsOfProvider(uid));
     final orders = ref.watch(ordersOfProvider(uid));
     final log = ref.watch(moderationLogProvider(uid));
-    final muted = theme.typography.body.sm.copyWith(
-      color: theme.colors.mutedForeground,
-    );
+    final muted = theme.mutedText;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+      padding: Insets.page,
       children: [
         FCard(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -514,11 +518,11 @@ class _UserDetail extends ConsumerWidget {
                       ? l10n.adminNoName
                       : profile!.displayName!,
                   style: theme.typography.display.lg.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeights.bold,
                     color: theme.colors.foreground,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: Space.xs),
                 SelectableText(
                   [
                     if ((profile?.email ?? '').isNotEmpty) profile!.email!,
@@ -527,10 +531,10 @@ class _UserDetail extends ConsumerWidget {
                   ].join(' · '),
                   style: muted,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: Space.md,
+                  runSpacing: Space.md,
                   children: [
                     if (ban != null)
                       StatusChip(
@@ -555,17 +559,17 @@ class _UserDetail extends ConsumerWidget {
                   ],
                 ),
                 if (ban != null && ban.reason.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: Space.md),
                   Text('${l10n.moderationReason}: ${ban.reason}', style: muted),
                 ],
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: Space.md,
+          runSpacing: Space.md,
           children: [
             FButton(
               variant: ban == null

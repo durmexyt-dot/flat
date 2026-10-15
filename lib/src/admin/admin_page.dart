@@ -12,6 +12,7 @@ import '../ui/async_view.dart';
 import '../ui/site_scaffold.dart';
 import '../ui/skeleton.dart';
 import 'admin_repository.dart';
+import '../ui/tokens.dart';
 
 /// Admin hub: events, service fee, team and support requests.
 class AdminPage extends ConsumerWidget {
@@ -29,7 +30,7 @@ class AdminPage extends ConsumerWidget {
           final unread = ref.watch(unreadForStaffProvider);
           final pending = ref.watch(pendingEventsProvider).length;
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            padding: Insets.page,
             children: [
               SettingsSectionTitle(l10n.adminTitle),
               SettingsGroup(
@@ -131,7 +132,7 @@ class AdminGate extends ConsumerWidget {
             ),
           );
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
+      duration: Motion.slow,
       layoutBuilder: (current, previous) => Stack(
         alignment: Alignment.topCenter,
         children: [...previous, ?current],
@@ -150,15 +151,20 @@ class AdminSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Shimmer(
     child: Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+      padding: const EdgeInsets.fromLTRB(
+        Space.xl,
+        Space.x3l,
+        Space.xl,
+        Space.xl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SkeletonBox(width: 120, height: 14),
-          const SizedBox(height: 12),
+          const SizedBox(height: Space.lg),
           for (var i = 0; i < count; i++) ...[
             const SkeletonBox(height: 56, radius: 10),
-            const SizedBox(height: 8),
+            const SizedBox(height: Space.md),
           ],
         ],
       ),
@@ -178,8 +184,8 @@ class CountPill extends StatelessWidget {
     final colors = context.theme.colors;
     return AnimatedScale(
       scale: count > 0 ? 1 : 0,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOutBack,
+      duration: Motion.normal,
+      curve: Motion.pop,
       child: Container(
         constraints: const BoxConstraints(minWidth: 22),
         height: 22,
@@ -198,7 +204,7 @@ class CountPill extends StatelessWidget {
               color: colors.primaryForeground,
               fontSize: 12,
               height: 1,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeights.bold,
             ),
           ),
         ),
@@ -226,7 +232,11 @@ class AdminNotice extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(FLucideIcons.info, size: 18, color: theme.colors.foreground),
+            Icon(
+              FLucideIcons.info,
+              size: IconSizes.md,
+              color: theme.colors.foreground,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

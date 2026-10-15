@@ -12,6 +12,7 @@ import '../ui/hero_tags.dart';
 import '../ui/skeleton.dart';
 import 'event_image.dart';
 import 'event_status_badge.dart';
+import '../ui/tokens.dart';
 
 /// An upcoming event on the home page: picture, name, when, where and the
 /// cheapest offer. The picture flies into the event page.
@@ -60,7 +61,12 @@ class EventCard extends ConsumerWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              padding: const EdgeInsets.fromLTRB(
+                Space.xl,
+                Space.lg,
+                Space.xl,
+                Space.xl,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -70,23 +76,23 @@ class EventCard extends ConsumerWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: type.body.lg.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeights.semibold,
                       color: colors.foreground,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: Space.sm),
                   EventMetaLine(
                     icon: FLucideIcons.calendar,
                     text: formatDateTime(context, info.date),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: Space.xxs),
                   EventMetaLine(
                     icon: FLucideIcons.mapPin,
                     text: placeText(info),
                   ),
                   const SizedBox(height: 10),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
+                    duration: Motion.normal,
                     child: Text(
                       offer == null || from == null
                           ? l10n.eventsNoOffers
@@ -100,7 +106,7 @@ class EventCard extends ConsumerWidget {
                       style: offer == null || from == null
                           ? type.body.sm.copyWith(color: colors.mutedForeground)
                           : type.body.sm.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeights.semibold,
                               color: colors.foreground,
                             ),
                     ),
@@ -149,8 +155,8 @@ class EventMetaLine extends StatelessWidget {
     final colors = context.theme.colors;
     return Row(
       children: [
-        Icon(icon, size: 14, color: colors.mutedForeground),
-        const SizedBox(width: 6),
+        Icon(icon, size: IconSizes.xs, color: colors.mutedForeground),
+        const SizedBox(width: Space.sm),
         Expanded(
           child: Text(
             text,
@@ -181,11 +187,11 @@ class SkeletonEventCard extends StatelessWidget {
           aspectRatio: 16 / 9,
           child: SkeletonBox(height: double.infinity, radius: radius),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         const SkeletonBox(width: 200, height: 18),
-        const SizedBox(height: 8),
+        const SizedBox(height: Space.md),
         const SkeletonBox(width: 140, height: 12),
-        const SizedBox(height: 6),
+        const SizedBox(height: Space.sm),
         const SkeletonBox(width: 160, height: 12),
         const SizedBox(height: 10),
         const SkeletonBox(width: 120, height: 14),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import 'tokens.dart';
+
 /// A segmented control built on Forui tabs: one tab per value, without tab
 /// content; the page shows the content for [selected] itself.
 class Segmented<T> extends StatelessWidget {
@@ -37,9 +39,9 @@ class Segmented<T> extends StatelessWidget {
           FTabEntry(
             label: Row(
               mainAxisSize: MainAxisSize.min,
-              spacing: 6,
+              spacing: Space.sm,
               children: [
-                if (icon != null) Icon(icon!(v), size: 16),
+                if (icon != null) Icon(icon!(v), size: IconSizes.sm),
                 Flexible(
                   child: Text(
                     label(v),

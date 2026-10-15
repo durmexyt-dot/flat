@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import 'app_style.dart';
+import 'tokens.dart';
 
 /// Outline of a ticket: rounded corners and two half-circle notches where
 /// the stub is torn off.
@@ -140,7 +141,7 @@ class TicketCard extends StatelessWidget {
               width: stubWidth - 1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
+                  horizontal: Space.md,
                   vertical: 14,
                 ),
                 child: Center(child: stub),
@@ -159,7 +160,7 @@ class TicketCard extends StatelessWidget {
           : FTappable(
               onPress: onTap,
               builder: (context, variants, _) => TweenAnimationBuilder<Color?>(
-                duration: const Duration(milliseconds: 150),
+                duration: Motion.fast,
                 tween: ColorTween(
                   end:
                       variants.contains(FTappableVariant.hovered) ||

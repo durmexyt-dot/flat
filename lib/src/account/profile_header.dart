@@ -13,6 +13,7 @@ import '../ui/format.dart';
 import '../ui/skeleton.dart';
 import 'avatar.dart';
 import 'photo_actions.dart';
+import '../ui/tokens.dart';
 
 /// Photo, name, username and ticket counts at the top of the account page.
 /// [horizontal] lays it out as a wide card row (website layout).
@@ -59,10 +60,10 @@ class ProfileHeader extends ConsumerWidget {
                     border: Border.all(color: colors.background, width: 3),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(Space.sm),
                     child: Icon(
                       FLucideIcons.camera,
-                      size: 16,
+                      size: IconSizes.sm,
                       color: colors.background,
                     ),
                   ),
@@ -76,7 +77,7 @@ class ProfileHeader extends ConsumerWidget {
             name,
             textAlign: horizontal ? TextAlign.start : TextAlign.center,
             style: theme.typography.body.xl.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeights.bold,
               color: colors.foreground,
             ),
           ),
@@ -87,11 +88,11 @@ class ProfileHeader extends ConsumerWidget {
                 color: colors.mutedForeground,
               ),
             ),
-          const SizedBox(height: 8),
+          const SizedBox(height: Space.md),
           Wrap(
             alignment: align,
-            spacing: 8,
-            runSpacing: 8,
+            spacing: Space.md,
+            runSpacing: Space.md,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               _InfoBadge(
@@ -112,7 +113,7 @@ class ProfileHeader extends ConsumerWidget {
           return Row(
             children: [
               avatar,
-              const SizedBox(width: 24),
+              const SizedBox(width: Space.x3l),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +121,7 @@ class ProfileHeader extends ConsumerWidget {
                 ),
               ),
               if (!staff) ...[
-                const SizedBox(width: 24),
+                const SizedBox(width: Space.x3l),
                 const SizedBox(width: 340, child: StatsRow()),
               ],
             ],
@@ -129,12 +130,12 @@ class ProfileHeader extends ConsumerWidget {
         return Column(
           children: [
             avatar,
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             ...details,
-            const SizedBox(height: 12),
+            const SizedBox(height: Space.lg),
             _editButton(context, l10n),
             // Team accounts don't buy or sell: no ticket counts.
-            if (!staff) ...[const SizedBox(height: 16), const StatsRow()],
+            if (!staff) ...[const SizedBox(height: Space.xl), const StatsRow()],
           ],
         );
       },
@@ -164,8 +165,8 @@ class _InfoBadge extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14),
-        const SizedBox(width: 4),
+        Icon(icon, size: IconSizes.xs),
+        const SizedBox(width: Space.xs),
         Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
       ],
     ),
@@ -181,13 +182,13 @@ class _HeaderSkeleton extends StatelessWidget {
       child: Column(
         children: [
           SkeletonBox(width: 96, height: 96, radius: 48),
-          SizedBox(height: 12),
+          SizedBox(height: Space.lg),
           SkeletonBox(width: 160, height: 24),
-          SizedBox(height: 8),
+          SizedBox(height: Space.md),
           SkeletonBox(width: 110, height: 14),
-          SizedBox(height: 16),
+          SizedBox(height: Space.xl),
           SkeletonBox(width: 140, height: 36, radius: 18),
-          SizedBox(height: 16),
+          SizedBox(height: Space.xl),
           SkeletonBox(height: 76, radius: 16),
         ],
       ),
@@ -206,7 +207,7 @@ class StatsRow extends ConsumerWidget {
 
     Widget card(ProfileStats? s, {bool failed = false}) => FCard(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: Space.lg),
         child: Row(
           children: [
             _Stat(value: s?.listed, label: l10n.statListed),
@@ -216,7 +217,7 @@ class StatsRow extends ConsumerWidget {
             _Stat(value: s?.bought, label: l10n.statBought),
             if (failed)
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: Space.md),
                 child: FTooltip(
                   tipBuilder: (context, _) => Text(l10n.retry),
                   child: FButton.icon(
@@ -254,7 +255,7 @@ class _Stat extends StatelessWidget {
     final theme = context.theme;
     final colors = theme.colors;
     final number = theme.typography.body.xl.copyWith(
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeights.heavy,
     );
     return Expanded(
       child: Column(
@@ -264,8 +265,8 @@ class _Stat extends StatelessWidget {
           else
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: value!.toDouble()),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.easeOutCubic,
+              duration: Motion.long,
+              curve: Motion.enter,
               builder: (context, v, _) => Text(
                 '${v.round()}',
                 style: number.copyWith(color: colors.foreground),
@@ -275,7 +276,7 @@ class _Stat extends StatelessWidget {
             label,
             style: theme.typography.body.xs.copyWith(
               color: colors.mutedForeground,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeights.medium,
             ),
           ),
         ],

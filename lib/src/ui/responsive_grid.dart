@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'tokens.dart';
+
 /// Lays [children] out in as many equal columns as fit (one on phones).
 class ResponsiveGrid extends StatelessWidget {
   const ResponsiveGrid({
@@ -68,7 +70,7 @@ class SplitView extends StatelessWidget {
             children: main,
           ),
         ),
-        const SizedBox(width: 32),
+        const SizedBox(width: Space.x5l),
         Expanded(
           flex: 5,
           child: Column(

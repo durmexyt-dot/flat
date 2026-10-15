@@ -18,6 +18,7 @@ import 'labels.dart';
 import 'order_detail_page.dart';
 import 'order_labels.dart';
 import '../ui/site_scaffold.dart';
+import '../ui/tokens.dart';
 
 class PayoutsPage extends ConsumerWidget {
   const PayoutsPage({super.key});
@@ -39,7 +40,7 @@ class PayoutsPage extends ConsumerWidget {
               onRetry: () => ref.invalidate(payoutsProvider),
               loading: const _PayoutsSkeleton(),
               data: (all) => ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                padding: Insets.pageList,
                 children: [
                   ResponsiveGrid(
                     maxColumns: 2,
@@ -85,15 +86,15 @@ class _PayoutsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const Shimmer(
     child: Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(Space.xl),
       child: Column(
         children: [
           SkeletonBox(height: 96, radius: 20),
-          SizedBox(height: 12),
+          SizedBox(height: Space.lg),
           SkeletonBox(height: 64, radius: 20),
-          SizedBox(height: 24),
+          SizedBox(height: Space.x3l),
           SkeletonBox(height: 80, radius: 20),
-          SizedBox(height: 12),
+          SizedBox(height: Space.lg),
           SkeletonBox(height: 80, radius: 20),
         ],
       ),
@@ -131,18 +132,18 @@ class _Summary extends StatelessWidget {
             label,
             style: theme.typography.body.xs.copyWith(
               color: colors.mutedForeground,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeights.medium,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: Space.xs),
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: minor.toDouble()),
-            duration: const Duration(milliseconds: 900),
-            curve: Curves.easeOutCubic,
+            duration: Motion.long,
+            curve: Motion.enter,
             builder: (context, v, _) => Text(
               formatMoney(context, v.round(), currency),
               style: theme.typography.display.sm.copyWith(
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeights.heavy,
                 color: colors.foreground,
               ),
             ),
@@ -153,7 +154,7 @@ class _Summary extends StatelessWidget {
 
     return FCard(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(Space.xxl),
         child: Row(
           children: [
             figure(l10n.payoutsUpcoming, upcoming),
@@ -210,18 +211,18 @@ class PayoutCard extends StatelessWidget {
 
     final card = FCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(Space.xl),
         child: Row(
           children: [
             FAvatar.raw(
               size: 40,
               child: Icon(
                 FLucideIcons.landmark,
-                size: 20,
+                size: IconSizes.lg,
                 color: colors.mutedForeground,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: Space.lg),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +230,7 @@ class PayoutCard extends StatelessWidget {
                   Text(
                     formatMoney(context, payout.amountMinor, payout.currency),
                     style: body.lg.copyWith(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeights.heavy,
                       color: colors.foreground,
                     ),
                   ),
@@ -293,16 +294,16 @@ class PayoutDetailPage extends ConsumerWidget {
                   EmptyState(icon: FLucideIcons.searchX, title: l10n.loadError),
             )
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              padding: Insets.pageList,
               children: [
                 PayoutCard(payout: payout),
-                const SizedBox(height: 16),
+                const SizedBox(height: Space.xl),
                 NextStepCard(
                   text: payoutNextStep(l10n, payout.status),
                   tone: payoutTone(payout.status),
                 ),
                 if (payout.failureReason.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: Space.lg),
                   FAlert(
                     variant: FAlertVariant.destructive,
                     icon: const Icon(FLucideIcons.info),
@@ -312,7 +313,7 @@ class PayoutDetailPage extends ConsumerWidget {
                 ],
                 SettingsSectionTitle(l10n.statusHistory),
                 StatusTimeline(steps: payoutTimeline(context, payout)),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 FButton(
                   variant: FButtonVariant.outline,
                   onPress: () => context.push(

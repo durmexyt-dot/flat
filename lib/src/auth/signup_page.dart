@@ -10,6 +10,7 @@ import '../info/info_page.dart';
 import '../info/legal_texts.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
+import '../ui/tokens.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -115,9 +116,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       : null,
                   autovalidateMode: AutovalidateMode.disabled,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 EmailField(controller: _email, enabled: !_loading),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 PasswordField(
                   controller: _password,
                   label: l10n.passwordLabel,
@@ -128,7 +129,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ? l10n.passwordTooShort
                       : null,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: Space.lg),
                 PasswordField(
                   controller: _confirm,
                   label: l10n.confirmPasswordLabel,
@@ -142,7 +143,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: Space.xl),
         FCheckbox(
           semanticsLabel: l10n.legalAcceptTerms(
             l10n.legalTermsLink,
@@ -157,23 +158,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
           onChange: (v) => setState(() => _accepted = v),
         ),
         AnimatedErrorText(error),
-        const SizedBox(height: 20),
+        const SizedBox(height: Space.xxl),
         SubmitButton(
           label: l10n.createAccountButton,
           loading: _loading,
           onPressed: _submit,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: Space.lg),
         Wrap(
           alignment: WrapAlignment.center,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(
-              l10n.haveAccount,
-              style: context.theme.typography.body.sm.copyWith(
-                color: context.theme.colors.mutedForeground,
-              ),
-            ),
+            Text(l10n.haveAccount, style: context.theme.mutedText),
             FButton(
               variant: FButtonVariant.ghost,
               size: FButtonSizeVariant.sm,
