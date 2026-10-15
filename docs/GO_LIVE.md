@@ -129,3 +129,7 @@ Merkliste/Preisalarm, „Ich suche Tickets“, mehr Währungen.
   App Check, Budget, Hosting mit Domain, Backups).
 - Team-Konten auf Prod anlegen; Testdaten und -konten löschen.
 - Stripe (Zahlung + Connect-Auszahlungen), danach Testmodus-Regeln entfernen.
+- **Suchmaschinen für Prod freigeben:** in `tool/build_web.sh`
+  `PROD_INDEXABLE=true` setzen (entfernt `noindex` aus dem Prod-Build; Staging
+  bleibt gesperrt). Mit eigener Domain dann `robots.txt`, `sitemap.xml` und
+  Google Search Console.

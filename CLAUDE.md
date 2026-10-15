@@ -21,3 +21,6 @@
 - UI: Forui 0.27.5, mobile first, 70/20/10 colors, no gradients.
   Spacing, sizes, motion, weights, text styles and fixed colors come from
   `lib/src/ui/tokens.dart` (see `docs/DESIGN.md`); no new magic numbers.
+- Both environments are `noindex` (meta tag in `web/index.html`). At go-live
+  set `PROD_INDEXABLE=true` in `tool/build_web.sh` so prod can be indexed;
+  remind the owner of this when go-live comes up.

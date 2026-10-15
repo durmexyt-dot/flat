@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert
+- Staging und Prod sind für Suchmaschinen gesperrt (`noindex`); Prod wird
+  zum Go-Live freigegeben.
+
 ### Intern
 - Design-Variablen an einer Stelle (`lib/src/ui/tokens.dart`, Übersicht in
   `docs/DESIGN.md`): Abstände, Icon-Größen, Animationen, Schriftgewichte,

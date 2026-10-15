@@ -9,6 +9,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Search engines may index prod only from the go-live on (docs/GO_LIVE.md).
+# Staging is never indexed.
+PROD_INDEXABLE=false
+
 env=${1:?usage: tool/build_web.sh staging|prod <base-href>}
 base_href=${2:?usage: tool/build_web.sh staging|prod <base-href>}
 case "$env" in staging|prod) ;; *) echo "Unknown environment: $env" >&2; exit 1 ;; esac
@@ -29,4 +33,9 @@ flutter build web --release --base-href "$base_href" \
   --dart-define=APP_BUILD="$build" \
   --dart-define=APP_COMMIT="$commit"
 
-echo "Built $env $version ($build · $commit) for $base_href"
+if [[ "$env" == prod && "$PROD_INDEXABLE" == true ]]; then
+  sed -i '/<meta name="robots" content="noindex, nofollow">/d' build/web/index.html
+fi
+grep -q 'name="robots"' build/web/index.html && index=noindex || index=indexable
+
+echo "Built $env $version ($build · $commit) for $base_href ($index)"
