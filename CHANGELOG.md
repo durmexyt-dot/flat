@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.8.2] – 2026-10-15
+
 ### Geändert
 - Staging und Prod sind für Suchmaschinen gesperrt (`noindex`); Prod wird
   zum Go-Live freigegeben.
