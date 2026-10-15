@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.9.0] – 2026-10-15
+
 ### Geändert (UX-Überarbeitung)
 - Keine Anmelde-Wand mehr: alle sehen sofort die Events. Wer kaufen oder
   verkaufen will, meldet sich an und landet danach genau dort, wo er war
