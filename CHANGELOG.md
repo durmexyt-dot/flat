@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert
+- Am PC sitzt der Scrollbalken am Fensterrand statt neben dem Inhalt, und
+  das Mausrad scrollt die Seite auch über den freien Rändern.
+
 ## [1.8.0] – 2026-10-14
 
 ### Neu

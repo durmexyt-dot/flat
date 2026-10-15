@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
@@ -162,23 +164,32 @@ class SiteScaffold extends StatelessWidget {
         children: [
           const SiteHeader(),
           Expanded(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                // Every page shares the header's width.
-                constraints: const BoxConstraints(maxWidth: SiteWidth.wide),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: accountNav
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(width: 248, child: AccountSidebar()),
-                            const SizedBox(width: 32),
-                            Expanded(child: content),
-                          ],
-                        )
-                      : content,
+            child: _WindowScroll(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  // Every page shares the header's width.
+                  constraints: const BoxConstraints(maxWidth: SiteWidth.wide),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: accountNav
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Its own list must not take the page's
+                              // scroll controller.
+                              const SizedBox(
+                                width: 248,
+                                child: PrimaryScrollController.none(
+                                  child: AccountSidebar(),
+                                ),
+                              ),
+                              const SizedBox(width: 32),
+                              Expanded(child: content),
+                            ],
+                          )
+                        : content,
+                  ),
                 ),
               ),
             ),
@@ -187,6 +198,126 @@ class SiteScaffold extends StatelessWidget {
       ),
     );
   }
+}
+
+/// On wide screens the content sits in a centered column, but the page
+/// scrolls like a website: the scrollbar is at the window's edge and the
+/// mouse wheel works over the empty sides too.
+///
+/// The page's main vertical list (the first one without its own controller)
+/// takes [_controller] as its primary scroll controller; its own scrollbar
+/// is hidden and drawn here instead.
+class _WindowScroll extends StatefulWidget {
+  const _WindowScroll({required this.child});
+  final Widget child;
+
+  @override
+  State<_WindowScroll> createState() => _WindowScrollState();
+}
+
+class _WindowScrollState extends State<_WindowScroll> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  bool get _single => _controller.positions.length == 1;
+
+  bool _fromMainList(ScrollNotification n) =>
+      _single &&
+      n.metrics.axis == Axis.vertical &&
+      n.context == _controller.position.context.notificationContext;
+
+  // Wheel over the sides: the list itself didn't take the event.
+  void _onPointerSignal(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent || !_single) return;
+    GestureBinding.instance.pointerSignalResolver.register(event, (e) {
+      final delta = (e as PointerScrollEvent).scrollDelta.dy;
+      if (delta != 0) _controller.position.pointerScroll(delta);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final behavior = ScrollConfiguration.of(context);
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerSignal: _onPointerSignal,
+      child: Scrollbar(
+        controller: _controller,
+        notificationPredicate: _fromMainList,
+        child: PrimaryScrollController(
+          controller: _controller,
+          automaticallyInheritForPlatforms: TargetPlatform.values.toSet(),
+          scrollDirection: Axis.vertical,
+          child: ScrollConfiguration(
+            behavior: _HideScrollbarOf(behavior, _controller),
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// [parent], except that the list using [controller] gets no scrollbar.
+class _HideScrollbarOf extends ScrollBehavior {
+  const _HideScrollbarOf(this.parent, this.controller);
+  final ScrollBehavior parent;
+  final ScrollController controller;
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) => details.controller == controller
+      ? child
+      : parent.buildScrollbar(context, child, details);
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) => parent.buildOverscrollIndicator(context, child, details);
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => parent.dragDevices;
+
+  @override
+  Set<LogicalKeyboardKey> get pointerAxisModifiers =>
+      parent.pointerAxisModifiers;
+
+  @override
+  MultitouchDragStrategy getMultitouchDragStrategy(BuildContext context) =>
+      parent.getMultitouchDragStrategy(context);
+
+  @override
+  TargetPlatform getPlatform(BuildContext context) =>
+      parent.getPlatform(context);
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      parent.getScrollPhysics(context);
+
+  @override
+  ScrollViewKeyboardDismissBehavior getKeyboardDismissBehavior(
+    BuildContext context,
+  ) => parent.getKeyboardDismissBehavior(context);
+
+  @override
+  GestureVelocityTrackerBuilder velocityTrackerBuilder(BuildContext context) =>
+      parent.velocityTrackerBuilder(context);
+
+  @override
+  bool shouldNotify(_HideScrollbarOf oldDelegate) =>
+      parent.runtimeType != oldDelegate.parent.runtimeType ||
+      parent.shouldNotify(oldDelegate.parent) ||
+      controller != oldDelegate.controller;
 }
 
 /// The website header: brand, navigation, account.

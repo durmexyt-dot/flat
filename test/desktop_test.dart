@@ -2,6 +2,7 @@ import 'package:flat/src/account/account_drawer.dart';
 import 'package:flat/src/account/account_sidebar.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,4 +97,33 @@ void main() {
     expect(find.widgetWithText(FButton, 'Prijavi se'), findsWidgets);
     expect(find.widgetWithText(FButton, 'Registruj se'), findsOneWidget);
   });
+
+  testWidgets('desktop: scrollbar at the window edge, wheel on the sides', (
+    tester,
+  ) async {
+    final auth = await _desktop(tester, market: buildSampleMarket('1'));
+    await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
+    tester.view.physicalSize = const Size(1800, 900);
+    await tester.pumpAndSettle();
+
+    // The page's scrollbar spans the window, not the 1200 px column.
+    final bar = find.byType(Scrollbar).first;
+    expect(tester.getRect(bar).right, 1800);
+
+    final list = find
+        .byWidgetPredicate(
+          (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+        )
+        .first;
+    final position = tester.state<ScrollableState>(list).position;
+    expect(position.pixels, 0);
+
+    // Mouse wheel over the empty left side scrolls the page.
+    final pointer = TestPointer(1, PointerDeviceKind.mouse);
+    pointer.hover(const Offset(40, 500));
+    await tester.sendEventToBinding(pointer.scroll(const Offset(0, 300)));
+    await tester.pumpAndSettle();
+    expect(position.pixels, greaterThan(0));
+  });
 }
+
