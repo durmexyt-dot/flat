@@ -1,6 +1,6 @@
 # Stubswap – Go-Live-Checkliste
 
-Stand: 11.10.2026. Stripe (echte Zahlungen, Auszahlungen über Stripe Connect)
+Stand: 15.10.2026 (v1.8.1 auf Staging und Prod). Stripe (echte Zahlungen, Auszahlungen über Stripe Connect)
 ist bewusst ausgeklammert und kommt als letzter Schritt.
 
 Legende: ✅ erledigt · 🔴 blockiert den Go-Live · 🟠 sollte vor dem Go-Live
@@ -41,7 +41,7 @@ Nutzereingaben ohnehin kaum möglich.
 
 ## 2. Sicherheit – Schritte in der Konsole (nur du kannst sie machen)
 
-1. 🔴 **Firestore-Regeln veröffentlichen**: Inhalt von `firestore.rules` →
+1. ✅ **Firestore-Regeln veröffentlichen** (bei jeder Änderung wiederholen): Inhalt von `firestore.rules` →
    Firebase-Konsole → Firestore → Regeln → Veröffentlichen.
    (Sonst gelten die alten, schwächeren Regeln und Stornieren funktioniert
    nicht.)
@@ -80,14 +80,16 @@ Nutzereingaben ohnehin kaum möglich.
 
 ## 3. Stand der Funktionen (ohne Stripe), Oktober 2026
 
-### ✅ Erledigt (v1.7)
+### ✅ Erledigt (v1.7–v1.8)
 
 Ticket-Upload und automatische Auslieferung, Reservierung (15 Min),
 Fristen/Abschluss/Ablauf per Cloud Function, Problem melden/Streitfall,
 Absage/Verschiebung, Rechtstexte (Platzhalter), Endpreis, Originalpreis +
 Gewinn, Wiederverkaufsregeln, Transaktionsmails (eigener SMTP-Versand),
 Betrugsschutz (Doppel-Upload, Limits neuer Verkäufer, Angebot melden),
-Moderation für Admin + Support, Rechnungen der Plattform mit CSV-Export.
+Moderation für Admin + Support, Rechnungen der Plattform mit CSV-Export,
+Übergabe von Handy-/Papiertickets, Datenauskunft, App Check (messend),
+Desktop-Scrollen über die ganze Fensterbreite.
 
 ### 🔴 Noch vor dem Start (Code)
 
