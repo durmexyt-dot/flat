@@ -292,14 +292,3 @@ final authRepositoryProvider = Provider<AuthRepository>(
 final authStateProvider = StreamProvider<AppUser?>(
   (ref) => ref.watch(authRepositoryProvider).authStateChanges(),
 );
-
-/// Whether the user chose to browse events without an account.
-class GuestMode extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void enter() => state = true;
-  void exit() => state = false;
-}
-
-final guestModeProvider = NotifierProvider<GuestMode, bool>(GuestMode.new);

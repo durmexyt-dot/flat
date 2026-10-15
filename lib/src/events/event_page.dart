@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../admin/admin_repository.dart';
-import '../auth/auth_repository.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
-import '../data/repositories.dart';
 import '../market/listing_ticket.dart';
+import '../ui/segmented.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/app_dialog.dart';
 import '../ui/app_style.dart';
@@ -103,14 +102,15 @@ class _EventPageState extends ConsumerState<EventPage> {
             const SizedBox(height: Space.xl),
             _Details(event: event),
           ],
-          SettingsSectionTitle(l10n.eventsOffers),
           _Offers(event: event, columns: wide ? 2 : 1),
+          _SellHint(event: event),
         ],
       );
     }
 
+    // The name is the page's heading; the bar only says what this is.
     return SiteScaffold(
-      title: event?.info.name ?? l10n.event,
+      title: l10n.event,
       maxWidth: SiteWidth.wide,
       body: body,
     );
@@ -121,19 +121,6 @@ class _Details extends ConsumerWidget {
   const _Details({required this.event});
 
   final Event event;
-
-  void _sell(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    if (ref.read(currentUidProvider) != null) {
-      context.push('/sell?event=${event.id}');
-      return;
-    }
-    showSnack(
-      l10n.guestSignInPrompt,
-      actionLabel: l10n.loginButton,
-      onAction: () => ref.read(guestModeProvider.notifier).exit(),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -226,17 +213,9 @@ class _Details extends ConsumerWidget {
           duration: Motion.normal,
           alignment: Alignment.topCenter,
           // Team accounts don't sell: they get the team actions below.
-          child: event.hidden || event.cancelled || ref.watch(isStaffProvider)
+          // Selling is offered below the offers: most visitors come to buy.
+          child: event.hidden || event.cancelled || upcoming
               ? const SizedBox(width: double.infinity)
-              : upcoming
-              ? FButton(
-                  onPress: () => _sell(context, ref),
-                  prefix: const Icon(FLucideIcons.tag),
-                  child: Text(
-                    l10n.eventsSellForEvent,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )
               : FAlert(
                   icon: const Icon(FLucideIcons.calendarCheck),
                   title: Text(l10n.eventsIsOver),
@@ -361,47 +340,154 @@ class _Fact extends StatelessWidget {
   }
 }
 
-class _Offers extends ConsumerWidget {
+/// The offers, cheapest first, with a filter for how many tickets are
+/// needed together.
+class _Offers extends ConsumerStatefulWidget {
   const _Offers({required this.event, required this.columns});
 
   final Event event;
   final int columns;
 
   @override
+  ConsumerState<_Offers> createState() => _OffersState();
+}
+
+class _OffersState extends ConsumerState<_Offers> {
+  /// Tickets needed together; 0 means any.
+  int _needed = 0;
+
+  static const _choices = [0, 1, 2, 3, 4];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final event = widget.event;
+    final columns = widget.columns;
+    final value = ref.watch(eventListingsProvider(event.id));
+    final listings = value.value ?? const <Listing>[];
+    final count = listings.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SettingsSectionTitle(
+          count == 0 ? l10n.eventsOffers : l10n.eventsOffersCount(count),
+        ),
+        if (count > 1) ...[
+          // Short labels, so all fit on phones; the question says what
+          // the numbers mean.
+          Text(l10n.offersHowMany, style: context.theme.mutedText),
+          const SizedBox(height: Space.sm),
+          Segmented<int>(
+            values: _choices,
+            selected: _needed,
+            label: (n) => n == 0
+                ? l10n.offersAnyAmount
+                : n == _choices.last
+                ? l10n.offersAmountOrMore(n)
+                : '$n',
+            onChanged: (n) => setState(() => _needed = n),
+          ),
+          const SizedBox(height: Space.lg),
+        ],
+        AsyncView<List<Listing>>(
+          value: value,
+          onRetry: () => ref.invalidate(eventListingsProvider(event.id)),
+          loading: Shimmer(
+            child: ResponsiveGrid(
+              maxColumns: columns,
+              children: [
+                for (var i = 0; i < columns * 2; i++)
+                  const SkeletonTicketTile(),
+              ],
+            ),
+          ),
+          data: (listings) {
+            if (listings.isEmpty) {
+              return EmptyState(
+                icon: FLucideIcons.ticket,
+                title: l10n.eventsNoOffers,
+                message: event.isUpcoming ? l10n.eventsNoOffersInfo : null,
+              );
+            }
+            final shown = listings.where((l) => l.available >= _needed).toList()
+              ..sort((a, b) {
+                final byPrice = a.buyerPriceMinor.compareTo(b.buyerPriceMinor);
+                return byPrice != 0
+                    ? byPrice
+                    : b.available.compareTo(a.available);
+              });
+            if (shown.isEmpty) {
+              return EmptyState(
+                icon: FLucideIcons.listFilter,
+                title: l10n.offersNoneForAmount(_needed),
+                message: l10n.offersNoneForAmountInfo,
+              );
+            }
+            return ResponsiveGrid(
+              maxColumns: columns,
+              children: [
+                for (final l in shown)
+                  OfferTicket(
+                    listing: l,
+                    onTap: () => context.push('/listing/${l.id}', extra: l),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Below the offers: selling tickets for this event. Guests are sent to
+/// sign-in first and come back to the form.
+class _SellHint extends ConsumerWidget {
+  const _SellHint({required this.event});
+
+  final Event event;
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final uid = ref.watch(currentUidProvider);
-    return AsyncView<List<Listing>>(
-      value: ref.watch(eventListingsProvider(event.id)),
-      onRetry: () => ref.invalidate(eventListingsProvider(event.id)),
-      loading: Shimmer(
-        child: ResponsiveGrid(
-          maxColumns: columns,
-          children: [
-            for (var i = 0; i < columns * 2; i++) const SkeletonTicketTile(),
-          ],
+    final theme = context.theme;
+    // Team accounts don't sell; past, hidden and cancelled events can't be.
+    if (!event.isUpcoming ||
+        event.hidden ||
+        event.cancelled ||
+        ref.watch(isStaffProvider)) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.x3l),
+      child: FCard(
+        child: Padding(
+          padding: const EdgeInsets.all(Space.xl),
+          child: Row(
+            children: [
+              Icon(FLucideIcons.tag, color: theme.colors.mutedForeground),
+              const SizedBox(width: Space.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.eventsHaveTickets, style: theme.titleText),
+                    Text(l10n.eventsHaveTicketsInfo, style: theme.mutedText),
+                  ],
+                ),
+              ),
+              const SizedBox(width: Space.lg),
+              FButton(
+                variant: FButtonVariant.outline,
+                mainAxisSize: MainAxisSize.min,
+                onPress: () => context.push('/sell?event=${event.id}'),
+                child: Text(l10n.sellTickets),
+              ),
+            ],
+          ),
         ),
       ),
-      data: (listings) {
-        if (listings.isEmpty) {
-          return EmptyState(
-            icon: FLucideIcons.ticket,
-            title: l10n.eventsNoOffers,
-            message: event.isUpcoming ? l10n.eventsNoOffersInfo : null,
-          );
-        }
-        return ResponsiveGrid(
-          maxColumns: columns,
-          children: [
-            for (final l in listings)
-              ListingTicket(
-                listing: l,
-                own: l.sellerId == uid,
-                onTap: () => context.push('/listing/${l.id}', extra: l),
-              ),
-          ],
-        );
-      },
     );
   }
 }

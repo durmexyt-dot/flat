@@ -55,6 +55,7 @@ class OrderDetailPage extends ConsumerWidget {
     final buyer = role == OrderRole.buyer && !staffView;
 
     return SiteScaffold(
+      selectable: true,
       title: role == OrderRole.seller ? l10n.saleDetails : l10n.orderDetails,
       maxWidth: SiteWidth.form,
       accountNav: true,

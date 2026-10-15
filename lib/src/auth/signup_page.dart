@@ -10,6 +10,7 @@ import '../info/info_page.dart';
 import '../info/legal_texts.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
+import '../router.dart';
 import '../ui/tokens.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -53,6 +54,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       _error = null;
     });
     // Read before signing up: the page goes once signed in.
+    final target = returnTarget(GoRouterState.of(context).uri) ?? '/';
+    final router = GoRouter.of(context);
     final auth = ref.read(authRepositoryProvider);
     final profiles = ref.read(profileRepositoryProvider);
     try {
@@ -63,7 +66,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       );
       final uid = auth.currentUser?.uid;
       if (uid != null) _recordAcceptance(profiles, uid);
-      // The router moves on to the home screen once signed in.
+      // Back to the page that asked for an account, or home.
+      router.go(target);
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {

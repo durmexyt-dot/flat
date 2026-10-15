@@ -21,6 +21,7 @@ import 'appearance_page.dart';
 import 'settings_controller.dart';
 import 'settings_widgets.dart';
 import '../ui/tokens.dart';
+import '../router.dart';
 
 /// Shown in the about dialog; keep in sync with pubspec.yaml.
 
@@ -35,7 +36,7 @@ class SettingsPage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
     final user = ref.watch(authStateProvider).value;
-    final isGuest = ref.watch(guestModeProvider);
+    final isGuest = user == null;
     final payoutMethod = user == null
         ? null
         : ref.watch(payoutMethodProvider).value;
@@ -53,21 +54,11 @@ class SettingsPage extends ConsumerWidget {
     final Widget? header = user != null
         ? const ProfileHeader()
         : isGuest
-        ? _GuestCard(
-            onSignIn: () {
-              ref.read(guestModeProvider.notifier).exit();
-              context.go('/login');
-            },
-          )
+        ? _GuestCard(onSignIn: () => openSignIn(context))
         : null;
     // On wide screens the sidebar holds buying, selling and account links.
     final wide = isWideLayout(context);
     final sections = <Widget>[
-      // Sellers: sold e-tickets still to upload.
-      if (user != null && !isStaff)
-        const SalesAwaitingTicketsAlert(
-          padding: EdgeInsets.only(top: Space.xl),
-        ),
       // Team accounts: their work comes first.
       if (isStaff) ...[
         SettingsSectionTitle(l10n.adminTeamSection),
@@ -130,6 +121,8 @@ class SettingsPage extends ConsumerWidget {
             SettingsLinkTile(
               icon: FLucideIcons.store,
               title: l10n.sales,
+              // Sold tickets still to upload: the task is on that page.
+              trailing: const SalesTaskCount(),
               onTap: () => context.push('/account/sales'),
             ),
             SettingsLinkTile(
@@ -253,15 +246,16 @@ class SettingsPage extends ConsumerWidget {
               title: Text(l10n.logoutButton),
               onPress: () async {
                 await ref.read(authRepositoryProvider).signOut();
-                if (context.mounted) context.go('/login');
+                if (context.mounted) context.go('/');
               },
             ),
           ],
         ),
       ],
     ];
+    // Named like its tab and sidebar entry; guests only get settings here.
     return SiteScaffold(
-      title: l10n.settingsTitle,
+      title: user == null ? l10n.settingsTitle : l10n.profileTitle,
       maxWidth: SiteWidth.full,
       accountNav: true,
       body: RefreshIndicator(

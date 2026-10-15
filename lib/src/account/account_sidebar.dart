@@ -6,9 +6,11 @@ import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
+import '../data/tickets_repository.dart';
 import '../support/support_repository.dart';
 import '../ui/count_badge.dart';
 import '../ui/tokens.dart';
+import '../ui/app_link.dart';
 
 /// Pages for buying and selling. Team accounts (admins, support) don't buy
 /// or sell, so they don't get these.
@@ -16,30 +18,49 @@ const marketplacePaths = ['/sell', '/checkout', '/account/'];
 
 bool isMarketplacePath(String path) => marketplacePaths.any(path.startsWith);
 
-/// Account entries, shared by the sidebar and the drawer. Without
-/// [marketplace] (team accounts) the buying and selling entries are left
-/// out.
-List<(IconData, String, String)> accountEntries(
+typedef AccountEntry = (IconData icon, String label, String path);
+
+/// Account pages in groups: buying, selling, settings, help. Without
+/// [marketplace] (team accounts) buying and selling are left out.
+List<(String, List<AccountEntry>)> accountGroups(
   AppLocalizations l10n, {
   bool marketplace = true,
 }) => [
-  (FLucideIcons.user, l10n.profileTitle, '/settings'),
   if (marketplace) ...[
-    (FLucideIcons.receipt, l10n.purchases, '/account/purchases'),
-    (FLucideIcons.tag, l10n.myListings, '/account/listings'),
-    (FLucideIcons.store, l10n.sales, '/account/sales'),
-    (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
-    (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
-    (FLucideIcons.receiptText, l10n.invoicesTitle, '/account/invoices'),
+    (
+      l10n.buying,
+      [
+        (FLucideIcons.ticket, l10n.purchases, '/account/purchases'),
+        (FLucideIcons.receiptText, l10n.invoicesTitle, '/account/invoices'),
+      ],
+    ),
+    (
+      l10n.selling,
+      [
+        (FLucideIcons.tag, l10n.myListings, '/account/listings'),
+        (FLucideIcons.store, l10n.sales, '/account/sales'),
+        (FLucideIcons.wallet, l10n.payouts, '/account/payouts'),
+        (FLucideIcons.landmark, l10n.payoutMethod, '/account/payout-method'),
+      ],
+    ),
   ],
-  (FLucideIcons.palette, l10n.appearance, '/settings/appearance'),
-  (FLucideIcons.bell, l10n.notifications, '/settings/notifications'),
-  (FLucideIcons.shield, l10n.privacySecurity, '/settings/privacy'),
-  (FLucideIcons.circleQuestionMark, l10n.helpCenter, '/support'),
+  (
+    l10n.settingsTitle,
+    [
+      (FLucideIcons.user, l10n.profileTitle, '/settings'),
+      (FLucideIcons.palette, l10n.appearance, '/settings/appearance'),
+      (FLucideIcons.bell, l10n.notifications, '/settings/notifications'),
+      (FLucideIcons.shield, l10n.privacySecurity, '/settings/privacy'),
+    ],
+  ),
+  (
+    l10n.accountGroupHelp,
+    [(FLucideIcons.circleQuestionMark, l10n.helpCenter, '/support')],
+  ),
 ];
 
 /// Team entries: the support inbox for staff, administration for admins.
-List<(IconData, String, String)> staffEntries(
+List<AccountEntry> staffEntries(
   AppLocalizations l10n, {
   required bool isStaff,
   required bool isAdmin,
@@ -51,7 +72,8 @@ List<(IconData, String, String)> staffEntries(
 ];
 
 /// An entry's icon, with the count of unread support answers on the help
-/// center and of new requests on the support inbox.
+/// center, of new requests on the support inbox and of sold tickets still
+/// to upload on the sold-tickets page.
 class AccountEntryIcon extends ConsumerWidget {
   const AccountEntryIcon({super.key, required this.icon, required this.path});
 
@@ -63,6 +85,11 @@ class AccountEntryIcon extends ConsumerWidget {
     final count = switch (path) {
       '/support' => ref.watch(unreadSupportAnswersProvider),
       '/admin/support' => ref.watch(unreadForStaffProvider),
+      // Sold tickets still to upload.
+      '/account/sales' =>
+        ref
+            .watch(salesAwaitingTicketsProvider)
+            .fold(0, (sum, o) => sum + o.ticketsMissing),
       _ => 0,
     };
     final child = Icon(icon);
@@ -81,17 +108,23 @@ class AccountSidebar extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final location = GoRouterState.of(context).uri.path;
     final signedIn = ref.watch(authStateProvider).value != null;
-    final entries = signedIn
-        ? accountEntries(l10n, marketplace: !ref.watch(isStaffProvider))
-        : accountEntries(l10n)
-              .where((e) => e.$3 == '/settings' || e.$3 == '/support');
+    // Guests: settings and help only.
+    final groups = signedIn
+        ? accountGroups(l10n, marketplace: !ref.watch(isStaffProvider))
+        : [
+            (
+              l10n.settingsTitle,
+              [(FLucideIcons.settings, l10n.settingsTitle, '/settings')],
+            ),
+            accountGroups(l10n).last,
+          ];
     final team = signedIn
         ? staffEntries(
             l10n,
             isStaff: ref.watch(isStaffProvider),
             isAdmin: ref.watch(isAdminProvider),
           )
-        : const <(IconData, String, String)>[];
+        : const <AccountEntry>[];
 
     return FSidebar(
       style: .delta(
@@ -101,23 +134,32 @@ class AccountSidebar extends ConsumerWidget {
       ),
       footer: signedIn ? const LogoutItem() : null,
       children: [
-        FSidebarGroup(
-          style: const .delta(padding: .value(EdgeInsets.zero)),
-          children: [
-            for (final (icon, label, path) in entries)
-              FSidebarItem(
-                icon: AccountEntryIcon(icon: icon, path: path),
-                label: Text(label),
-                selected: location == path,
-                onPress: () => context.go(path),
-              ),
-          ],
-        ),
+        for (final (i, (title, entries)) in groups.indexed)
+          FSidebarGroup(
+            style: .delta(
+              padding: .value(EdgeInsets.only(top: i == 0 ? 0 : Space.lg)),
+            ),
+            label: Text(title),
+            children: [
+              for (final (icon, label, path) in entries)
+                AppLink(
+                  path: path,
+                  onTap: () => context.go(path),
+                  builder: (tap) => FSidebarItem(
+                    icon: AccountEntryIcon(icon: icon, path: path),
+                    label: Text(label),
+                    selected: location == path,
+                    onPress: tap,
+                  ),
+                ),
+            ],
+          ),
         if (team.isNotEmpty)
           FSidebarGroup(
             style: const .delta(
-              padding: .value(EdgeInsets.only(top: Space.xl)),
+              padding: .value(EdgeInsets.only(top: Space.lg)),
             ),
+            label: Text(l10n.accountGroupTeam),
             children: [
               for (final (icon, label, path) in team)
                 FSidebarItem(
@@ -157,7 +199,7 @@ class LogoutItem extends ConsumerWidget {
               final router = GoRouter.of(context);
               beforeSignOut?.call();
               await ref.read(authRepositoryProvider).signOut();
-              router.go('/login');
+              router.go('/');
             },
           ),
         ],

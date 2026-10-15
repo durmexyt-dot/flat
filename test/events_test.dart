@@ -1,6 +1,10 @@
 import 'package:flat/src/admin/admin_repository.dart';
+import 'package:flat/src/data/events_repository.dart';
+import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/home/home_page.dart';
+import 'package:flat/src/market/listing_ticket.dart';
+import 'package:flat/src/ui/segmented.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
@@ -50,15 +54,10 @@ void main() {
 
     await tester.tap(find.text('FK Sarajevo – FK Željezničar').first);
     await tester.pumpAndSettle();
-    expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('4 od 6 dostupno'),
-      200,
-      scrollable: mainScrollable,
-    );
-    expect(find.text('4 od 6 dostupno'), findsOneWidget);
-
-    await tapVisible(tester, find.text('4 od 6 dostupno'));
+    expect(find.text('Imaš karte za ovaj događaj?'), findsOneWidget);
+    // Offers show what tells them apart: price, seats, how many.
+    expect(find.byType(OfferTicket), findsWidgets);
+    await tapVisible(tester, find.byType(OfferTicket).first);
     expect(find.text('Detalji ponude'), findsOneWidget);
     expect(find.text('Sve ponude za ovaj događaj'), findsOneWidget);
   });
@@ -76,7 +75,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tapVisible(tester, find.text('Bijelo Dugme Tribute').first);
-    await tapVisible(tester, find.text('Prodaj karte za ovaj događaj'));
+    await tapVisible(tester, find.widgetWithText(FButton, 'Prodaj karte').last);
     // Preselected.
     expect(find.text('Bijelo Dugme Tribute'), findsOneWidget);
     expect(find.text('Promijeni'), findsOneWidget);
@@ -168,5 +167,61 @@ void main() {
     await _go(tester, '/admin/events');
     expect(find.text('Nemate pristup'), findsOneWidget);
     expect(find.text('Hamlet'), findsNothing);
+  });
+
+  testWidgets('offers are cheapest first and filter by how many', (
+    tester,
+  ) async {
+    Listing offer(String id, int price, int quantity) => Listing.fromMap(id, {
+      'sellerId': 'other',
+      'eventId': 'ev-x',
+      'event': {
+        'name': 'Test koncert',
+        'venue': 'Zetra',
+        'city': 'Sarajevo',
+        'date': DateTime(2030, 7, 14, 20),
+        'category': 'concerts',
+      },
+      'quantity': quantity,
+      'priceMinor': price,
+      'currency': 'BAM',
+      'status': 'active',
+    });
+    final auth = await pumpApp(
+      tester,
+      marketRepository: InMemoryMarketRepository(
+        listings: [
+          offer('a', 6000, 2),
+          offer('b', 4000, 1),
+          offer('c', 5000, 5),
+        ],
+      ),
+      eventRepository: InMemoryEventRepository(
+        events: [Event(id: 'ev-x', info: offer('a', 1, 1).event)],
+      ),
+    );
+    await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Test koncert').first);
+    await tester.pumpAndSettle();
+    expect(find.text('3 ponude'), findsOneWidget);
+
+    List<String> shown() => tester
+        .widgetList<OfferTicket>(find.byType(OfferTicket, skipOffstage: false))
+        .map((t) => t.listing.id)
+        .toList();
+    // Cheapest first.
+    expect(shown(), ['b', 'c', 'a']);
+
+    // Only offers with at least 2 tickets left.
+    Finder amount(String label) => find.descendant(
+      of: find.byType(Segmented<int>),
+      matching: find.text(label),
+    );
+    await tapVisible(tester, amount('2'));
+    expect(shown(), ['c', 'a']);
+    // None has 4 or more besides "c".
+    await tapVisible(tester, amount('4+'));
+    expect(shown(), ['c']);
   });
 }

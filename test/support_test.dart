@@ -16,9 +16,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
-    await tapVisible(tester, find.text('Kupovine i računi'));
-    await tester.tap(find.text('EXIT Festival'));
-    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('Moje karte').first);
+    await tapVisible(tester, find.text('EXIT Festival'));
     await tapVisible(tester, find.text('Pomoć oko ove narudžbe'));
 
     expect(find.text('SSW-9ZC4TB'), findsOneWidget);
@@ -53,8 +52,6 @@ void main() {
 
   testWidgets('guests can read the help center', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.text('Pretraži događaje kao gost'));
-    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(FLucideIcons.settings));
     await tester.pumpAndSettle();
     await tapVisible(tester, find.text('Centar za pomoć'));

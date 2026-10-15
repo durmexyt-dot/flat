@@ -66,6 +66,7 @@ void main() {
     tester,
   ) async {
     await pumpApp(tester);
+    await openLogin(tester);
     final router = GoRouter.of(tester.element(find.byType(LoginPage)));
     for (final (topic, title) in [
       ('imprint', 'Impresum'),
@@ -101,6 +102,7 @@ void main() {
     tester,
   ) async {
     await pumpApp(tester);
+    await openLogin(tester);
     expect(
       find.textContaining('Nastavkom prihvataš', findRichText: true),
       findsOneWidget,
@@ -113,6 +115,7 @@ void main() {
     tester,
   ) async {
     final auth = await pumpApp(tester);
+    await openLogin(tester);
     await tester.tap(find.text('Registruj se'));
     await tester.pumpAndSettle();
 
@@ -157,7 +160,10 @@ void main() {
     final price = find.textContaining('49,50');
     await tester.scrollUntilVisible(price, 200, scrollable: mainScrollable);
     expect(price, findsOneWidget);
-    expect(find.text('uključena naknada za uslugu 10%'), findsOneWidget);
+    expect(
+      find.text('po karti · uključena naknada za uslugu 10%'),
+      findsOneWidget,
+    );
 
     // The detail shows the face value.
     await tapVisible(tester, price);

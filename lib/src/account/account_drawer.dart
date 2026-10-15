@@ -11,6 +11,7 @@ import 'account_sidebar.dart';
 import 'avatar.dart';
 import 'profile_header.dart';
 import '../ui/tokens.dart';
+import '../router.dart';
 
 /// The account menu on wide screens, opened from the avatar in the header.
 class AccountDrawer extends ConsumerWidget {
@@ -28,21 +29,26 @@ class AccountDrawer extends ConsumerWidget {
       context.push(path);
     }
 
-    FSidebarItem item((IconData, String, String) entry) => FSidebarItem(
+    FSidebarItem item(AccountEntry entry) => FSidebarItem(
       icon: AccountEntryIcon(icon: entry.$1, path: entry.$3),
       label: Text(entry.$2),
       onPress: () => open(entry.$3),
     );
 
     final marketplace = !ref.watch(isStaffProvider);
-    final entries = accountEntries(l10n, marketplace: marketplace);
-    // Profile; buying and selling (not for team accounts); preferences and
-    // help.
-    final market = marketplace ? 5 : 0;
+    // A short menu: what people come back for. The account pages have the
+    // full list in their sidebar.
     final groups = [
-      entries.sublist(0, 1),
-      entries.sublist(1, 1 + market),
-      entries.sublist(1 + market),
+      if (marketplace)
+        <AccountEntry>[
+          (FLucideIcons.ticket, l10n.navMyTickets, '/account/purchases'),
+          (FLucideIcons.tag, l10n.myListings, '/account/listings'),
+          (FLucideIcons.store, l10n.sales, '/account/sales'),
+        ],
+      <AccountEntry>[
+        (FLucideIcons.user, l10n.profileAndSettings, '/settings'),
+        (FLucideIcons.circleQuestionMark, l10n.helpCenter, '/support'),
+      ],
       staffEntries(
         l10n,
         isStaff: ref.watch(isStaffProvider),
@@ -122,8 +128,7 @@ class AccountDrawer extends ConsumerWidget {
                         label: Text(l10n.signInOrUp),
                         onPress: () {
                           Navigator.pop(context);
-                          ref.read(guestModeProvider.notifier).exit();
-                          context.go('/login');
+                          openSignIn(context);
                         },
                       ),
                       item((
@@ -131,7 +136,11 @@ class AccountDrawer extends ConsumerWidget {
                         l10n.settingsTitle,
                         '/settings',
                       )),
-                      item(entries.last),
+                      item((
+                        FLucideIcons.circleQuestionMark,
+                        l10n.helpCenter,
+                        '/support',
+                      )),
                     ],
                   ),
                 ]

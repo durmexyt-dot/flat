@@ -10,8 +10,8 @@ import '../market/labels.dart';
 import '../ui/skeleton.dart';
 import '../ui/tokens.dart';
 
-/// An event's 16:9 picture: a shimmer while it loads, a muted box with the
-/// category icon when there is none.
+/// An event's 16:9 picture: a shimmer while it loads, a tile with the
+/// event's name when there is none.
 class EventImage extends ConsumerWidget {
   const EventImage({
     super.key,
@@ -49,6 +49,7 @@ class EventImage extends ConsumerWidget {
         : EventImagePlaceholder(
             key: const ValueKey('placeholder'),
             category: event.info.category,
+            name: event.info.name,
             iconSize: iconSize,
           );
 
@@ -69,28 +70,82 @@ class EventImage extends ConsumerWidget {
   }
 }
 
-/// Neutral stand-in for a missing picture.
+/// Stand-in for a missing picture: the event's name on a quiet tile, so a
+/// list of events without pictures still reads as designed, not broken.
 class EventImagePlaceholder extends StatelessWidget {
   const EventImagePlaceholder({
     super.key,
     required this.category,
+    this.name = '',
     this.iconSize = 36,
   });
 
   final EventCategory category;
+  final String name;
   final double iconSize;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.theme.colors;
-    return ColoredBox(
-      color: colors.muted,
-      child: Center(
-        child: Icon(
-          categoryIcon(category),
-          size: iconSize,
-          color: colors.mutedForeground,
+    final theme = context.theme;
+    final colors = theme.colors;
+    if (name.isEmpty) {
+      return ColoredBox(
+        color: colors.muted,
+        child: Center(
+          child: Icon(
+            categoryIcon(category),
+            size: iconSize,
+            color: colors.mutedForeground,
+          ),
         ),
+      );
+    }
+    return ColoredBox(
+      color: colors.secondary,
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // Scales with the tile: small on cards, large on the event page.
+          final pad = (box.maxWidth * 0.06).clamp(Space.md, Space.x5l);
+          final fontSize = (box.maxWidth * 0.075).clamp(14.0, 40.0);
+          // A stack, not a column: in very small tiles the name is cut
+          // off instead of overflowing.
+          return Stack(
+            children: [
+              Positioned(
+                top: pad,
+                left: pad,
+                child: Icon(
+                  categoryIcon(category),
+                  size: fontSize * 0.9,
+                  color: colors.mutedForeground,
+                ),
+              ),
+              Positioned(
+                left: pad,
+                right: pad,
+                bottom: pad,
+                // Decorative: the card or page names the event already, so
+                // screen readers skip it (and it isn't a second Text).
+                child: ExcludeSemantics(
+                  child: RichText(
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textScaler: MediaQuery.textScalerOf(context),
+                    text: TextSpan(
+                      text: name,
+                      style: theme.typography.body.md.copyWith(
+                        fontSize: fontSize,
+                        height: 1.15,
+                        fontWeight: FontWeights.heavy,
+                        color: colors.secondaryForeground,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

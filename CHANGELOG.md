@@ -9,6 +9,34 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert (UX-Überarbeitung)
+- Keine Anmelde-Wand mehr: alle sehen sofort die Events. Wer kaufen oder
+  verkaufen will, meldet sich an und landet danach genau dort, wo er war
+  (z. B. direkt im Checkout). Neu laden behält die aktuelle Seite.
+- Event-Seite: Angebote zuerst, günstigstes oben, Filter „Koliko karata
+  trebaš zajedno?“; Karten zeigen Preis, Sektor/Reihe, Kartenart und Anzahl.
+  „Prodaj karte“ als Hinweis unter den Angeboten.
+- Angebotsseite: feste Kaufleiste am Handy; die Anzahl wird im Checkout
+  gewählt; „Angebot melden“ weg vom Kauf-Button.
+- Handy: Tab-Leiste Događaji · Moje karte · Prodaj · Profil (statt des
+  schwebenden Buttons).
+- Desktop: Konto-Seitenleiste in Gruppen (Kupovina, Prodaja, Postavke,
+  Pomoć), kurzes Avatar-Menü; einheitliche Begriffe („Moje karte“,
+  „Prodane karte“, „Profil“).
+- Fehlende Ticket-Uploads: ein Aufgaben-Hinweis auf „Prodane karte“ statt
+  dreier roter Boxen, sonst ein Zähler; rot erst am letzten Tag;
+  „učitaj“ statt „uploaduj“.
+- Beträge in Rechnungslisten werden nie abgeschnitten.
+- Verkaufsformular am PC kompakter (Sektor/Reihe/Sitzplätze in einer
+  Zeile, Preis und Abrechnung nebeneinander).
+- Karten und Navigation sind echte Links (Mittelklick, Strg-/Cmd-Klick,
+  „In neuem Tab öffnen“); Texte auf Detailseiten sind markierbar; die
+  Adresse in der Browserzeile folgt jeder Seite.
+- Events ohne Bild zeigen eine ruhige Kachel mit dem Namen statt eines
+  leeren Kastens; doppelte Titel am Handy entfernt.
+- Ladebalken im Startbildschirm bei langsamem ersten Laden; Start ohne
+  künstliche Wartezeit.
+
 ## [1.8.2] – 2026-10-15
 
 ### Geändert

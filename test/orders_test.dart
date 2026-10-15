@@ -16,7 +16,7 @@ Future<void> _openAccountEntry(WidgetTester tester, String entry) async {
   await tester.pumpAndSettle();
   await tester.tap(byLabel('Postavke'));
   await tester.pumpAndSettle();
-  await tapVisible(tester, find.text(entry));
+  await tapVisible(tester, find.text(entry).first);
 }
 
 void main() {
@@ -37,7 +37,7 @@ void main() {
   });
 
   testWidgets('purchase shows progress and invoice with fees', (tester) async {
-    await _openAccountEntry(tester, 'Kupovine i računi');
+    await _openAccountEntry(tester, 'Moje karte');
     expect(find.text('FK Sarajevo – FK Željezničar'), findsOneWidget);
     expect(find.text('EXIT Festival'), findsOneWidget);
 
@@ -58,9 +58,9 @@ void main() {
   });
 
   testWidgets('sale shows seller earnings and a dispute', (tester) async {
-    await _openAccountEntry(tester, 'Prodaje');
+    await _openAccountEntry(tester, 'Prodane karte');
     // Sold e-tickets without files: the warning comes first.
-    expect(find.textContaining('još nisu uploadovane'), findsOneWidget);
+    expect(find.textContaining('još nisu učitane'), findsOneWidget);
     await tapVisible(tester, find.text('Zdravko Čolić'));
     expect(find.text('Detalji prodaje'), findsOneWidget);
     await tapVisible(tester, find.text('Tvoja zarada'));

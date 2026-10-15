@@ -14,7 +14,10 @@ import '../admin/admin_repository.dart';
 import '../auth/auth_repository.dart';
 import '../brand/brand.dart';
 import '../data/repositories.dart';
+import 'app_tab_bar.dart';
 import 'tokens.dart';
+import '../router.dart';
+import 'app_link.dart';
 
 export 'tokens.dart' show SiteWidth, wideLayoutBreakpoint;
 
@@ -37,6 +40,7 @@ class SiteScaffold extends StatelessWidget {
     this.narrowHeader,
     this.showTitle = true,
     this.accountNav = false,
+    this.selectable = false,
   });
 
   final String title;
@@ -57,11 +61,18 @@ class SiteScaffold extends StatelessWidget {
   /// the page and [maxWidth] is ignored.
   final bool accountNav;
 
+  /// Lets the text be selected and copied, e.g. order numbers, IBANs and
+  /// tracking numbers on detail pages.
+  final bool selectable;
+
   @override
   Widget build(BuildContext context) {
+    final body = selectable ? SelectionArea(child: this.body) : this.body;
     if (!isWideLayout(context)) {
+      final tabs = AppTabBar.isTabPath(GoRouterState.of(context).uri.path);
       return Scaffold(
         floatingActionButton: floatingActionButton,
+        bottomNavigationBar: tabs ? const AppTabBar() : null,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -319,11 +330,11 @@ class SiteHeader extends ConsumerWidget {
 
     Widget link(String label, String path) {
       final active = location == path;
-      return FButton(
+      Widget button(VoidCallback tap) => FButton(
         variant: FButtonVariant.ghost,
         mainAxisSize: MainAxisSize.min,
         selected: active,
-        onPress: () => context.go(path),
+        onPress: tap,
         child: Text(
           label,
           style: TextStyle(
@@ -335,13 +346,14 @@ class SiteHeader extends ConsumerWidget {
           overflow: TextOverflow.ellipsis,
         ),
       );
+      return AppLink(
+        path: path,
+        onTap: () => context.go(path),
+        builder: button,
+      );
     }
 
-    void signIn({bool signUp = false}) {
-      ref.read(guestModeProvider.notifier).exit();
-      context.go('/login');
-      if (signUp) context.push('/signup');
-    }
+    void signIn({bool signUp = false}) => openSignIn(context, signUp: signUp);
 
     return ColoredBox(
       color: theme.colors.background,

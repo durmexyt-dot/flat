@@ -100,6 +100,120 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @offersHowMany.
+  ///
+  /// In bs, this message translates to:
+  /// **'Koliko karata trebaš zajedno?'**
+  String get offersHowMany;
+
+  /// No description provided for @navInbox.
+  ///
+  /// In bs, this message translates to:
+  /// **'Upiti'**
+  String get navInbox;
+
+  /// No description provided for @navSell.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaj'**
+  String get navSell;
+
+  /// No description provided for @accountGroupHelp.
+  ///
+  /// In bs, this message translates to:
+  /// **'Pomoć'**
+  String get accountGroupHelp;
+
+  /// No description provided for @accountGroupTeam.
+  ///
+  /// In bs, this message translates to:
+  /// **'Tim'**
+  String get accountGroupTeam;
+
+  /// No description provided for @profileAndSettings.
+  ///
+  /// In bs, this message translates to:
+  /// **'Profil i postavke'**
+  String get profileAndSettings;
+
+  /// No description provided for @offerAmountAtCheckout.
+  ///
+  /// In bs, this message translates to:
+  /// **'Broj karata biraš u sljedećem koraku.'**
+  String get offerAmountAtCheckout;
+
+  /// No description provided for @offerAvailable.
+  ///
+  /// In bs, this message translates to:
+  /// **'dostupno'**
+  String get offerAvailable;
+
+  /// No description provided for @offerPerTicket.
+  ///
+  /// In bs, this message translates to:
+  /// **'po karti'**
+  String get offerPerTicket;
+
+  /// No description provided for @offerNoSeats.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bez označenih mjesta'**
+  String get offerNoSeats;
+
+  /// No description provided for @eventsOffersCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, =1{1 ponuda} few{{count} ponude} other{{count} ponuda}}'**
+  String eventsOffersCount(int count);
+
+  /// No description provided for @offersAnyAmount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sve'**
+  String get offersAnyAmount;
+
+  /// No description provided for @offersAmount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count} {count, plural, =1{karta} few{karte} other{karata}}'**
+  String offersAmount(int count);
+
+  /// No description provided for @offersAmountOrMore.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count}+'**
+  String offersAmountOrMore(int count);
+
+  /// No description provided for @offersNoneForAmount.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema ponude za {count} karte zajedno'**
+  String offersNoneForAmount(int count);
+
+  /// No description provided for @offersNoneForAmountInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Probaj manji broj ili pogledaj kasnije.'**
+  String get offersNoneForAmountInfo;
+
+  /// No description provided for @eventsHaveTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Imaš karte za ovaj događaj?'**
+  String get eventsHaveTickets;
+
+  /// No description provided for @eventsHaveTicketsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prodaj ih sigurno fanovima kojima trebaju.'**
+  String get eventsHaveTicketsInfo;
+
+  /// No description provided for @signInToContinue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prijavi se ili napravi račun da nastaviš.'**
+  String get signInToContinue;
+
   /// No description provided for @handoverSection.
   ///
   /// In bs, this message translates to:
@@ -1075,13 +1189,13 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryFilesSection.
   ///
   /// In bs, this message translates to:
-  /// **'Uploadovane karte'**
+  /// **'Učitane karte'**
   String get deliveryFilesSection;
 
   /// No description provided for @deliveryProgress.
   ///
   /// In bs, this message translates to:
-  /// **'{done} od {total} karata uploadovano'**
+  /// **'{done} od {total} karata učitano'**
   String deliveryProgress(int done, int total);
 
   /// No description provided for @deliveryAddFile.
@@ -1093,7 +1207,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryAllUploaded.
   ///
   /// In bs, this message translates to:
-  /// **'Sve karte su uploadovane.'**
+  /// **'Sve karte su učitane.'**
   String get deliveryAllUploaded;
 
   /// No description provided for @deliveryInfoTitle.
@@ -1105,7 +1219,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryInfo.
   ///
   /// In bs, this message translates to:
-  /// **'Karte se automatski šalju kupcu odmah nakon plaćanja. Uploaduj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.'**
+  /// **'Karte se automatski šalju kupcu odmah nakon plaćanja. Učitaj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.'**
   String get deliveryInfo;
 
   /// No description provided for @deliveryFileTypes.
@@ -1129,7 +1243,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryNoFiles.
   ///
   /// In bs, this message translates to:
-  /// **'Još nema uploadovanih karata.'**
+  /// **'Još nema učitanih karata.'**
   String get deliveryNoFiles;
 
   /// No description provided for @deliveryWaiting.
@@ -1165,19 +1279,19 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryUpload.
   ///
   /// In bs, this message translates to:
-  /// **'Uploaduj'**
+  /// **'Učitaj'**
   String get deliveryUpload;
 
   /// No description provided for @deliveryUploaded.
   ///
   /// In bs, this message translates to:
-  /// **'Karte uploadovane'**
+  /// **'Karte učitane'**
   String get deliveryUploaded;
 
   /// No description provided for @deliveryUploading.
   ///
   /// In bs, this message translates to:
-  /// **'Uploadujem…'**
+  /// **'Učitavam…'**
   String get deliveryUploading;
 
   /// No description provided for @deliveryWrongType.
@@ -1195,13 +1309,13 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryUploadError.
   ///
   /// In bs, this message translates to:
-  /// **'Upload nije uspio. Pokušaj ponovo.'**
+  /// **'Učitavanje nije uspjelo. Pokušaj ponovo.'**
   String get deliveryUploadError;
 
   /// No description provided for @deliveryPickUnsupported.
   ///
   /// In bs, this message translates to:
-  /// **'Upload fajlova je za sada moguć samo u web pregledniku.'**
+  /// **'Učitavanje fajlova je za sada moguć samo u web pregledniku.'**
   String get deliveryPickUnsupported;
 
   /// No description provided for @deliveryDeleteTitle.
@@ -1237,25 +1351,25 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryNoAccess.
   ///
   /// In bs, this message translates to:
-  /// **'Samo prodavac može uploadovati karte za ovu ponudu.'**
+  /// **'Samo prodavac može učitati karte za ovu ponudu.'**
   String get deliveryNoAccess;
 
   /// No description provided for @deliveryMissingBadge.
   ///
   /// In bs, this message translates to:
-  /// **'Karte nisu uploadovane'**
+  /// **'Karte nisu učitane'**
   String get deliveryMissingBadge;
 
   /// No description provided for @deliveryUploadAction.
   ///
   /// In bs, this message translates to:
-  /// **'Uploaduj karte'**
+  /// **'Učitaj karte'**
   String get deliveryUploadAction;
 
   /// No description provided for @deliverySalesWarning.
   ///
   /// In bs, this message translates to:
-  /// **'{count, plural, one{Imaš {count} prodanu kartu koja još nije uploadovana} few{Imaš {count} prodane karte koje još nisu uploadovane} other{Imaš {count} prodanih karata koje još nisu uploadovane}}'**
+  /// **'{count, plural, one{Imaš {count} prodanu kartu koja još nije učitana} few{Imaš {count} prodane karte koje još nisu učitane} other{Imaš {count} prodanih karata koje još nisu učitane}}'**
   String deliverySalesWarning(int count);
 
   /// No description provided for @deliveryDeadline.
@@ -1267,13 +1381,13 @@ abstract class AppLocalizations {
   /// No description provided for @deliverySellerMissingTitle.
   ///
   /// In bs, this message translates to:
-  /// **'Karte još nisu uploadovane'**
+  /// **'Karte još nisu učitane'**
   String get deliverySellerMissingTitle;
 
   /// No description provided for @deliverySellerMissingInfo.
   ///
   /// In bs, this message translates to:
-  /// **'Uploaduj ih do {date}. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.'**
+  /// **'Učitaj ih do {date}. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.'**
   String deliverySellerMissingInfo(String date);
 
   /// No description provided for @deliveryBuyerSection.
@@ -1357,7 +1471,7 @@ abstract class AppLocalizations {
   /// No description provided for @deliveryAlertDeadlineTitle.
   ///
   /// In bs, this message translates to:
-  /// **'Prodaja otkazana – karte nisu uploadovane'**
+  /// **'Prodaja otkazana – karte nisu učitane'**
   String get deliveryAlertDeadlineTitle;
 
   /// No description provided for @deliveryAlertDeadlineBody.
@@ -1723,31 +1837,31 @@ abstract class AppLocalizations {
   /// No description provided for @sellerUploadNow.
   ///
   /// In bs, this message translates to:
-  /// **'Uploaduj'**
+  /// **'Učitaj'**
   String get sellerUploadNow;
 
   /// No description provided for @sellerTicketsMissing.
   ///
   /// In bs, this message translates to:
-  /// **'Karte još nisu uploadovane'**
+  /// **'Karte još nisu učitane'**
   String get sellerTicketsMissing;
 
   /// No description provided for @sellerTicketsMissingInfo.
   ///
   /// In bs, this message translates to:
-  /// **'{done} od {total} karata uploadovano. Uploaduj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.'**
+  /// **'{done} od {total} karata učitano. Učitaj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.'**
   String sellerTicketsMissingInfo(int done, int total);
 
   /// No description provided for @sellerTicketsButton.
   ///
   /// In bs, this message translates to:
-  /// **'Karte (upload)'**
+  /// **'Karte (učitavanje)'**
   String get sellerTicketsButton;
 
   /// No description provided for @sellerUploadNowHint.
   ///
   /// In bs, this message translates to:
-  /// **'Ponuda je objavljena. Uploaduj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.'**
+  /// **'Ponuda je objavljena. Učitaj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.'**
   String get sellerUploadNowHint;
 
   /// No description provided for @eventPageCancelled.
@@ -3553,7 +3667,7 @@ abstract class AppLocalizations {
   /// No description provided for @continueAsGuest.
   ///
   /// In bs, this message translates to:
-  /// **'Pretraži događaje kao gost'**
+  /// **'Nastavi bez prijave'**
   String get continueAsGuest;
 
   /// No description provided for @signupTitle.
@@ -5065,13 +5179,13 @@ abstract class AppLocalizations {
   /// No description provided for @purchases.
   ///
   /// In bs, this message translates to:
-  /// **'Kupovine i računi'**
+  /// **'Moje karte'**
   String get purchases;
 
   /// No description provided for @sales.
   ///
   /// In bs, this message translates to:
-  /// **'Prodaje'**
+  /// **'Prodane karte'**
   String get sales;
 
   /// No description provided for @payouts.

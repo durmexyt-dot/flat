@@ -51,6 +51,7 @@ dependencies:
   cloud_functions: ^6.5.0
   pdf: ^3.13.1
   firebase_app_check: ^0.4.8
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

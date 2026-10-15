@@ -10,6 +10,84 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get offersHowMany => 'How many tickets do you need together?';
+
+  @override
+  String get navInbox => 'Requests';
+
+  @override
+  String get navSell => 'Sell';
+
+  @override
+  String get accountGroupHelp => 'Help';
+
+  @override
+  String get accountGroupTeam => 'Team';
+
+  @override
+  String get profileAndSettings => 'Profile & settings';
+
+  @override
+  String get offerAmountAtCheckout => 'You choose how many in the next step.';
+
+  @override
+  String get offerAvailable => 'available';
+
+  @override
+  String get offerPerTicket => 'per ticket';
+
+  @override
+  String get offerNoSeats => 'No seats given';
+
+  @override
+  String eventsOffersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offers',
+      one: '1 offer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get offersAnyAmount => 'All';
+
+  @override
+  String offersAmount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tickets',
+      one: 'ticket',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String offersAmountOrMore(int count) {
+    return '$count+';
+  }
+
+  @override
+  String offersNoneForAmount(int count) {
+    return 'No offer for $count tickets together';
+  }
+
+  @override
+  String get offersNoneForAmountInfo =>
+      'Try fewer tickets or check back later.';
+
+  @override
+  String get eventsHaveTickets => 'Got tickets for this event?';
+
+  @override
+  String get eventsHaveTicketsInfo => 'Sell them safely to fans who need them.';
+
+  @override
+  String get signInToContinue => 'Sign in or create an account to continue.';
+
+  @override
   String get handoverSection => 'Ticket handover';
 
   @override
@@ -1970,7 +2048,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUp => 'Sign up';
 
   @override
-  String get continueAsGuest => 'Browse events as guest';
+  String get continueAsGuest => 'Continue without signing in';
 
   @override
   String get signupTitle => 'Create your account';
@@ -2781,10 +2859,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payoutDetails => 'Payout details';
 
   @override
-  String get purchases => 'Purchases & invoices';
+  String get purchases => 'My tickets';
 
   @override
-  String get sales => 'Sales';
+  String get sales => 'Sold tickets';
 
   @override
   String get payouts => 'Payouts';

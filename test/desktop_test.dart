@@ -55,10 +55,12 @@ void main() {
     expect(find.byType(AccountDrawer), findsOneWidget);
     expect(find.text('Amra Test'), findsWidgets);
 
-    await tester.tap(find.text('Isplate'));
+    // A short menu: what people come back for.
+    expect(find.text('Isplate'), findsNothing);
+    await tester.tap(find.text('Moje ponude'));
     await tester.pumpAndSettle();
     expect(find.byType(AccountDrawer), findsNothing);
-    expect(find.text('Uskoro na računu'), findsOneWidget);
+    expect(find.byType(AccountSidebar), findsOneWidget);
     // Page title next to the content, header stays.
     expect(find.byType(SiteHeader), findsOneWidget);
   });
@@ -71,12 +73,17 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(byLabel('Otvori meni računa'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Profil'));
+    await tester.tap(find.text('Profil i postavke'));
     await tester.pumpAndSettle();
 
     // Account pages share the sidebar on the left of the content.
     expect(find.byType(AccountSidebar), findsOneWidget);
-    final nav = tester.getTopLeft(find.text('Kupovine i računi'));
+    final nav = tester.getTopLeft(
+      find.descendant(
+        of: find.byType(AccountSidebar),
+        matching: find.text('Moje karte'),
+      ),
+    );
     final edit = tester.getTopLeft(find.text('Uredi profil'));
     expect(edit.dx, greaterThan(nav.dx + 200));
     // The profile card shows the counts beside the name.
@@ -91,9 +98,9 @@ void main() {
   });
 
   testWidgets('desktop: guests see sign in and sign up', (tester) async {
+    // Guests land on the events, not on a sign-in wall.
     await _desktop(tester);
-    await tester.tap(find.text('Pretraži događaje kao gost'));
-    await tester.pumpAndSettle();
+    expect(find.text('Karte za koncerte, sport i festivale'), findsOneWidget);
     expect(find.widgetWithText(FButton, 'Prijavi se'), findsWidgets);
     expect(find.widgetWithText(FButton, 'Registruj se'), findsOneWidget);
   });
@@ -126,4 +133,3 @@ void main() {
     expect(position.pixels, greaterThan(0));
   });
 }
-

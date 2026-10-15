@@ -2,11 +2,11 @@ import 'package:flat/src/auth/auth_widgets.dart';
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
+import 'package:flat/src/market/listing_ticket.dart';
 import 'package:flat/src/payments/checkout_page.dart';
 import 'package:flat/src/payments/payment_gateway.dart';
 import 'package:flat/src/payments/test_payment_gateway.dart';
 import 'package:flat/src/ui/site_scaffold.dart';
-import 'package:flat/src/ui/ticket.dart';
 import 'package:flutter/widgets.dart' show EditableText;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
@@ -46,16 +46,12 @@ Future<void> _toCheckout(WidgetTester tester, {int quantity = 4}) async {
   // Home shows the event; its page lists the offer.
   await tester.tap(find.text('Sarajevo Jazz Festival').first);
   await tester.pumpAndSettle();
-  await tapVisible(
-    tester,
-    find.descendant(
-      of: find.byType(TicketCard),
-      matching: find.text('Sarajevo Jazz Festival'),
-    ),
-  );
-  await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
-  await tapVisible(tester, find.text('Kupi karte').last);
+  await tapVisible(tester, find.byType(OfferTicket).first);
+  // Phones: the buy bar at the bottom; the number is chosen at checkout.
+  await tester.tap(find.text('Kupi karte').last);
+  await tester.pumpAndSettle();
   expect(find.text('Plaćanje'), findsOneWidget);
+  await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
   expect(find.text('Testni način · bez pravog novca'), findsOneWidget);
 }
 
@@ -245,7 +241,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
-    await tapVisible(tester, find.text('Prodaje'));
+    await tapVisible(tester, find.text('Prodane karte'));
     await tester.tap(find.text('Sarajevo Jazz Festival'));
     await tester.pumpAndSettle();
     expect(find.text('Pošalji karte kupcu što prije.'), findsOneWidget);
@@ -311,7 +307,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
-    await tapVisible(tester, find.text('Prodaje'));
+    await tapVisible(tester, find.text('Prodane karte'));
     await tester.tap(find.text('Sarajevo Jazz Festival'));
     await tester.pumpAndSettle();
 
@@ -354,7 +350,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
-    await tapVisible(tester, find.text('Kupovine i računi'));
+    await tapVisible(tester, find.text('Moje karte').first);
     await tester.tap(find.text('Sarajevo Jazz Festival'));
     await tester.pumpAndSettle();
     expect(find.text('Detalji narudžbe'), findsOneWidget);

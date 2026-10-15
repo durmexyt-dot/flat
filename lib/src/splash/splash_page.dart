@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../auth/auth_repository.dart';
+import '../router.dart';
 import '../brand/brand.dart';
 import '../web/html_splash.dart';
 import '../ui/tokens.dart';
 
-/// How long the splash stays at least, so the brand can be seen.
-const splashMinDuration = Duration(milliseconds: 1800);
+/// How long the splash stays at least, so the hand-over to the next screen
+/// doesn't flash; the HTML splash already showed the brand while loading.
+const splashMinDuration = Duration(milliseconds: 600);
 
 /// Set once the splash has finished; until then every route leads here.
 class SplashDone extends Notifier<bool> {
@@ -46,8 +48,9 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       auth.authStateChanges().first,
     ]);
     if (!mounted) return;
+    final target = returnTarget(GoRouterState.of(context).uri) ?? '/';
     ref.read(splashDoneProvider.notifier).complete();
-    context.go(auth.currentUser != null ? '/' : '/login');
+    context.go(target);
   }
 
   @override

@@ -205,6 +205,7 @@ class _SellPageState extends ConsumerState<SellPage> {
     final maxPrice = markup == null || face == null || face <= 0
         ? null
         : maxResalePrice(face, markup);
+    final wide = isWideLayout(context);
     return _WithGuide(
       form: Form(
         key: _formKey,
@@ -296,113 +297,107 @@ class _SellPageState extends ConsumerState<SellPage> {
               ),
               const SizedBox(height: Space.lg),
               _QuantityStepper(
+                compact: wide,
                 value: _quantity,
                 max: maxQuantity,
                 onChanged: (v) => setState(() => _quantity = v),
               ),
               const SizedBox(height: Space.lg),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: FTextFormField(
-                      control: FTextFieldControl.managed(controller: _section),
-                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
-                      label: Text(l10n.section),
-                      description: Text(l10n.optional),
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ),
-                  const SizedBox(width: Space.lg),
-                  Expanded(
-                    child: FTextFormField(
-                      control: FTextFieldControl.managed(controller: _row),
-                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
-                      label: Text(l10n.row),
-                      description: Text(l10n.optional),
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Space.lg),
-              FTextFormField(
-                control: FTextFieldControl.managed(controller: _seats),
-                inputFormatters: [LengthLimitingTextInputFormatter(60)],
-                label: Text(l10n.seats),
-                description: Text(l10n.optional),
-                textInputAction: TextInputAction.next,
+              _SeatFields(
+                section: _section,
+                row: _row,
+                seats: _seats,
+                wide: wide,
               ),
               SettingsSectionTitle(l10n.price),
-              FTextFormField(
-                control: FTextFieldControl.managed(
-                  controller: _faceValue,
-                  onChange: (_) => setState(() {}),
-                ),
-                label: Text(l10n.priceFaceValue),
-                description: Text(l10n.priceFaceValueInfo),
-                prefixBuilder: (context, style, variants) =>
-                    fieldIcon(FLucideIcons.receiptText),
-                suffixBuilder: (context, style, variants) => Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 12),
-                  child: Text(currency.symbol, style: context.theme.mutedText),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                textInputAction: TextInputAction.next,
-                validator: (v) {
-                  final minor = parseMoney(v ?? '');
-                  // The rules accept up to 10 000 per ticket.
-                  return (minor == null || minor <= 0 || minor > 1000000)
-                      ? l10n.priceFaceValueInvalid
-                      : null;
-                },
-              ),
-              const SizedBox(height: Space.lg),
-              FTextFormField(
-                control: FTextFieldControl.managed(
-                  controller: _price,
-                  onChange: (_) => setState(() {}),
-                ),
-                label: Text(l10n.pricePerTicket),
-                // The resale rule for this event, as the rules check it.
-                description: markup == null
-                    ? null
-                    : Text(
-                        maxPrice == null
-                            ? l10n.resaleLimitHint(markup)
-                            : l10n.resaleMaxPrice(
-                                formatMoney(context, maxPrice, currency.code),
-                                markup,
-                              ),
+              _SideBySide(
+                wide: wide,
+                first: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    FTextFormField(
+                      control: FTextFieldControl.managed(
+                        controller: _faceValue,
+                        onChange: (_) => setState(() {}),
                       ),
-                prefixBuilder: (context, style, variants) =>
-                    fieldIcon(FLucideIcons.tag),
-                suffixBuilder: (context, style, variants) => Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 12),
-                  child: Text(currency.symbol, style: context.theme.mutedText),
+                      label: Text(l10n.priceFaceValue),
+                      description: Text(l10n.priceFaceValueInfo),
+                      prefixBuilder: (context, style, variants) =>
+                          fieldIcon(FLucideIcons.receiptText),
+                      suffixBuilder: (context, style, variants) => Padding(
+                        padding: const EdgeInsetsDirectional.only(end: 12),
+                        child: Text(
+                          currency.symbol,
+                          style: context.theme.mutedText,
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: (v) {
+                        final minor = parseMoney(v ?? '');
+                        // The rules accept up to 10 000 per ticket.
+                        return (minor == null || minor <= 0 || minor > 1000000)
+                            ? l10n.priceFaceValueInvalid
+                            : null;
+                      },
+                    ),
+                    const SizedBox(height: Space.lg),
+                    FTextFormField(
+                      control: FTextFieldControl.managed(
+                        controller: _price,
+                        onChange: (_) => setState(() {}),
+                      ),
+                      label: Text(l10n.pricePerTicket),
+                      // The resale rule for this event, as the rules check it.
+                      description: markup == null
+                          ? null
+                          : Text(
+                              maxPrice == null
+                                  ? l10n.resaleLimitHint(markup)
+                                  : l10n.resaleMaxPrice(
+                                      formatMoney(
+                                        context,
+                                        maxPrice,
+                                        currency.code,
+                                      ),
+                                      markup,
+                                    ),
+                            ),
+                      prefixBuilder: (context, style, variants) =>
+                          fieldIcon(FLucideIcons.tag),
+                      suffixBuilder: (context, style, variants) => Padding(
+                        padding: const EdgeInsetsDirectional.only(end: 12),
+                        child: Text(
+                          currency.symbol,
+                          style: context.theme.mutedText,
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      validator: (v) {
+                        final minor = parseMoney(v ?? '');
+                        if (minor == null || minor <= 0) {
+                          return l10n.priceInvalid;
+                        }
+                        if (maxPrice != null && minor > maxPrice) {
+                          return l10n.resaleTooHigh(
+                            formatMoney(context, maxPrice, currency.code),
+                          );
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+                second: _PriceBreakdown(
+                  priceMinor: parseMoney(_price.text) ?? 0,
+                  faceValueMinor: parseMoney(_faceValue.text),
+                  quantity: _quantity,
+                  currency: currency.code,
                 ),
-                validator: (v) {
-                  final minor = parseMoney(v ?? '');
-                  if (minor == null || minor <= 0) return l10n.priceInvalid;
-                  if (maxPrice != null && minor > maxPrice) {
-                    return l10n.resaleTooHigh(
-                      formatMoney(context, maxPrice, currency.code),
-                    );
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: Space.lg),
-              _PriceBreakdown(
-                priceMinor: parseMoney(_price.text) ?? 0,
-                faceValueMinor: parseMoney(_faceValue.text),
-                quantity: _quantity,
-                currency: currency.code,
               ),
               const SizedBox(height: Space.lg),
               FTextFormField(
@@ -426,6 +421,97 @@ class _SellPageState extends ConsumerState<SellPage> {
       ),
     );
   }
+}
+
+/// Section, row and seats: one row on wide screens, two on phones.
+class _SeatFields extends StatelessWidget {
+  const _SeatFields({
+    required this.section,
+    required this.row,
+    required this.seats,
+    required this.wide,
+  });
+
+  final TextEditingController section;
+  final TextEditingController row;
+  final TextEditingController seats;
+  final bool wide;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    Widget field(TextEditingController c, String label, int max) =>
+        FTextFormField(
+          control: FTextFieldControl.managed(controller: c),
+          inputFormatters: [LengthLimitingTextInputFormatter(max)],
+          label: Text(label),
+          description: Text(l10n.optional),
+          textInputAction: TextInputAction.next,
+        );
+    final sectionField = field(section, l10n.section, 40);
+    final rowField = field(row, l10n.row, 40);
+    final seatsField = field(seats, l10n.seats, 60);
+    if (wide) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: sectionField),
+          const SizedBox(width: Space.lg),
+          Expanded(child: rowField),
+          const SizedBox(width: Space.lg),
+          Expanded(flex: 2, child: seatsField),
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: sectionField),
+            const SizedBox(width: Space.lg),
+            Expanded(child: rowField),
+          ],
+        ),
+        const SizedBox(height: Space.lg),
+        seatsField,
+      ],
+    );
+  }
+}
+
+/// Two parts next to each other on wide screens, one below the other on
+/// phones; e.g. the prices and what they come to.
+class _SideBySide extends StatelessWidget {
+  const _SideBySide({
+    required this.wide,
+    required this.first,
+    required this.second,
+  });
+
+  final bool wide;
+  final Widget first;
+  final Widget second;
+
+  @override
+  Widget build(BuildContext context) => wide
+      ? Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: first),
+            const SizedBox(width: Space.x3l),
+            Expanded(child: second),
+          ],
+        )
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            first,
+            const SizedBox(height: Space.lg),
+            second,
+          ],
+        );
 }
 
 /// The form, and on wide screens a guide to selling next to it.
@@ -584,27 +670,35 @@ class _QuantityStepper extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.max = 20,
+    this.compact = false,
   });
 
   final int value;
   final ValueChanged<int> onChanged;
   final int max;
 
+  /// Wide screens: the buttons right next to the label instead of at the
+  /// far end of the row.
+  final bool compact;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
+    final label = Text(
+      l10n.quantity,
+      style: theme.typography.body.sm.copyWith(
+        fontWeight: FontWeights.medium,
+        color: theme.colors.foreground,
+      ),
+    );
     return Row(
       children: [
-        Expanded(
-          child: Text(
-            l10n.quantity,
-            style: theme.typography.body.sm.copyWith(
-              fontWeight: FontWeights.medium,
-              color: theme.colors.foreground,
-            ),
-          ),
-        ),
+        if (compact) ...[
+          label,
+          const SizedBox(width: Space.x3l),
+        ] else
+          Expanded(child: label),
         FButton.icon(
           variant: FButtonVariant.outline,
           onPress: value > 1 ? () => onChanged(value - 1) : null,

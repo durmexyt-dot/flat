@@ -122,14 +122,11 @@ void main() {
 
     await tester.tap(find.text('Dubioza kolektiv').first);
     await tester.pumpAndSettle();
-    expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
-    expect(find.text('Ponude'), findsOneWidget);
+    expect(find.text('Imaš karte za ovaj događaj?'), findsOneWidget);
+    expect(find.text('1 ponuda'), findsOneWidget);
 
     // The ticket on the event page, then the flying one, then the detail's.
-    final ticket = find.descendant(
-      of: find.byType(TicketCard, skipOffstage: false),
-      matching: find.text('Dubioza kolektiv', skipOffstage: false),
-    );
+    final ticket = find.byType(TicketCard, skipOffstage: false);
     double ticketTop() => tester.getTopLeft(ticket.last).dy;
     await tester.ensureVisible(ticket.first);
     await tester.pumpAndSettle();
@@ -149,12 +146,15 @@ void main() {
       reason: 'before $before during $during after $after',
     );
 
-    // A buyer sees the total with the 10 % service fee.
+    // A buyer sees the price per ticket with the 10 % service fee, in the
+    // buy bar; the number of tickets is chosen at checkout.
     expect(find.text('Detalji ponude'), findsOneWidget);
     expect(find.text('Sve ponude za ovaj događaj'), findsOneWidget);
-    await tapVisible(tester, find.byIcon(FLucideIcons.plus).last);
-    // 2 × 45,00 = 90,00 + 9,00 fee = 99,00
-    expect(find.textContaining('99,00'), findsOneWidget);
+    expect(
+      find.text('po karti · uključena naknada za uslugu 10%'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('49,50'), findsWidgets);
   });
 
   testWidgets('seller publishes a listing, changes price and withdraws', (
@@ -172,7 +172,7 @@ void main() {
     await auth.signIn(email: 'a@b.ba', password: 'x', keepSignedIn: true);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Prodaj karte'));
+    await tester.tap(find.text('Prodaj'));
     await tester.pumpAndSettle();
     // Without a payout method the form is locked.
     expect(find.text('Prvo dodaj način isplate'), findsOneWidget);
@@ -273,16 +273,25 @@ void main() {
     expect(find.text('Promijeni cijenu'), findsNothing);
   });
 
-  testWidgets('guests cannot open the sell form', (tester) async {
+  testWidgets('guests sign in before selling and come back to the form', (
+    tester,
+  ) async {
     await pumpApp(tester);
-    await tester.tap(find.text('Pretraži događaje kao gost'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Prodaj karte'));
+    await tester.tap(find.text('Prodaj'));
     await tester.pumpAndSettle();
     expect(find.text('Objavi ponudu'), findsNothing);
     expect(
-      find.text('Prijavite se da biste kupovali i prodavali karte'),
-      findsWidgets,
+      find.text('Prijavi se ili napravi račun da nastaviš.'),
+      findsOneWidget,
     );
+
+    await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
+    await tester.enterText(find.byType(EditableText).at(1), 'secret1');
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
+    await tester.pumpAndSettle();
+    // Back where the user wanted to go: selling (here: a payout method
+    // is needed first).
+    expect(find.text('Prodaj karte'), findsWidgets);
+    expect(find.text('Dobrodošli na Stubswap'), findsNothing);
   });
 }

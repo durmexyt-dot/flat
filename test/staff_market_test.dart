@@ -36,7 +36,7 @@ void main() {
       await _go(tester, '/sell');
       expect(find.byType(HomePage), findsOneWidget);
       await _go(tester, '/account/purchases');
-      expect(find.text('Kupovine i računi'), findsNothing);
+      expect(find.text('Još nemaš kupovina'), findsNothing);
 
       // A listing shows why there is no buy button.
       final listing = market.watchActiveListings();
@@ -47,15 +47,16 @@ void main() {
 
       // The settings have no buying and selling sections.
       await _go(tester, '/settings');
-      expect(find.text('Kupovine i računi'), findsNothing);
+      expect(find.text('Moje karte'), findsNothing);
       expect(find.text('Moje ponude'), findsNothing);
     });
   }
 
   testWidgets('normal users still buy and sell', (tester) async {
     await _signedIn(tester, null);
-    expect(find.text('Prodaj karte'), findsWidgets);
+    // Phones: selling is a tab.
+    expect(find.text('Prodaj'), findsOneWidget);
     await _go(tester, '/settings');
-    expect(find.text('Kupovine i računi'), findsOneWidget);
+    expect(find.text('Moje ponude'), findsOneWidget);
   });
 }

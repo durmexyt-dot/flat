@@ -123,9 +123,6 @@ class _MyListingsPageState extends ConsumerState<MyListingsPage> {
                       96,
                     ),
                     children: [
-                      const SalesAwaitingTicketsAlert(
-                        padding: EdgeInsets.only(bottom: Space.lg),
-                      ),
                       ResponsiveGrid(
                         maxColumns: 2,
                         children: [

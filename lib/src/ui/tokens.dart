@@ -125,6 +125,7 @@ abstract final class FixedColors {
   /// Status badges: done / waiting.
   static const positive = Color(0xFF2E9E5B);
   static const waiting = Color(0xFFE0A100);
+  static const onWaiting = Color(0xFF1B1B1B);
 
   /// The staging ribbon.
   static const stagingRibbon = Color(0xFFE0A100);

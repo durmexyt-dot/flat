@@ -59,11 +59,39 @@ const _accountOnly = [
   '/settings/notifications',
 ];
 
+/// [path] with `?from=` set to [target], the page to come back to.
+String withReturnTo(String path, String target) =>
+    Uri(path: path, queryParameters: {'from': target}).toString();
+
+/// Whether [path] needs an account (selling, the account, checkout).
+bool isAccountOnly(String path) => _accountOnly.any(path.startsWith);
+
+/// Opens sign-in (or sign-up) and comes back to the current page after it.
+void openSignIn(BuildContext context, {bool signUp = false}) {
+  final here = GoRouterState.of(context).uri;
+  final back = _authRoutes.contains(here.path)
+      ? returnTarget(here)
+      : here.toString();
+  final path = signUp ? '/signup' : '/login';
+  context.push(back == null ? path : withReturnTo(path, back));
+}
+
+/// The page to come back to after signing in or the splash, if it is a safe
+/// address inside the app.
+String? returnTarget(Uri uri) {
+  final from = uri.queryParameters['from'];
+  if (from == null || !from.startsWith('/') || from.startsWith('//')) {
+    return null;
+  }
+  final path = Uri.parse(from).path;
+  if (path == '/splash' || _authRoutes.contains(path)) return null;
+  return from;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authRepositoryProvider);
   final refresh = _RefreshNotifier();
   final sub = auth.authStateChanges().listen((_) => refresh.notify());
-  ref.listen(guestModeProvider, (_, _) => refresh.notify());
   ref.listen(isStaffProvider, (_, _) => refresh.notify());
   ref.onDispose(() {
     sub.cancel();
@@ -75,24 +103,30 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: refresh,
     redirect: (context, state) {
       final location = state.matchedLocation;
-      // Every cold start, also a reload on web, begins with the splash.
+      // Every cold start, also a reload on web, begins with the splash; it
+      // then goes on to the address that was opened.
       if (!ref.read(splashDoneProvider)) {
-        return location == '/splash' ? null : '/splash';
+        if (location == '/splash') return null;
+        return withReturnTo('/splash', state.uri.toString());
       }
       if (location == '/splash') return null;
 
       final signedIn = auth.currentUser != null;
-      // Selling and the account need an account; browsing doesn't.
-      if (!signedIn && _accountOnly.any(location.startsWith)) return '/login';
+      // Browsing is open to everyone; selling and the account need an
+      // account, and after signing in the user comes back here.
+      if (!signedIn && isAccountOnly(location)) {
+        return withReturnTo('/login', state.uri.toString());
+      }
       // Team accounts (admins, support) don't buy or sell.
       if (signedIn &&
           ref.read(isStaffProvider) &&
           isMarketplacePath(location)) {
         return '/';
       }
-      final canBrowse = signedIn || ref.read(guestModeProvider);
-      if (canBrowse) return _authRoutes.contains(location) ? '/' : null;
-      return location == '/' ? '/login' : null;
+      if (signedIn && _authRoutes.contains(location)) {
+        return returnTarget(state.uri) ?? '/';
+      }
+      return null;
     },
     routes: [
       _route('/splash', (_) => const SplashPage()),
@@ -140,7 +174,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/account/payouts', (_) => const PayoutsPage()),
       _route('/account/payout-method', (_) => const PayoutMethodPage()),
       _route('/checkout/:id', (state) {
-        final (listing, quantity) = state.extra as (Listing, int)? ?? (null, 1);
+        final (listing, quantity) =
+            state.extra as (Listing, int)? ??
+            (null, int.tryParse(state.uri.queryParameters['qty'] ?? '') ?? 1);
         return CheckoutPage(
           listingId: state.pathParameters['id']!,
           initial: listing,

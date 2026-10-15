@@ -10,6 +10,7 @@ import '../ui/hero_tags.dart';
 import '../ui/ticket.dart';
 import 'labels.dart';
 import '../ui/tokens.dart';
+import '../ui/app_link.dart';
 
 /// Ticket-shaped card for an event: name, place, date stub. Flies between
 /// lists and detail pages as a shared element.
@@ -239,4 +240,115 @@ Widget _ticketShuttle(
       child: hero.child,
     ),
   );
+}
+
+/// One offer on an event's page: the event is already known there, so the
+/// ticket shows what tells offers apart: price, seats, kind, how many.
+class OfferTicket extends ConsumerWidget {
+  const OfferTicket({super.key, required this.listing, this.onTap});
+
+  final Listing listing;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    final colors = theme.colors;
+    final type = theme.typography;
+    final own = listing.sellerId == ref.watch(currentUidProvider);
+    final seats = seatText(l10n, listing.section, listing.row, listing.seats);
+
+    return AppLink(
+      path: '/listing/${listing.id}',
+      onTap: onTap ?? () {},
+      builder: (tap) => Hero(
+        tag: HeroTags.listing(listing.id),
+        flightShuttleBuilder: _ticketShuttle,
+        child: TicketCard(
+          onTap: tap,
+          stub: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '${listing.available}',
+                style: type.display.xl.copyWith(
+                  fontWeight: FontWeights.heavy,
+                  color: colors.foreground,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(height: Space.xxs),
+              Text(
+                l10n.offerAvailable,
+                textAlign: TextAlign.center,
+                style: theme.mutedSmallText,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      formatMoney(
+                        context,
+                        own ? listing.priceMinor : listing.buyerPriceMinor,
+                        listing.currency,
+                      ),
+                      style: type.body.xl.copyWith(
+                        fontWeight: FontWeights.bold,
+                        color: colors.foreground,
+                        height: 1.1,
+                      ),
+                    ),
+                  ),
+                  if (own)
+                    FBadge(
+                      variant: FBadgeVariant.outline,
+                      child: Text(l10n.yourListing),
+                    ),
+                ],
+              ),
+              Text(
+                own
+                    ? l10n.offerPerTicket
+                    : '${l10n.offerPerTicket} · '
+                          '${l10n.priceInclFee('${listing.fees.buyerPercent}')}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.mutedSmallText,
+              ),
+              const SizedBox(height: Space.md),
+              Text(
+                seats.isEmpty ? l10n.offerNoSeats : seats,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.titleText,
+              ),
+              const SizedBox(height: Space.xxs),
+              Row(
+                children: [
+                  Icon(
+                    FLucideIcons.ticket,
+                    size: IconSizes.xs,
+                    color: colors.mutedForeground,
+                  ),
+                  const SizedBox(width: Space.sm),
+                  Text(
+                    ticketTypeName(l10n, listing.ticketType),
+                    style: theme.mutedText,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

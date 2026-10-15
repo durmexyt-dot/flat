@@ -10,6 +10,87 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get offersHowMany => 'Wie viele Tickets brauchst du zusammen?';
+
+  @override
+  String get navInbox => 'Anfragen';
+
+  @override
+  String get navSell => 'Verkaufen';
+
+  @override
+  String get accountGroupHelp => 'Hilfe';
+
+  @override
+  String get accountGroupTeam => 'Team';
+
+  @override
+  String get profileAndSettings => 'Profil & Einstellungen';
+
+  @override
+  String get offerAmountAtCheckout =>
+      'Die Anzahl wählst du im nächsten Schritt.';
+
+  @override
+  String get offerAvailable => 'verfügbar';
+
+  @override
+  String get offerPerTicket => 'pro Ticket';
+
+  @override
+  String get offerNoSeats => 'Ohne Platzangabe';
+
+  @override
+  String eventsOffersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Angebote',
+      one: '1 Angebot',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get offersAnyAmount => 'Alle';
+
+  @override
+  String offersAmount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tickets',
+      one: 'Ticket',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String offersAmountOrMore(int count) {
+    return '$count+';
+  }
+
+  @override
+  String offersNoneForAmount(int count) {
+    return 'Kein Angebot für $count Tickets zusammen';
+  }
+
+  @override
+  String get offersNoneForAmountInfo =>
+      'Versuch eine kleinere Anzahl oder schau später wieder vorbei.';
+
+  @override
+  String get eventsHaveTickets => 'Du hast Tickets für dieses Event?';
+
+  @override
+  String get eventsHaveTicketsInfo =>
+      'Verkaufe sie sicher an Fans, die sie brauchen.';
+
+  @override
+  String get signInToContinue =>
+      'Melde dich an oder erstelle ein Konto, um fortzufahren.';
+
+  @override
   String get handoverSection => 'Übergabe der Tickets';
 
   @override
@@ -1983,7 +2064,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signUp => 'Registrieren';
 
   @override
-  String get continueAsGuest => 'Als Gast Events durchsuchen';
+  String get continueAsGuest => 'Ohne Anmeldung weiter';
 
   @override
   String get signupTitle => 'Erstelle dein Konto';
@@ -2803,10 +2884,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get payoutDetails => 'Auszahlungsdetails';
 
   @override
-  String get purchases => 'Käufe & Rechnungen';
+  String get purchases => 'Meine Tickets';
 
   @override
-  String get sales => 'Verkäufe';
+  String get sales => 'Verkaufte Tickets';
 
   @override
   String get payouts => 'Auszahlungen';

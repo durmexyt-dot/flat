@@ -13,6 +13,7 @@ import '../ui/skeleton.dart';
 import 'event_image.dart';
 import 'event_status_badge.dart';
 import '../ui/tokens.dart';
+import '../ui/app_link.dart';
 
 /// An upcoming event on the home page: picture, name, when, where and the
 /// cheapest offer. The picture flies into the event page.
@@ -33,8 +34,8 @@ class EventCard extends ConsumerWidget {
     final from = ref.watch(eventFromPriceProvider)[event.id];
     final info = event.info;
 
-    return FTappable(
-      onPress: onTap,
+    Widget card(VoidCallback? tap) => FTappable(
+      onPress: tap,
       semanticsLabel: info.name,
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -118,6 +119,10 @@ class EventCard extends ConsumerWidget {
         ),
       ),
     );
+    final tap = onTap;
+    return tap == null
+        ? card(null)
+        : AppLink(path: '/event/${event.id}', onTap: tap, builder: card);
   }
 }
 

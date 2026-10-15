@@ -59,8 +59,10 @@ String serverErrorText(AppLocalizations l10n, Object error) => switch (error) {
   _ => l10n.errorUnknown,
 };
 
-/// The sales still waiting for e-tickets: how many tickets, by when, and a
-/// way to the first listing that needs them. Nothing when all is uploaded.
+/// On the sold-tickets page: the sales still waiting for e-tickets, how many
+/// tickets, by when, and a way to the first listing that needs them. A task,
+/// not an error: it only turns red in the last day. Nothing when all is
+/// uploaded. Elsewhere a count ([SalesTaskCount]) points here.
 class SalesAwaitingTicketsAlert extends ConsumerWidget {
   const SalesAwaitingTicketsAlert({
     super.key,
@@ -75,6 +77,10 @@ class SalesAwaitingTicketsAlert extends ConsumerWidget {
     final waiting = [...ref.watch(salesAwaitingTicketsProvider)]
       ..sort((a, b) => a.deliveryDeadline.compareTo(b.deliveryDeadline));
     final missing = waiting.fold(0, (sum, o) => sum + o.ticketsMissing);
+    final urgent =
+        waiting.isNotEmpty &&
+        waiting.first.deliveryDeadline.difference(DateTime.now()) <
+            const Duration(days: 1);
     return AnimatedSize(
       duration: Motion.normal,
       alignment: Alignment.topCenter,
@@ -83,8 +89,13 @@ class SalesAwaitingTicketsAlert extends ConsumerWidget {
           : Padding(
               padding: padding,
               child: FAlert(
-                variant: FAlertVariant.destructive,
-                icon: const Icon(FLucideIcons.fileWarning),
+                variant: urgent
+                    ? FAlertVariant.destructive
+                    : FAlertVariant.primary,
+                icon: Icon(
+                  FLucideIcons.fileClock,
+                  color: urgent ? null : FixedColors.waiting,
+                ),
                 title: Text(l10n.deliverySalesWarning(missing)),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,6 +123,39 @@ class SalesAwaitingTicketsAlert extends ConsumerWidget {
                 ),
               ),
             ),
+    );
+  }
+}
+
+/// How many sold tickets still need uploading, as a small count; nothing
+/// when none. Leads the eye to the sold-tickets page.
+class SalesTaskCount extends ConsumerWidget {
+  const SalesTaskCount({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final missing = ref
+        .watch(salesAwaitingTicketsProvider)
+        .fold(0, (sum, o) => sum + o.ticketsMissing);
+    if (missing == 0) return const SizedBox.shrink();
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: FixedColors.waiting,
+        borderRadius: BorderRadius.circular(Space.md),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.sm,
+          vertical: Space.xxs,
+        ),
+        child: Text(
+          '$missing',
+          style: context.theme.typography.body.xs.copyWith(
+            color: FixedColors.onWaiting,
+            fontWeight: FontWeights.bold,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -155,16 +199,16 @@ class ListingMissingTickets extends ConsumerWidget {
                   child: Row(
                     children: [
                       Icon(
-                        FLucideIcons.fileWarning,
+                        FLucideIcons.fileClock,
                         size: IconSizes.sm,
-                        color: theme.colors.destructive,
+                        color: FixedColors.waiting,
                       ),
                       const SizedBox(width: Space.sm),
                       Expanded(
                         child: Text(
                           l10n.deliveryMissingBadge,
                           style: theme.typography.body.sm.copyWith(
-                            color: theme.colors.destructive,
+                            color: theme.colors.foreground,
                             fontWeight: FontWeights.semibold,
                           ),
                         ),

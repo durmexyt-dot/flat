@@ -67,7 +67,7 @@ Future<void> _signIn(
 Future<void> _openAccountEntry(WidgetTester tester, String entry) async {
   await tester.tap(byLabel('Postavke'));
   await tester.pumpAndSettle();
-  await tapVisible(tester, find.text(entry));
+  await tapVisible(tester, find.text(entry).first);
 }
 
 Future<void> goTo(WidgetTester tester, String location) async {
@@ -93,11 +93,11 @@ void main() {
     );
     await _openAccountEntry(tester, 'Moje ponude');
     // The listing has no files yet.
-    expect(find.text('Karte nisu uploadovane'), findsOneWidget);
-    await tester.tap(byLabel('Uploaduj karte'));
+    expect(find.text('Karte nisu učitane'), findsOneWidget);
+    await tester.tap(byLabel('Učitaj karte'));
     await tester.pumpAndSettle();
     expect(find.text('Karte za ponudu'), findsOneWidget);
-    expect(find.text('0 od 2 karata uploadovano'), findsOneWidget);
+    expect(find.text('0 od 2 karata učitano'), findsOneWidget);
 
     // Not a ticket file.
     pickTicketFile = () async =>
@@ -122,7 +122,7 @@ void main() {
     await tester.tap(byLabel('+').first);
     await tester.pumpAndSettle();
     expect(find.text('2 karte'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FButton, 'Uploaduj'));
+    await tester.tap(find.widgetWithText(FButton, 'Učitaj'));
     await tester.pumpAndSettle();
 
     final file = ticketFiles.listingFiles['jazz']!.single;
@@ -130,7 +130,7 @@ void main() {
     expect(file.contentType, 'application/pdf');
     expect(find.text('karte.pdf'), findsOneWidget);
     expect(find.text('Čeka kupca'), findsOneWidget);
-    expect(find.text('2 od 2 karata uploadovano'), findsOneWidget);
+    expect(find.text('2 od 2 karata učitano'), findsOneWidget);
     // All uploaded: no more adding.
     expect(find.text('Dodaj karte'), findsNothing);
 
@@ -190,7 +190,7 @@ void main() {
         ticketFileRepository: files,
       ),
     );
-    await _openAccountEntry(tester, 'Kupovine i računi');
+    await _openAccountEntry(tester, 'Moje karte');
     await tester.tap(find.text('Sarajevo Jazz Festival'));
     await tester.pumpAndSettle();
     expect(find.text('Tvoje karte'), findsOneWidget);
@@ -212,7 +212,7 @@ void main() {
         ),
       ),
     );
-    await _openAccountEntry(tester, 'Kupovine i računi');
+    await _openAccountEntry(tester, 'Moje karte');
     await tester.tap(find.text('Sarajevo Jazz Festival'));
     await tester.pumpAndSettle();
     expect(
@@ -236,23 +236,31 @@ void main() {
     );
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
+    // On the account page only a count points to the task.
     expect(
-      find.text('Imaš 1 prodanu kartu koja još nije uploadovana'),
+      find.text('Imaš 1 prodanu kartu koja još nije učitana'),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(SalesTaskCount),
+        matching: find.text('1'),
+      ),
       findsOneWidget,
     );
 
-    await tapVisible(tester, find.text('Prodaje'));
+    await tapVisible(tester, find.text('Prodane karte'));
     expect(
-      find.text('Imaš 1 prodanu kartu koja još nije uploadovana'),
+      find.text('Imaš 1 prodanu kartu koja još nije učitana'),
       findsOneWidget,
     );
     await tapVisible(tester, find.text('Sarajevo Jazz Festival'));
-    expect(find.text('Karte još nisu uploadovane'), findsOneWidget);
+    expect(find.text('Karte još nisu učitane'), findsOneWidget);
     // E-tickets aren't marked as sent by hand.
     expect(find.text('Označi karte kao poslane'), findsNothing);
 
     // The alert leads to the upload page.
-    await tapVisible(tester, find.text('Uploaduj karte'));
+    await tapVisible(tester, find.text('Učitaj karte'));
     expect(find.text('Karte za ponudu'), findsOneWidget);
   });
 }

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeAuthRepository implements AuthRepository {
@@ -234,3 +235,14 @@ Finder byLabel(String label) => find.byWidgetPredicate(
     _ => false,
   },
 );
+
+/// Opens the sign-in page, as a guest would from a "Prijavi se" button.
+Future<void> openLogin(WidgetTester tester, {String? from}) async {
+  final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+  router.push(
+    from == null
+        ? '/login'
+        : Uri(path: '/login', queryParameters: {'from': from}).toString(),
+  );
+  await tester.pumpAndSettle();
+}

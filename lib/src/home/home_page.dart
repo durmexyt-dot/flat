@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:forui/forui.dart';
 
-import '../admin/admin_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../account/avatar.dart';
 import '../support/support_badge.dart';
@@ -22,11 +21,11 @@ import '../ui/async_view.dart';
 import '../ui/segmented.dart';
 import '../ui/site_footer.dart';
 import '../ui/site_scaffold.dart';
-import '../ui/snack.dart';
 import 'city_picker.dart';
 import 'event_row.dart';
 import 'home_sections.dart';
 import '../ui/tokens.dart';
+import '../router.dart';
 
 /// Event discovery: filters by city and type, rows of recently viewed,
 /// popular, recommended and nearby events, popular categories and all
@@ -80,20 +79,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     context.push('/event/${e.id}', extra: e);
   }
 
-  /// Signed-in users go to [path]; guests are asked to sign in.
-  void _signedInOnly(String path) {
-    final l10n = AppLocalizations.of(context);
-    if (ref.read(currentUidProvider) != null) {
-      context.push(path);
-      return;
-    }
-    showSnack(
-      l10n.guestSignInPrompt,
-      actionLabel: l10n.loginButton,
-      onAction: () => ref.read(guestModeProvider.notifier).exit(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -115,15 +100,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       showTitle: false,
       maxWidth: SiteWidth.wide,
       narrowHeader: _narrowHeader(context),
-      // Team accounts don't buy or sell.
-      floatingActionButton: ref.watch(isStaffProvider)
-          ? null
-          : FButton(
-              mainAxisSize: MainAxisSize.min,
-              onPress: () => _signedInOnly('/sell'),
-              prefix: const Icon(FLucideIcons.tag),
-              child: Text(l10n.sellTickets, overflow: TextOverflow.ellipsis),
-            ),
+      // Selling is a tab on phones and in the header on wide screens.
       body: RefreshIndicator(
         onRefresh: () async {
           ref
@@ -166,7 +143,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       action: FButton(
                         mainAxisSize: MainAxisSize.min,
                         prefix: const Icon(FLucideIcons.calendarPlus),
-                        onPress: () => _signedInOnly('/events/new'),
+                        onPress: () => context.push('/events/new'),
                         child: Text(
                           l10n.homeAddEvent,
                           overflow: TextOverflow.ellipsis,
@@ -544,7 +521,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               variant: FButtonVariant.outline,
               size: FButtonSizeVariant.sm,
               mainAxisSize: MainAxisSize.min,
-              onPress: () => ref.read(guestModeProvider.notifier).exit(),
+              onPress: () => openSignIn(context),
               child: Text(l10n.loginButton, overflow: TextOverflow.ellipsis),
             ),
           ],

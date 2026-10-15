@@ -5,7 +5,6 @@ import 'package:forui/forui.dart';
 
 import '../admin/admin_repository.dart';
 import '../../l10n/app_localizations.dart';
-import '../auth/auth_repository.dart';
 import '../auth/auth_widgets.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
@@ -44,47 +43,153 @@ class ListingDetailPage extends ConsumerWidget {
     final listing = live.value ?? initial;
     final uid = ref.watch(currentUidProvider);
 
+    final wide = isWideLayout(context);
+    final staff = ref.watch(isStaffProvider);
+    final buyer = listing != null && listing.sellerId != uid && !staff;
+    // Phones: buying sits in a bar that stays at the bottom of the screen.
+    final buyBar = buyer && !wide;
+
+    final Widget body;
+    if (listing == null) {
+      body = AsyncView<Listing?>(
+        value: live,
+        onRetry: () => ref.invalidate(listingProvider(id)),
+        loading: const SkeletonTicketList(count: 1),
+        data: (_) =>
+            EmptyState(icon: FLucideIcons.searchX, title: l10n.listingNotFound),
+      );
+    } else {
+      final list = ListView(
+        padding: Insets.pageList,
+        children: [
+          // Details left, buying or managing right on wide screens.
+          SplitView(
+            wide: wide,
+            main: [
+              if (listing.eventId.isNotEmpty) ...[
+                _EventBanner(eventId: listing.eventId),
+                const SizedBox(height: Space.xl),
+              ],
+              ListingTicket(listing: listing, showStatus: true),
+              const SizedBox(height: Space.xl),
+              _Facts(listing: listing),
+              if (buyBar) ...[
+                const SizedBox(height: Space.xl),
+                const _BuyerProtection(),
+              ],
+              // Signed-in buyers can report a listing to the team; kept
+              // away from the buy button.
+              if (buyer && uid != null) ...[
+                const SizedBox(height: Space.x3l),
+                _ReportButton(listing: listing),
+              ],
+            ],
+            side: [
+              if (listing.sellerId == uid)
+                _SellerPanel(listing: listing)
+              else if (staff)
+                // Team accounts don't buy.
+                FAlert(
+                  icon: const Icon(FLucideIcons.shieldUser),
+                  title: Text(l10n.staffNoMarketTitle),
+                  subtitle: Text(l10n.staffNoMarketInfo),
+                )
+              else if (!buyBar)
+                _BuyerPanel(listing: listing),
+            ],
+          ),
+        ],
+      );
+      body = buyBar
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: list),
+                _BuyBar(listing: listing),
+              ],
+            )
+          : list;
+    }
+
     return SiteScaffold(
+      selectable: true,
       title: l10n.listingDetails,
       maxWidth: SiteWidth.full,
-      body: listing == null
-          ? AsyncView<Listing?>(
-              value: live,
-              onRetry: () => ref.invalidate(listingProvider(id)),
-              loading: const SkeletonTicketList(count: 1),
-              data: (_) => EmptyState(
-                icon: FLucideIcons.searchX,
-                title: l10n.listingNotFound,
-              ),
-            )
-          : ListView(
-              padding: Insets.pageList,
-              children: [
-                // Details left, buying or managing right on wide screens.
-                SplitView(
-                  wide: isWideLayout(context),
-                  main: [
-                    if (listing.eventId.isNotEmpty) ...[
-                      _EventBanner(eventId: listing.eventId),
-                      const SizedBox(height: Space.xl),
-                    ],
-                    ListingTicket(listing: listing, showStatus: true),
-                    const SizedBox(height: Space.xl),
-                    _Facts(listing: listing),
-                  ],
-                  side: [
-                    if (listing.sellerId == uid)
-                      _SellerPanel(listing: listing)
-                    else ...[
-                      _BuyerPanel(listing: listing),
-                      // Signed-in buyers can report a listing to the team.
-                      if (uid != null && !ref.watch(isStaffProvider))
-                        _ReportButton(listing: listing),
-                    ],
+      body: body,
+    );
+  }
+}
+
+/// Opens checkout; the number of tickets is chosen there. Guests are sent
+/// to sign-in first and come straight back.
+void _buy(BuildContext context, Listing listing) =>
+    context.push('/checkout/${listing.id}', extra: (listing, 1));
+
+bool _canBuy(Listing l) => l.status == ListingStatus.active && l.available > 0;
+
+/// Phones: price and the buy button, always in reach.
+class _BuyBar extends StatelessWidget {
+  const _BuyBar({required this.listing});
+
+  final Listing listing;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colors.background,
+        border: Border(top: BorderSide(color: theme.colors.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            Space.xl,
+            Space.lg,
+            Space.xl,
+            Space.lg,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      formatMoney(
+                        context,
+                        listing.buyerPriceMinor,
+                        listing.currency,
+                      ),
+                      style: theme.typography.body.xl.copyWith(
+                        fontWeight: FontWeights.bold,
+                        color: theme.colors.foreground,
+                      ),
+                    ),
+                    Text(
+                      '${l10n.offerPerTicket} · '
+                      '${l10n.priceInclFee('${listing.fees.buyerPercent}')}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.mutedSmallText,
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: Space.lg),
+              FButton(
+                mainAxisSize: MainAxisSize.min,
+                onPress: _canBuy(listing) ? () => _buy(context, listing) : null,
+                prefix: const Icon(FLucideIcons.shoppingBag),
+                child: Text(l10n.buyTickets),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -574,48 +679,16 @@ class _MoneyRow extends StatelessWidget {
   }
 }
 
-class _BuyerPanel extends ConsumerStatefulWidget {
+/// Wide screens: the price and the buy button beside the details.
+class _BuyerPanel extends StatelessWidget {
   const _BuyerPanel({required this.listing});
 
   final Listing listing;
 
   @override
-  ConsumerState<_BuyerPanel> createState() => _BuyerPanelState();
-}
-
-class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
-  int _quantity = 1;
-
-  void _buy() {
-    final l10n = AppLocalizations.of(context);
-    if (ref.read(currentUidProvider) == null) {
-      showSnack(
-        l10n.guestSignInPrompt,
-        actionLabel: l10n.loginButton,
-        onAction: () {
-          ref.read(guestModeProvider.notifier).exit();
-          context.go('/login');
-        },
-      );
-      return;
-    }
-    context.push(
-      '/checkout/${widget.listing.id}',
-      extra: (widget.listing, _quantity),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
-    final listing = widget.listing;
-    final quantity = _quantity.clamp(1, listing.available.clamp(1, 99));
-    final subtotal = listing.priceMinor * quantity;
-    final fee = listing.fees.buyerFee(subtotal);
-    final available =
-        listing.status == ListingStatus.active && listing.available > 0;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -624,98 +697,64 @@ class _BuyerPanelState extends ConsumerState<_BuyerPanel> {
           child: Padding(
             padding: const EdgeInsets.all(Space.xl),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.quantity,
-                        style: theme.typography.body.sm.copyWith(
-                          fontWeight: FontWeights.medium,
-                          color: theme.colors.foreground,
-                        ),
-                      ),
-                    ),
-                    FButton.icon(
-                      variant: FButtonVariant.outline,
-                      onPress: quantity > 1
-                          ? () => setState(() => _quantity = quantity - 1)
-                          : null,
-                      child: const Icon(FLucideIcons.minus),
-                    ),
-                    SizedBox(
-                      width: 40,
-                      child: Text(
-                        '$quantity',
-                        textAlign: TextAlign.center,
-                        style: theme.typography.body.lg.copyWith(
-                          fontWeight: FontWeights.semibold,
-                          color: theme.colors.foreground,
-                        ),
-                      ),
-                    ),
-                    FButton.icon(
-                      variant: FButtonVariant.outline,
-                      onPress: quantity < listing.available
-                          ? () => setState(() => _quantity = quantity + 1)
-                          : null,
-                      child: const Icon(FLucideIcons.plus),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: Space.md),
-                _MoneyRow(
-                  '$quantity × ${formatMoney(context, listing.priceMinor, listing.currency)}',
-                  formatMoney(context, subtotal, listing.currency),
-                ),
-                _MoneyRow(
-                  '${l10n.serviceFee} (${listing.fees.buyerPercent} %)',
-                  formatMoney(context, fee, listing.currency),
-                ),
-                const FDivider(
-                  style: .delta(
-                    padding: .value(EdgeInsets.symmetric(vertical: Space.md)),
+                Text(
+                  formatMoney(
+                    context,
+                    listing.buyerPriceMinor,
+                    listing.currency,
+                  ),
+                  style: theme.typography.display.sm.copyWith(
+                    fontWeight: FontWeights.bold,
+                    color: theme.colors.foreground,
                   ),
                 ),
-                _MoneyRow(
-                  l10n.total,
-                  formatMoney(context, subtotal + fee, listing.currency),
-                  strong: true,
+                Text(
+                  '${l10n.offerPerTicket} · '
+                  '${l10n.priceInclFee('${listing.fees.buyerPercent}')}',
+                  style: theme.mutedText,
                 ),
+                const SizedBox(height: Space.md),
+                Text(l10n.offerAmountAtCheckout, style: theme.mutedSmallText),
               ],
             ),
           ),
         ),
         const SizedBox(height: Space.xl),
-        if (ref.watch(isStaffProvider))
-          // Team accounts don't buy.
-          FAlert(
-            icon: const Icon(FLucideIcons.shieldUser),
-            title: Text(l10n.staffNoMarketTitle),
-            subtitle: Text(l10n.staffNoMarketInfo),
-          )
-        else
-          FButton(
-            size: FButtonSizeVariant.lg,
-            onPress: available ? _buy : null,
-            prefix: const Icon(FLucideIcons.shoppingBag),
-            child: Flexible(
-              child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
-            ),
+        FButton(
+          size: FButtonSizeVariant.lg,
+          onPress: _canBuy(listing) ? () => _buy(context, listing) : null,
+          prefix: const Icon(FLucideIcons.shoppingBag),
+          child: Flexible(
+            child: Text(l10n.buyTickets, overflow: TextOverflow.ellipsis),
           ),
+        ),
         const SizedBox(height: Space.lg),
-        Row(
-          children: [
-            Icon(
-              FLucideIcons.shieldCheck,
-              size: IconSizes.md,
-              color: theme.colors.mutedForeground,
-            ),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Text(l10n.buyerProtection, style: theme.mutedSmallText),
-            ),
-          ],
+        const _BuyerProtection(),
+      ],
+    );
+  }
+}
+
+/// What buyers are promised.
+class _BuyerProtection extends StatelessWidget {
+  const _BuyerProtection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    return Row(
+      children: [
+        Icon(
+          FLucideIcons.shieldCheck,
+          size: IconSizes.md,
+          color: theme.colors.mutedForeground,
+        ),
+        const SizedBox(width: Space.md),
+        Expanded(
+          child: Text(l10n.buyerProtection, style: theme.mutedSmallText),
         ),
       ],
     );

@@ -84,8 +84,6 @@ Future<void> _home(WidgetTester tester, {bool signIn = true}) async {
   );
   if (signIn) {
     await auth.signIn(email: 'amra@test.ba', password: 'x', keepSignedIn: true);
-  } else {
-    await tester.tap(find.text('Pretraži događaje kao gost'));
   }
   await tester.pumpAndSettle();
 }
@@ -349,18 +347,15 @@ void main() {
       tester,
     ) async {
       await pumpApp(tester);
-      await tester.tap(find.text('Pretraži događaje kao gost'));
-      await tester.pumpAndSettle();
       expect(find.text('Još nema događaja'), findsOneWidget);
       await tester.tap(find.text('Dodaj događaj'));
       await tester.pumpAndSettle();
-      // The banner and the toast.
+      // Sign-in, saying why; afterwards the user comes back to the form.
+      expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);
       expect(
-        find.text('Prijavite se da biste kupovali i prodavali karte'),
-        findsNWidgets(2),
+        find.text('Prijavi se ili napravi račun da nastaviš.'),
+        findsOneWidget,
       );
-      await tester.pump(const Duration(seconds: 10));
-      await tester.pumpAndSettle();
     });
 
     testWidgets('footer links open the info pages', (tester) async {

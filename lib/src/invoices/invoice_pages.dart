@@ -52,7 +52,24 @@ class InvoiceTile extends StatelessWidget with FTileMixin {
       prefix: Icon(
         inv.isCreditNote ? FLucideIcons.receiptText : FLucideIcons.receipt,
       ),
-      title: Text('${invoiceTitle(l10n, inv)} ${inv.number}'),
+      // The amount sits in the title row and is never cut: on phones the
+      // tile's details column would be shortened first.
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '${invoiceTitle(l10n, inv)} ${inv.number}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: Space.md),
+          Text(
+            formatMoney(context, inv.grossMinor, inv.currency),
+            style: const TextStyle(fontWeight: FontWeights.semibold),
+          ),
+        ],
+      ),
       subtitle: Text(
         [
           if (showRecipient)
@@ -63,7 +80,6 @@ class InvoiceTile extends StatelessWidget with FTileMixin {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      details: Text(formatMoney(context, inv.grossMinor, inv.currency)),
       suffix: const Icon(FLucideIcons.chevronRight),
       onPress: () => context.push('/invoice/${inv.id}'),
     );
@@ -141,6 +157,7 @@ class InvoicePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return SiteScaffold(
+      selectable: true,
       title: l10n.invoiceTitle,
       accountNav: true,
       body: AsyncView<PlatformInvoice?>(

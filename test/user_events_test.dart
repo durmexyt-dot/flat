@@ -148,7 +148,13 @@ void main() {
     expect(find.textContaining('tim ga još nije provjerio'), findsOneWidget);
     expect(find.text('Koncerti · Narodna muzika'), findsOneWidget);
     // Tickets can still be sold.
-    expect(find.text('Prodaj karte za ovaj događaj'), findsOneWidget);
+    // Selling is offered below the offers.
+    await tester.scrollUntilVisible(
+      find.text('Imaš karte za ovaj događaj?'),
+      200,
+      scrollable: mainScrollable,
+    );
+    expect(find.text('Imaš karte za ovaj događaj?'), findsOneWidget);
     expect(find.text('Uredi / provjeri'), findsNothing);
 
     await _go(tester, '/admin/events/ev-user');

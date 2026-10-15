@@ -5,6 +5,7 @@ import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../info/info_page.dart';
+import '../router.dart';
 import 'auth_repository.dart';
 import 'auth_widgets.dart';
 import '../ui/tokens.dart';
@@ -37,9 +38,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       _loading = true;
       _error = null;
     });
+    // Where to go once signed in: the page that asked for it, or home.
+    final target = returnTarget(GoRouterState.of(context).uri) ?? '/';
+    final router = GoRouter.of(context);
     try {
       await action(ref.read(authRepositoryProvider));
-      // The router moves on to the home screen once signed in.
+      router.go(target);
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {
@@ -66,9 +70,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final l10n = AppLocalizations.of(context);
     final theme = context.theme;
     final error = _error == null ? '' : authExceptionText(l10n, _error!);
+    // Sent here from a page that needs an account; the router goes back
+    // there after signing in.
+    final from = returnTarget(GoRouterState.of(context).uri);
 
     return AuthScaffold(
       title: l10n.loginWelcome,
+      subtitle: from == null ? null : l10n.signInToContinue,
       children: [
         Form(
           key: _formKey,
@@ -162,7 +170,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               variant: FButtonVariant.ghost,
               size: FButtonSizeVariant.sm,
               mainAxisSize: MainAxisSize.min,
-              onPress: () => context.push('/signup'),
+              onPress: () => context.push(
+                from == null ? '/signup' : withReturnTo('/signup', from),
+              ),
               child: Text(l10n.signUp, overflow: TextOverflow.ellipsis),
             ),
           ],
@@ -173,7 +183,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             variant: FButtonVariant.ghost,
             size: FButtonSizeVariant.sm,
             mainAxisSize: MainAxisSize.min,
-            onPress: () => ref.read(guestModeProvider.notifier).enter(),
+            onPress: () => context.go(
+              from != null && !isAccountOnly(Uri.parse(from).path) ? from : '/',
+            ),
             prefix: const Icon(FLucideIcons.search),
             child: Text(
               l10n.continueAsGuest,

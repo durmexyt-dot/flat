@@ -139,6 +139,7 @@ class _SupportTicketPageState extends ConsumerState<SupportTicketPage> {
     if (list != null) _followNewMessages(list.length);
 
     return SiteScaffold(
+      selectable: true,
       title: t?.number ?? l10n.supportTicket,
       maxWidth: SiteWidth.form,
       accountNav: true,

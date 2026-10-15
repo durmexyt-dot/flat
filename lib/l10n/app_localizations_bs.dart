@@ -10,6 +10,87 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get offersHowMany => 'Koliko karata trebaš zajedno?';
+
+  @override
+  String get navInbox => 'Upiti';
+
+  @override
+  String get navSell => 'Prodaj';
+
+  @override
+  String get accountGroupHelp => 'Pomoć';
+
+  @override
+  String get accountGroupTeam => 'Tim';
+
+  @override
+  String get profileAndSettings => 'Profil i postavke';
+
+  @override
+  String get offerAmountAtCheckout => 'Broj karata biraš u sljedećem koraku.';
+
+  @override
+  String get offerAvailable => 'dostupno';
+
+  @override
+  String get offerPerTicket => 'po karti';
+
+  @override
+  String get offerNoSeats => 'Bez označenih mjesta';
+
+  @override
+  String eventsOffersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ponuda',
+      few: '$count ponude',
+      one: '1 ponuda',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get offersAnyAmount => 'Sve';
+
+  @override
+  String offersAmount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'karata',
+      few: 'karte',
+      one: 'karta',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String offersAmountOrMore(int count) {
+    return '$count+';
+  }
+
+  @override
+  String offersNoneForAmount(int count) {
+    return 'Nema ponude za $count karte zajedno';
+  }
+
+  @override
+  String get offersNoneForAmountInfo =>
+      'Probaj manji broj ili pogledaj kasnije.';
+
+  @override
+  String get eventsHaveTickets => 'Imaš karte za ovaj događaj?';
+
+  @override
+  String get eventsHaveTicketsInfo =>
+      'Prodaj ih sigurno fanovima kojima trebaju.';
+
+  @override
+  String get signInToContinue => 'Prijavi se ili napravi račun da nastaviš.';
+
+  @override
   String get handoverSection => 'Predaja karata';
 
   @override
@@ -551,25 +632,25 @@ class AppLocalizationsBs extends AppLocalizations {
   String get deliveryPageTitle => 'Karte za ponudu';
 
   @override
-  String get deliveryFilesSection => 'Uploadovane karte';
+  String get deliveryFilesSection => 'Učitane karte';
 
   @override
   String deliveryProgress(int done, int total) {
-    return '$done od $total karata uploadovano';
+    return '$done od $total karata učitano';
   }
 
   @override
   String get deliveryAddFile => 'Dodaj karte';
 
   @override
-  String get deliveryAllUploaded => 'Sve karte su uploadovane.';
+  String get deliveryAllUploaded => 'Sve karte su učitane.';
 
   @override
   String get deliveryInfoTitle => 'Kako funkcioniše';
 
   @override
   String get deliveryInfo =>
-      'Karte se automatski šalju kupcu odmah nakon plaćanja. Uploaduj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.';
+      'Karte se automatski šalju kupcu odmah nakon plaćanja. Učitaj ih najkasnije 24 sata prije događaja – inače kupci automatski dobijaju povrat novca.';
 
   @override
   String get deliveryFileTypes =>
@@ -583,7 +664,7 @@ class AppLocalizationsBs extends AppLocalizations {
       'Ove karte predaješ kupcu direktno (npr. prenosom u aplikaciji organizatora ili lično). Nakon predaje potvrdi slanje u prodaji.';
 
   @override
-  String get deliveryNoFiles => 'Još nema uploadovanih karata.';
+  String get deliveryNoFiles => 'Još nema učitanih karata.';
 
   @override
   String get deliveryWaiting => 'Čeka kupca';
@@ -613,13 +694,13 @@ class AppLocalizationsBs extends AppLocalizations {
       'Jedan PDF može sadržavati više karata. Kupac dobija cijeli fajl.';
 
   @override
-  String get deliveryUpload => 'Uploaduj';
+  String get deliveryUpload => 'Učitaj';
 
   @override
-  String get deliveryUploaded => 'Karte uploadovane';
+  String get deliveryUploaded => 'Karte učitane';
 
   @override
-  String get deliveryUploading => 'Uploadujem…';
+  String get deliveryUploading => 'Učitavam…';
 
   @override
   String get deliveryWrongType =>
@@ -629,11 +710,11 @@ class AppLocalizationsBs extends AppLocalizations {
   String get deliveryTooBig => 'Fajl je veći od 10 MB.';
 
   @override
-  String get deliveryUploadError => 'Upload nije uspio. Pokušaj ponovo.';
+  String get deliveryUploadError => 'Učitavanje nije uspjelo. Pokušaj ponovo.';
 
   @override
   String get deliveryPickUnsupported =>
-      'Upload fajlova je za sada moguć samo u web pregledniku.';
+      'Učitavanje fajlova je za sada moguć samo u web pregledniku.';
 
   @override
   String get deliveryDeleteTitle => 'Obrisati fajl?';
@@ -653,22 +734,22 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get deliveryNoAccess =>
-      'Samo prodavac može uploadovati karte za ovu ponudu.';
+      'Samo prodavac može učitati karte za ovu ponudu.';
 
   @override
-  String get deliveryMissingBadge => 'Karte nisu uploadovane';
+  String get deliveryMissingBadge => 'Karte nisu učitane';
 
   @override
-  String get deliveryUploadAction => 'Uploaduj karte';
+  String get deliveryUploadAction => 'Učitaj karte';
 
   @override
   String deliverySalesWarning(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Imaš $count prodanih karata koje još nisu uploadovane',
-      few: 'Imaš $count prodane karte koje još nisu uploadovane',
-      one: 'Imaš $count prodanu kartu koja još nije uploadovana',
+      other: 'Imaš $count prodanih karata koje još nisu učitane',
+      few: 'Imaš $count prodane karte koje još nisu učitane',
+      one: 'Imaš $count prodanu kartu koja još nije učitana',
     );
     return '$_temp0';
   }
@@ -679,11 +760,11 @@ class AppLocalizationsBs extends AppLocalizations {
   }
 
   @override
-  String get deliverySellerMissingTitle => 'Karte još nisu uploadovane';
+  String get deliverySellerMissingTitle => 'Karte još nisu učitane';
 
   @override
   String deliverySellerMissingInfo(String date) {
-    return 'Uploaduj ih do $date. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.';
+    return 'Učitaj ih do $date. Ako ne stignu na vrijeme, kupac automatski dobija povrat novca.';
   }
 
   @override
@@ -735,7 +816,7 @@ class AppLocalizationsBs extends AppLocalizations {
 
   @override
   String get deliveryAlertDeadlineTitle =>
-      'Prodaja otkazana – karte nisu uploadovane';
+      'Prodaja otkazana – karte nisu učitane';
 
   @override
   String deliveryAlertDeadlineBody(String event) {
@@ -951,22 +1032,22 @@ class AppLocalizationsBs extends AppLocalizations {
   String get eventChangeFilterCancelled => 'Otkazani';
 
   @override
-  String get sellerUploadNow => 'Uploaduj';
+  String get sellerUploadNow => 'Učitaj';
 
   @override
-  String get sellerTicketsMissing => 'Karte još nisu uploadovane';
+  String get sellerTicketsMissing => 'Karte još nisu učitane';
 
   @override
   String sellerTicketsMissingInfo(int done, int total) {
-    return '$done od $total karata uploadovano. Uploaduj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.';
+    return '$done od $total karata učitano. Učitaj ih sada – kupci ih dobiju odmah nakon plaćanja. Rok je 24 sata prije događaja, inače kupci dobijaju povrat novca.';
   }
 
   @override
-  String get sellerTicketsButton => 'Karte (upload)';
+  String get sellerTicketsButton => 'Karte (učitavanje)';
 
   @override
   String get sellerUploadNowHint =>
-      'Ponuda je objavljena. Uploaduj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.';
+      'Ponuda je objavljena. Učitaj karte sada – kupci ih dobiju odmah nakon plaćanja. Možeš i kasnije.';
 
   @override
   String get eventPageCancelled => 'Događaj je otkazan';
@@ -1970,7 +2051,7 @@ class AppLocalizationsBs extends AppLocalizations {
   String get signUp => 'Registruj se';
 
   @override
-  String get continueAsGuest => 'Pretraži događaje kao gost';
+  String get continueAsGuest => 'Nastavi bez prijave';
 
   @override
   String get signupTitle => 'Kreirajte svoj račun';
@@ -2778,10 +2859,10 @@ class AppLocalizationsBs extends AppLocalizations {
   String get payoutDetails => 'Detalji isplate';
 
   @override
-  String get purchases => 'Kupovine i računi';
+  String get purchases => 'Moje karte';
 
   @override
-  String get sales => 'Prodaje';
+  String get sales => 'Prodane karte';
 
   @override
   String get payouts => 'Isplate';

@@ -8,16 +8,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers.dart';
 
 void main() {
-  testWidgets('splash leads to the Bosnian login screen', (tester) async {
+  testWidgets('splash leads to the events, without a sign-in wall', (
+    tester,
+  ) async {
     await pumpApp(tester);
+    expect(find.text('Dobrodošli na Stubswap'), findsNothing);
+    expect(
+      find.text('Prijavite se da biste kupovali i prodavali karte'),
+      findsOneWidget,
+    );
+    // Phones: the tab bar.
+    expect(find.text('Događaji'), findsWidgets);
+    expect(find.text('Moje karte'), findsOneWidget);
+    expect(find.text('Prodaj'), findsOneWidget);
+    expect(find.text('Profil'), findsOneWidget);
+  });
+
+  testWidgets('the Bosnian login screen', (tester) async {
+    await pumpApp(tester);
+    await openLogin(tester);
     expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);
     expect(find.text('Ostani prijavljen'), findsOneWidget);
     expect(find.text('Nastavi s Google računom'), findsOneWidget);
-    expect(find.text('Pretraži događaje kao gost'), findsOneWidget);
+    expect(find.text('Nastavi bez prijave'), findsOneWidget);
   });
 
   testWidgets('empty login shows validation errors', (tester) async {
     await pumpApp(tester);
+    await openLogin(tester);
     await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pumpAndSettle();
     expect(find.text('Unesite e-mail adresu'), findsOneWidget);
@@ -26,6 +44,7 @@ void main() {
 
   testWidgets('sign in leads to home with greeting', (tester) async {
     await pumpApp(tester);
+    await openLogin(tester);
     await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
     await tester.enterText(find.byType(EditableText).at(1), 'secret1');
     await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
@@ -37,6 +56,7 @@ void main() {
     tester,
   ) async {
     final auth = await pumpApp(tester);
+    await openLogin(tester);
     auth.delay = const Duration(seconds: 2);
     await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
     await tester.enterText(find.byType(EditableText).at(1), 'secret1');
@@ -53,21 +73,36 @@ void main() {
     expect(find.text('Zdravo, Amra'), findsOneWidget);
   });
 
-  testWidgets('guest can browse events and get back to sign in', (
-    tester,
-  ) async {
+  testWidgets('sign-in goes back to the page that needed it', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.text('Pretraži događaje kao gost'));
+    // E.g. a guest opened "Moje karte".
+    await tester.tap(find.text('Moje karte'));
     await tester.pumpAndSettle();
-    expect(find.text('Pregledate kao gost'), findsOneWidget);
-
+    expect(
+      find.text('Prijavi se ili napravi račun da nastaviš.'),
+      findsOneWidget,
+    );
+    await tester.enterText(find.byType(EditableText).at(0), 'amra@test.ba');
+    await tester.enterText(find.byType(EditableText).at(1), 'secret1');
     await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
     await tester.pumpAndSettle();
-    expect(find.text('Dobrodošli na Stubswap'), findsOneWidget);
+    expect(find.text('Još nemaš kupovina'), findsOneWidget);
+  });
+
+  testWidgets('guests leave sign-in and keep browsing', (tester) async {
+    await pumpApp(tester);
+    await openLogin(tester);
+    await tester.tap(find.text('Nastavi bez prijave'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Prijavite se da biste kupovali i prodavali karte'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('sign up creates the account and opens home', (tester) async {
     await pumpApp(tester);
+    await openLogin(tester);
     await tester.tap(find.text('Registruj se'));
     await tester.pumpAndSettle();
     expect(find.text('Kreirajte svoj račun'), findsOneWidget);
@@ -97,12 +132,13 @@ void main() {
 
     await tester.tap(byLabel('Postavke'));
     await tester.pumpAndSettle();
-    expect(find.text('Postavke'), findsOneWidget);
+    // The account page is named like its tab.
+    expect(find.text('Profil'), findsWidgets);
 
     await tapVisible(tester, find.text('Bosanski'));
     await tester.tap(find.text('Deutsch').last);
     await tester.pumpAndSettle();
-    expect(find.text('Einstellungen'), findsOneWidget);
+    expect(find.text('Darstellung'), findsWidgets);
 
     await tapVisible(tester, find.text('Darstellung').last);
     await tester.pumpAndSettle();
@@ -135,6 +171,10 @@ void main() {
 
     await tapVisible(tester, find.text('Abmelden'));
     await tester.pumpAndSettle();
-    expect(find.text('Willkommen bei Stubswap'), findsOneWidget);
+    // Signed out: back to the events, as a guest.
+    expect(
+      find.text('Melde dich an, um Tickets zu kaufen und zu verkaufen'),
+      findsOneWidget,
+    );
   });
 }

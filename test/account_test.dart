@@ -9,6 +9,8 @@ import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 
+import 'package:flat/src/account/profile_header.dart';
+
 import 'helpers.dart';
 
 Listing _listing(String seller, int quantity, ListingStatus status) =>
@@ -66,9 +68,11 @@ void main() {
     expect(find.text('Amra Test'), findsOneWidget);
     expect(find.text('Javni profil'), findsOneWidget);
     // Listed 3 (withdrawn excluded), sold 2, bought 4 (cancelled excluded).
-    expect(find.text('3'), findsOneWidget);
-    expect(find.text('2'), findsOneWidget);
-    expect(find.text('4'), findsOneWidget);
+    Finder stat(String n) =>
+        find.descendant(of: find.byType(StatsRow), matching: find.text(n));
+    expect(stat('3'), findsOneWidget);
+    expect(stat('2'), findsOneWidget);
+    expect(stat('4'), findsOneWidget);
   });
 
   testWidgets('avatar flies from the home app bar to the account page', (
