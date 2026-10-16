@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flat/src/account/photo_picker.dart';
 import 'package:flat/src/data/models.dart';
 import 'package:flat/src/data/memory_repositories.dart';
-import 'package:flat/src/ui/hero_page.dart';
+import 'package:flat/src/ui/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -97,7 +97,7 @@ void main() {
 
     await tester.tap(byLabel('Postavke'));
     await tester.pump();
-    await tester.pump(heroTransitionDuration ~/ 2);
+    await tester.pump(Motion.page ~/ 2);
     final during = sizes().toList();
     await tester.pumpAndSettle();
     final after = sizes().toList();

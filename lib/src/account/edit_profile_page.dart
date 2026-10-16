@@ -146,7 +146,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                 fieldIcon(FLucideIcons.user),
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
-                            autovalidateMode: AutovalidateMode.disabled,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteractionIfError,
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? l10n.nameRequired
                                 : null,
@@ -166,7 +167,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             autocorrect: false,
                             textInputAction: TextInputAction.done,
                             onSubmit: (_) => _save(),
-                            autovalidateMode: AutovalidateMode.disabled,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteractionIfError,
                             validator: (v) {
                               final value = (v ?? '').trim().toLowerCase();
                               if (_usernameTaken) return l10n.usernameTaken;

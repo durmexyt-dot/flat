@@ -1,5 +1,5 @@
 import 'package:flat/src/splash/splash_page.dart';
-import 'package:flat/src/ui/hero_page.dart';
+import 'package:flat/src/ui/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forui/forui.dart';
@@ -19,9 +19,12 @@ Iterable<double> _markSizes(WidgetTester tester) => find
 bool _inFlight(WidgetTester tester, double from, double to) =>
     _markSizes(tester).any((w) => w > from + 0.3 && w < to - 0.3);
 
-Future<void> _pumpHalfTransition(WidgetTester tester) async {
+Future<void> _pumpHalfTransition(
+  WidgetTester tester, [
+  Duration? transition,
+]) async {
   await tester.pump();
-  await tester.pump(heroTransitionDuration ~/ 2);
+  await tester.pump((transition ?? Motion.brandHandoff) ~/ 2);
 }
 
 void main() {
@@ -51,7 +54,7 @@ void main() {
     await tester.enterText(find.byType(EditableText).at(0), 'a@b.ba');
     await tester.enterText(find.byType(EditableText).at(1), 'secret1');
     await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
-    await _pumpHalfTransition(tester);
+    await _pumpHalfTransition(tester, Motion.page);
     // From sign-in (22.4) into the home bar (17.9).
     expect(
       _inFlight(tester, 17.9, 22.4),

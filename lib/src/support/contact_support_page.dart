@@ -158,7 +158,7 @@ class _ContactSupportPageState extends ConsumerState<ContactSupportPage> {
                 minLines: 5,
                 maxLines: 10,
                 maxLength: 2000,
-                autovalidateMode: AutovalidateMode.disabled,
+                autovalidateMode: AutovalidateMode.onUserInteractionIfError,
                 validator: (v) => (v ?? '').trim().length < 10
                     ? l10n.supportMessageTooShort
                     : null,

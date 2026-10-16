@@ -69,14 +69,21 @@ abstract final class Radii {
 
 /// Animation durations and curves.
 ///
-/// With the system's "reduce motion" setting, [reduced] is set and every
-/// duration below is zero: things change at once instead of moving.
+/// Nothing overshoots: things that simply appear settle without bounce
+/// (Apple: bounce only after a gesture that carried momentum).
+///
+/// With the system's "reduce motion" setting, [reduced] is set: every
+/// duration below becomes [reducedDuration], a short change instead of a
+/// movement, and page transitions only cross-fade.
 abstract final class Motion {
   /// Set by the app (app.dart) from `MediaQuery.disableAnimations`.
   static bool reduced = false;
 
+  /// What every duration becomes with [reduced].
+  static const reducedDuration = Duration(milliseconds: 100);
+
   static Duration _ms(int ms) =>
-      reduced ? Duration.zero : Duration(milliseconds: ms);
+      reduced ? reducedDuration : Duration(milliseconds: ms);
 
   static Duration get fast => _ms(150);
   static Duration get quick => _ms(200);
@@ -89,15 +96,38 @@ abstract final class Motion {
   /// Count-ups and other attention moments.
   static Duration get long => _ms(900);
 
+  /// Moving from one page to the next. The new page is visible from the
+  /// first frame.
+  static Duration get page =>
+      reduced ? const Duration(milliseconds: 150) : _ms(350);
+
+  /// The brand flying from the splash to the first page: once per visit, so
+  /// it may take its time.
+  static const brandHandoff = Duration(milliseconds: 700);
+
+  /// Light/dark changes. Eased even with [reduced]: a sudden brightness
+  /// jump is harder on the eyes than a short fade.
+  static const theme = Duration(milliseconds: 350);
+
   /// One pass of the loading shimmer. It doesn't run with [reduced].
   static const shimmer = Duration(milliseconds: 1400);
 
   /// Things coming in.
   static const enter = Curves.easeOutCubic;
   static const ease = Curves.easeOut;
+}
 
-  /// A small overshoot, for things that pop in.
-  static const pop = Curves.easeOutBack;
+/// Type set for headings (Forui's display styles from 20 px up): tighter
+/// lines and letters as type grows; body text stays as Forui sets it.
+abstract final class TypeScale {
+  /// Line height of headings.
+  static const double headingLeading = 1.2;
+
+  /// Letter spacing of headings, as a share of the font size.
+  static const double headingTracking = -0.02;
+
+  /// From this font size on, a style counts as a heading.
+  static const double headingFrom = 20;
 }
 
 /// Touch targets.

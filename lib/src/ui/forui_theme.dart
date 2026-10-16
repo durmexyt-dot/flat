@@ -70,6 +70,36 @@ FButtonStyles _buttonStyles(
   );
 }
 
+/// [style] set as a heading when it is large enough (see [TypeScale]).
+TextStyle _heading(TextStyle style) {
+  final size = style.fontSize ?? 0;
+  if (size < TypeScale.headingFrom) return style;
+  return style.copyWith(
+    height: TypeScale.headingLeading,
+    letterSpacing: size * TypeScale.headingTracking,
+  );
+}
+
+/// Forui's typography with headings set tighter (Forui's display styles
+/// keep body-like line heights of up to 2.5).
+FTypography _typography(FColors colors, {required bool touch}) {
+  final t = FTypography.inherit(colors: colors, touch: touch);
+  final d = t.display;
+  return t.copyWith(
+    display: d.copyWith(
+      lg: _heading(d.lg),
+      xl: _heading(d.xl),
+      xl2: _heading(d.xl2),
+      xl3: _heading(d.xl3),
+      xl4: _heading(d.xl4),
+      xl5: _heading(d.xl5),
+      xl6: _heading(d.xl6),
+      xl7: _heading(d.xl7),
+      xl8: _heading(d.xl8),
+    ),
+  );
+}
+
 /// The Forui theme for the user's settings. [touch] picks the larger touch
 /// sizes on phones and tablets.
 FThemeData buildForuiTheme(
@@ -81,7 +111,7 @@ FThemeData buildForuiTheme(
   final neutral = brightness == Brightness.light
       ? FColors.neutralLight
       : FColors.neutralDark;
-  final typography = FTypography.inherit(colors: colors, touch: touch);
+  final typography = _typography(colors, touch: touch);
   FStyle styleFor(FColors c) =>
       FStyle.inherit(colors: c, typography: typography, touch: touch).copyWith(
         borderRadius: FBorderRadius().scale(_radiusScale(settings.uiStyle)),
@@ -92,7 +122,7 @@ FThemeData buildForuiTheme(
   final plain = FThemeData(
     colors: neutral,
     touch: touch,
-    typography: FTypography.inherit(colors: neutral, touch: touch),
+    typography: _typography(neutral, touch: touch),
     style: styleFor(neutral),
   );
   final style = styleFor(colors);

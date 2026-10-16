@@ -7,6 +7,7 @@ import '../auth/auth_repository.dart';
 import '../router.dart';
 import '../brand/brand.dart';
 import '../web/html_splash.dart';
+import '../ui/hero_page.dart';
 import '../ui/tokens.dart';
 
 /// How long the splash stays at least, so the hand-over to the next screen
@@ -50,6 +51,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (!mounted) return;
     final target = returnTarget(GoRouterState.of(context).uri) ?? '/';
     ref.read(splashDoneProvider.notifier).complete();
+    BrandHandoff.pending = true;
     context.go(target);
   }
 

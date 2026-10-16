@@ -310,7 +310,7 @@ class _ColorDot extends StatelessWidget {
               child: AnimatedScale(
                 scale: selected ? 1 : 0,
                 duration: Motion.normal,
-                curve: Motion.pop,
+                curve: Motion.enter,
                 child: Icon(
                   FLucideIcons.check,
                   size: IconSizes.lg,

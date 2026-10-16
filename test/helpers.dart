@@ -12,7 +12,7 @@ import 'package:flat/src/data/tickets_repository.dart';
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/support/support_repository.dart';
-import 'package:flat/src/ui/hero_page.dart';
+import 'package:flat/src/ui/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -185,7 +185,7 @@ Future<FakeAuthRepository> pumpApp(
   if (settle) {
     await tester.pump(splashMinDuration);
     await tester.pump();
-    await tester.pump(heroTransitionDuration);
+    await tester.pump(Motion.brandHandoff);
     await tester.pumpAndSettle();
   }
   return auth;

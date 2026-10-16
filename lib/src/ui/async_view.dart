@@ -140,9 +140,9 @@ class EmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.6, end: 1),
-            duration: const Duration(milliseconds: 500),
-            curve: Motion.pop,
+            tween: Tween(begin: 0.9, end: 1),
+            duration: Motion.slow,
+            curve: Motion.enter,
             builder: (context, v, child) =>
                 Transform.scale(scale: v, child: child),
             // Icon in a muted circle, like Forui's empty states.

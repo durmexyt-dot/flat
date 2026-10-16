@@ -242,7 +242,7 @@ class _PasswordFieldState extends State<PasswordField> {
       enabled: widget.enabled,
       onSubmit: widget.onSubmitted,
       validator: widget.validator,
-      autovalidateMode: AutovalidateMode.disabled,
+      autovalidateMode: AutovalidateMode.onUserInteractionIfError,
     );
   }
 }
@@ -293,7 +293,7 @@ class EmailField extends StatelessWidget {
       enabled: enabled,
       onSubmit: onSubmitted,
       validator: (value) => validateEmail(l10n, value),
-      autovalidateMode: AutovalidateMode.disabled,
+      autovalidateMode: AutovalidateMode.onUserInteractionIfError,
     );
   }
 }

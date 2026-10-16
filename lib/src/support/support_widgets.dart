@@ -64,7 +64,7 @@ class UnreadDot extends StatelessWidget {
   Widget build(BuildContext context) => AnimatedScale(
     scale: visible ? 1 : 0,
     duration: Motion.normal,
-    curve: Motion.pop,
+    curve: Motion.enter,
     child: Container(
       width: 8,
       height: 8,

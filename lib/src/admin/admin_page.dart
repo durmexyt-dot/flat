@@ -185,7 +185,7 @@ class CountPill extends StatelessWidget {
     return AnimatedScale(
       scale: count > 0 ? 1 : 0,
       duration: Motion.normal,
-      curve: Motion.pop,
+      curve: Motion.enter,
       child: Container(
         constraints: const BoxConstraints(minWidth: 22),
         height: 22,

@@ -1,7 +1,7 @@
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
-import 'package:flat/src/ui/hero_page.dart';
+import 'package:flat/src/ui/tokens.dart';
 import 'package:flat/src/ui/ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -133,7 +133,7 @@ void main() {
     final before = ticketTop();
     await tester.tap(ticket.first);
     await tester.pump();
-    await tester.pump(heroTransitionDuration ~/ 2);
+    await tester.pump(Motion.page ~/ 2);
     final during = ticketTop();
     await tester.pumpAndSettle();
     final after = ticketTop();

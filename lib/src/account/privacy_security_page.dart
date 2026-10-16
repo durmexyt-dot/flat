@@ -191,7 +191,7 @@ class _VisibilityOption extends StatelessWidget {
             AnimatedScale(
               scale: selected ? 1 : 0,
               duration: Motion.normal,
-              curve: Motion.pop,
+              curve: Motion.enter,
               child: Icon(
                 FLucideIcons.circleCheck,
                 size: IconSizes.lg,

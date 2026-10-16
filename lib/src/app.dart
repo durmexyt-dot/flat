@@ -32,7 +32,7 @@ class FlatApp extends ConsumerWidget {
       theme: buildTheme(Brightness.light, settings),
       darkTheme: buildTheme(Brightness.dark, settings),
       themeMode: settings.themeMode,
-      themeAnimationDuration: Motion.slower,
+      themeAnimationDuration: Motion.theme,
       themeAnimationCurve: Motion.enter,
       builder: (context, child) => ValueListenableBuilder(
         valueListenable: prefersReducedMotion,
@@ -64,7 +64,11 @@ class FlatApp extends ConsumerWidget {
                   child: UpdateNotifier(
                     child: LiveAlerts(
                       child: SupportAlerts(
-                        child: _StagingBanner(child: child!),
+                        // Flying Heroes are movement too.
+                        child: HeroMode(
+                          enabled: !reduced,
+                          child: _StagingBanner(child: child!),
+                        ),
                       ),
                     ),
                   ),

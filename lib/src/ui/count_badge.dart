@@ -24,7 +24,7 @@ class CountBadge extends StatelessWidget {
           child: AnimatedScale(
             scale: count > 0 ? 1 : 0,
             duration: Motion.normal,
-            curve: Motion.pop,
+            curve: Motion.enter,
             child: Container(
               constraints: const BoxConstraints(minWidth: 18),
               height: 18,

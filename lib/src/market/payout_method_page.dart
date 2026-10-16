@@ -157,7 +157,8 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
                             fieldIcon(FLucideIcons.user),
                         textCapitalization: TextCapitalization.words,
                         textInputAction: TextInputAction.next,
-                        autovalidateMode: AutovalidateMode.disabled,
+                        autovalidateMode:
+                            AutovalidateMode.onUserInteractionIfError,
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? l10n.required
                             : null,
@@ -223,7 +224,7 @@ class _PayoutMethodPageState extends ConsumerState<PayoutMethodPage> {
         autofillHints: const [],
         inputFormatters: [IbanFormatter()],
         onSubmit: (_) => _save(),
-        autovalidateMode: AutovalidateMode.disabled,
+        autovalidateMode: AutovalidateMode.onUserInteractionIfError,
         // Says what is wrong, so a hidden leftover character
         // or a typo can be found.
         validator: (v) => switch (checkIban(v ?? '')) {

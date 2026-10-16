@@ -31,8 +31,8 @@ Verläufe.
 
 - **Alles etwas luftiger:** `Space.unit` von 4 auf 4.5 setzen; alle Abstände
   wachsen mit.
-- **Ruhigere Animationen:** Werte in `Motion` erhöhen oder `Motion.pop`
-  (Überschwingen) auf `Curves.easeOut` setzen.
+- **Ruhigere Animationen:** Werte in `Motion` erhöhen. Kein Überschwingen
+  (Apple: nur nach Gesten mit Schwung).
 - **Andere Statusfarben:** `FixedColors.positive` / `waiting` ändern.
 - **Breitere Seiten am PC:** `SiteWidth.wide` erhöhen (Kopfzeile und Inhalt
   wachsen zusammen).
@@ -47,6 +47,10 @@ Verläufe.
 - Icon-Buttons immer mit `semanticsLabel`; `FTooltip` in `MergeSemantics`.
 - Statusfarben (`FixedColors`) nur für Punkte, Icons und Flächen, nicht für
   Fließtext; Kontraste prüft `test/accessibility_test.dart`.
+- Formularfelder: `AutovalidateMode.onUserInteractionIfError` – Fehler
+  erst beim Absenden, danach live bis zur Korrektur.
+- Reduzierte Bewegung: `Motion.reducedDuration` statt der normalen Dauern,
+  Seiten nur überblenden, keine Hero-Flüge (`HeroMode` in `app.dart`).
 - Endlose Animationen nur, wenn `MediaQuery.disableAnimationsOf` false ist.
 - Vorschläge aus dem Skill ui-ux-pro-max sind willkommen, die Regeln oben
   (Forui, 70/20/10, keine Verläufe, Tokens) gehen vor.

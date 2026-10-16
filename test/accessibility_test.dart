@@ -112,18 +112,38 @@ void main() {
     );
   });
 
-  testWidgets('reduced motion turns durations off', (tester) async {
+  testWidgets('reduced motion shortens durations', (tester) async {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
     await pumpApp(tester);
     await tester.pumpAndSettle();
     expect(Motion.reduced, isTrue);
-    expect(Motion.normal, Duration.zero);
+    expect(Motion.normal, Motion.reducedDuration);
 
     tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
     await tester.pumpAndSettle();
     expect(Motion.reduced, isFalse);
-    expect(Motion.normal, greaterThan(Duration.zero));
+    expect(Motion.normal, greaterThan(Motion.reducedDuration));
+  });
+
+  testWidgets('form errors show on submit and clear while fixing', (
+    tester,
+  ) async {
+    await pumpApp(tester);
+    await openLogin(tester);
+    final email = find.byType(EditableText).at(0);
+    await tester.enterText(email, 'a@b');
+    await tester.pump();
+    // Nothing is flagged while typing for the first time.
+    expect(find.text('Unesite ispravnu e-mail adresu'), findsNothing);
+
+    await tester.tap(find.widgetWithText(FButton, 'Prijavi se'));
+    await tester.pumpAndSettle();
+    expect(find.text('Unesite ispravnu e-mail adresu'), findsOneWidget);
+
+    await tester.enterText(email, 'a@b.ba');
+    await tester.pumpAndSettle();
+    expect(find.text('Unesite ispravnu e-mail adresu'), findsNothing);
   });
 }

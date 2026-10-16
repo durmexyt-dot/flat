@@ -118,7 +118,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   validator: (v) => (v == null || v.trim().isEmpty)
                       ? l10n.nameRequired
                       : null,
-                  autovalidateMode: AutovalidateMode.disabled,
+                  autovalidateMode: AutovalidateMode.onUserInteractionIfError,
                 ),
                 const SizedBox(height: Space.lg),
                 EmailField(controller: _email, enabled: !_loading),

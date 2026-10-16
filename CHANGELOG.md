@@ -9,6 +9,18 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert (nach Apples Designprinzipien)
+- Seitenwechsel doppelt so schnell (350 statt 700 ms); die neue Seite ist
+  ab dem ersten Moment sichtbar. Nur der Übergang vom Startbildschirm, bei
+  dem das Logo an seinen Platz fliegt, bleibt ruhig.
+- Nichts federt mehr über (Zähler, Punkte, Leer-Zustände): Überschwingen
+  nur nach einer Geste mit Schwung.
+- „Bewegung reduzieren“: kurze Überblendungen statt gar keiner Rückmeldung,
+  keine fliegenden Elemente, Hell/Dunkel wechselt weiterhin sanft.
+- Formulare: Fehler erscheinen beim Absenden und verschwinden live, sobald
+  sie behoben sind.
+- Große Überschriften enger gesetzt (Zeilenhöhe 1,2, Buchstaben −2 %).
+
 ## [1.10.0] – 2026-10-16
 
 ### Geändert (Barrierefreiheit, nach ui-ux-pro-max-Checkliste)
