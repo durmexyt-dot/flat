@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.0] – 2026-10-16
+
 ### Neu
 - Event-Seite zeigt die Termine des Events: „N događaja u tvojoj blizini“
   (Stadt wählbar, Orte bis 40 km zählen mit) bzw. „Nema događaja u tvojoj
