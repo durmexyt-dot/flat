@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.10.0] – 2026-10-16
+
 ### Geändert (Barrierefreiheit, nach ui-ux-pro-max-Checkliste)
 - Handy/Tablet: alles Tippbare ist mindestens 44 px groß – kleine Buttons
   („Sve ponude…“, „Uredi profil“, „Potvrdi“), Tabs/Filter, Avatar oben
