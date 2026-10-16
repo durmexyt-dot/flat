@@ -189,6 +189,9 @@ void main() {
       find.byType(EditableText).first,
       'Dino Merlin – akustični koncert',
     );
+    // Done typing: the focused field no longer pulls the page back to it.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
     await tapVisible(tester, find.widgetWithText(FButton, 'Potvrdi'));
 
     final event = await events.watchEvent('ev-user').first;

@@ -262,6 +262,7 @@ class Event {
     required this.info,
     this.status = EventStatus.confirmed,
     this.genre = '',
+    this.performer = '',
     this.createdBy = '',
     this.postponedFrom,
     this.cancelReason = '',
@@ -278,6 +279,16 @@ class Event {
   /// A finer category within [EventInfo.category], e.g. "football" or
   /// "rock" (see events/genres.dart). Empty if none.
   final String genre;
+
+  /// The artist, team or tour (e.g. "Metallica"): dates of the same
+  /// performer in other places belong together. Empty: the name counts.
+  final String performer;
+
+  /// Dates with the same key are one show in different places: the
+  /// performer if given, else the name (case, spaces and diacritics don't
+  /// matter).
+  String get groupKey =>
+      searchKey(performer.trim().isNotEmpty ? performer : info.name);
 
   /// Who added the event.
   final String createdBy;
@@ -313,6 +324,7 @@ class Event {
         ? EventStatus.confirmed
         : enumByName(EventStatus.values, m['status'], EventStatus.pending),
     genre: m['genre'] as String? ?? '',
+    performer: m['performer'] as String? ?? '',
     postponedFrom: _date(m['postponedFrom']),
     cancelReason: m['cancelReason'] as String? ?? '',
     createdBy: m['createdBy'] as String? ?? '',
@@ -326,6 +338,7 @@ class Event {
     EventInfo? info,
     EventStatus? status,
     String? genre,
+    String? performer,
     bool? hasImage,
     int? imageVersion,
     int? Function()? maxMarkupPercent,
@@ -334,6 +347,7 @@ class Event {
     info: info ?? this.info,
     status: status ?? this.status,
     genre: genre ?? this.genre,
+    performer: performer ?? this.performer,
     createdBy: createdBy,
     postponedFrom: postponedFrom,
     cancelReason: cancelReason,
@@ -343,6 +357,175 @@ class Event {
         ? this.maxMarkupPercent
         : maxMarkupPercent(),
     createdAt: createdAt,
+  );
+}
+
+/// Compares names loosely: case, spaces, punctuation and diacritics don't
+/// matter ("Tribina Sjever" = "tribina-sjever", "Koševo" = "Kosevo").
+String searchKey(String text) {
+  const map = {'č': 'c', 'ć': 'c', 'š': 's', 'ž': 'z', 'đ': 'dj', 'ü': 'u'};
+  final folded = text.trim().toLowerCase().split('').map((c) => map[c] ?? c);
+  return folded.join().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
+}
+
+// ---------------------------------------------------------------------------
+// Seat maps
+// ---------------------------------------------------------------------------
+
+/// The seat map id of a venue: the same hall shares one map across events.
+String seatMapId(String venue, String city) =>
+    '${searchKey(venue)} ${searchKey(city)}'.trim().replaceAll(' ', '-');
+
+/// A rectangle on a seat map, in fractions (0–1) of the map's width and
+/// height, so it fits any size the map is drawn at.
+@immutable
+class MapRect {
+  const MapRect(this.x, this.y, this.w, this.h);
+
+  final double x;
+  final double y;
+  final double w;
+  final double h;
+
+  /// Clamped into the map and at least [min] in size.
+  factory MapRect.normalized(
+    double x,
+    double y,
+    double w,
+    double h, {
+    double min = 0.02,
+  }) {
+    double c(double v) => v.clamp(0.0, 1.0);
+    final left = c(w < 0 ? x + w : x), top = c(h < 0 ? y + h : y);
+    final width = (c(left + w.abs()) - left).clamp(min, 1.0 - left);
+    final height = (c(top + h.abs()) - top).clamp(min, 1.0 - top);
+    return MapRect(left, top, width, height);
+  }
+
+  bool contains(double px, double py) =>
+      px >= x && px <= x + w && py >= y && py <= y + h;
+
+  factory MapRect.fromMap(Map<String, dynamic> m) {
+    double v(String k) => (m[k] as num?)?.toDouble() ?? 0;
+    return MapRect(v('x'), v('y'), v('w'), v('h'));
+  }
+
+  Map<String, dynamic> toMap() => {'x': x, 'y': y, 'w': w, 'h': h};
+
+  @override
+  bool operator ==(Object other) =>
+      other is MapRect &&
+      other.x == x &&
+      other.y == y &&
+      other.w == w &&
+      other.h == h;
+
+  @override
+  int get hashCode => Object.hash(x, y, w, h);
+}
+
+/// One section of a hall (a stand, a block, the floor) on its seat map.
+/// Listings belong to it when their section has the same name.
+@immutable
+class SeatSection {
+  const SeatSection({required this.name, required this.rect});
+
+  final String name;
+  final MapRect rect;
+
+  bool matches(String section) =>
+      section.trim().isNotEmpty && searchKey(section) == searchKey(name);
+
+  factory SeatSection.fromMap(Map<String, dynamic> m) =>
+      SeatSection(name: m['name'] as String? ?? '', rect: MapRect.fromMap(m));
+
+  Map<String, dynamic> toMap() => {'name': name, ...rect.toMap()};
+
+  SeatSection copyWith({String? name, MapRect? rect}) =>
+      SeatSection(name: name ?? this.name, rect: rect ?? this.rect);
+}
+
+/// A venue's seat map: optional floor plan picture with the sections drawn
+/// on it as tappable areas. Without a picture the sections are drawn on
+/// their own.
+@immutable
+class SeatMap {
+  const SeatMap({
+    required this.id,
+    required this.venue,
+    required this.city,
+    this.aspectRatio = defaultAspectRatio,
+    this.sections = const [],
+    this.stage,
+    this.hasImage = false,
+    this.imageVersion = 0,
+  });
+
+  /// Width / height of a map without a picture.
+  static const defaultAspectRatio = 4 / 3;
+
+  /// The most sections a map holds (the rules check it too).
+  static const maxSections = 120;
+
+  final String id;
+  final String venue;
+  final String city;
+
+  /// Width / height: the picture's, or [defaultAspectRatio].
+  final double aspectRatio;
+  final List<SeatSection> sections;
+
+  /// Where the stage or pitch is, if marked.
+  final MapRect? stage;
+
+  /// The picture lives in seatMapImages/{id}.
+  final bool hasImage;
+  final int imageVersion;
+
+  /// The section a listing's [section] text belongs to, if any.
+  SeatSection? sectionOf(String section) =>
+      sections.where((s) => s.matches(section)).firstOrNull;
+
+  factory SeatMap.fromMap(String id, Map<String, dynamic> m) => SeatMap(
+    id: id,
+    venue: m['venue'] as String? ?? '',
+    city: m['city'] as String? ?? '',
+    aspectRatio: (m['aspectRatio'] as num?)?.toDouble() ?? defaultAspectRatio,
+    sections: [
+      for (final s in (m['sections'] as List?) ?? const [])
+        SeatSection.fromMap((s as Map).cast<String, dynamic>()),
+    ],
+    stage: m['stage'] is Map
+        ? MapRect.fromMap((m['stage'] as Map).cast<String, dynamic>())
+        : null,
+    hasImage: m['hasImage'] == true,
+    imageVersion: (m['imageVersion'] as num?)?.toInt() ?? 0,
+  );
+
+  /// Without hasImage and imageVersion: the repository sets those.
+  Map<String, dynamic> toMap() => {
+    'venue': venue,
+    'city': city,
+    'aspectRatio': aspectRatio,
+    'sections': [for (final s in sections) s.toMap()],
+    'stage': stage?.toMap(),
+  };
+
+  SeatMap copyWith({
+    double? aspectRatio,
+    List<SeatSection>? sections,
+    MapRect? Function()? stage,
+    bool? hasImage,
+    int? imageVersion,
+  }) => SeatMap(
+    id: id,
+    venue: venue,
+    city: city,
+    aspectRatio: aspectRatio ?? this.aspectRatio,
+    sections: sections ?? this.sections,
+    stage: stage == null ? this.stage : stage(),
+    hasImage: hasImage ?? this.hasImage,
+    imageVersion: imageVersion ?? this.imageVersion,
   );
 }
 
@@ -784,6 +967,7 @@ class Listing {
     this.row = '',
     this.seats = '',
     this.note = '',
+    this.together = false,
     this.createdAt,
   });
 
@@ -817,6 +1001,10 @@ class Listing {
   final String row;
   final String seats;
   final String note;
+
+  /// The seller says the seats are next to each other, so buyers of two
+  /// or more sit together. False also for listings from before.
+  final bool together;
   final DateTime? createdAt;
 
   int get available => quantity - quantitySold - quantityReserved;
@@ -849,6 +1037,7 @@ class Listing {
     row: m['row'] as String? ?? '',
     seats: m['seats'] as String? ?? '',
     note: m['note'] as String? ?? '',
+    together: m['together'] == true,
     createdAt: _date(m['createdAt']),
   );
 
@@ -870,6 +1059,7 @@ class Listing {
     'row': row,
     'seats': seats,
     'note': note,
+    if (together) 'together': true,
   };
 }
 

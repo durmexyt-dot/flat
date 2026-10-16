@@ -343,6 +343,23 @@ class OfferTicket extends ConsumerWidget {
                     ticketTypeName(l10n, listing.ticketType),
                     style: theme.mutedText,
                   ),
+                  if (listing.together && listing.available > 1) ...[
+                    const SizedBox(width: Space.md),
+                    Icon(
+                      FLucideIcons.armchair,
+                      size: IconSizes.xs,
+                      color: colors.mutedForeground,
+                    ),
+                    const SizedBox(width: Space.sm),
+                    Flexible(
+                      child: Text(
+                        l10n.offerTogether,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.mutedText,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ],

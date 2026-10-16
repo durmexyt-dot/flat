@@ -1,3 +1,4 @@
+import 'package:flat/src/market/listing_ticket.dart';
 import 'package:flat/src/data/events_repository.dart';
 import 'package:flat/src/data/memory_repositories.dart';
 import 'package:flat/src/data/models.dart';
@@ -123,15 +124,18 @@ void main() {
     await tester.tap(find.text('Dubioza kolektiv').first);
     await tester.pumpAndSettle();
     expect(find.text('Imaš karte za ovaj događaj?'), findsOneWidget);
+    await openTickets(tester);
     expect(find.text('1 ponuda'), findsOneWidget);
 
-    // The ticket on the event page, then the flying one, then the detail's.
+    // The offer on the tickets page, then the flying one, then the
+    // detail's.
+    final offer = find.byType(OfferTicket);
     final ticket = find.byType(TicketCard, skipOffstage: false);
     double ticketTop() => tester.getTopLeft(ticket.last).dy;
-    await tester.ensureVisible(ticket.first);
+    await tester.ensureVisible(offer.first);
     await tester.pumpAndSettle();
     final before = ticketTop();
-    await tester.tap(ticket.first);
+    await tester.tap(offer.first);
     await tester.pump();
     await tester.pump(Motion.page ~/ 2);
     final during = ticketTop();

@@ -98,7 +98,9 @@ cd firestore_test && npm install && npm test
 
 Data model (collections): `users` (private profile, notification settings,
 `private/payoutMethod`), `publicProfiles`, `usernames`, `roles` (team),
-`config/fees`, `events` + `eventImages`, `listings` (each for one event, with
+`config/fees`, `events` + `eventImages` (dates of one performer share
+`performer`), `seatMaps` + `seatMapImages` (per venue, sections drawn by the
+team), `listings` (each for one event, with
 the fees in force when it was created), `orders` and `payouts`
 (server-written), `supportTickets` with `messages` (in-app support).
 Profile photos, event pictures and support pictures are stored as small

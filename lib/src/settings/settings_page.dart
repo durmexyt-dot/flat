@@ -79,6 +79,11 @@ class SettingsPage extends ConsumerWidget {
               onTap: () => context.push('/admin/events'),
             ),
             SettingsLinkTile(
+              icon: FLucideIcons.map,
+              title: l10n.adminSeatMaps,
+              onTap: () => context.push('/admin/seatmaps'),
+            ),
+            SettingsLinkTile(
               icon: FLucideIcons.shieldAlert,
               title: l10n.moderationTitle,
               trailing: openReports > 0 ? CountPill(count: openReports) : null,

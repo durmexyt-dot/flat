@@ -157,6 +157,7 @@ void main() {
 
     await tester.tap(find.text('Dubioza kolektiv').first);
     await tester.pumpAndSettle();
+    await openTickets(tester);
     final price = find.textContaining('49,50');
     await tester.scrollUntilVisible(price, 200, scrollable: mainScrollable);
     expect(price, findsOneWidget);

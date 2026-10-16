@@ -147,6 +147,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
   late final _name = TextEditingController(text: widget.event?.info.name);
   late final _venue = TextEditingController(text: widget.event?.info.venue);
   late final _city = TextEditingController(text: widget.event?.info.city);
+  late final _performer = TextEditingController(text: widget.event?.performer);
   late DateTime? _date = widget.event?.info.date;
   late EventCategory _category =
       widget.event?.info.category ?? EventCategory.concerts;
@@ -168,7 +169,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
 
   @override
   void dispose() {
-    for (final c in [_name, _venue, _city, _markup]) {
+    for (final c in [_name, _venue, _city, _performer, _markup]) {
       c.dispose();
     }
     super.dispose();
@@ -278,6 +279,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
           createdBy: uid,
           byStaff: widget.team,
           genre: _genre,
+          performer: _performer.text.trim(),
           imageBase64: _newImage,
         );
         showSnack(widget.team ? l10n.eventsCreated : l10n.eventsUserAdded);
@@ -295,6 +297,7 @@ class _EventFormState extends ConsumerState<_EventForm> {
           event.id,
           info,
           genre: _genre,
+          performer: _performer.text.trim(),
           imageBase64: _newImage,
           removeImage: _removeImage && event.hasImage,
         );
@@ -684,6 +687,19 @@ class _EventFormState extends ConsumerState<_EventForm> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: Space.lg),
+                    FTextFormField(
+                      control: FTextFieldControl.managed(
+                        controller: _performer,
+                      ),
+                      inputFormatters: [LengthLimitingTextInputFormatter(100)],
+                      label: Text(l10n.eventPerformer),
+                      description: Text(l10n.eventPerformerInfo),
+                      prefixBuilder: (context, style, variants) =>
+                          fieldIcon(FLucideIcons.micVocal),
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: Space.lg),
                     DateTimeField(

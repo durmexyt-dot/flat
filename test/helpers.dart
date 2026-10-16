@@ -12,6 +12,7 @@ import 'package:flat/src/data/tickets_repository.dart';
 import 'package:flat/src/settings/settings_controller.dart';
 import 'package:flat/src/splash/splash_page.dart';
 import 'package:flat/src/support/support_repository.dart';
+import 'package:flat/src/data/seat_map_repository.dart';
 import 'package:flat/src/ui/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
@@ -138,6 +139,7 @@ late InMemoryAdminRepository admin;
 late InMemoryTicketFileRepository ticketFiles;
 late FakeServerActions serverActions;
 late InMemoryPlatformRepository platform;
+late InMemorySeatMapRepository seatMaps;
 
 Future<FakeAuthRepository> pumpApp(
   WidgetTester tester, {
@@ -148,6 +150,7 @@ Future<FakeAuthRepository> pumpApp(
   InMemoryAdminRepository? adminRepository,
   InMemoryTicketFileRepository? ticketFileRepository,
   InMemoryPlatformRepository? platformRepository,
+  InMemorySeatMapRepository? seatMapRepository,
 }) async {
   profiles = InMemoryProfileRepository();
   market = marketRepository ?? InMemoryMarketRepository();
@@ -157,6 +160,7 @@ Future<FakeAuthRepository> pumpApp(
   ticketFiles = ticketFileRepository ?? InMemoryTicketFileRepository();
   serverActions = FakeServerActions();
   platform = platformRepository ?? InMemoryPlatformRepository();
+  seatMaps = seatMapRepository ?? InMemorySeatMapRepository();
   tester.view.physicalSize = const Size(390, 844) * 3;
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -178,6 +182,7 @@ Future<FakeAuthRepository> pumpApp(
         ticketFileRepositoryProvider.overrideWithValue(ticketFiles),
         serverActionsProvider.overrideWithValue(serverActions),
         platformRepositoryProvider.overrideWithValue(platform),
+        seatMapRepositoryProvider.overrideWithValue(seatMaps),
       ],
       child: const FlatApp(),
     ),
@@ -215,6 +220,11 @@ Finder get mainScrollable {
 
 /// Scrolls the first scrollable until [finder] is built and visible, then
 /// taps it.
+/// On an event page: opens the tickets of the first date that has some.
+Future<void> openTickets(WidgetTester tester) async {
+  await tapVisible(tester, find.text('Prikaži karte').first);
+}
+
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
   if (finder.evaluate().isEmpty) {
     await tester.scrollUntilVisible(finder, 200, scrollable: mainScrollable);

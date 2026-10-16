@@ -464,6 +464,45 @@ test('event pictures: the team, or a user with their new event', async () => {
   await assertFails(deleteDoc(doc(fs, 'eventImages/U1')));
 });
 
+test('events: a performer groups dates in different places', async () => {
+  await assertSucceeds(setDoc(doc(db('boss'), 'events/P1'), eventDoc({ performer: 'Metallica' })));
+  await assertSucceeds(setDoc(doc(db('seller'), 'events/P2'), eventDoc({ status: 'pending', createdBy: 'seller', performer: 'Metallica' })));
+  await assertFails(setDoc(doc(db('boss'), 'events/P3'), eventDoc({ performer: 'x'.repeat(101) })));
+  await assertFails(setDoc(doc(db('boss'), 'events/P4'), eventDoc({ performer: 5 })));
+  await assertSucceeds(updateDoc(doc(db('helper'), 'events/P1'), { performer: 'Metallica – M72', updatedAt: serverTimestamp() }));
+});
+
+test('listings: sellers may say the seats are next to each other', async () => {
+  const fs = db('seller');
+  await assertSucceeds(setDoc(doc(fs, 'listings/t1'), listing({ together: true })));
+  await assertFails(setDoc(doc(fs, 'listings/t2'), listing({ together: 'yes' })));
+  // Not changed afterwards.
+  await assertFails(updateDoc(doc(fs, 'listings/t1'), { together: false, updatedAt: serverTimestamp() }));
+});
+
+test('seat maps: everybody reads them, the team draws them', async () => {
+  const map = (over = {}) => ({
+    venue: 'Zetra', city: 'Sarajevo', aspectRatio: 1.5,
+    sections: [{ name: 'Tribina Sjever', x: 0.1, y: 0.1, w: 0.3, h: 0.2 }],
+    stage: { x: 0.4, y: 0.8, w: 0.2, h: 0.1 },
+    hasImage: false, imageVersion: 1, updatedAt: serverTimestamp(), ...over,
+  });
+  await assertSucceeds(setDoc(doc(db('helper'), 'seatMaps/zetra-sarajevo'), map()));
+  await assertSucceeds(setDoc(doc(db('boss'), 'seatMaps/zetra-sarajevo'), map({ imageVersion: 2, hasImage: true })));
+  await assertSucceeds(getDoc(doc(db(null), 'seatMaps/zetra-sarajevo')));
+  await assertFails(setDoc(doc(db('seller'), 'seatMaps/x'), map()));
+  await assertFails(setDoc(doc(db('boss'), 'seatMaps/a1'), map({ extra: 1 })));
+  await assertFails(setDoc(doc(db('boss'), 'seatMaps/a2'), map({ aspectRatio: 9 })));
+  await assertFails(setDoc(doc(db('boss'), 'seatMaps/a3'), map({ sections: Array(121).fill({ name: 'A', x: 0, y: 0, w: 0.1, h: 0.1 }) })));
+  await assertFails(deleteDoc(doc(db('seller'), 'seatMaps/zetra-sarajevo')));
+  await assertSucceeds(deleteDoc(doc(db('helper'), 'seatMaps/zetra-sarajevo')));
+  // The floor plan picture.
+  await assertSucceeds(setDoc(doc(db('helper'), 'seatMapImages/z'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertFails(setDoc(doc(db('seller'), 'seatMapImages/z'), { data: 'x'.repeat(5000), updatedAt: serverTimestamp() }));
+  await assertFails(setDoc(doc(db('boss'), 'seatMapImages/z'), { data: 'x'.repeat(400001), updatedAt: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(db(null), 'seatMapImages/z')));
+});
+
 test('team accounts neither buy nor sell', async () => {
   await env.withSecurityRulesDisabled(async (ctx) => {
     for (const uid of ['boss', 'helper']) {

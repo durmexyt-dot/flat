@@ -20,6 +20,8 @@ What it creates (staging only, the rules decide everything):
   waiting for payment; a sold-out and a withdrawn listing
 - support requests: open, answered by the team (unread), closed, with picture
 - seller profile with username, photo and payout method
+- a tour: the concert's performer in Tuzla (with tickets) and Banja Luka
+  (none), and a seat map of Zetra with offers in its sections
 """
 import base64
 import datetime
@@ -249,13 +251,15 @@ def ensure_event(a, eid, e, *, status, reader, image=None):
     return get(reader.token, f'events/{eid}')
 
 
-def ensure_listing(seller, lid, eid, e, fees, *, quantity, price, section='', row='', seats='', note=''):
+def ensure_listing(seller, lid, eid, e, fees, *, quantity, price, section='', row='', seats='', note='',
+                   together=False, ticket_type='eTicket'):
     create(seller.token, f'listings/{lid}', {
         'sellerId': seller.uid, 'eventId': eid, 'event': event_info(e),
         'buyerFeePercent': fees[0], 'sellerFeePercent': fees[1],
-        'ticketType': 'eTicket', 'quantity': quantity, 'quantitySold': 0,
+        'ticketType': ticket_type, 'quantity': quantity, 'quantitySold': 0,
         'priceMinor': price, 'currency': 'BAM', 'status': 'active',
         'section': section, 'row': row, 'seats': seats, 'note': note,
+        **({'together': True} if together else {}),
     }, f'listing {lid}')
     return get(seller.token, f'listings/{lid}')
 
@@ -398,6 +402,52 @@ def user_close(a, tid):
 
 # ---- The showcase ----------------------------------------------------------
 
+def ensure_tour(staff, seller, fees, concert):
+    """One performer in several places (Sarajevo, Tuzla, Banja Luka without
+    tickets) and a seat map of Zetra with offers in its sections."""
+    concert = {**concert, 'performer': 'Dubioza kolektiv'}
+    current = get(staff.token, 'events/showcase-concert') or {}
+    if current.get('performer') != 'Dubioza kolektiv':
+        commit(staff.token, [update_op('events/showcase-concert', {'performer': 'Dubioza kolektiv'},
+                                       times=('updatedAt',))], 'concert performer')
+    tuzla = {'name': 'Test: Dubioza kolektiv – Tuzla', 'performer': 'Dubioza kolektiv', 'venue': 'Mejdan',
+             'city': 'Tuzla', 'date': day(31, 20), 'category': 'concerts', 'genre': 'rock'}
+    banjaluka = {'name': 'Test: Dubioza kolektiv – Banja Luka', 'performer': 'Dubioza kolektiv',
+                 'venue': 'Dvorana Borik', 'city': 'Banja Luka', 'date': day(38, 20), 'category': 'concerts',
+                 'genre': 'rock'}
+    ensure_event(staff, 'showcase-tour-tuzla', tuzla, status='confirmed', reader=staff,
+                 image=picture('Dubioza kolektiv – Tuzla', (124, 58, 237)))
+    ensure_event(staff, 'showcase-tour-banjaluka', banjaluka, status='confirmed', reader=staff)
+
+    if get(staff.token, 'seatMaps/zetra-sarajevo') is None:
+        def area(name, x, y, w, h):
+            return {'name': name, 'x': x, 'y': y, 'w': w, 'h': h}
+        commit(staff.token, [set_op('seatMaps/zetra-sarajevo', {
+            'venue': 'Zetra', 'city': 'Sarajevo', 'aspectRatio': 1.5,
+            'sections': [
+                area('Tribina Sjever', 0.18, 0.04, 0.64, 0.16),
+                area('Tribina Jug', 0.18, 0.80, 0.64, 0.16),
+                area('Tribina Zapad', 0.03, 0.22, 0.13, 0.56),
+                area('VIP', 0.84, 0.22, 0.13, 0.24),
+                area('Tribina Istok', 0.84, 0.50, 0.13, 0.28),
+                area('Parter', 0.36, 0.24, 0.45, 0.52),
+            ],
+            'stage': {'x': 0.19, 'y': 0.30, 'w': 0.13, 'h': 0.40},
+            'hasImage': False, 'imageVersion': 1,
+        }, times=('updatedAt',))], 'seat map Zetra')
+    else:
+        print('  exists: seat map Zetra')
+
+    ensure_listing(seller, 'showcase-concert-north', 'showcase-concert', concert, fees,
+                   quantity=4, price=5500, section='Tribina Sjever', row='12', seats='5–8', together=True)
+    ensure_listing(seller, 'showcase-concert-floor', 'showcase-concert', concert, fees,
+                   quantity=3, price=6500, section='Parter', ticket_type='mobile')
+    ensure_listing(seller, 'showcase-concert-vip', 'showcase-concert', concert, fees,
+                   quantity=2, price=12000, section='VIP', row='1', seats='1–2', together=True)
+    ensure_listing(seller, 'showcase-tour-tuzla-open', 'showcase-tour-tuzla', tuzla, fees,
+                   quantity=2, price=4000, together=True)
+
+
 def main():
     seller = Account('SELLER', 'Test Prodavac')
     buyer = Account('BUYER', 'Test Kupac')
@@ -482,6 +532,9 @@ def main():
                    quantity=1, price=8000, section='Parter')
     ensure_order(buyer, 'showcase-o-soldout', 'showcase-film-soldout', 1)
     pay(buyer, 'showcase-o-soldout')
+
+    print('Tour and seat map')
+    ensure_tour(staff, seller, fees, concert)
 
     print('Support')
     paid = get(buyer.token, 'orders/showcase-o-paid')

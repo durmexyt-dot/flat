@@ -12,6 +12,7 @@ class City {
 /// Cities in Bosnia and Herzegovina and the region where events take place.
 const knownCities = [
   City('Sarajevo', 43.8563, 18.4131),
+  City('Ilidža', 43.8297, 18.3108),
   City('Banja Luka', 44.7722, 17.1910),
   City('Tuzla', 44.5384, 18.6671),
   City('Zenica', 44.2034, 17.9077),
@@ -82,3 +83,16 @@ String cityKey(String name) {
 }
 
 bool sameCity(String a, String b) => cityKey(a) == cityKey(b);
+
+/// Within this distance a place counts as near a city.
+const nearbyKm = 40.0;
+
+/// Whether an event in [eventCity] is near [homeCity]: the same city, or
+/// both known and at most [nearbyKm] apart.
+bool isNearCity(String eventCity, String homeCity) {
+  if (sameCity(eventCity, homeCity)) return true;
+  City? find(String name) =>
+      knownCities.where((c) => sameCity(c.name, name)).firstOrNull;
+  final a = find(eventCity), b = find(homeCity);
+  return a != null && b != null && _km(a.lat, a.lon, b.lat, b.lon) <= nearbyKm;
+}

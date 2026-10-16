@@ -9,6 +9,7 @@ import 'admin/admin_repository.dart';
 import 'admin/event_editor_page.dart';
 import 'admin/events_admin_page.dart';
 import 'admin/fees_page.dart';
+import 'admin/seat_map_pages.dart';
 import 'admin/team_page.dart';
 import 'account/notifications_page.dart';
 import 'account/privacy_security_page.dart';
@@ -18,6 +19,7 @@ import 'auth/login_page.dart';
 import 'auth/signup_page.dart';
 import 'data/models.dart';
 import 'events/event_page.dart';
+import 'events/event_tickets_page.dart';
 import 'home/home_page.dart';
 import 'info/info_page.dart';
 import 'market/listing_detail_page.dart';
@@ -155,6 +157,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       _route(
+        '/event/:id/tickets',
+        (state) => EventTicketsPage(
+          id: state.pathParameters['id']!,
+          initial: state.extra as Event?,
+        ),
+      ),
+      _route(
         '/listing/:id',
         (state) => ListingDetailPage(
           id: state.pathParameters['id']!,
@@ -191,6 +200,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       _route('/admin', (_) => const AdminPage()),
       _route('/admin/support', (_) => const SupportInboxPage()),
       _route('/admin/fees', (_) => const FeesPage()),
+      _route('/admin/seatmaps', (_) => const SeatMapsPage()),
+      _route(
+        '/admin/seatmaps/:id',
+        (state) => SeatMapEditorPage(
+          id: state.pathParameters['id']!,
+          venue: state.uri.queryParameters['venue'] ?? '',
+          city: state.uri.queryParameters['city'] ?? '',
+        ),
+      ),
       _route('/admin/team', (_) => const TeamPage()),
       _route('/admin/resale', (_) => const ResaleRulesPage()),
       _route('/admin/limits', (_) => const SellerLimitsPage()),

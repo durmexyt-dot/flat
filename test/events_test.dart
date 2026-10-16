@@ -55,6 +55,7 @@ void main() {
     await tester.tap(find.text('FK Sarajevo – FK Željezničar').first);
     await tester.pumpAndSettle();
     expect(find.text('Imaš karte za ovaj događaj?'), findsOneWidget);
+    await openTickets(tester);
     // Offers show what tells them apart: price, seats, how many.
     expect(find.byType(OfferTicket), findsWidgets);
     await tapVisible(tester, find.byType(OfferTicket).first);
@@ -204,6 +205,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Test koncert').first);
     await tester.pumpAndSettle();
+    await openTickets(tester);
     expect(find.text('3 ponude'), findsOneWidget);
 
     List<String> shown() => tester

@@ -271,7 +271,9 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['sellerId', 'eventId', 'event',
             'buyerFeePercent', 'sellerFeePercent', 'faceValueMinor', 'ticketType',
             'quantity', 'quantitySold', 'quantityReserved', 'priceMinor', 'currency', 'status',
-            'section', 'row', 'seats', 'note', 'createdAt', 'updatedAt'])
+            'section', 'row', 'seats', 'note', 'together', 'createdAt', 'updatedAt'])
+        // The seller says the seats are next to each other.
+        && (!('together' in request.resource.data) || request.resource.data.together is bool)
         && validEvent(request.resource.data.event)
         // Tickets only for a visible event an admin created; the copy of
         // the event is exactly the event.
@@ -686,7 +688,7 @@ service cloud.firestore {
     match /events/{id} {
       function validEventDoc(d) {
         return d.keys().hasOnly(['name', 'venue', 'city', 'date', 'category',
-            'genre', 'status', 'createdBy', 'hasImage', 'imageVersion',
+            'genre', 'performer', 'status', 'createdBy', 'hasImage', 'imageVersion',
             'postponedFrom', 'cancelReason', 'maxMarkupPercent', 'createdAt', 'updatedAt'])
           && validMarkup(d.get('maxMarkupPercent', null))
           && str(d.name, 2, 100)
@@ -695,6 +697,7 @@ service cloud.firestore {
           && d.date is timestamp
           && d.category in ['concerts', 'sports', 'theater', 'festivals', 'other']
           && optStr(d, 'genre', 40)
+          && optStr(d, 'performer', 100)
           && d.status in ['pending', 'confirmed', 'hidden', 'active', 'cancelled']
           && d.hasImage is bool
           && d.imageVersion is int
@@ -747,6 +750,37 @@ service cloud.firestore {
       allow read: if true;
       allow create: if signedIn() && validImage() && (isStaff() || newOwnEvent());
       allow update: if isStaff() && validImage();
+      allow delete: if isStaff();
+    }
+
+    // A venue's seat map: sections drawn as rectangles (fractions of the
+    // map), optionally on a floor plan picture. Everybody reads it, the
+    // team draws it.
+    match /seatMaps/{id} {
+      function validSeatMap(d) {
+        return d.keys().hasOnly(['venue', 'city', 'aspectRatio', 'sections', 'stage',
+            'hasImage', 'imageVersion', 'updatedAt'])
+          && str(d.venue, 1, 100)
+          && str(d.city, 1, 60)
+          && d.aspectRatio is number && d.aspectRatio >= 0.2 && d.aspectRatio <= 5
+          && d.sections is list && d.sections.size() <= 120
+          && (!('stage' in d) || d.stage == null || d.stage is map)
+          && d.hasImage is bool
+          && d.imageVersion is int
+          && d.updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create, update: if isStaff() && validSeatMap(request.resource.data);
+      allow delete: if isStaff();
+    }
+
+    // A seat map's floor plan: a JPEG in base64, like event pictures.
+    match /seatMapImages/{id} {
+      allow read: if true;
+      allow create, update: if isStaff()
+        && request.resource.data.keys().hasOnly(['data', 'updatedAt'])
+        && str(request.resource.data.data, 100, 400000)
+        && request.resource.data.updatedAt == request.time;
       allow delete: if isStaff();
     }
 

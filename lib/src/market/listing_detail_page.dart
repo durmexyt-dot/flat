@@ -252,7 +252,8 @@ class _EventBanner extends ConsumerWidget {
             variant: FButtonVariant.ghost,
             size: FButtonSizeVariant.sm,
             mainAxisSize: MainAxisSize.min,
-            onPress: () => context.push('/event/$eventId', extra: event),
+            onPress: () =>
+                context.push('/event/$eventId/tickets', extra: event),
             suffix: const Icon(FLucideIcons.arrowRight),
             child: Text(l10n.eventsAllOffers, overflow: TextOverflow.ellipsis),
           ),

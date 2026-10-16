@@ -46,6 +46,7 @@ Future<void> _toCheckout(WidgetTester tester, {int quantity = 4}) async {
   // Home shows the event; its page lists the offer.
   await tester.tap(find.text('Sarajevo Jazz Festival').first);
   await tester.pumpAndSettle();
+  await openTickets(tester);
   await tapVisible(tester, find.byType(OfferTicket).first);
   // Phones: the buy bar at the bottom; the number is chosen at checkout.
   await tester.tap(find.text('Kupi karte').last);

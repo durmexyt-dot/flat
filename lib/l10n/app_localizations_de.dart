@@ -10,6 +10,216 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String datesNearbyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Veranstaltungen in deiner Nähe',
+      one: '1 Veranstaltung in deiner Nähe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get datesNoneNearby => 'Keine Veranstaltungen in deiner Nähe';
+
+  @override
+  String datesNoneNearbyInfo(String city) {
+    return 'In und um $city gibt es gerade keinen Termin.';
+  }
+
+  @override
+  String datesElsewhereCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Veranstaltungen an anderen Veranstaltungsorten',
+      one: '1 Veranstaltung an einem anderen Veranstaltungsort',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String datesAllCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Termine',
+      one: '1 Termin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get datesPickCity =>
+      'Wähle deine Stadt, um Veranstaltungen in deiner Nähe zu sehen';
+
+  @override
+  String datesNearCity(String city) {
+    return 'In der Nähe von $city';
+  }
+
+  @override
+  String get showTickets => 'Tickets anzeigen';
+
+  @override
+  String get noTicketsAvailable => 'Keine Tickets';
+
+  @override
+  String ticketsFrom(String price) {
+    return 'ab $price';
+  }
+
+  @override
+  String get ticketsPageTitle => 'Tickets';
+
+  @override
+  String get otherDates => 'Weitere Termine';
+
+  @override
+  String get seatMapSoon => 'Saalplan kommt bald';
+
+  @override
+  String get seatMapSoonInfo =>
+      'Für diesen Ort gibt es noch keinen Saalplan. Block und Reihe stehen bei jedem Angebot.';
+
+  @override
+  String get seatMapHint =>
+      'Tippe auf einen Block, um nur seine Angebote zu sehen';
+
+  @override
+  String get seatMapStage => 'Bühne';
+
+  @override
+  String seatMapSectionOffers(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Angebote',
+      one: '1 Angebot',
+      zero: 'keine Angebote',
+    );
+    return '$name: $_temp0';
+  }
+
+  @override
+  String sectionFilter(String name) {
+    return 'Block: $name';
+  }
+
+  @override
+  String get filtersMore => 'Preis und Ticketart';
+
+  @override
+  String get filterPrice => 'Preis pro Ticket';
+
+  @override
+  String get filterTicketType => 'Ticketart';
+
+  @override
+  String get filterTogether => 'Plätze nebeneinander';
+
+  @override
+  String get filterTogetherInfo =>
+      'Nur Angebote, bei denen der Verkäufer angibt, dass die Plätze nebeneinander liegen';
+
+  @override
+  String get filtersReset => 'Filter zurücksetzen';
+
+  @override
+  String get offersNoneForFilters => 'Kein Angebot passt zu den Filtern';
+
+  @override
+  String get offerTogether => 'Nebeneinander';
+
+  @override
+  String get sellTogether => 'Die Plätze liegen nebeneinander';
+
+  @override
+  String get sellTogetherInfo =>
+      'So finden dich Käufer, die mehrere Plätze zusammen suchen.';
+
+  @override
+  String get sellSectionsOfVenue => 'Blöcke dieses Ortes';
+
+  @override
+  String get eventPerformer => 'Künstler / Tour (optional)';
+
+  @override
+  String get eventPerformerInfo =>
+      'Termine desselben Künstlers in anderen Städten werden zusammen gezeigt.';
+
+  @override
+  String get adminSeatMaps => 'Saalpläne';
+
+  @override
+  String get adminSeatMapsInfo =>
+      'Blöcke der Veranstaltungsorte, für Käufer auf der Ticketseite';
+
+  @override
+  String get seatMapNone => 'Kein Plan';
+
+  @override
+  String seatMapSectionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Blöcke',
+      one: '1 Block',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seatMapTitle => 'Saalplan';
+
+  @override
+  String get seatMapPicture => 'Bild des Plans (optional)';
+
+  @override
+  String get seatMapPictureHint =>
+      'Das Bild wird nicht zugeschnitten. Ohne Bild werden die Blöcke auf leerer Fläche gezeichnet.';
+
+  @override
+  String get seatMapDrawHint =>
+      'Zieh mit Finger oder Maus, um einen Block zu zeichnen. Tippe einen Block an, um ihn umzubenennen oder zu löschen.';
+
+  @override
+  String get seatMapDrawSection => 'Block';
+
+  @override
+  String get seatMapSectionName => 'Name des Blocks';
+
+  @override
+  String seatMapSectionDefault(int n) {
+    return 'Block $n';
+  }
+
+  @override
+  String get seatMapDeleteSection => 'Block löschen';
+
+  @override
+  String get seatMapRemoveStage => 'Bühne entfernen';
+
+  @override
+  String get seatMapDelete => 'Plan löschen';
+
+  @override
+  String get seatMapDeleteInfo =>
+      'Käufer sehen für diesen Ort dann keinen Plan mehr.';
+
+  @override
+  String seatMapUnmatched(String names) {
+    return 'Blöcke aus Angeboten, die im Plan fehlen: $names';
+  }
+
+  @override
+  String get seatMapDuplicate => 'Zwei Blöcke haben denselben Namen';
+
+  @override
+  String get seatMapVenues => 'Orte aus Events';
+
+  @override
   String get quantityDecrease => 'Ein Ticket weniger';
 
   @override

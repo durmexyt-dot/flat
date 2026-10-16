@@ -43,6 +43,12 @@ class AdminPage extends ConsumerWidget {
                     onTap: () => context.push('/admin/events'),
                   ),
                   SettingsLinkTile(
+                    icon: FLucideIcons.map,
+                    title: l10n.adminSeatMaps,
+                    subtitle: l10n.adminSeatMapsInfo,
+                    onTap: () => context.push('/admin/seatmaps'),
+                  ),
+                  SettingsLinkTile(
                     icon: FLucideIcons.percent,
                     title: l10n.adminFeesTitle,
                     subtitle: fees == null

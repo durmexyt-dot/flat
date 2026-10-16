@@ -28,6 +28,7 @@ abstract class EventRepository {
     required String createdBy,
     required bool byStaff,
     String genre = '',
+    String performer = '',
     String? imageBase64,
   });
 
@@ -37,6 +38,7 @@ abstract class EventRepository {
     String id,
     EventInfo info, {
     String genre = '',
+    String performer = '',
     String? imageBase64,
     bool removeImage = false,
   });
@@ -91,6 +93,7 @@ class FirestoreEventRepository implements EventRepository {
     required String createdBy,
     required bool byStaff,
     String genre = '',
+    String performer = '',
     String? imageBase64,
   }) async {
     final ref = _events.doc();
@@ -98,6 +101,7 @@ class FirestoreEventRepository implements EventRepository {
       ..set(ref, {
         ...info.toMap(),
         'genre': genre,
+        if (performer.trim().isNotEmpty) 'performer': performer.trim(),
         'status': _statusName(
           byStaff ? EventStatus.confirmed : EventStatus.pending,
         ),
@@ -122,6 +126,7 @@ class FirestoreEventRepository implements EventRepository {
     String id,
     EventInfo info, {
     String genre = '',
+    String performer = '',
     String? imageBase64,
     bool removeImage = false,
   }) async {
@@ -129,6 +134,7 @@ class FirestoreEventRepository implements EventRepository {
       ..update(_events.doc(id), {
         ...info.toMap(),
         'genre': genre,
+        'performer': performer.trim(),
         if (imageBase64 != null) 'hasImage': true,
         if (removeImage && imageBase64 == null) 'hasImage': false,
         if (imageBase64 != null || removeImage)
@@ -209,6 +215,7 @@ class InMemoryEventRepository implements EventRepository {
     required String createdBy,
     required bool byStaff,
     String genre = '',
+    String performer = '',
     String? imageBase64,
   }) async {
     final id = 'event-${_nextId++}';
@@ -219,6 +226,7 @@ class InMemoryEventRepository implements EventRepository {
         info: info,
         status: byStaff ? EventStatus.confirmed : EventStatus.pending,
         genre: genre,
+        performer: performer.trim(),
         createdBy: createdBy,
         hasImage: imageBase64 != null,
         imageVersion: 1,
@@ -233,6 +241,7 @@ class InMemoryEventRepository implements EventRepository {
     String id,
     EventInfo info, {
     String genre = '',
+    String performer = '',
     String? imageBase64,
     bool removeImage = false,
   }) async {
@@ -246,6 +255,7 @@ class InMemoryEventRepository implements EventRepository {
       old.copyWith(
         info: info,
         genre: genre,
+        performer: performer.trim(),
         hasImage: _images.containsKey(id),
         imageVersion: old.imageVersion + 1,
       ),
@@ -310,6 +320,19 @@ final eventImageProvider = FutureProvider.family<Uint8List?, (String, int)>((
   final data = await ref.watch(eventRepositoryProvider).loadImage(key.$1);
   ref.keepAlive();
   return data == null ? null : base64Decode(data);
+});
+
+/// The dates of an event's show (same performer or name) in all places:
+/// the upcoming ones plus the event [id] itself, soonest first.
+final eventDatesProvider = Provider.family<List<Event>, String>((ref, id) {
+  final all = ref.watch(eventsProvider).value ?? const <Event>[];
+  final event = all.where((e) => e.id == id).firstOrNull;
+  if (event == null) return const [];
+  final key = event.groupKey;
+  return [
+    for (final e in all)
+      if (e.id == id || (e.groupKey == key && e.isUpcoming && !e.cancelled)) e,
+  ];
 });
 
 /// Active listings for one event, cheapest first.

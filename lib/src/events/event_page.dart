@@ -7,8 +7,11 @@ import '../../l10n/app_localizations.dart';
 import '../admin/admin_repository.dart';
 import '../data/events_repository.dart';
 import '../data/models.dart';
+import '../home/city_picker.dart';
+import '../location/cities.dart';
+import '../location/location_controller.dart';
 import '../market/listing_ticket.dart';
-import '../ui/segmented.dart';
+import 'event_card.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/app_dialog.dart';
 import '../ui/app_style.dart';
@@ -24,7 +27,8 @@ import 'event_status_badge.dart';
 import 'recently_viewed.dart';
 import '../ui/tokens.dart';
 
-/// One event: picture, details, selling and all offers, cheapest first.
+/// One event: picture, details and its dates – near the user first, then
+/// in other places – each leading to its tickets.
 class EventPage extends ConsumerStatefulWidget {
   const EventPage({super.key, required this.id, this.initial});
 
@@ -102,8 +106,8 @@ class _EventPageState extends ConsumerState<EventPage> {
             const SizedBox(height: Space.xl),
             _Details(event: event),
           ],
-          _Offers(event: event, columns: wide ? 2 : 1),
-          _SellHint(event: event),
+          _Dates(event: event, columns: wide ? 2 : 1),
+          EventSellHint(event: event),
         ],
       );
     }
@@ -144,9 +148,13 @@ class _Details extends ConsumerWidget {
           style: theme.typography.display.lg.copyWith(
             fontWeight: FontWeights.bold,
             color: theme.colors.foreground,
-            height: 1.15,
           ),
         ),
+        if (event.performer.isNotEmpty &&
+            searchKey(event.performer) != searchKey(info.name)) ...[
+          const SizedBox(height: Space.xs),
+          Text(event.performer, style: theme.mutedText),
+        ],
         AnimatedSize(
           duration: Motion.normal,
           alignment: Alignment.topCenter,
@@ -201,13 +209,6 @@ class _Details extends ConsumerWidget {
             ),
           ),
         ],
-        const SizedBox(height: Space.lg),
-        _Fact(
-          icon: FLucideIcons.calendar,
-          text: formatDateTime(context, info.date),
-        ),
-        _Fact(icon: FLucideIcons.mapPin, text: info.venue),
-        _Fact(icon: FLucideIcons.building2, text: info.city),
         const SizedBox(height: Space.xl),
         AnimatedSize(
           duration: Motion.normal,
@@ -311,140 +312,10 @@ Future<bool> confirmEventDialog(BuildContext context) async {
   return ok == true;
 }
 
-class _Fact extends StatelessWidget {
-  const _Fact({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = context.theme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        children: [
-          Icon(icon, size: IconSizes.sm, color: theme.colors.mutedForeground),
-          const SizedBox(width: Space.md),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.typography.body.md.copyWith(
-                color: theme.colors.foreground,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The offers, cheapest first, with a filter for how many tickets are
-/// needed together.
-class _Offers extends ConsumerStatefulWidget {
-  const _Offers({required this.event, required this.columns});
-
-  final Event event;
-  final int columns;
-
-  @override
-  ConsumerState<_Offers> createState() => _OffersState();
-}
-
-class _OffersState extends ConsumerState<_Offers> {
-  /// Tickets needed together; 0 means any.
-  int _needed = 0;
-
-  static const _choices = [0, 1, 2, 3, 4];
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final event = widget.event;
-    final columns = widget.columns;
-    final value = ref.watch(eventListingsProvider(event.id));
-    final listings = value.value ?? const <Listing>[];
-    final count = listings.length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SettingsSectionTitle(
-          count == 0 ? l10n.eventsOffers : l10n.eventsOffersCount(count),
-        ),
-        if (count > 1) ...[
-          // Short labels, so all fit on phones; the question says what
-          // the numbers mean.
-          Text(l10n.offersHowMany, style: context.theme.mutedText),
-          const SizedBox(height: Space.sm),
-          Segmented<int>(
-            values: _choices,
-            selected: _needed,
-            label: (n) => n == 0
-                ? l10n.offersAnyAmount
-                : n == _choices.last
-                ? l10n.offersAmountOrMore(n)
-                : '$n',
-            onChanged: (n) => setState(() => _needed = n),
-          ),
-          const SizedBox(height: Space.lg),
-        ],
-        AsyncView<List<Listing>>(
-          value: value,
-          onRetry: () => ref.invalidate(eventListingsProvider(event.id)),
-          loading: Shimmer(
-            child: ResponsiveGrid(
-              maxColumns: columns,
-              children: [
-                for (var i = 0; i < columns * 2; i++)
-                  const SkeletonTicketTile(),
-              ],
-            ),
-          ),
-          data: (listings) {
-            if (listings.isEmpty) {
-              return EmptyState(
-                icon: FLucideIcons.ticket,
-                title: l10n.eventsNoOffers,
-                message: event.isUpcoming ? l10n.eventsNoOffersInfo : null,
-              );
-            }
-            final shown = listings.where((l) => l.available >= _needed).toList()
-              ..sort((a, b) {
-                final byPrice = a.buyerPriceMinor.compareTo(b.buyerPriceMinor);
-                return byPrice != 0
-                    ? byPrice
-                    : b.available.compareTo(a.available);
-              });
-            if (shown.isEmpty) {
-              return EmptyState(
-                icon: FLucideIcons.listFilter,
-                title: l10n.offersNoneForAmount(_needed),
-                message: l10n.offersNoneForAmountInfo,
-              );
-            }
-            return ResponsiveGrid(
-              maxColumns: columns,
-              children: [
-                for (final l in shown)
-                  OfferTicket(
-                    listing: l,
-                    onTap: () => context.push('/listing/${l.id}', extra: l),
-                  ),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
 /// Below the offers: selling tickets for this event. Guests are sent to
 /// sign-in first and come back to the form.
-class _SellHint extends ConsumerWidget {
-  const _SellHint({required this.event});
+class EventSellHint extends ConsumerWidget {
+  const EventSellHint({super.key, required this.event});
 
   final Event event;
 
@@ -488,6 +359,143 @@ class _SellHint extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The dates of this show: those near the chosen city, then those in other
+/// places, or all of them when no city is chosen.
+class _Dates extends ConsumerWidget {
+  const _Dates({required this.event, required this.columns});
+
+  final Event event;
+  final int columns;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    final found = ref.watch(eventDatesProvider(event.id));
+    final dates = found.isEmpty ? [event] : found;
+    final city = ref.watch(chosenCityProvider)?.name;
+
+    Widget grid(List<Event> list) => ResponsiveGrid(
+      maxColumns: columns,
+      children: [for (final e in list) _DateCard(event: e)],
+    );
+
+    final cityButton = Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: FButton(
+        variant: FButtonVariant.outline,
+        size: FButtonSizeVariant.sm,
+        mainAxisSize: MainAxisSize.min,
+        prefix: const Icon(FLucideIcons.mapPin),
+        suffix: const Icon(FLucideIcons.chevronDown),
+        onPress: () => showCityPicker(context),
+        child: Flexible(
+          child: Text(
+            city == null ? l10n.datesPickCity : l10n.datesNearCity(city),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+
+    if (city == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SettingsSectionTitle(l10n.datesAllCount(dates.length)),
+          cityButton,
+          const SizedBox(height: Space.lg),
+          grid(dates),
+        ],
+      );
+    }
+    final near = [
+      for (final e in dates)
+        if (isNearCity(e.info.city, city)) e,
+    ];
+    final other = [
+      for (final e in dates)
+        if (!near.contains(e)) e,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SettingsSectionTitle(
+          near.isEmpty
+              ? l10n.datesNoneNearby
+              : l10n.datesNearbyCount(near.length),
+        ),
+        cityButton,
+        const SizedBox(height: Space.lg),
+        if (near.isEmpty)
+          Text(l10n.datesNoneNearbyInfo(city), style: theme.mutedText)
+        else
+          grid(near),
+        if (other.isNotEmpty) ...[
+          SettingsSectionTitle(l10n.datesElsewhereCount(other.length)),
+          grid(other),
+        ],
+      ],
+    );
+  }
+}
+
+/// One date: place and time as a ticket, the cheapest price and the way to
+/// its tickets – or that there are none.
+class _DateCard extends ConsumerWidget {
+  const _DateCard({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = context.theme;
+    final from = ref.watch(eventFromPriceProvider)[event.id];
+    final tickets = ref.watch(eventOffersProvider)[event.id]?.tickets ?? 0;
+    final open = from != null && tickets > 0;
+    final path = '/event/${event.id}/tickets';
+    void show() => context.push(path, extra: event);
+
+    final Widget status;
+    if (event.cancelled) {
+      status = Text(l10n.eventPageCancelled, style: theme.mutedText);
+    } else if (!event.isUpcoming) {
+      status = Text(l10n.eventsIsOver, style: theme.mutedText);
+    } else if (!open) {
+      status = Text(l10n.noTicketsAvailable, style: theme.mutedText);
+    } else {
+      status = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${l10n.ticketsFrom(formatMoney(context, from.minor, from.currency))}'
+            ' · ${l10n.offersAmount(tickets)}',
+            style: theme.titleText,
+          ),
+          const SizedBox(height: Space.md),
+          FButton(
+            size: FButtonSizeVariant.sm,
+            mainAxisSize: MainAxisSize.min,
+            onPress: show,
+            child: Text(l10n.showTickets),
+          ),
+        ],
+      );
+    }
+
+    return EventTicket(
+      heroTag: 'date-${event.id}',
+      event: event.info,
+      lines: [
+        const SizedBox(height: Space.md),
+        status,
+      ],
+      onTap: open ? show : null,
     );
   }
 }

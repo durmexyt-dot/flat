@@ -13,6 +13,7 @@ import '../data/platform_repository.dart';
 import '../events/event_picker.dart';
 import '../admin/admin_repository.dart';
 import '../data/repositories.dart';
+import '../data/seat_map_repository.dart';
 import '../settings/settings_controller.dart';
 import '../settings/settings_widgets.dart';
 import '../ui/async_view.dart';
@@ -46,6 +47,9 @@ class _SellPageState extends ConsumerState<SellPage> {
   bool _preselected = false;
   TicketType _type = TicketType.eTicket;
   int _quantity = 1;
+
+  /// The seats are next to each other (from two tickets on).
+  bool _together = false;
   bool _saving = false;
   bool _eventError = false;
 
@@ -133,6 +137,7 @@ class _SellPageState extends ConsumerState<SellPage> {
               row: _row.text.trim(),
               seats: _seats.text.trim(),
               note: _note.text.trim(),
+              together: _quantity > 1 && _together,
             ),
           );
       ref.invalidate(statsProvider);
@@ -302,12 +307,57 @@ class _SellPageState extends ConsumerState<SellPage> {
                 max: maxQuantity,
                 onChanged: (v) => setState(() => _quantity = v),
               ),
+              AnimatedSize(
+                duration: Motion.normal,
+                alignment: Alignment.topCenter,
+                child: _quantity < 2
+                    ? const SizedBox(width: double.infinity)
+                    : Padding(
+                        padding: const EdgeInsets.only(top: Space.lg),
+                        child: SettingsGroup(
+                          children: [
+                            FTile(
+                              prefix: const Icon(FLucideIcons.armchair),
+                              title: Text(l10n.sellTogether),
+                              subtitle: Text(
+                                l10n.sellTogetherInfo,
+                                overflow: TextOverflow.visible,
+                              ),
+                              suffix: FSwitch(
+                                value: _together,
+                                onChange: (v) => setState(() => _together = v),
+                              ),
+                              onPress: () =>
+                                  setState(() => _together = !_together),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
               const SizedBox(height: Space.lg),
               _SeatFields(
                 section: _section,
                 row: _row,
                 seats: _seats,
                 wide: wide,
+                sections: selected == null
+                    ? const []
+                    : [
+                        for (final s
+                            in ref
+                                    .watch(
+                                      seatMapProvider(
+                                        seatMapId(
+                                          selected.info.venue,
+                                          selected.info.city,
+                                        ),
+                                      ),
+                                    )
+                                    .value
+                                    ?.sections ??
+                                const <SeatSection>[])
+                          s.name,
+                      ],
               ),
               SettingsSectionTitle(l10n.price),
               _SideBySide(
@@ -430,12 +480,16 @@ class _SeatFields extends StatelessWidget {
     required this.row,
     required this.seats,
     required this.wide,
+    this.sections = const [],
   });
 
   final TextEditingController section;
   final TextEditingController row;
   final TextEditingController seats;
   final bool wide;
+
+  /// The venue's sections from its seat map, to pick from.
+  final List<String> sections;
 
   @override
   Widget build(BuildContext context) {
@@ -451,6 +505,48 @@ class _SeatFields extends StatelessWidget {
     final sectionField = field(section, l10n.section, 40);
     final rowField = field(row, l10n.row, 40);
     final seatsField = field(seats, l10n.seats, 60);
+    final picks = sections.isEmpty
+        ? null
+        : ValueListenableBuilder(
+            valueListenable: section,
+            builder: (context, value, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: Space.md),
+                Text(l10n.sellSectionsOfVenue, style: context.theme.mutedText),
+                const SizedBox(height: Space.sm),
+                Wrap(
+                  spacing: Space.md,
+                  runSpacing: Space.md,
+                  children: [
+                    for (final name in sections)
+                      FButton(
+                        variant: searchKey(value.text) == searchKey(name)
+                            ? FButtonVariant.primary
+                            : FButtonVariant.outline,
+                        size: FButtonSizeVariant.sm,
+                        mainAxisSize: MainAxisSize.min,
+                        onPress: () => section.text = name,
+                        child: Text(name),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          );
+    final fields = _fieldsLayout(sectionField, rowField, seatsField);
+    if (picks == null) return fields;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [fields, picks],
+    );
+  }
+
+  Widget _fieldsLayout(
+    Widget sectionField,
+    Widget rowField,
+    Widget seatsField,
+  ) {
     if (wide) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,

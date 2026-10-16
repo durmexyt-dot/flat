@@ -65,6 +65,19 @@ abstract final class Radii {
 
   /// The grab handle on top of a sheet.
   static const double handle = 2;
+
+  /// Sections and the stage on a seat map.
+  static const double mapArea = 4;
+}
+
+/// Opacities for tinted surfaces.
+abstract final class Opacities {
+  /// A light tint of a signal color, e.g. a seat map section with offers.
+  static const double tint = 0.15;
+
+  /// A surface over a picture that should stay readable, e.g. a section
+  /// without offers on a floor plan.
+  static const double veil = 0.7;
 }
 
 /// Animation durations and curves.

@@ -100,6 +100,300 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @datesNearbyCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, =1{1 događaj u tvojoj blizini} few{{count} događaja u tvojoj blizini} other{{count} događaja u tvojoj blizini}}'**
+  String datesNearbyCount(int count);
+
+  /// No description provided for @datesNoneNearby.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema događaja u tvojoj blizini'**
+  String get datesNoneNearby;
+
+  /// No description provided for @datesNoneNearbyInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'U gradu {city} i okolini trenutno nema termina.'**
+  String datesNoneNearbyInfo(String city);
+
+  /// No description provided for @datesElsewhereCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, =1{1 događaj na drugom mjestu} few{{count} događaja na drugim mjestima} other{{count} događaja na drugim mjestima}}'**
+  String datesElsewhereCount(int count);
+
+  /// No description provided for @datesAllCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, =1{1 termin} few{{count} termina} other{{count} termina}}'**
+  String datesAllCount(int count);
+
+  /// No description provided for @datesPickCity.
+  ///
+  /// In bs, this message translates to:
+  /// **'Odaberi grad da vidiš događaje u blizini'**
+  String get datesPickCity;
+
+  /// No description provided for @datesNearCity.
+  ///
+  /// In bs, this message translates to:
+  /// **'U blizini: {city}'**
+  String datesNearCity(String city);
+
+  /// No description provided for @showTickets.
+  ///
+  /// In bs, this message translates to:
+  /// **'Prikaži karte'**
+  String get showTickets;
+
+  /// No description provided for @noTicketsAvailable.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema karata'**
+  String get noTicketsAvailable;
+
+  /// No description provided for @ticketsFrom.
+  ///
+  /// In bs, this message translates to:
+  /// **'od {price}'**
+  String ticketsFrom(String price);
+
+  /// No description provided for @ticketsPageTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Karte'**
+  String get ticketsPageTitle;
+
+  /// No description provided for @otherDates.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ostali termini'**
+  String get otherDates;
+
+  /// No description provided for @seatMapSoon.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plan sjedenja uskoro'**
+  String get seatMapSoon;
+
+  /// No description provided for @seatMapSoonInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Za ovo mjesto još nemamo plan. Sektor i red vidiš na svakoj ponudi.'**
+  String get seatMapSoonInfo;
+
+  /// No description provided for @seatMapHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dodirni sektor da vidiš samo njegove ponude'**
+  String get seatMapHint;
+
+  /// No description provided for @seatMapStage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Bina'**
+  String get seatMapStage;
+
+  /// No description provided for @seatMapSectionOffers.
+  ///
+  /// In bs, this message translates to:
+  /// **'{name}: {count, plural, =0{nema ponuda} =1{1 ponuda} few{{count} ponude} other{{count} ponuda}}'**
+  String seatMapSectionOffers(String name, int count);
+
+  /// No description provided for @sectionFilter.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektor: {name}'**
+  String sectionFilter(String name);
+
+  /// No description provided for @filtersMore.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena i vrsta karte'**
+  String get filtersMore;
+
+  /// No description provided for @filterPrice.
+  ///
+  /// In bs, this message translates to:
+  /// **'Cijena po karti'**
+  String get filterPrice;
+
+  /// No description provided for @filterTicketType.
+  ///
+  /// In bs, this message translates to:
+  /// **'Vrsta karte'**
+  String get filterTicketType;
+
+  /// No description provided for @filterTogether.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sjedišta jedno do drugog'**
+  String get filterTogether;
+
+  /// No description provided for @filterTogetherInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Samo ponude za koje prodavac navodi da su mjesta jedno do drugog'**
+  String get filterTogetherInfo;
+
+  /// No description provided for @filtersReset.
+  ///
+  /// In bs, this message translates to:
+  /// **'Poništi filtere'**
+  String get filtersReset;
+
+  /// No description provided for @offersNoneForFilters.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nijedna ponuda ne odgovara filterima'**
+  String get offersNoneForFilters;
+
+  /// No description provided for @offerTogether.
+  ///
+  /// In bs, this message translates to:
+  /// **'Jedno do drugog'**
+  String get offerTogether;
+
+  /// No description provided for @sellTogether.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mjesta su jedno do drugog'**
+  String get sellTogether;
+
+  /// No description provided for @sellTogetherInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupci koji traže više mjesta zajedno lakše te pronađu.'**
+  String get sellTogetherInfo;
+
+  /// No description provided for @sellSectionsOfVenue.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektori ovog mjesta'**
+  String get sellSectionsOfVenue;
+
+  /// No description provided for @eventPerformer.
+  ///
+  /// In bs, this message translates to:
+  /// **'Izvođač / turneja (neobavezno)'**
+  String get eventPerformer;
+
+  /// No description provided for @eventPerformerInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Termini istog izvođača u drugim gradovima prikazuju se zajedno.'**
+  String get eventPerformerInfo;
+
+  /// No description provided for @adminSeatMaps.
+  ///
+  /// In bs, this message translates to:
+  /// **'Planovi sjedenja'**
+  String get adminSeatMaps;
+
+  /// No description provided for @adminSeatMapsInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektori mjesta, za kupce na stranici s kartama'**
+  String get adminSeatMapsInfo;
+
+  /// No description provided for @seatMapNone.
+  ///
+  /// In bs, this message translates to:
+  /// **'Nema plana'**
+  String get seatMapNone;
+
+  /// No description provided for @seatMapSectionsCount.
+  ///
+  /// In bs, this message translates to:
+  /// **'{count, plural, =1{1 sektor} few{{count} sektora} other{{count} sektora}}'**
+  String seatMapSectionsCount(int count);
+
+  /// No description provided for @seatMapTitle.
+  ///
+  /// In bs, this message translates to:
+  /// **'Plan sjedenja'**
+  String get seatMapTitle;
+
+  /// No description provided for @seatMapPicture.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika plana (neobavezno)'**
+  String get seatMapPicture;
+
+  /// No description provided for @seatMapPictureHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Slika se ne obrezuje. Bez slike sektori se crtaju na praznoj podlozi.'**
+  String get seatMapPictureHint;
+
+  /// No description provided for @seatMapDrawHint.
+  ///
+  /// In bs, this message translates to:
+  /// **'Povuci prstom ili mišem da nacrtaš sektor. Dodirni sektor da ga preimenuješ ili obrišeš.'**
+  String get seatMapDrawHint;
+
+  /// No description provided for @seatMapDrawSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektor'**
+  String get seatMapDrawSection;
+
+  /// No description provided for @seatMapSectionName.
+  ///
+  /// In bs, this message translates to:
+  /// **'Naziv sektora'**
+  String get seatMapSectionName;
+
+  /// No description provided for @seatMapSectionDefault.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektor {n}'**
+  String seatMapSectionDefault(int n);
+
+  /// No description provided for @seatMapDeleteSection.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obriši sektor'**
+  String get seatMapDeleteSection;
+
+  /// No description provided for @seatMapRemoveStage.
+  ///
+  /// In bs, this message translates to:
+  /// **'Ukloni binu'**
+  String get seatMapRemoveStage;
+
+  /// No description provided for @seatMapDelete.
+  ///
+  /// In bs, this message translates to:
+  /// **'Obriši plan'**
+  String get seatMapDelete;
+
+  /// No description provided for @seatMapDeleteInfo.
+  ///
+  /// In bs, this message translates to:
+  /// **'Kupci više neće vidjeti plan za ovo mjesto.'**
+  String get seatMapDeleteInfo;
+
+  /// No description provided for @seatMapUnmatched.
+  ///
+  /// In bs, this message translates to:
+  /// **'Sektori iz ponuda koji nisu na planu: {names}'**
+  String seatMapUnmatched(String names);
+
+  /// No description provided for @seatMapDuplicate.
+  ///
+  /// In bs, this message translates to:
+  /// **'Dva sektora imaju isti naziv'**
+  String get seatMapDuplicate;
+
+  /// No description provided for @seatMapVenues.
+  ///
+  /// In bs, this message translates to:
+  /// **'Mjesta iz događaja'**
+  String get seatMapVenues;
+
   /// No description provided for @quantityDecrease.
   ///
   /// In bs, this message translates to:

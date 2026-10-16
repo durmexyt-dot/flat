@@ -10,6 +10,218 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String datesNearbyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count događaja u tvojoj blizini',
+      few: '$count događaja u tvojoj blizini',
+      one: '1 događaj u tvojoj blizini',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get datesNoneNearby => 'Nema događaja u tvojoj blizini';
+
+  @override
+  String datesNoneNearbyInfo(String city) {
+    return 'U gradu $city i okolini trenutno nema termina.';
+  }
+
+  @override
+  String datesElsewhereCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count događaja na drugim mjestima',
+      few: '$count događaja na drugim mjestima',
+      one: '1 događaj na drugom mjestu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String datesAllCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count termina',
+      few: '$count termina',
+      one: '1 termin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get datesPickCity => 'Odaberi grad da vidiš događaje u blizini';
+
+  @override
+  String datesNearCity(String city) {
+    return 'U blizini: $city';
+  }
+
+  @override
+  String get showTickets => 'Prikaži karte';
+
+  @override
+  String get noTicketsAvailable => 'Nema karata';
+
+  @override
+  String ticketsFrom(String price) {
+    return 'od $price';
+  }
+
+  @override
+  String get ticketsPageTitle => 'Karte';
+
+  @override
+  String get otherDates => 'Ostali termini';
+
+  @override
+  String get seatMapSoon => 'Plan sjedenja uskoro';
+
+  @override
+  String get seatMapSoonInfo =>
+      'Za ovo mjesto još nemamo plan. Sektor i red vidiš na svakoj ponudi.';
+
+  @override
+  String get seatMapHint => 'Dodirni sektor da vidiš samo njegove ponude';
+
+  @override
+  String get seatMapStage => 'Bina';
+
+  @override
+  String seatMapSectionOffers(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ponuda',
+      few: '$count ponude',
+      one: '1 ponuda',
+      zero: 'nema ponuda',
+    );
+    return '$name: $_temp0';
+  }
+
+  @override
+  String sectionFilter(String name) {
+    return 'Sektor: $name';
+  }
+
+  @override
+  String get filtersMore => 'Cijena i vrsta karte';
+
+  @override
+  String get filterPrice => 'Cijena po karti';
+
+  @override
+  String get filterTicketType => 'Vrsta karte';
+
+  @override
+  String get filterTogether => 'Sjedišta jedno do drugog';
+
+  @override
+  String get filterTogetherInfo =>
+      'Samo ponude za koje prodavac navodi da su mjesta jedno do drugog';
+
+  @override
+  String get filtersReset => 'Poništi filtere';
+
+  @override
+  String get offersNoneForFilters => 'Nijedna ponuda ne odgovara filterima';
+
+  @override
+  String get offerTogether => 'Jedno do drugog';
+
+  @override
+  String get sellTogether => 'Mjesta su jedno do drugog';
+
+  @override
+  String get sellTogetherInfo =>
+      'Kupci koji traže više mjesta zajedno lakše te pronađu.';
+
+  @override
+  String get sellSectionsOfVenue => 'Sektori ovog mjesta';
+
+  @override
+  String get eventPerformer => 'Izvođač / turneja (neobavezno)';
+
+  @override
+  String get eventPerformerInfo =>
+      'Termini istog izvođača u drugim gradovima prikazuju se zajedno.';
+
+  @override
+  String get adminSeatMaps => 'Planovi sjedenja';
+
+  @override
+  String get adminSeatMapsInfo =>
+      'Sektori mjesta, za kupce na stranici s kartama';
+
+  @override
+  String get seatMapNone => 'Nema plana';
+
+  @override
+  String seatMapSectionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sektora',
+      few: '$count sektora',
+      one: '1 sektor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seatMapTitle => 'Plan sjedenja';
+
+  @override
+  String get seatMapPicture => 'Slika plana (neobavezno)';
+
+  @override
+  String get seatMapPictureHint =>
+      'Slika se ne obrezuje. Bez slike sektori se crtaju na praznoj podlozi.';
+
+  @override
+  String get seatMapDrawHint =>
+      'Povuci prstom ili mišem da nacrtaš sektor. Dodirni sektor da ga preimenuješ ili obrišeš.';
+
+  @override
+  String get seatMapDrawSection => 'Sektor';
+
+  @override
+  String get seatMapSectionName => 'Naziv sektora';
+
+  @override
+  String seatMapSectionDefault(int n) {
+    return 'Sektor $n';
+  }
+
+  @override
+  String get seatMapDeleteSection => 'Obriši sektor';
+
+  @override
+  String get seatMapRemoveStage => 'Ukloni binu';
+
+  @override
+  String get seatMapDelete => 'Obriši plan';
+
+  @override
+  String get seatMapDeleteInfo => 'Kupci više neće vidjeti plan za ovo mjesto.';
+
+  @override
+  String seatMapUnmatched(String names) {
+    return 'Sektori iz ponuda koji nisu na planu: $names';
+  }
+
+  @override
+  String get seatMapDuplicate => 'Dva sektora imaju isti naziv';
+
+  @override
+  String get seatMapVenues => 'Mjesta iz događaja';
+
+  @override
   String get quantityDecrease => 'Jedna karta manje';
 
   @override

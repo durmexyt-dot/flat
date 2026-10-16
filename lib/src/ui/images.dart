@@ -44,6 +44,20 @@ String encodeEventImage(List<int> bytes) {
   return _fit(small, maxChars: 380000);
 }
 
+/// Seat map pictures (floor plans): not cropped, longest side at most
+/// 1600 px, JPEG in base64 under 380 000 characters. Returns the data and
+/// the picture's width / height.
+(String, double) encodeSeatMapImage(List<int> bytes) {
+  final image = _decode(bytes);
+  final longest = image.width > image.height ? image.width : image.height;
+  final small = longest > 1600
+      ? (image.width >= image.height
+            ? img.copyResize(image, width: 1600)
+            : img.copyResize(image, height: 1600))
+      : image;
+  return (_fit(small, maxChars: 380000), small.width / small.height);
+}
+
 /// Support pictures (screenshots, tickets): longest side at most 1600 px,
 /// JPEG in base64 under 300 000 characters as the rules require.
 String encodeSupportImage(List<int> bytes) {

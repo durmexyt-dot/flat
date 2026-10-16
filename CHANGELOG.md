@@ -9,6 +9,27 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Neu
+- Event-Seite zeigt die Termine des Events: „N događaja u tvojoj blizini“
+  (Stadt wählbar, Orte bis 40 km zählen mit) bzw. „Nema događaja u tvojoj
+  blizini“, darunter Termine an anderen Orten – je mit Preis ab und
+  „Prikaži karte“ oder „Nema karata“.
+- Neues Feld „Izvođač / turneja“ im Event-Editor: Termine desselben
+  Künstlers gehören zusammen (sonst zählt der Name).
+- Eigene Ticket-Seite je Termin: interaktiver Saalplan (Block antippen zeigt
+  seine Angebote) oder „Plan sjedenja uskoro“, Filter Anzahl, Preis pro
+  Ticket (Schieberegler), Ticketart und ab 2 Tickets „Plätze nebeneinander“.
+- Verkaufen: Schalter „Plätze liegen nebeneinander“ (ab 2 Tickets), Blöcke
+  aus dem Saalplan zum Antippen.
+- Team: Saalpläne je Veranstaltungsort zeichnen (Blöcke und Bühne ziehen,
+  benennen, verschieben; Bild optional), Hinweis auf Blöcke aus Angeboten,
+  die im Plan fehlen.
+
+### Firestore-Regeln
+- `events.performer`, `listings.together`, neue Sammlungen `seatMaps` und
+  `seatMapImages` (lesen alle, schreiben das Team). Vor dem Release in der
+  Konsole veröffentlichen.
+
 ## [1.11.0] – 2026-10-16
 
 ### Geändert (nach Apples Designprinzipien)
