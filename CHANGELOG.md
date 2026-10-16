@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.4] – 2026-10-16
+
 - German is the default language (until a language is picked in the
   settings)
 
