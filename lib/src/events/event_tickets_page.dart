@@ -107,6 +107,13 @@ class _EventTicketsPageState extends ConsumerState<EventTicketsPage> {
   void _set(OfferFilter f) => setState(() => _filter = f);
 
   @override
+  void didUpdateWidget(EventTicketsPage old) {
+    super.didUpdateWidget(old);
+    // Another date in the same place: its filters start fresh.
+    if (old.id != widget.id) _filter = const OfferFilter();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final live = ref.watch(eventProvider(widget.id));

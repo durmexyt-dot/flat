@@ -274,4 +274,26 @@ void main() {
     expect(saved!.sections.single.name, 'Parter');
     expect(saved.sections.single.rect.w, closeTo(0.5, 0.05));
   });
+
+  testWidgets('another date starts with fresh filters', (tester) async {
+    await _pump(
+      tester,
+      maps: [_zetraMap],
+      listings: [
+        _offer('p1', _sarajevo, section: 'Parter'),
+        _offer('z1', _zagreb),
+      ],
+    );
+    await _go(tester, '/event/${_sarajevo.id}/tickets');
+    await tester.tap(find.text('Parter').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Sektor: Parter'), findsOneWidget);
+
+    GoRouter.of(
+      tester.element(find.byType(Navigator, skipOffstage: false).first),
+    ).go('/event/${_zagreb.id}/tickets');
+    await tester.pumpAndSettle();
+    expect(find.text('Sektor: Parter'), findsNothing);
+    expect(_shownOffers(tester), ['z1']);
+  });
 }

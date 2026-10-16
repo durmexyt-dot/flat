@@ -395,7 +395,7 @@ class _Dates extends ConsumerWidget {
         onPress: () => showCityPicker(context),
         child: Flexible(
           child: Text(
-            city == null ? l10n.datesPickCity : l10n.datesNearCity(city),
+            city == null ? l10n.homeCityPick : l10n.datesNearCity(city),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -407,6 +407,8 @@ class _Dates extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SettingsSectionTitle(l10n.datesAllCount(dates.length)),
+          Text(l10n.datesPickCity, style: theme.mutedText),
+          const SizedBox(height: Space.md),
           cityButton,
           const SizedBox(height: Space.lg),
           grid(dates),
