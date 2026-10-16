@@ -9,6 +9,11 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.1] – 2026-10-16
+
+- Tickets page: fresh filters for another date; shorter city button
+- Seed: floats as doubles, face values for the tour listings
+
 ## [1.12.0] – 2026-10-16
 
 ### Neu
