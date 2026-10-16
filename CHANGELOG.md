@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.11.0] – 2026-10-16
+
 ### Geändert (nach Apples Designprinzipien)
 - Seitenwechsel doppelt so schnell (350 statt 700 ms); die neue Seite ist
   ab dem ersten Moment sichtbar. Nur der Übergang vom Startbildschirm, bei
