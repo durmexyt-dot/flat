@@ -1,6 +1,6 @@
 # Working on Stubswap
 
-- Answer the owner in German. App languages: Bosnian (default), German, English.
+- Answer the owner in German. App languages: German (default), Bosnian, English.
 - Commit directly to `main` and push after each task.
 - Deploy via the `gh-pages` branch with `tool/release.sh` / `tool/deploy_web.sh`
   (no GitHub Actions).

@@ -4,10 +4,25 @@ import 'package:flat/src/ui/site_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers.dart';
 
 void main() {
+  test('German until a language is picked', () async {
+    SharedPreferences.setMockInitialValues({});
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(
+          await SharedPreferences.getInstance(),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    expect(container.read(settingsProvider).locale, const Locale('de'));
+  });
+
   testWidgets('splash leads to the events, without a sign-in wall', (
     tester,
   ) async {

@@ -14,6 +14,9 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
 /// Display names of the supported languages, in menu order.
 const languageNames = {'bs': 'Bosanski', 'de': 'Deutsch', 'en': 'English'};
 
+/// The app's language until the user picks one.
+const defaultLanguage = 'de';
+
 enum Currency {
   bam('BAM', 'KM'),
   eur('EUR', '€'),
@@ -114,7 +117,7 @@ class SettingsController extends Notifier<AppSettings> {
     final prefs = ref.watch(sharedPreferencesProvider);
     final code = prefs.getString(_localeKey);
     return AppSettings(
-      locale: Locale(languageNames.containsKey(code) ? code! : 'bs'),
+      locale: Locale(languageNames.containsKey(code) ? code! : defaultLanguage),
       themeMode: _byName(
         ThemeMode.values,
         prefs.getString(_themeKey),

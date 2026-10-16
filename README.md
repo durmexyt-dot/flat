@@ -1,7 +1,7 @@
 # Stubswap
 
 Marketplace app to buy and sell tickets for events (Flutter: web, Android,
-iOS, macOS; Firebase Auth). UI languages: Bosnian (default), German, English.
+iOS, macOS; Firebase Auth). UI languages: German (default), Bosnian, English.
 
 Web version: https://durmexyt-dot.github.io/flat/
 

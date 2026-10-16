@@ -165,7 +165,8 @@ Future<FakeAuthRepository> pumpApp(
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
 
-  SharedPreferences.setMockInitialValues({});
+  // Tests read Bosnian texts; the app's default language is German.
+  SharedPreferences.setMockInitialValues({'locale': 'bs'});
   final prefs = await SharedPreferences.getInstance();
   final auth = FakeAuthRepository();
 

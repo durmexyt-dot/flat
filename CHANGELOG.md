@@ -9,6 +9,9 @@ die nächste Version.
 
 ## [Unreleased]
 
+- German is the default language (until a language is picked in the
+  settings)
+
 ## [1.12.3] – 2026-10-16
 
 - Fix cards jumping when opening a recently viewed event
