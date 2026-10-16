@@ -9,6 +9,9 @@ die nächste Version.
 
 ## [Unreleased]
 
+- Tickets page on wide screens: offers start next to the title, no empty
+  space above them
+
 ## [1.12.1] – 2026-10-16
 
 - Tickets page: fresh filters for another date; shorter city button

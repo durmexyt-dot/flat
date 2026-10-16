@@ -179,6 +179,7 @@ class _EventTicketsPageState extends ConsumerState<EventTicketsPage> {
         filter: _filter,
         inSection: inSection,
         columns: 1,
+        alongside: wide,
         onReset: () => _set(const OfferFilter()),
       );
 
@@ -190,8 +191,8 @@ class _EventTicketsPageState extends ConsumerState<EventTicketsPage> {
           Space.x5l,
         ),
         children: [
-          _Header(event: event),
-          const SizedBox(height: Space.xl),
+          // On wide screens the offers start next to the title instead of
+          // below it, so nothing floats under an empty header row.
           if (wide)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +201,12 @@ class _EventTicketsPageState extends ConsumerState<EventTicketsPage> {
                   flex: 6,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [mapBlock, filters],
+                    children: [
+                      _Header(event: event),
+                      const SizedBox(height: Space.xl),
+                      mapBlock,
+                      filters,
+                    ],
                   ),
                 ),
                 const SizedBox(width: Space.x5l),
@@ -208,6 +214,8 @@ class _EventTicketsPageState extends ConsumerState<EventTicketsPage> {
               ],
             )
           else ...[
+            _Header(event: event),
+            const SizedBox(height: Space.xl),
             mapBlock,
             filters,
             offers,
@@ -541,6 +549,7 @@ class _OfferList extends ConsumerWidget {
     required this.inSection,
     required this.columns,
     required this.onReset,
+    this.alongside = false,
   });
 
   final Event event;
@@ -549,6 +558,9 @@ class _OfferList extends ConsumerWidget {
   final bool Function(Listing) inSection;
   final int columns;
   final VoidCallback onReset;
+
+  /// Next to the header: the count lines up with the title, no gap above.
+  final bool alongside;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -568,6 +580,9 @@ class _OfferList extends ConsumerWidget {
           listings.isEmpty
               ? l10n.eventsOffers
               : l10n.eventsOffersCount(shown.length),
+          padding: alongside
+              ? const EdgeInsets.fromLTRB(Space.xxs, 0, Space.xxs, Space.md)
+              : null,
         ),
         AsyncView<List<Listing>>(
           value: value,
