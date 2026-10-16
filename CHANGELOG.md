@@ -9,6 +9,20 @@ die nächste Version.
 
 ## [Unreleased]
 
+### Geändert (Barrierefreiheit, nach ui-ux-pro-max-Checkliste)
+- Handy/Tablet: alles Tippbare ist mindestens 44 px groß – kleine Buttons
+  („Sve ponude…“, „Uredi profil“, „Potvrdi“), Tabs/Filter, Avatar oben
+  rechts, Passwort-Auge, „Ostani prijavljen“ samt Text, „Učitaj karte“.
+  Desktop bleibt kompakt.
+- „Bewegung reduzieren“ (System oder Browser): keine Animationen, kein
+  Lade-Schimmer.
+- Warnfarbe (Amber) dunkler, damit Symbole auf Weiß genug Kontrast haben;
+  „ili“ beim Login größer.
+- Bildschirmleser: Plus/Minus bei der Kartenanzahl beschriftet, Tooltips
+  ohne leere Elemente.
+- Neuer Test `test/accessibility_test.dart` prüft Tippgrößen, Beschriftungen,
+  Farbkontraste und reduzierte Bewegung.
+
 ## [1.9.0] – 2026-10-15
 
 ### Geändert (UX-Überarbeitung)

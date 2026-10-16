@@ -284,36 +284,38 @@ class _ColorDot extends StatelessWidget {
     final scheme = colorSchemeFor(color, brightness);
     final fill = scheme.primary;
 
-    return FTooltip(
-      tipBuilder: (context, _) => Text(label),
-      child: FTappable(
-        semanticsLabel: label,
-        selected: selected,
-        onPress: onTap,
-        child: AnimatedContainer(
-          duration: Motion.normal,
-          // No overshooting curve here: padding must not go negative.
-          curve: Motion.enter,
-          width: 48,
-          height: 48,
-          padding: EdgeInsets.all(selected ? 4 : 0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: selected ? fill : Colors.transparent,
-              width: 2.5,
+    return MergeSemantics(
+      child: FTooltip(
+        tipBuilder: (context, _) => Text(label),
+        child: FTappable(
+          semanticsLabel: label,
+          selected: selected,
+          onPress: onTap,
+          child: AnimatedContainer(
+            duration: Motion.normal,
+            // No overshooting curve here: padding must not go negative.
+            curve: Motion.enter,
+            width: 48,
+            height: 48,
+            padding: EdgeInsets.all(selected ? 4 : 0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? fill : Colors.transparent,
+                width: 2.5,
+              ),
             ),
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
-            child: AnimatedScale(
-              scale: selected ? 1 : 0,
-              duration: Motion.normal,
-              curve: Motion.pop,
-              child: Icon(
-                FLucideIcons.check,
-                size: IconSizes.lg,
-                color: scheme.onPrimary,
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
+              child: AnimatedScale(
+                scale: selected ? 1 : 0,
+                duration: Motion.normal,
+                curve: Motion.pop,
+                child: Icon(
+                  FLucideIcons.check,
+                  size: IconSizes.lg,
+                  color: scheme.onPrimary,
+                ),
               ),
             ),
           ),

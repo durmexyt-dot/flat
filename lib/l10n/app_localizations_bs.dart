@@ -10,6 +10,12 @@ class AppLocalizationsBs extends AppLocalizations {
   AppLocalizationsBs([String locale = 'bs']) : super(locale);
 
   @override
+  String get quantityDecrease => 'Jedna karta manje';
+
+  @override
+  String get quantityIncrease => 'Jedna karta više';
+
+  @override
   String get offersHowMany => 'Koliko karata trebaš zajedno?';
 
   @override

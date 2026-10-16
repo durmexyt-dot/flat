@@ -10,6 +10,12 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get quantityDecrease => 'Ein Ticket weniger';
+
+  @override
+  String get quantityIncrease => 'Ein Ticket mehr';
+
+  @override
   String get offersHowMany => 'Wie viele Tickets brauchst du zusammen?';
 
   @override

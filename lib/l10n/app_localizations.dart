@@ -100,6 +100,18 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @quantityDecrease.
+  ///
+  /// In bs, this message translates to:
+  /// **'Jedna karta manje'**
+  String get quantityDecrease;
+
+  /// No description provided for @quantityIncrease.
+  ///
+  /// In bs, this message translates to:
+  /// **'Jedna karta više'**
+  String get quantityIncrease;
+
   /// No description provided for @offersHowMany.
   ///
   /// In bs, this message translates to:

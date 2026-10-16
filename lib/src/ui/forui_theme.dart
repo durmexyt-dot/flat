@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../settings/settings_controller.dart';
+import 'tokens.dart';
 
 /// Forui's neutral palette with the user's brand color as primary: neutral
 /// surfaces and text (70/20 %), brand only for main actions (10 %).
@@ -22,6 +25,50 @@ double _radiusScale(UiStyle style) => switch (style) {
   UiStyle.soft => 1,
   UiStyle.crisp => 0.4,
 };
+
+/// [constraints] grown to at least [TapTarget.min] in both directions.
+BoxConstraints _tapSafe(BoxConstraints constraints) => constraints.copyWith(
+  minWidth: math.max(constraints.minWidth, TapTarget.min),
+  minHeight: math.max(constraints.minHeight, TapTarget.min),
+);
+
+/// [variants] with [f] applied to the base and to every variant.
+FVariants<K, E, V, D> _mapVariants<
+  K extends FVariantConstraint,
+  E extends FVariant,
+  V,
+  D extends Delta
+>(FVariants<K, E, V, D> variants, V Function(V) f) => FVariants.raw(
+  f(variants.base),
+  {for (final e in variants.variants.entries) e.key: f(e.value)},
+);
+
+/// Forui's buttons, with the small sizes (32 and 40 px) grown to
+/// [TapTarget.min] on touch screens. They look the same, only taller.
+FButtonStyles _buttonStyles(
+  FColors colors,
+  FTypography typography,
+  FStyle style,
+) {
+  FButtonStyle grow(FButtonStyle s) => s.copyWith(
+    contentStyle: .delta(constraints: _tapSafe(s.contentStyle.constraints)),
+    iconContentStyle: .delta(
+      constraints: _tapSafe(s.iconContentStyle.constraints),
+    ),
+  );
+  final styles = FButtonStyles.inherit(
+    colors: colors,
+    typography: typography,
+    style: style,
+    touch: true,
+  );
+  return FButtonStyles(
+    _mapVariants(
+      styles,
+      (sizes) => FButtonSizeStyles(_mapVariants(sizes, grow)),
+    ),
+  );
+}
 
 /// The Forui theme for the user's settings. [touch] picks the larger touch
 /// sizes on phones and tablets.
@@ -48,11 +95,18 @@ FThemeData buildForuiTheme(
     typography: FTypography.inherit(colors: neutral, touch: touch),
     style: styleFor(neutral),
   );
+  final style = styleFor(colors);
   return FThemeData(
     colors: colors,
     touch: touch,
     typography: typography,
-    style: styleFor(colors),
+    style: style,
+    buttonStyles: touch ? _buttonStyles(colors, typography, style) : null,
+    tabsStyle: FTabsStyle.inherit(
+      colors: colors,
+      typography: typography,
+      style: style,
+    ).copyWith(minHeight: touch ? TapTarget.min : null),
     tileStyles: plain.tileStyles,
     tileGroupStyle: plain.tileGroupStyle,
     itemStyles: plain.itemStyles,

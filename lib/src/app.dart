@@ -15,6 +15,7 @@ import 'ui/forui_theme.dart';
 import 'ui/snack.dart';
 import 'ui/theme.dart';
 import 'ui/tokens.dart';
+import 'web/reduced_motion.dart';
 
 class FlatApp extends ConsumerWidget {
   const FlatApp({super.key});
@@ -33,37 +34,46 @@ class FlatApp extends ConsumerWidget {
       themeMode: settings.themeMode,
       themeAnimationDuration: Motion.slower,
       themeAnimationCurve: Motion.enter,
-      builder: (context, child) {
-        // The user's text size on top of the system's.
-        final media = MediaQuery.of(context);
-        final system = media.textScaler.scale(1);
-        final brightness = switch (settings.themeMode) {
-          ThemeMode.light => Brightness.light,
-          ThemeMode.dark => Brightness.dark,
-          ThemeMode.system => media.platformBrightness,
-        };
-        // Larger touch targets on phones and tablets, compact on desktop.
-        final touch = media.size.width < 900;
-        return MediaQuery(
-          data: media.copyWith(
-            textScaler: TextScaler.linear(system * settings.textSize.scale),
-          ),
-          child: FTheme(
-            data: buildForuiTheme(settings, brightness, touch: touch),
-            motion: const FThemeMotion(duration: Motion.slow),
-            child: FToaster(
-              key: toasterKey,
-              child: FTooltipGroup(
-                child: UpdateNotifier(
-                  child: LiveAlerts(
-                    child: SupportAlerts(child: _StagingBanner(child: child!)),
+      builder: (context, child) => ValueListenableBuilder(
+        valueListenable: prefersReducedMotion,
+        builder: (context, browserReduced, _) {
+          // The user's text size on top of the system's.
+          final media = MediaQuery.of(context);
+          final system = media.textScaler.scale(1);
+          final brightness = switch (settings.themeMode) {
+            ThemeMode.light => Brightness.light,
+            ThemeMode.dark => Brightness.dark,
+            ThemeMode.system => media.platformBrightness,
+          };
+          // "Reduce motion" from the system or the browser: no movement.
+          final reduced = media.disableAnimations || browserReduced;
+          Motion.reduced = reduced;
+          // Larger touch targets on phones and tablets, compact on desktop.
+          final touch = media.size.width < wideLayoutBreakpoint;
+          return MediaQuery(
+            data: media.copyWith(
+              textScaler: TextScaler.linear(system * settings.textSize.scale),
+              disableAnimations: reduced,
+            ),
+            child: FTheme(
+              data: buildForuiTheme(settings, brightness, touch: touch),
+              motion: FThemeMotion(duration: Motion.slow),
+              child: FToaster(
+                key: toasterKey,
+                child: FTooltipGroup(
+                  child: UpdateNotifier(
+                    child: LiveAlerts(
+                      child: SupportAlerts(
+                        child: _StagingBanner(child: child!),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
       locale: settings.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

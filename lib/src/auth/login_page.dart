@@ -107,26 +107,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             // FCheckbox's own label needs a bounded width; a separate,
-            // tappable label keeps its natural width in this row.
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: Space.md,
-              children: [
-                FCheckbox(
-                  semanticsLabel: l10n.keepSignedIn,
-                  value: _keepSignedIn,
-                  onChange: (v) => setState(() => _keepSignedIn = v),
-                ),
-                FTappable(
-                  onPress: () => setState(() => _keepSignedIn = !_keepSignedIn),
-                  child: Text(
-                    l10n.keepSignedIn,
-                    style: theme.typography.body.sm.copyWith(
-                      color: theme.colors.foreground,
+            // tappable label keeps its natural width in this row. Box and
+            // label are one control for screen readers, as tall as a
+            // tap target.
+            MergeSemantics(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: TapTarget.min),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: Space.md,
+                  children: [
+                    FCheckbox(
+                      value: _keepSignedIn,
+                      onChange: (v) => setState(() => _keepSignedIn = v),
                     ),
-                  ),
+                    FTappable(
+                      onPress: () =>
+                          setState(() => _keepSignedIn = !_keepSignedIn),
+                      child: Text(
+                        l10n.keepSignedIn,
+                        style: theme.typography.body.sm.copyWith(
+                          color: theme.colors.foreground,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             FButton(
               variant: FButtonVariant.ghost,

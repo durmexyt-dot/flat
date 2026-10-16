@@ -188,44 +188,47 @@ class ListingMissingTickets extends ConsumerWidget {
           ? const SizedBox(width: double.infinity)
           : Padding(
               padding: const EdgeInsets.only(top: Space.sm),
+              // The row's texts name the action for screen readers.
               child: FTappable(
-                semanticsLabel: l10n.deliveryUploadAction,
                 onPress: () => context.push('/listing/${listing.id}/tickets'),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Space.xs,
-                    vertical: Space.sm,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        FLucideIcons.fileClock,
-                        size: IconSizes.sm,
-                        color: FixedColors.waiting,
-                      ),
-                      const SizedBox(width: Space.sm),
-                      Expanded(
-                        child: Text(
-                          l10n.deliveryMissingBadge,
-                          style: theme.typography.body.sm.copyWith(
-                            color: theme.colors.foreground,
-                            fontWeight: FontWeights.semibold,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: TapTarget.min),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Space.xs,
+                      vertical: Space.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          FLucideIcons.fileClock,
+                          size: IconSizes.sm,
+                          color: FixedColors.waiting,
+                        ),
+                        const SizedBox(width: Space.sm),
+                        Expanded(
+                          child: Text(
+                            l10n.deliveryMissingBadge,
+                            style: theme.typography.body.sm.copyWith(
+                              color: theme.colors.foreground,
+                              fontWeight: FontWeights.semibold,
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        l10n.deliveryUploadAction,
-                        style: theme.typography.body.sm.copyWith(
-                          color: theme.colors.foreground,
-                          decoration: TextDecoration.underline,
+                        Text(
+                          l10n.deliveryUploadAction,
+                          style: theme.typography.body.sm.copyWith(
+                            color: theme.colors.foreground,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
-                      ),
-                      Icon(
-                        FLucideIcons.chevronRight,
-                        size: IconSizes.sm,
-                        color: theme.colors.mutedForeground,
-                      ),
-                    ],
+                        Icon(
+                          FLucideIcons.chevronRight,
+                          size: IconSizes.sm,
+                          color: theme.colors.mutedForeground,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

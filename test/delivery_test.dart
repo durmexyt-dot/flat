@@ -94,7 +94,7 @@ void main() {
     await _openAccountEntry(tester, 'Moje ponude');
     // The listing has no files yet.
     expect(find.text('Karte nisu učitane'), findsOneWidget);
-    await tester.tap(byLabel('Učitaj karte'));
+    await tester.tap(find.text('Učitaj karte'));
     await tester.pumpAndSettle();
     expect(find.text('Karte za ponudu'), findsOneWidget);
     expect(find.text('0 od 2 karata učitano'), findsOneWidget);

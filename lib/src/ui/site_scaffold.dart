@@ -410,34 +410,37 @@ class SiteHeader extends ConsumerWidget {
                     ),
                   ] else
                     Builder(
-                      builder: (context) => FTooltip(
-                        tipBuilder: (context, _) => Text(l10n.openAccountMenu),
-                        child: FTappable(
-                          semanticsLabel: l10n.openAccountMenu,
-                          onPress: () => Scaffold.of(context).openEndDrawer(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(Space.xs),
-                            child: Row(
-                              children: [
-                                AccountBadge(
-                                  child: UserAvatar(
-                                    size: 36,
-                                    photoBase64: profile?.photoBase64,
-                                    name:
-                                        profile?.displayName ??
-                                        user.displayName ??
-                                        user.email,
-                                    // The account page shows the flying one.
-                                    hero: false,
+                      builder: (context) => MergeSemantics(
+                        child: FTooltip(
+                          tipBuilder: (context, _) =>
+                              Text(l10n.openAccountMenu),
+                          child: FTappable(
+                            semanticsLabel: l10n.openAccountMenu,
+                            onPress: () => Scaffold.of(context).openEndDrawer(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(Space.xs),
+                              child: Row(
+                                children: [
+                                  AccountBadge(
+                                    child: UserAvatar(
+                                      size: 36,
+                                      photoBase64: profile?.photoBase64,
+                                      name:
+                                          profile?.displayName ??
+                                          user.displayName ??
+                                          user.email,
+                                      // The account page shows the flying one.
+                                      hero: false,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: Space.xs),
-                                Icon(
-                                  FLucideIcons.chevronDown,
-                                  size: IconSizes.sm,
-                                  color: theme.colors.mutedForeground,
-                                ),
-                              ],
+                                  const SizedBox(width: Space.xs),
+                                  Icon(
+                                    FLucideIcons.chevronDown,
+                                    size: IconSizes.sm,
+                                    color: theme.colors.mutedForeground,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

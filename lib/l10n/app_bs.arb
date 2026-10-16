@@ -1,5 +1,7 @@
 {
   "@@locale": "bs",
+  "quantityDecrease": "Jedna karta manje",
+  "quantityIncrease": "Jedna karta više",
   "offersHowMany": "Koliko karata trebaš zajedno?",
   "navInbox": "Upiti",
   "navSell": "Prodaj",

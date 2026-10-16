@@ -1,5 +1,7 @@
 {
   "@@locale": "en",
+  "quantityDecrease": "One ticket fewer",
+  "quantityIncrease": "One more ticket",
   "offersHowMany": "How many tickets do you need together?",
   "navInbox": "Requests",
   "navSell": "Sell",

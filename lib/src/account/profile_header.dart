@@ -218,13 +218,15 @@ class StatsRow extends ConsumerWidget {
             if (failed)
               Padding(
                 padding: const EdgeInsets.only(right: Space.md),
-                child: FTooltip(
-                  tipBuilder: (context, _) => Text(l10n.retry),
-                  child: FButton.icon(
-                    variant: .ghost,
-                    semanticsLabel: l10n.retry,
-                    onPress: () => ref.invalidate(statsProvider),
-                    child: const Icon(FLucideIcons.refreshCw),
+                child: MergeSemantics(
+                  child: FTooltip(
+                    tipBuilder: (context, _) => Text(l10n.retry),
+                    child: FButton.icon(
+                      variant: .ghost,
+                      semanticsLabel: l10n.retry,
+                      onPress: () => ref.invalidate(statsProvider),
+                      child: const Icon(FLucideIcons.refreshCw),
+                    ),
                   ),
                 ),
               ),

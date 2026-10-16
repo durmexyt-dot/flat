@@ -429,18 +429,20 @@ class _Invoice extends StatelessWidget {
                     ],
                   ),
                 ),
-                FTooltip(
-                  tipBuilder: (context, _) => Text(l10n.copy),
-                  child: FButton.icon(
-                    variant: FButtonVariant.ghost,
-                    semanticsLabel: l10n.copy,
-                    onPress: () async {
-                      await Clipboard.setData(
-                        ClipboardData(text: order.number),
-                      );
-                      showSnack(l10n.copied);
-                    },
-                    child: const Icon(FLucideIcons.copy),
+                MergeSemantics(
+                  child: FTooltip(
+                    tipBuilder: (context, _) => Text(l10n.copy),
+                    child: FButton.icon(
+                      variant: FButtonVariant.ghost,
+                      semanticsLabel: l10n.copy,
+                      onPress: () async {
+                        await Clipboard.setData(
+                          ClipboardData(text: order.number),
+                        );
+                        showSnack(l10n.copied);
+                      },
+                      child: const Icon(FLucideIcons.copy),
+                    ),
                   ),
                 ),
               ],

@@ -387,16 +387,26 @@ class _HomePageState extends ConsumerState<HomePage> {
         if (user == null)
           const SettingsButton()
         else
-          FTooltip(
-            tipBuilder: (context, _) => Text(l10n.settingsTitle),
-            child: FTappable(
-              semanticsLabel: l10n.settingsTitle,
-              onPress: () => context.push('/settings'),
-              child: AccountBadge(
-                child: UserAvatar(
-                  size: 34,
-                  photoBase64: profile?.photoBase64,
-                  name: profile?.displayName ?? user.displayName ?? user.email,
+          MergeSemantics(
+            child: FTooltip(
+              tipBuilder: (context, _) => Text(l10n.settingsTitle),
+              child: FTappable(
+                semanticsLabel: l10n.settingsTitle,
+                onPress: () => context.push('/settings'),
+                child: SizedBox.square(
+                  dimension: TapTarget.min,
+                  child: Center(
+                    child: AccountBadge(
+                      child: UserAvatar(
+                        size: 34,
+                        photoBase64: profile?.photoBase64,
+                        name:
+                            profile?.displayName ??
+                            user.displayName ??
+                            user.email,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

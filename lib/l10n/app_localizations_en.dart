@@ -10,6 +10,12 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get quantityDecrease => 'One ticket fewer';
+
+  @override
+  String get quantityIncrease => 'One more ticket';
+
+  @override
   String get offersHowMany => 'How many tickets do you need together?';
 
   @override

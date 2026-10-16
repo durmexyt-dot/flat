@@ -163,18 +163,20 @@ class _PaymentSimulatorSheetState extends State<PaymentSimulatorSheet> {
                           ),
                         ),
                         const Spacer(),
-                        FTooltip(
-                          tipBuilder: (context, _) => Text(l10n.cancel),
-                          child: FButton.icon(
-                            variant: FButtonVariant.ghost,
-                            semanticsLabel: l10n.cancel,
-                            onPress: _processing
-                                ? null
-                                : () => Navigator.pop(
-                                    context,
-                                    const PaymentCancelled(),
-                                  ),
-                            child: const Icon(FLucideIcons.x),
+                        MergeSemantics(
+                          child: FTooltip(
+                            tipBuilder: (context, _) => Text(l10n.cancel),
+                            child: FButton.icon(
+                              variant: FButtonVariant.ghost,
+                              semanticsLabel: l10n.cancel,
+                              onPress: _processing
+                                  ? null
+                                  : () => Navigator.pop(
+                                      context,
+                                      const PaymentCancelled(),
+                                    ),
+                              child: const Icon(FLucideIcons.x),
+                            ),
                           ),
                         ),
                       ],

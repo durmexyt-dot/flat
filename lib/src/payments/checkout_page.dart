@@ -280,6 +280,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                           ),
                         ),
                         FButton.icon(
+                          semanticsLabel: l10n.quantityDecrease,
                           onPress: !locked && quantity > 1
                               ? () => setState(() {
                                   _quantity = quantity - 1;
@@ -300,6 +301,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                           ),
                         ),
                         FButton.icon(
+                          semanticsLabel: l10n.quantityIncrease,
                           onPress: !locked && quantity < left
                               ? () => setState(() {
                                   _quantity = quantity + 1;

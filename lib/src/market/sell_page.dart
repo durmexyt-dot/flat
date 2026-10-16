@@ -700,6 +700,7 @@ class _QuantityStepper extends StatelessWidget {
         ] else
           Expanded(child: label),
         FButton.icon(
+          semanticsLabel: l10n.quantityDecrease,
           variant: FButtonVariant.outline,
           onPress: value > 1 ? () => onChanged(value - 1) : null,
           child: const Icon(FLucideIcons.minus),
@@ -724,6 +725,7 @@ class _QuantityStepper extends StatelessWidget {
           ),
         ),
         FButton.icon(
+          semanticsLabel: l10n.quantityIncrease,
           variant: FButtonVariant.outline,
           onPress: value < max ? () => onChanged(value + 1) : null,
           child: const Icon(FLucideIcons.plus),

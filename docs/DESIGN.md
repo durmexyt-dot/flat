@@ -39,6 +39,18 @@ Verläufe.
 - **Neue Hausfarbe:** `BrandColor` in `settings_controller.dart` ergänzen oder
   ändern; Forui und Material übernehmen sie.
 
+## Barrierefreiheit
+
+- Auf Touch-Geräten (< 900 px) hebt `forui_theme.dart` kleine Forui-Buttons
+  und Tabs auf `TapTarget.min`. Eigene tippbare Flächen bekommen mindestens
+  `BoxConstraints(minHeight: TapTarget.min)`.
+- Icon-Buttons immer mit `semanticsLabel`; `FTooltip` in `MergeSemantics`.
+- Statusfarben (`FixedColors`) nur für Punkte, Icons und Flächen, nicht für
+  Fließtext; Kontraste prüft `test/accessibility_test.dart`.
+- Endlose Animationen nur, wenn `MediaQuery.disableAnimationsOf` false ist.
+- Vorschläge aus dem Skill ui-ux-pro-max sind willkommen, die Regeln oben
+  (Forui, 70/20/10, keine Verläufe, Tokens) gehen vor.
+
 ## Ausnahmen
 
 Ein paar Feinwerte stehen bewusst noch als Zahl im Code, weil sie zu einem

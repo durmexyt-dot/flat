@@ -47,14 +47,16 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FTooltip(
-      tipBuilder: (context, _) =>
-          Text(AppLocalizations.of(context).settingsTitle),
-      child: FButton.icon(
-        variant: FButtonVariant.ghost,
-        semanticsLabel: AppLocalizations.of(context).settingsTitle,
-        onPress: () => context.push('/settings'),
-        child: const Icon(FLucideIcons.settings),
+    return MergeSemantics(
+      child: FTooltip(
+        tipBuilder: (context, _) =>
+            Text(AppLocalizations.of(context).settingsTitle),
+        child: FButton.icon(
+          variant: FButtonVariant.ghost,
+          semanticsLabel: AppLocalizations.of(context).settingsTitle,
+          onPress: () => context.push('/settings'),
+          child: const Icon(FLucideIcons.settings),
+        ),
       ),
     );
   }
@@ -217,6 +219,24 @@ class _PasswordFieldState extends State<PasswordField> {
       label: Text(widget.label),
       prefixBuilder: (context, style, obscure, variants) =>
           const _FieldIcon(FLucideIcons.lock),
+      // Forui's eye button, as large as a tap target.
+      suffixBuilder: (context, style, obscure, variants) =>
+          FTextField.defaultObscureIconBuilder(
+            context,
+            style.copyWith(
+              obscureButtonPadding: const .scale(0),
+              obscureButtonStyle: const .delta(
+                iconContentStyle: .delta(
+                  constraints: BoxConstraints(
+                    minWidth: TapTarget.min,
+                    minHeight: TapTarget.min,
+                  ),
+                ),
+              ),
+            ),
+            obscure,
+            variants,
+          ),
       autofillHints: widget.autofillHints,
       textInputAction: widget.textInputAction,
       enabled: widget.enabled,
@@ -399,7 +419,7 @@ class OrDivider extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: Space.lg),
             child: Text(
               AppLocalizations.of(context).orDivider,
-              style: theme.mutedSmallText,
+              style: theme.mutedText,
             ),
           ),
           const Expanded(child: FDivider()),

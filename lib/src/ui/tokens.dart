@@ -68,19 +68,28 @@ abstract final class Radii {
 }
 
 /// Animation durations and curves.
+///
+/// With the system's "reduce motion" setting, [reduced] is set and every
+/// duration below is zero: things change at once instead of moving.
 abstract final class Motion {
-  static const fast = Duration(milliseconds: 150);
-  static const quick = Duration(milliseconds: 200);
+  /// Set by the app (app.dart) from `MediaQuery.disableAnimations`.
+  static bool reduced = false;
+
+  static Duration _ms(int ms) =>
+      reduced ? Duration.zero : Duration(milliseconds: ms);
+
+  static Duration get fast => _ms(150);
+  static Duration get quick => _ms(200);
 
   /// Most size and content changes.
-  static const normal = Duration(milliseconds: 250);
-  static const slow = Duration(milliseconds: 300);
-  static const slower = Duration(milliseconds: 350);
+  static Duration get normal => _ms(250);
+  static Duration get slow => _ms(300);
+  static Duration get slower => _ms(350);
 
   /// Count-ups and other attention moments.
-  static const long = Duration(milliseconds: 900);
+  static Duration get long => _ms(900);
 
-  /// One pass of the loading shimmer.
+  /// One pass of the loading shimmer. It doesn't run with [reduced].
   static const shimmer = Duration(milliseconds: 1400);
 
   /// Things coming in.
@@ -89,6 +98,12 @@ abstract final class Motion {
 
   /// A small overshoot, for things that pop in.
   static const pop = Curves.easeOutBack;
+}
+
+/// Touch targets.
+abstract final class TapTarget {
+  /// Nothing tappable is smaller on touch screens (Apple HIG, WCAG 2.5.5).
+  static const double min = 44;
 }
 
 /// Font weights, by role.
@@ -121,10 +136,15 @@ abstract final class SiteWidth {
 const wideLayoutBreakpoint = 900.0;
 
 /// Fixed colors that don't follow the brand color or dark mode.
+///
+/// Status colors are used for dots, icons and fills, not body text: they keep
+/// at least 3:1 against light and dark surfaces (WCAG 1.4.11), and
+/// [onWaiting] at least 4.5:1 on [waiting]. test/accessibility_test.dart
+/// checks this.
 abstract final class FixedColors {
   /// Status badges: done / waiting.
   static const positive = Color(0xFF2E9E5B);
-  static const waiting = Color(0xFFE0A100);
+  static const waiting = Color(0xFFB98500);
   static const onWaiting = Color(0xFF1B1B1B);
 
   /// The staging ribbon.
