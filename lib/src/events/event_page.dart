@@ -49,8 +49,25 @@ class _EventPageState extends ConsumerState<EventPage> {
     if (_recorded == widget.id) return;
     _recorded = widget.id;
     final id = widget.id;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    void record() {
       if (mounted) ref.read(recentlyViewedIdsProvider.notifier).add(id);
+    }
+
+    // Only once the page has come in: the list underneath would otherwise
+    // reorder (this event moves to the front of "recently viewed") while
+    // it still shows through the transition. Checked after the first frame:
+    // until then the page is built offstage, as if already in.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final animation = ModalRoute.of(context)?.animation;
+      if (animation == null || animation.isCompleted) return record();
+      void onStatus(AnimationStatus status) {
+        if (status.isAnimating) return;
+        animation.removeStatusListener(onStatus);
+        if (status.isCompleted) record();
+      }
+
+      animation.addStatusListener(onStatus);
     });
   }
 

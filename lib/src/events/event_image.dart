@@ -66,8 +66,44 @@ class EventImage extends ConsumerWidget {
       ),
     );
     if (heroTag == null) return picture;
-    return Hero(tag: heroTag!, child: picture);
+    return Hero(tag: heroTag!, flightShuttleBuilder: _shuttle, child: picture);
   }
+}
+
+/// Flies both pictures as they are laid out on their own screens, scaled
+/// and crossfaded. Laid out anew at each in-between size, the placeholder's
+/// name would wrap differently from frame to frame and flicker.
+Widget _shuttle(
+  BuildContext flightContext,
+  Animation<double> animation,
+  HeroFlightDirection direction,
+  BuildContext fromHeroContext,
+  BuildContext toHeroContext,
+) {
+  Widget scaled(BuildContext hero) {
+    final size = (hero.findRenderObject() as RenderBox?)?.size;
+    final child = (hero.widget as Hero).child;
+    if (size == null || size.isEmpty) return child;
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: SizedBox.fromSize(size: size, child: child),
+    );
+  }
+
+  // The animation runs from the pushed page's side on push and pop alike.
+  final from = direction == HeroFlightDirection.push
+      ? fromHeroContext
+      : toHeroContext;
+  final to = direction == HeroFlightDirection.push
+      ? toHeroContext
+      : fromHeroContext;
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      FadeTransition(opacity: ReverseAnimation(animation), child: scaled(from)),
+      FadeTransition(opacity: animation, child: scaled(to)),
+    ],
+  );
 }
 
 /// Stand-in for a missing picture: the event's name on a quiet tile, so a

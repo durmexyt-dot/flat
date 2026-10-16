@@ -13,6 +13,9 @@ die nächste Version.
 
 - Tickets page on wide screens: offers start next to the title, no empty
   space above them
+- Opening an event no longer reorders "recently viewed" mid-transition, so
+  the cards underneath don't jump; event pictures without an image scale
+  smoothly between card and page instead of rewrapping their name
 
 ## [1.12.1] – 2026-10-16
 

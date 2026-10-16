@@ -7,7 +7,7 @@
 - **Releases go to STAGING only** (`tool/release.sh patch|minor`, default
   target). Deploy to PROD (`/flat/`) only when the owner explicitly asks, and
   then the exact version tested on staging: `tool/deploy_web.sh prod --ref vX.Y.Z`.
-  Exception: **bug fixes** may go to staging and prod together
+  Exception: **bug fixes always go to staging and prod together**
   (`tool/release.sh patch all`) once checked in the browser.
 - Until go-live, "prod" (`/flat/`, `stubswap-prod`) is an integration
   environment without real users: no real payments, company details and

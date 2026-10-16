@@ -5,6 +5,7 @@ import 'package:flat/src/home/event_row.dart';
 import 'package:flat/src/home/home_page.dart';
 import 'package:flat/src/home/home_sections.dart';
 import 'package:flat/src/info/info_page.dart';
+import 'package:flat/src/ui/tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -285,6 +286,27 @@ void main() {
         _inSection('Preporučeno za vas', find.text('Dubioza kolektiv')),
         findsOneWidget,
       );
+    });
+
+    testWidgets('opening a viewed event keeps the row still until it is in', (
+      tester,
+    ) async {
+      await _home(tester);
+      final viewed = ProviderScope.containerOf(
+        tester.element(find.byType(HomePage)),
+      ).read(recentlyViewedIdsProvider.notifier);
+      viewed.add('ev-mostar');
+      viewed.add('ev-dubioza');
+      await tester.pumpAndSettle();
+
+      GoRouter.of(tester.element(find.byType(HomePage)))
+          .push('/event/ev-mostar');
+      await tester.pump();
+      await tester.pump(Motion.page ~/ 2);
+      // Mid-transition the home row underneath hasn't reordered.
+      expect(viewed.state, ['ev-dubioza', 'ev-mostar']);
+      await tester.pumpAndSettle();
+      expect(viewed.state, ['ev-mostar', 'ev-dubioza']);
     });
 
     testWidgets('a type shows only its sections', (tester) async {
