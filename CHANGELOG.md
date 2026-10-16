@@ -9,6 +9,10 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.3] – 2026-10-16
+
+- Fix cards jumping when opening a recently viewed event
+
 ## [1.12.2] – 2026-10-16
 
 - Tickets page on wide screens: offers start next to the title, no empty
