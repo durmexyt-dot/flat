@@ -61,6 +61,8 @@ def value(v):
         return {'booleanValue': v}
     if isinstance(v, int):
         return {'integerValue': str(v)}
+    if isinstance(v, float):
+        return {'doubleValue': v}
     if isinstance(v, datetime.datetime):
         return {'timestampValue': v.astimezone(UTC).isoformat().replace('+00:00', 'Z')}
     if isinstance(v, dict):
@@ -77,6 +79,8 @@ def plain(v):
         return datetime.datetime.fromisoformat(v['timestampValue'].replace('Z', '+00:00'))
     if 'integerValue' in v:
         return int(v['integerValue'])
+    if 'doubleValue' in v:
+        return float(v['doubleValue'])
     if 'booleanValue' in v:
         return v['booleanValue']
     if 'mapValue' in v:
@@ -252,7 +256,7 @@ def ensure_event(a, eid, e, *, status, reader, image=None):
 
 
 def ensure_listing(seller, lid, eid, e, fees, *, quantity, price, section='', row='', seats='', note='',
-                   together=False, ticket_type='eTicket'):
+                   together=False, ticket_type='eTicket', face_value=None):
     create(seller.token, f'listings/{lid}', {
         'sellerId': seller.uid, 'eventId': eid, 'event': event_info(e),
         'buyerFeePercent': fees[0], 'sellerFeePercent': fees[1],
@@ -260,6 +264,7 @@ def ensure_listing(seller, lid, eid, e, fees, *, quantity, price, section='', ro
         'priceMinor': price, 'currency': 'BAM', 'status': 'active',
         'section': section, 'row': row, 'seats': seats, 'note': note,
         **({'together': True} if together else {}),
+        **({'faceValueMinor': face_value} if face_value else {}),
     }, f'listing {lid}')
     return get(seller.token, f'listings/{lid}')
 
@@ -439,13 +444,13 @@ def ensure_tour(staff, seller, fees, concert):
         print('  exists: seat map Zetra')
 
     ensure_listing(seller, 'showcase-concert-north', 'showcase-concert', concert, fees,
-                   quantity=4, price=5500, section='Tribina Sjever', row='12', seats='5–8', together=True)
+                   quantity=4, price=5500, section='Tribina Sjever', row='12', seats='5–8', together=True, face_value=5000)
     ensure_listing(seller, 'showcase-concert-floor', 'showcase-concert', concert, fees,
-                   quantity=3, price=6500, section='Parter', ticket_type='mobile')
+                   quantity=3, price=6500, section='Parter', ticket_type='mobile', face_value=6000)
     ensure_listing(seller, 'showcase-concert-vip', 'showcase-concert', concert, fees,
-                   quantity=2, price=12000, section='VIP', row='1', seats='1–2', together=True)
+                   quantity=2, price=12000, section='VIP', row='1', seats='1–2', together=True, face_value=11000)
     ensure_listing(seller, 'showcase-tour-tuzla-open', 'showcase-tour-tuzla', tuzla, fees,
-                   quantity=2, price=4000, together=True)
+                   quantity=2, price=4000, together=True, face_value=4000)
 
 
 def main():
