@@ -77,12 +77,13 @@ void main() {
 
   testWidgets('notification switches are saved to the profile', (tester) async {
     await _signedInAt(tester, 'Obavještenja');
-    expect(find.text('Status narudžbe'), findsOneWidget);
-    await tapVisible(tester, find.text('Novosti i ponude'));
+    // Only what is actually sent can be switched.
+    expect(find.text('Novosti i ponude'), findsNothing);
+    await tapVisible(tester, find.text('Status narudžbe'));
     final profile = await tester.runAsync(
       () => profiles.watchProfile('1').first,
     );
-    expect(profile?.notifications.newsletter, isTrue);
+    expect(profile?.notifications.orderUpdates, isFalse);
     // Push is not available in tests (no browser).
     await tester.scrollUntilVisible(
       find.text('Push na ovom uređaju'),

@@ -9,6 +9,12 @@ die nächste Version.
 
 ## [Unreleased]
 
+- Notifications work on phones: shown through a small service worker
+  (Chrome on Android refuses page notifications); the test button says
+  whether it worked
+- Notification settings show only what is actually sent (event reminders,
+  price alerts and newsletter hidden until they exist)
+
 ## [1.12.4] – 2026-10-16
 
 - German is the default language (until a language is picked in the

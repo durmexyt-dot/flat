@@ -880,6 +880,8 @@
   "sendTestNotification": "Pošalji probno obavještenje",
   "testNotificationTitle": "Stubswap obavještenja rade",
   "testNotificationBody": "Ovako ćeš saznati kada se tvoje karte prodaju.",
+  "testNotificationSent": "Probno obavještenje je poslano. Ako ga ne vidiš, provjeri obavještenja za preglednik u postavkama uređaja.",
+  "testNotificationFailed": "Preglednik nije prikazao obavještenje.",
   "buying": "Kupovina",
   "selling": "Prodaja",
   "other": "Ostalo",

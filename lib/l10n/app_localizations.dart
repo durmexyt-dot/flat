@@ -4750,6 +4750,18 @@ abstract class AppLocalizations {
   /// **'Ovako ćeš saznati kada se tvoje karte prodaju.'**
   String get testNotificationBody;
 
+  /// No description provided for @testNotificationSent.
+  ///
+  /// In bs, this message translates to:
+  /// **'Probno obavještenje je poslano. Ako ga ne vidiš, provjeri obavještenja za preglednik u postavkama uređaja.'**
+  String get testNotificationSent;
+
+  /// No description provided for @testNotificationFailed.
+  ///
+  /// In bs, this message translates to:
+  /// **'Preglednik nije prikazao obavještenje.'**
+  String get testNotificationFailed;
+
   /// No description provided for @buying.
   ///
   /// In bs, this message translates to:

@@ -96,8 +96,8 @@ Desktop-Scrollen über die ganze Fensterbreite.
 1. ✅ **Mobile- und Papiertickets**: Übergabeangaben (Transfer an Name/E-Mail,
    Sendungsnummer) statt nur „gesendet“; Bestätigung durch den Käufer.
 2. ✅ **App Check** eingebaut (Staging und Prod), noch nicht erzwungen, siehe 2.4.
-3. **Einstellungen ohne Funktion** (Preisalarme, Event-Erinnerungen,
-   Newsletter) bauen oder ausblenden.
+3. ✅ **Einstellungen ohne Funktion** (Preisalarme, Event-Erinnerungen,
+   Newsletter) ausgeblendet (v1.12.5); kommen zurück, wenn es sie gibt.
 4. ✅ **Datenauskunft (DSGVO/ZZLP)**: eigene Daten exportieren.
 5. **Prod aufräumen**: Skript zum Löschen von Testdaten und -konten.
 

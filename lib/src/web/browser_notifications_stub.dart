@@ -6,7 +6,7 @@ PushSupport pushSupport() => PushSupport.unsupported;
 
 Future<PushSupport> requestPushPermission() async => PushSupport.unsupported;
 
-void showTestNotification(String title, String body) {}
+Future<bool> showTestNotification(String title, String body) async => false;
 
 /// Outside the browser the app is visible while it runs.
 bool pageHidden() => false;

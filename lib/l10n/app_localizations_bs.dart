@@ -2682,6 +2682,13 @@ class AppLocalizationsBs extends AppLocalizations {
       'Ovako ćeš saznati kada se tvoje karte prodaju.';
 
   @override
+  String get testNotificationSent =>
+      'Probno obavještenje je poslano. Ako ga ne vidiš, provjeri obavještenja za preglednik u postavkama uređaja.';
+
+  @override
+  String get testNotificationFailed => 'Preglednik nije prikazao obavještenje.';
+
+  @override
   String get buying => 'Kupovina';
 
   @override

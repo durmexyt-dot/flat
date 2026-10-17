@@ -57,9 +57,15 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     }
   }
 
-  void _sendTest() {
+  Future<void> _sendTest() async {
     final l10n = AppLocalizations.of(context);
-    showTestNotification(l10n.testNotificationTitle, l10n.testNotificationBody);
+    final shown = await showTestNotification(
+      l10n.testNotificationTitle,
+      l10n.testNotificationBody,
+    );
+    // Phones may still hide it (e.g. browser notifications off for the
+    // whole browser), so say what happened either way.
+    showSnack(shown ? l10n.testNotificationSent : l10n.testNotificationFailed);
   }
 
   @override
@@ -144,6 +150,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                   )
                 : const SizedBox(width: double.infinity),
           ),
+          // Only what is actually sent. Event reminders, price alerts and
+          // the newsletter come back once they exist.
           SettingsSectionTitle(l10n.buying),
           SettingsGroup(
             children: [
@@ -152,18 +160,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 prefs.orderUpdates,
                 l10n.notifOrderUpdates,
                 l10n.notifOrderUpdatesInfo,
-              ),
-              toggle(
-                'eventReminders',
-                prefs.eventReminders,
-                l10n.notifEventReminders,
-                l10n.notifEventRemindersInfo,
-              ),
-              toggle(
-                'priceAlerts',
-                prefs.priceAlerts,
-                l10n.notifPriceAlerts,
-                l10n.notifPriceAlertsInfo,
               ),
             ],
           ),
@@ -181,17 +177,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 prefs.payoutUpdates,
                 l10n.notifPayoutUpdates,
                 l10n.notifPayoutUpdatesInfo,
-              ),
-            ],
-          ),
-          SettingsSectionTitle(l10n.other),
-          SettingsGroup(
-            children: [
-              toggle(
-                'newsletter',
-                prefs.newsletter,
-                l10n.notifNewsletter,
-                l10n.notifNewsletterInfo,
               ),
             ],
           ),

@@ -783,6 +783,8 @@
   "sendTestNotification": "Test-Benachrichtigung senden",
   "testNotificationTitle": "Stubswap-Benachrichtigungen funktionieren",
   "testNotificationBody": "So erfährst du, wenn deine Tickets verkauft werden.",
+  "testNotificationSent": "Test-Benachrichtigung gesendet. Siehst du sie nicht, prüfe die Benachrichtigungen für den Browser in den Geräte-Einstellungen.",
+  "testNotificationFailed": "Der Browser hat die Benachrichtigung nicht angezeigt.",
   "buying": "Kaufen",
   "selling": "Verkaufen",
   "other": "Sonstiges",

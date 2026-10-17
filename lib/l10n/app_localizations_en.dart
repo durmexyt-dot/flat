@@ -2674,6 +2674,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'This is how you\'ll hear when your tickets sell.';
 
   @override
+  String get testNotificationSent =>
+      'Test notification sent. If you don\'t see it, check notifications for your browser in the device settings.';
+
+  @override
+  String get testNotificationFailed =>
+      'Your browser didn\'t show the notification.';
+
+  @override
   String get buying => 'Buying';
 
   @override

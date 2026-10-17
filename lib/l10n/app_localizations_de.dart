@@ -2697,6 +2697,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'So erfährst du, wenn deine Tickets verkauft werden.';
 
   @override
+  String get testNotificationSent =>
+      'Test-Benachrichtigung gesendet. Siehst du sie nicht, prüfe die Benachrichtigungen für den Browser in den Geräte-Einstellungen.';
+
+  @override
+  String get testNotificationFailed =>
+      'Der Browser hat die Benachrichtigung nicht angezeigt.';
+
+  @override
   String get buying => 'Kaufen';
 
   @override
