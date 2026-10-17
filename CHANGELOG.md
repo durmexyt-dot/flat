@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.5] – 2026-10-17
+
 - Notifications work on phones: shown through a small service worker
   (Chrome on Android refuses page notifications); the test button says
   whether it worked
