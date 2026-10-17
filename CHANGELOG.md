@@ -9,6 +9,8 @@ die nächste Version.
 
 ## [Unreleased]
 
+## [1.12.6] – 2026-10-17
+
 - Event reminders, price alerts and newsletter: shown again, but off and
   locked ("coming soon") until they exist; off by default
 
