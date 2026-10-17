@@ -9,13 +9,16 @@ die nächste Version.
 
 ## [Unreleased]
 
+- Event reminders, price alerts and newsletter: shown again, but off and
+  locked ("coming soon") until they exist; off by default
+
 ## [1.12.5] – 2026-10-17
 
 - Notifications work on phones: shown through a small service worker
   (Chrome on Android refuses page notifications); the test button says
   whether it worked
-- Event reminders, price alerts and newsletter: shown but off and locked
-  ("coming soon") until they exist; off by default
+- Notification settings show only what is actually sent (event reminders,
+  price alerts and newsletter hidden until they exist)
 
 ## [1.12.4] – 2026-10-16
 
