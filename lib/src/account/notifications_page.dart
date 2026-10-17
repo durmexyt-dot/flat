@@ -83,6 +83,17 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
       onPress: () => _set(key, !value),
     );
 
+    // Not built yet: shown, off and locked.
+    FTile soon(String title, String info) => FTile(
+      enabled: false,
+      title: Text(title),
+      subtitle: Text(
+        '$info · ${l10n.comingSoon}',
+        overflow: TextOverflow.visible,
+      ),
+      suffix: const FSwitch(value: false, enabled: false),
+    );
+
     final pushHint = switch (_push) {
       PushSupport.unsupported => l10n.pushUnsupported,
       PushSupport.denied => l10n.pushDenied,
@@ -150,8 +161,6 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                   )
                 : const SizedBox(width: double.infinity),
           ),
-          // Only what is actually sent. Event reminders, price alerts and
-          // the newsletter come back once they exist.
           SettingsSectionTitle(l10n.buying),
           SettingsGroup(
             children: [
@@ -161,6 +170,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 l10n.notifOrderUpdates,
                 l10n.notifOrderUpdatesInfo,
               ),
+              soon(l10n.notifEventReminders, l10n.notifEventRemindersInfo),
+              soon(l10n.notifPriceAlerts, l10n.notifPriceAlertsInfo),
             ],
           ),
           SettingsSectionTitle(l10n.selling),
@@ -179,6 +190,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 l10n.notifPayoutUpdatesInfo,
               ),
             ],
+          ),
+          SettingsSectionTitle(l10n.other),
+          SettingsGroup(
+            children: [soon(l10n.notifNewsletter, l10n.notifNewsletterInfo)],
           ),
         ],
       ),

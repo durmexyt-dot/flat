@@ -75,8 +75,9 @@ class NotificationPrefs {
     this.orderUpdates = true,
     this.saleUpdates = true,
     this.payoutUpdates = true,
-    this.priceAlerts = true,
-    this.eventReminders = true,
+    // Off until these exist; the switches are shown but locked.
+    this.priceAlerts = false,
+    this.eventReminders = false,
     this.newsletter = false,
     this.email = true,
     this.push = false,

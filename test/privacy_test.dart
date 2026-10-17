@@ -77,8 +77,26 @@ void main() {
 
   testWidgets('notification switches are saved to the profile', (tester) async {
     await _signedInAt(tester, 'Obavještenja');
-    // Only what is actually sent can be switched.
-    expect(find.text('Novosti i ponude'), findsNothing);
+    // Not built yet: shown, but off and locked.
+    final newsletter = find.ancestor(
+      of: find.text('Novosti i ponude'),
+      matching: find.byType(FTile),
+    );
+    expect(
+      tester
+          .widget<FSwitch>(
+            find.descendant(of: newsletter, matching: find.byType(FSwitch)),
+          )
+          .value,
+      isFalse,
+    );
+    await tapVisible(tester, find.text('Novosti i ponude'));
+    expect(
+      (await tester.runAsync(() => profiles.watchProfile('1').first))
+          ?.notifications
+          .newsletter,
+      isFalse,
+    );
     await tapVisible(tester, find.text('Status narudžbe'));
     final profile = await tester.runAsync(
       () => profiles.watchProfile('1').first,
